@@ -65,6 +65,35 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Gets all categories by departments.
+        /// </summary>       
+        /// <param name="deptId"> pass department id for fetching details</param>
+        /// <returns>returns category object if details are available. Else empty object.</returns>
+        [HttpGet("GetAllCategoryBYDeptId")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllCategoryBYDeptId(string deptId)
+        {
+            log.Info($"Request of {nameof(GetAllCategoryBYDeptId)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetAllCategoryBYDeptId(deptId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAllCategoryBYDeptId)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAllCategoryBYDeptId)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Gets all categories.
         /// </summary>       
         /// <returns>returns category object if details are available. Else empty object.</returns>
