@@ -69,6 +69,36 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+
+        /// <summary>
+        /// Gets all items by Product Id.
+        /// </summary>       
+        /// <param name="akiProductID">Pass Product Id</param>
+        /// <returns>returns Items object if details are available. Else empty object.</returns>
+        [HttpGet("GetAllItemsByProductId")]
+        [ProducesResponseType(typeof(APIResult<List<ItemResponseModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllItemsByProductId(string akiProductID)
+        {
+            log.Info($"Request of {nameof(GetAllItemsByProductId)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.GetAllItemsByProductId(akiProductID);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAllItemsByProductId)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAllItemsByProductId)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
         /// <summary>
         /// Gets all items competitors.
         /// </summary>       
