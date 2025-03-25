@@ -84,7 +84,7 @@ namespace CousinPCMS.Domain
         public string SafetyLeadTime { get; set; }
         public string FlushingMethod { get; set; }
         public string ReplenishmentSystem { get; set; }
-        public int RoundingPrecision { get; set; }
+        public decimal RoundingPrecision { get; set; }
         public string PurchUnitOfMeasure { get; set; }
         public string TimeBucket { get; set; }
         public string ReorderingPolicy { get; set; }

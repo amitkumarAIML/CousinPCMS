@@ -1,11 +1,15 @@
 ﻿using CousinPCMS.BLL;
 using CousinPCMS.Domain;
 using log4net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
 namespace CousinPCMS.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class DepartmentController : ControllerBase
     {
         /// <summary>
