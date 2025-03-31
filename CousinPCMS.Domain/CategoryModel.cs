@@ -42,6 +42,9 @@ namespace CousinPCMS.Domain
         public int AKI_Indentation { get; set; }
         public string AKIDepartment { get; set; }
         public string AKIDepartmentName { get; set; }
+        public string akiCategoryAlternativeTitle { get; set; }
+        public string AKI_Layout_Template { get; set; }
+        public string AKI_Show_Category_Text { get; set; }
     }
 
     public class LinkedAttributeModel
