@@ -1,0 +1,48 @@
+.custom-node {
+  cursor: pointer;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family);
+  font-size: 10px;
+}
+
+.node-icon {
+  margin-right: 5px;
+}
+
+.node-name {
+  margin-right: 5px;
+}
+
+/* Drag and drop styling */
+nz-tree {
+  width: 100%;
+}
+
+:host ::ng-deep .ant-tree-node-content-wrapper {
+  width: 100%;
+}
+
+:host ::ng-deep .ant-tree-treenode-draggable .ant-tree-draggable-icon {
+  cursor: grab;
+}
+
+:host ::ng-deep .ant-tree-treenode-dragging {
+  background-color: #f5f5f5;
+  opacity: 0.8;
+}
+
+/* Hover state styling */
+:host ::ng-deep .ant-tree-node-content-wrapper:hover {
+  background-color: #e6f7ff;
+}
+
+/* Selected node styling */
+:host ::ng-deep .ant-tree-node-selected {
+  background-color: #bae7ff;
+}
+
+:host ::ng-deep .ant-tree-treenode {
+  padding: 0 0 0 0 !important; /* Adjust padding */
+}

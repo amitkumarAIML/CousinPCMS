@@ -1,0 +1,9 @@
+::ng-deep .ant-tabs-content {
+    min-height: 650px; /* Ensures both tabs have the same height */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+ 
+  

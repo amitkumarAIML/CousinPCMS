@@ -1,0 +1,172 @@
+@import "tailwindcss" important;
+
+:root {
+    --color-primary-theme: #21b6e1;
+    --color-primary-theme-hover: #4acfed;
+    --color-primary-font: #343941;
+    --color-secondary-font: #67768c;
+    --color-border: #cbd5e0;
+    --color-light-border: #e2e8f0;
+    --color-place-holder: #cbd5e0;
+    --color-disable: #eff2f7;
+    --color-disable-font: #a3b1c0;
+    --color-danger: #ff4747;
+    --color-success: #1cb253;
+    --color-white: #ffffff;
+    --color-bg: #edeff4;
+    --color-table-heightlighted: #e9f8fc;
+    --color-highlighted: #DB9F27;
+    --shadow-cousins-box: 0px 1px 3px 0px #00000029;
+    --font-family: Inter;
+}
+
+* {
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-disable-font) var(--color-bg) !important;
+}
+
+body {
+    font-size: 14px;
+    font-weight: 500 !important;
+    color: var(--color-primary-font);
+    background-color: var(--color-bg);
+}
+
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: var(--color-white) !important;
+    color: var(--color-highlighted) !important;
+}
+
+nz-icon .ant-tree-switcher-line-icon,
+.anticon-file {
+    display: none !important;
+    
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px; 
+}
+label {
+    display: block;
+    font-size: 12px !important; /* Font size for labels */
+    font-weight: 500; /* Medium font weight */
+    color: var(--color-secondary-font);
+    margin-bottom: 5px; /* Space between label and input */
+    font-family: var(--font-family);
+}
+
+.ant-form-item-explain-error {
+    color: var(--color-danger);
+    font-size: 12px;
+    font-family: var(--font-family);
+}
+
+.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
+    border-color: var(--color-danger);
+}
+
+.ant-form-item {
+    display: block;
+    margin-bottom: 0px;
+}
+
+.ant-form-item-label { 
+    overflow: visible;
+}
+/* Label Styling */
+.ant-form-item-label > label
+{
+    font-size: 12px !important; /* Font size for labels */
+    font-weight: 500; /* Medium font weight */
+    color: var(--color-secondary-font);
+    margin-bottom: 5px; /* Space between label and input */
+    font-family: var(--font-family);
+}
+  
+/* Input & Textarea Styling */
+input[nz-input], 
+textarea[nz-input] {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 12px;
+    border: 1px solid #d1d5db; /* Gray-300 */
+    border-radius: 5px;
+    outline: none;
+    transition: border 0.2s ease-in-out;
+    color: var(--color-secondary-font);
+    font-family: var(--font-family);
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    font-size: 12px;
+    font-family: var(--font-family);
+}
+
+.ant-tabs-tab-btn {
+    font-size: 12px; 
+    font-family: var(--font-family);
+    color: var(--color-secondary-font);
+}
+
+button[nz-button] {
+    margin-right: 8px;
+    margin-bottom: 12px;
+    border-radius: 5px;
+    border: 1px solid #CBD5E1; /* Gray-300 */
+    font-size: 12px;
+    font-family: var(--font-family);
+    color: #67768C;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.ant-btn-primary {
+    background: var(--color-primary-theme);
+}
+
+
+/* Checkbox Wrapper */
+.nz-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+  /* Label Styling (Text before Checkbox) */
+.nz-checkbox-wrapper label {
+    display: flex;
+    color: var(--color-secondary-font);
+    flex-direction: row-reverse; /* Moves checkbox after text */
+    padding-left: 0px;
+}
+
+.ant-checkbox + span  {
+    padding-left: 0px !important;
+}
+
+.ant-select {
+    border: 1px #d1d5db; /* Gray-300 */
+    border-radius: 5px !important; /* Rounded corners */
+    transition: all 0.3s ease-in-out;
+    font-size: 12px;
+    font-family: var(--font-family);
+}
+
+.ant-select-selector {
+    border-radius: 5px !important; /* Rounded corners */
+}
+
+.ant-select-disabled {
+    background-color: #CBD5E1 !important;
+    color: #CBD5E1 !important; /* Dim text color */
+    cursor: not-allowed;
+}
+
+.ant-select-item-option {
+    font-size: 12px; 
+    font-family: var(--font-family);
+}
+
+  

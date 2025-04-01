@@ -1,0 +1,28 @@
+<div class="p-4 bg-white rounded-lg m-5">
+    <span >Department Form</span>
+
+    <!-- Tabs -->
+    <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
+      <nz-tab nzTitle="Department Info">
+        <cousins-department-info [deptData]="departmentData"></cousins-department-info>
+      </nz-tab>
+  
+      <!-- Catalogue Options Tab -->
+      <nz-tab nzTitle="Catalogue Options">
+       <cousins-catalogue-options [deptData]="departmentData"></cousins-catalogue-options>
+      </nz-tab>
+    </nz-tabset>
+
+    <ng-template #extraTemplate>
+            <button nz-button nzType="default" class="" (click)="cancle()">
+              Cancel
+            </button>
+            <button nz-button nzType="default" class="">
+              Delete
+            </button>
+            <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading"  (click)="saveDetails()">
+              Save
+            </button>
+    </ng-template>
+</div>
+  

@@ -1,0 +1,40 @@
+.tree-view-scroll {
+    max-height: 70vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.card {
+    max-height: 70vh;
+}
+
+
+/* For larger screens */
+@media (min-width: 1024px) {
+    .tree-view-scroll {
+        max-height: 800px;
+    }
+    .card {
+        max-height: 800px;
+    }
+}
+
+/* For medium screens */
+@media (max-width: 1023px) {
+    .tree-view-scroll {
+        max-height: 60vh;
+    }
+    .card {
+        max-height: 60vh;
+    }
+}
+
+/* For smaller screens (mobile) */
+@media (max-width: 768px) {
+    .tree-view-scroll {
+        max-height: 50vh;
+    }
+    .card {
+        max-height: 50vh;
+    }
+}

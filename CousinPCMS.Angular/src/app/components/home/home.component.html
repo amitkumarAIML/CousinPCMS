@@ -1,0 +1,39 @@
+<!-- <div class="grid grid-cols-12">
+  <div class="col-span-6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-6 m-4 p-2 bg-white rounded-md">
+        <cousins-tree-view (categorySelected)="onCategorySelected($event)" ></cousins-tree-view>
+      </div>
+      <div class="col-span-6 m-4 p-2 bg-white rounded-md">
+        <cousins-product-display [selectedCategory]="selectedCategory"></cousins-product-display>
+      </div>
+    </div>
+  </div>
+  <div class="col-span-6 m-4 p-2 bg-white rounded-md">
+   <cousins-sku-display></cousins-sku-display>
+  </div>
+</div> -->
+
+
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 p-4">
+  <!-- Left Section -->
+  <div class="lg:col-span-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Category Tree -->
+      <div class="p-4 bg-white rounded-md shadow-md tree-view-scroll">
+        <cousins-tree-view (categorySelected)="onCategorySelected($event)"></cousins-tree-view>
+      </div>
+      <!-- Product Display -->
+      <div class="p-4 bg-white rounded-md shadow-md card">
+        <cousins-product-display [selectedCategory]="selectedCategory" (productSelected)="onProductSelected($event)"></cousins-product-display>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div class="lg:col-span-6 p-4 bg-white rounded-md shadow-md card">
+    <cousins-sku-display [selectedProductId]="selectedProductId"></cousins-sku-display>
+  </div>
+</div>

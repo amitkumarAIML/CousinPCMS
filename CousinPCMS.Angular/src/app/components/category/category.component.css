@@ -1,0 +1,58 @@
+.header-container {
+    display: flex;
+    justify-content: space-between; /* Align title left & buttons right */
+    align-items: center;
+}
+
+.header-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.button-group {
+    display: block;
+}
+
+.ant-divider-horizontal {
+    margin: 0px 0;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.char-count {
+    right: 10px;
+    font-size: 12px;
+    color: #888;
+    background: white;
+    padding-left: 5px;
+}
+
+.nz-checkbox-wrapper-price {
+    align-items: flex-end !important;
+    margin-bottom: 12px !important;;
+}
+
+.nz-checkbox-wrapper-label {
+    flex-direction: row ;
+    margin-left: 0px;
+    margin-bottom: 5px;
+}
+
+.nz-checkbox-wrapper-website {
+    display: block;
+}
+
+.ant-checkbox-inner {
+    margin-left: 70px !important;
+}
+
+.product-link {
+    font-family: var(--font-family);
+    color: var(--color-primary-thems);
+    font-size: 12px;
+}

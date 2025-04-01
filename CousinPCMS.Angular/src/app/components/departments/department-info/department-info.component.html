@@ -1,0 +1,89 @@
+<div class="pl-4">
+    <form nz-form [formGroup]="departmentForm" class="max-w-4xl rounded-lg">
+        <div class="grid grid-cols-2 gap-2">
+          <nz-form-item>
+            <nz-form-label nzRequired [nzNoColon]="true">Department ID</nz-form-label>
+            <input nz-input formControlName="akiDepartmentID" class="w-full bg-gray-100" [disabled]="true" />
+          </nz-form-item>
+
+          <nz-form-item  class="col-span-2">
+            <nz-form-label nzRequired [nzNoColon]="true">Department Name</nz-form-label>
+            <nz-form-control [nzErrorTip]="'Please enter a department name '">
+              <div class="input-wrapper">
+                <input nz-input formControlName="akiDepartmentName" class="w-full pr-10" maxlength="50"/>
+                <span class="char-count">
+                  {{ 50 - departmentForm.get('akiDepartmentName')?.value?.length || 50 }}
+                </span>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+          
+          <nz-form-item>
+            <nz-form-label nzRequired [nzNoColon]="true">List Order</nz-form-label>
+            <nz-form-control [nzErrorTip]="'Please enter a list order number'">
+              <input nz-input formControlName="akiDepartmentListOrder" class="w-full" type="number"/>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <div class="col-span-2 nz-checkbox-wrapper">
+            <label  formControlName="akiDepartmentWebActive" nz-checkbox nzValue="false"> 
+                Web Active
+            </label >
+            <label  formControlName="akI_DeptPromptUserIfBlank" nz-checkbox nzValue="false">
+              Prompt User If Price Group Is Blank
+            </label >
+          </div>
+    
+          <nz-form-item class="col-span-2">
+            <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
+            <div class="input-wrapper">
+              <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-24"  maxlength="2000"></textarea>
+              <span class="char-count">
+                {{ 2000 - departmentForm.get('akiDepartmentDescText')?.value?.length || 2000 }}
+              </span>
+            </div>
+          </nz-form-item>
+    
+          <nz-form-item class="col-span-2">
+              <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
+              <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
+                <div class="input-wrapper">
+                  <input nz-input formControlName="akiDepartmentImageURL" class="w-full" maxlength="255"/>
+                  <span class="char-count">
+                    {{ 255 - departmentForm.get('akiDepartmentImageURL')?.value?.length || 255 }}
+                  </span> 
+                </div>
+               </nz-form-control> 
+          </nz-form-item>
+    
+          <nz-form-item >
+              <nz-form-label [nzNoColon]="true">Image Height</nz-form-label>
+              <nz-form-control [nzSm]="18" [nzXs]="24">
+                <input nz-input formControlName="akiDepartmentImageHeight" type="number"/>
+              </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item >
+            <nz-form-label [nzNoColon]="true">Image Width</nz-form-label>
+            <nz-form-control [nzSm]="18" [nzXs]="24">
+              <input nz-input formControlName="akiDepartmentImageWidth" type="number"/>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item class="col-span-2">
+            <nz-form-label [nzNoColon]="true">Key Words</nz-form-label>
+            <div class="input-wrapper">
+              <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" maxlength="500"/>
+              <span class="char-count">
+                {{ 500 - departmentForm.get('akiDepartmentKeyWords')?.value?.length || 500 }}
+              </span>
+            </div>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label [nzNoColon]="true">Commodity Code</nz-form-label>
+            <input nz-input formControlName="akiDepartmentCommodityCode" />
+          </nz-form-item>
+        </div>
+    </form>
+</div>
