@@ -78,7 +78,7 @@ namespace CousinPCMS.BLL
 
                 var response = client.Execute(request);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     returnValue.IsSuccess = true;
                     returnValue.Value = "Success";
