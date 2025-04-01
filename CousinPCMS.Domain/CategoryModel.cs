@@ -8,7 +8,7 @@ namespace CousinPCMS.Domain
         public string ODataEtag { get; set; }
         public string AkiCategoryID { get; set; }
         public string AkiCategoryName { get; set; }
-        public int AkiCategoryParentID { get; set; }
+        public string AkiCategoryParentID { get; set; }
         public decimal AkiCategoryGuidePrice { get; set; }
         public decimal AkiCategoryGuideWeight { get; set; }
         public int AkiCategoryListOrder { get; set; }
