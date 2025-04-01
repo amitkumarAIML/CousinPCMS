@@ -130,33 +130,67 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<List<AdditionalCategoryModel>> GetAdditionalCategory()
+        public APIResult<List<AdditionalCategoryModel>> GetAdditionalCategory(string categoryId)
         {
             APIResult<List<AdditionalCategoryModel>> returnValue = new APIResult<List<AdditionalCategoryModel>>
             {
                 IsError = false,
                 IsSuccess = true,
+                Value = new List<AdditionalCategoryModel>()
             };
+
             try
             {
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var allFilters = new List<Filters>
+                {
+                    new Filters
+                    {
+                        ParameterName = "additionalCategory",
+                        ParameterValue = categoryId,
+                        DataType = typeof(string),
+                        Compare = ComparisonType.Equals
+                    }
+                };
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                // Fetch Additional Category Data
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts?company={HardcodedValues.CompanyName}{filter}",
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                // Fetch Product Data
+                var pservice = new ProductService(Oauth);
+                var category = pservice.GetProductsByCategory(categoryId);
 
                 if (!string.IsNullOrEmpty(response))
                 {
                     var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AdditionalCategoryModel>>>(response);
-                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+
+                    if (responseOfOrderLine?.Value != null && responseOfOrderLine.Value.Any())
                     {
-                        returnValue.Value = responseOfOrderLine.Value;
-                    }
-                    else
-                    {
-                        returnValue.IsSuccess = false;
+                        returnValue.Value.AddRange(responseOfOrderLine.Value);
                     }
                 }
-                else
+
+                if (category?.Value != null && category.Value.Any())
                 {
-                    returnValue.IsSuccess = false;
+                    var products = category.Value.Select(additionalCategory => new AdditionalCategoryModel
+                    {
+                        AdditionalCategory = additionalCategory.AkiCategoryID,
+                        Product = additionalCategory.AkiProductID,
+                        ListOrder = additionalCategory.AkiProductListOrder,
+                        ProductName = additionalCategory.AkiProductName,
+                        CategoryName = additionalCategory.Category_Name,
+                        WebActive = additionalCategory.AkiProductWebActive
+                    }).ToList();
+
+                    returnValue.Value.AddRange(products);
                 }
+                returnValue.IsSuccess = true;
             }
             catch (Exception exception)
             {
@@ -164,6 +198,7 @@ namespace CousinPCMS.BLL
                 returnValue.IsError = true;
                 returnValue.ExceptionInformation = exception;
             }
+
             return returnValue;
         }
     }

@@ -75,4 +75,19 @@ namespace CousinPCMS.Domain
         public string AKI_Color { get; set; }
         public string AKI_Featured_Prod_BG_Color { get; set; }
     }
+
+    public class DepartmentLayoutModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string ODataEtag { get; set; }
+
+        [JsonProperty("departmentId")]
+        public int DepartmentId { get; set; }
+
+        [JsonProperty("templateCode")]
+        public string TemplateCode { get; set; }
+
+        [JsonProperty("layoutDescription")]
+        public string LayoutDescription { get; set; }
+    }
 }
