@@ -261,5 +261,62 @@ namespace CousinPCMS.API.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// Gets country details.
+        /// </summary>       
+        /// <returns>returns country object if details are available. Else empty object.</returns>
+        [HttpGet("GetDepartmentLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<CountryRegionModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCountryOrigin()
+        {
+            log.Info($"Request of {nameof(GetCountryOrigin)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _accountService.GetCountryOrigin();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCountryOrigin)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCountryOrigin)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+
+        /// <summary>
+        /// Gets country details.
+        /// </summary>       
+        /// <returns>returns country object if details are available. Else empty object.</returns>
+        [HttpGet("GetCommodityCodes")]
+        [ProducesResponseType(typeof(APIResult<List<CommodityModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCommodityCodes()
+        {
+            log.Info($"Request of {nameof(GetCommodityCodes)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _accountService.GetCommodityCodes();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCommodityCodes)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCommodityCodes)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

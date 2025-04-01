@@ -70,6 +70,34 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Gets all department layout.
+        /// </summary>       
+        /// <returns>returns department layout object if details are available. Else empty object.</returns>
+        [HttpGet("GetDepartmentLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<DepartmentLayoutModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetDepartmentLayouts()
+        {
+            log.Info($"Request of {nameof(GetDepartmentLayouts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _deptService.GetDepartmentLayouts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetDepartmentLayouts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetDepartmentLayouts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Updates an existing department.
         /// </summary>
         /// <param name="objModel">The department object with updated details.</param>

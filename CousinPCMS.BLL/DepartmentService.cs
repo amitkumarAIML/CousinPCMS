@@ -50,6 +50,43 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<List<DepartmentLayoutModel>> GetDepartmentLayouts()
+        {
+            APIResult<List<DepartmentLayoutModel>> returnValue = new APIResult<List<DepartmentLayoutModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}departmentlayouts?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var departmentResponse = JsonConvert.DeserializeObject<ODataResponse<List<DepartmentLayoutModel>>>(response);
+                    if (departmentResponse != null && departmentResponse.Value != null && departmentResponse.Value.Any() && departmentResponse.Value.Count > 0)
+                    {
+                        returnValue.Value = departmentResponse.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = false;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
         public APIResult<DepartmentModel> UpdateDepartment(AddDepartmentRequestModel objModel)
         {
             APIResult<DepartmentModel> returnValue = new APIResult<DepartmentModel>
