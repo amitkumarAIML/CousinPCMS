@@ -1,15 +1,15 @@
 <div class="p-4 bg-white rounded-lg m-5">
-    <span >Department Form</span>
+    <span >Product Form</span>
 
     <!-- Tabs -->
     <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
-      <nz-tab nzTitle="Department Info">
-        <cousins-department-info [deptData]="departmentData"></cousins-department-info>
+      <nz-tab nzTitle="Product Details">
+        <cousins-product-details ></cousins-product-details>
       </nz-tab>
   
       <!-- Catalogue Options Tab -->
-      <nz-tab nzTitle="Catalogue Options">
-       <cousins-catalogue-options [deptData]="departmentData"></cousins-catalogue-options>
+      <nz-tab nzTitle="SKUs">
+       <!-- <cousins-skus-list [deptData]="departmentData"></cousins-skus-list> -->
       </nz-tab>
     </nz-tabset>
 
@@ -17,7 +17,7 @@
             <button nz-button nzType="default" class="" (click)="cancle()">
               Cancel
             </button>
-            <button nz-button nzType="default" class="" [nzLoading]="loading"  (click)="delete()">
+            <button nz-button nzType="default" class="">
               Delete
             </button>
             <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading"  (click)="saveDetails()">

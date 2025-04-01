@@ -11,8 +11,8 @@
             <nz-form-item class="col-span-2">
             <nz-form-label [nzNoColon]="true">Layout Template</nz-form-label>
             <nz-select formControlName="akI_Layout_Template" class="w-full bg-gray-100" >
-                @for (option of layoutOptions; track option.value) {
-                    <nz-option  [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+                @for (option of layoutOptions; track option.templateCode) {
+                    <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                 }
             </nz-select>
             </nz-form-item>

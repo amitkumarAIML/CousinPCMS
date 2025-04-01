@@ -54,6 +54,12 @@ export class ProductDisplayComponent {
   onProductClick(productId: string) {
     if (!productId) return; // Prevents undefined errors
     this.selectedProduct = productId;
+    const pro = this.products.filter((res) => res.akiProductID === productId);
+    if (pro.length > 0) {
+      this.homeService.setSelectedProduct(pro);
+      console.log('productId ', productId,pro)
+
+    }
     this.productSelected.emit(productId);
   }
 }

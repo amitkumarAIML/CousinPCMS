@@ -194,7 +194,6 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       this.homeService.setSelectedDepartment(dep);
     } else {
       const cat = this.categories.filter((r) => r.akiCategoryID == event.origin.key);
-      console.log('cat ', cat)
       if (cat.length > 0) {
         const dep = this.departments.filter(a => a.akiDepartmentID == cat[0].akiDepartment);
         this.homeService.setSelectedDepartment(dep);

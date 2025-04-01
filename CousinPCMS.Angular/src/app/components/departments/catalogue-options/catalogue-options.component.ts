@@ -5,6 +5,9 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DepartmentResponse } from '../../../shared/models/departmentModel';
+import { DataService } from '../../../shared/services/data.service';
+import { DepartmentService } from '../department.service';
+import { layoutDepartmentResponse } from '../../../shared/models/layoutTemplateModel';
 
 @Component({
   selector: 'cousins-catalogue-options',
@@ -20,24 +23,26 @@ import { DepartmentResponse } from '../../../shared/models/departmentModel';
 })
 export class CatalogueOptionsComponent {
   catalogueForm: FormGroup;
-  layoutOptions = [
-    { value: 'grid', label: 'Grid View' },
-    { value: 'list', label: 'List View' }
-  ];
- @Input() deptData!: DepartmentResponse;
+  layoutOptions: layoutDepartmentResponse[] = [];
+  @Input() deptData!: DepartmentResponse;
 
-  constructor(private fb: FormBuilder) {
-    this.catalogueForm = this.fb.group({
-      akI_Catalogue_Active: [false],
-      akI_Layout_Template: [''],
-      akI_Color: ['#F7941D'],
-      akI_Featured_Prod_BG_Color: ['#FFFF80'],
-    });
-  }
+    constructor(private fb: FormBuilder,
+          private departmentService: DepartmentService, 
+          private dataService : DataService) {
+          this.catalogueForm = this.fb.group({
+            akI_Catalogue_Active: [false],
+            akI_Layout_Template: [],
+            akI_Color: ['#F7941D'],
+            akI_Featured_Prod_BG_Color: ['#FFFF80'],
+          });
+    }
+    getFormData() {
+      return this.catalogueForm.value;
+    }
 
-  getFormData() {
-    return this.catalogueForm.value;
-  }
+    ngOnInit() {
+      this.getLayoutTemplate();
+    }
 
     ngOnChanges(changes: SimpleChanges) {
       if (changes['deptData']) {
@@ -59,5 +64,16 @@ export class CatalogueOptionsComponent {
       }
       this.catalogueForm.patchValue({ [field]: value });
     }
+
+    getLayoutTemplate() {
+      this.departmentService.getLayoutTemplateList().subscribe({
+        next: (reponse) => {
+          this.layoutOptions = reponse;
+        },
+        error: (error) => {
+          console.error('Error fetching departments:', error);
+        }
+      });
+    } 
     
 }

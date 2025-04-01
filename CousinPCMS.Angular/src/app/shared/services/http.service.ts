@@ -37,7 +37,6 @@ export class HttpService {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`, {
     });
   }
-
   
   // PATCH method for partial updates
   patch<T>(endpoint: string, data: any): Observable<T> {

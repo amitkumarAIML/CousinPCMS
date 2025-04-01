@@ -81,7 +81,6 @@ export class DepartmentsComponent implements AfterViewInit {
     this.router.navigate(['/home']);
   }
  
-
   saveDetails () {
     // Mark all form controls as touched to trigger validation errors
     this.departmentInfoComp.departmentForm.markAllAsTouched();
@@ -104,7 +103,6 @@ export class DepartmentsComponent implements AfterViewInit {
       ...catalogData,
     };
 
-    console.log('mergedData ', mergedData)
     this.loading = true;
     this.departmentService.updateDepartment(mergedData).subscribe({
       next: (response) => {
@@ -119,6 +117,34 @@ export class DepartmentsComponent implements AfterViewInit {
         console.error('Error fetching departments:', error.error);
       }
     });
+  }
+
+  delete() {
+    const departmentData = this.departmentInfoComp.getFormData();
+    const catalogData = this.catalogComp.getFormData();
+
+    // Merge the data from both forms
+    const mergedData = {
+      ...departmentData,
+      ...catalogData,
+      akiDepartmentWebActive : true
+    };
+    console.log('mergedData ', mergedData)
+    this.loading = true;
+    this.departmentService.updateDepartment(mergedData).subscribe({
+      next: (response) => {
+        this.dataService.ShowNotification('success', '', 'Department Successfully deleted');
+        this.router.navigate(['/home']);
+        this.loading = false;
+        
+      },
+      error: (error) => {
+        this.loading = false;
+        this.dataService.ShowNotification('error', '', error.error);
+        console.error('Error fetching departments:', error.error);
+      }
+    });
+
   }
 
 
