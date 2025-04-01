@@ -50,7 +50,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateDepartment(DepartmentModel objModel)
+        public APIResult<string> UpdateDepartment(AddDepartmentRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {

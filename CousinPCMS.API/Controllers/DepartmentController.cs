@@ -78,7 +78,7 @@ namespace CousinPCMS.API.Controllers
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> UpdateDepartment(DepartmentModel objModel)
+        public async Task<IActionResult> UpdateDepartment(AddDepartmentRequestModel objModel)
         {
             log.Info($"Request of {nameof(UpdateDepartment)} method called.");
 
