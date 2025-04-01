@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace CousinPCMS.Domain
 {
@@ -62,10 +63,25 @@ namespace CousinPCMS.Domain
 
     public class AdditionalCategoryModel
     {
-        [JsonPropertyName("@odata.etag")]
+        [JsonProperty("@odata.etag")]
         public string ODataEtag { get; set; }
 
-        public string Sku { get; set; }
-        public int AdditionalCategoryValue { get; set; }
+        [JsonProperty("Product")]
+        public int Product { get; set; }
+
+        [JsonProperty("additionalCategory")]
+        public string AdditionalCategory { get; set; }
+
+        [JsonProperty("Listorder")]
+        public int ListOrder { get; set; }
+
+        [JsonProperty("ProductName")]
+        public string ProductName { get; set; }
+
+        [JsonProperty("webactive")]
+        public bool WebActive { get; set; }
+
+        [JsonProperty("CategoryName")]
+        public string CategoryName { get; set; }
     }
 }

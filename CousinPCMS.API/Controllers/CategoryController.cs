@@ -126,14 +126,15 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets additional product details.
+        /// Gets associated product details by category id.
+        /// <paramref name="categoryId"/> 
         /// </summary>       
         /// <returns>returns product object if details are available. Else empty object.</returns>
         [HttpGet("GetAdditionalCategory")]
         [ProducesResponseType(typeof(APIResult<List<AdditionalCategoryModel>>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetAdditionalCategory()
+        public async Task<IActionResult> GetAdditionalCategory(string categoryId)
         {
             log.Info($"Request of {nameof(GetAdditionalCategory)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
@@ -141,7 +142,7 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _categoryService.GetAdditionalCategory();
+            var responseValue = _categoryService.GetAdditionalCategory(categoryId);
             if (!responseValue.IsError)
             {
                 log.Info($"Response of {nameof(GetAdditionalCategory)} is success.");
