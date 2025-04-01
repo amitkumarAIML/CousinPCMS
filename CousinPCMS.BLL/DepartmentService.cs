@@ -26,10 +26,10 @@ namespace CousinPCMS.BLL
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<DepartmentModel>>>(response);
-                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    var departmentResponse = JsonConvert.DeserializeObject<ODataResponse<List<DepartmentModel>>>(response);
+                    if (departmentResponse != null && departmentResponse.Value != null && departmentResponse.Value.Any() && departmentResponse.Value.Count > 0)
                     {
-                        returnValue.Value = responseOfOrderLine.Value;
+                        returnValue.Value = departmentResponse.Value;
                     }
                     else
                     {
@@ -50,9 +50,9 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateDepartment(AddDepartmentRequestModel objModel)
+        public APIResult<DepartmentModel> UpdateDepartment(AddDepartmentRequestModel objModel)
         {
-            APIResult<string> returnValue = new APIResult<string>
+            APIResult<DepartmentModel> returnValue = new APIResult<DepartmentModel>
             {
                 IsError = false,
                 IsSuccess = true,
@@ -80,8 +80,9 @@ namespace CousinPCMS.BLL
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    var departmentResponse = JsonConvert.DeserializeObject<DepartmentModel>(response.Content);
                     returnValue.IsSuccess = true;
-                    returnValue.Value = "Success";
+                    returnValue.Value = departmentResponse;
                 }
                 else
                 {
