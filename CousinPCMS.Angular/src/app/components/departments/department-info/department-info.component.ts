@@ -36,8 +36,8 @@ export class DepartmentInfoComponent {
       akI_DeptPromptUserIfBlank: [false],
       akiDepartmentDescText: [''],
       akiDepartmentImageURL: ['',], //[Validators.pattern(/https?:\/\/(www\.)?[\w-]+(\.[\w-]+)+([\/\w-]*)*(\?[\/\w-]*)?$/)]
-      akiDepartmentImageHeight: [''],
-      akiDepartmentImageWidth: [''],
+      akiDepartmentImageHeight: [],
+      akiDepartmentImageWidth: [],
       akiDepartmentKeyWords: [''],
       akiDepartmentCommodityCode: ['']
     });

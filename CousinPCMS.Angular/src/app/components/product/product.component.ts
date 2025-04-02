@@ -6,12 +6,14 @@ import { Router } from '@angular/router';
 import { HomeService } from '../home/home.service';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { Subscription } from 'rxjs';
+import { SkusListComponent } from './skus-list/skus-list.component';
 
 @Component({
   selector: 'cousins-product',
   imports: [ NzTabsModule,  // ✅ Import Tabs
              NzButtonModule,
-             ProductDetailsComponent
+             ProductDetailsComponent,
+             SkusListComponent
             ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css'
@@ -32,8 +34,9 @@ export class ProductComponent {
       if (product) {
           this.productData = product[0];
           console.log('Received product:', product);
-        }
-  });
+      }
+    });
+    
   }
 
   cancle() {

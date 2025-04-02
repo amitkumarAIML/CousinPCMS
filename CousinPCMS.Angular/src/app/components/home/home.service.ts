@@ -19,6 +19,9 @@ export class HomeService {
   private selectedProduct = new BehaviorSubject<any>(null);
   selectedProduct$ = this.selectedProduct.asObservable();
 
+  private selectedSkU = new BehaviorSubject<any>(null);
+  selectedSkU$ = this.selectedSkU.asObservable();
+
   setSelectedDepartment(dept: any): void {
     this.selectedDepartment.next(dept);
   }
@@ -29,6 +32,10 @@ export class HomeService {
 
   setSelectedProduct(product: any): void  {
     this.selectedProduct.next(product);
+  }
+
+  setSelectedSkU(sku: any): void  {
+    this.selectedSkU.next(sku);
   }
 
   getDepartments(): Observable<any> {

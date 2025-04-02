@@ -1,1 +1,45 @@
-<p>skus-list works!</p>
+<nz-table #headerTable [nzData]="skusList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
+      [nzScroll]="{ y: '660px' }">
+    <thead>
+      <tr>
+        <th nzWidth="40px"></th>
+        <th nzWidth="200px">SkuName</th>
+        <th>ManufacturerRef</th>
+        <th>ITEM_NUMBER</th>
+        <th>ListOrder</th>
+        <th>Obsolete</th>
+        <th>Unavailable</th>
+        <th>CatActive</th>
+        <th>TemplateID</th>
+        <th>AltSkuName</th>
+        <th>CommodityCode</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of headerTable.data; track $index) {
+        <tr  
+            (click)="onRowSelect(data)"
+            [class.selected-row]="selectedRow === data">
+            
+            <!-- Play Icon for Row Selection -->
+            @if(selectedRow === data) {
+                <td (click)="onRowSelect(data)">
+                    <nz-icon nzType="caret-right" nzTheme="outline" style="font-size: 16px;" />
+                </td>
+            } @else {
+                <td></td>
+            }
+            <td>{{ data.skuName }}</td>
+            <td>{{ data.akiManufacturerRef }}</td>
+            <td>{{ data.itemNumber }}</td>
+            <td>{{ data.akiListOrder }}</td>
+            <td><label nz-checkbox [(ngModel)]="data.akiObsolete"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.salesBlocked"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive"></label></td>
+            <td>{{ data.akiTemplateID }}</td>
+            <td>{{ data.akiAltSKUName }}</td>
+            <td>{{ data.akiCommodityCode }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
