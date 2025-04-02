@@ -182,5 +182,71 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Deletes the existing category.
+        /// </summary>
+        /// <param name="categoryId">category Id is passed.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpGet("DeleteCategory")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteCategory(string categoryId)
+        {
+            log.Info($"Request of {nameof(DeleteCategory)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+            DeleteCategoryRequestModel obj = new DeleteCategoryRequestModel();
+            obj.categoryID = categoryId;
+
+            var responseValue = _categoryService.DeleteCategory(obj);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteCategory)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteCategory)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Updates an existing department.
+        /// </summary>
+        /// <param name="objModel">The department object with updated details.</param>
+        /// <returns>Returns object of category update detail or null.</returns>
+        [HttpPatch("UpdateCategory")]
+        [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateCategory(AddCategoryRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateCategory)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.UpdateCategory(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateCategory)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateCategory)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }

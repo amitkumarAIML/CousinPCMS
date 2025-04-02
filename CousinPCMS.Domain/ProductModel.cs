@@ -18,7 +18,7 @@ namespace CousinPCMS.Domain
         public string AkiProductImageURL { get; set; }
         public int AkiProductImageHeight { get; set; }
         public int AkiProductImageWidth { get; set; }
-        public bool AkiProductPrintCatActive { get; set; }
+        public bool akiProductIsActive { get; set; }
         public string AkiProductPrintTitle { get; set; }
         public bool AkiProductShowPriceBreaks { get; set; }
         public string AkiProductHeading { get; set; }
@@ -33,6 +33,10 @@ namespace CousinPCMS.Domain
         public string Category_Name { get; set; }
     }
 
+    public class DeleteProductRequestModel
+    {
+        public int producttID { get; set; }
+    }
     public class ProductLayoutModel
     {
         [JsonProperty("@odata.etag")]

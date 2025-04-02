@@ -21,5 +21,12 @@ export class DepartmentService {
     );
   }
 
+  deleteDepartment(departmentId :  number) {
+    return this.httpService.get<any>(`Department/DeleteDepartment`,{deptId: departmentId}).pipe(
+      map(response => response.value),
+      catchError(error => error)
+    );
+  }
+
 
 }

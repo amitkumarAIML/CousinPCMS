@@ -29,7 +29,7 @@
   }
   
   .product-item {
-    padding: 12px 16px;
+    padding: 8px 16px;
     cursor: pointer;
     font-size: 10px;
     font-family: var(--font-family);
@@ -40,6 +40,7 @@
   /* Hover Effect */
   .product-item:hover {
     background-color: #f8f9fa;
+    /* background-color: #bae7ff; */
   }
   
   /* Selected Product */

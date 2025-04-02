@@ -4,12 +4,12 @@
     <!-- Tabs -->
     <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
       <nz-tab nzTitle="Product Details">
-        <cousins-product-details ></cousins-product-details>
+        <cousins-product-details [productData]="productData" ></cousins-product-details>
       </nz-tab>
   
       <!-- Catalogue Options Tab -->
       <nz-tab nzTitle="SKUs">
-       <!-- <cousins-skus-list [deptData]="departmentData"></cousins-skus-list> -->
+       <cousins-skus-list ></cousins-skus-list>
       </nz-tab>
     </nz-tabset>
 

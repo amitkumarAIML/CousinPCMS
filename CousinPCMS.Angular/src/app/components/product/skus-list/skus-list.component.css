@@ -1,0 +1,30 @@
+
+::ng-deep .ant-table-thead > tr > th { 
+    font-size: 10px !important;
+    font-family: inter !important;;
+    background-color: var(--color-light-border) !important;;
+    
+    color: #343941;
+}
+::ng-deep .ant-table-tbody > tr > td {
+    font-size: 10px !important;
+    font-family: inter !important;;
+    color: #67768C;
+}
+
+
+ .selected-row {
+    background-color: #f8f9fa;
+    /* background-color: #e4f4fd; */
+  }
+  
+  .play-icon {
+    font-size: 18px;
+    color: #374151; /* Dark gray */
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .play-icon:hover {
+    color: #2563eb; /* Blue hover effect */
+  }

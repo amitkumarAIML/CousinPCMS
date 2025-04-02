@@ -43,8 +43,8 @@ namespace CousinPCMS.Domain
         [JsonProperty("AKI_Dept_Parent")]
         public int AKI_Dept_Parent { get; set; }
 
-        [JsonProperty("AKI_Catalogue_Active")]
-        public bool AKI_Catalogue_Active { get; set; }
+        [JsonProperty("AKI_DepartmentIsActive")]
+        public bool AKI_DepartmentIsActive { get; set; }
 
         [JsonProperty("AKI_Layout_Template")]
         public string AKI_Layout_Template { get; set; }
@@ -74,6 +74,11 @@ namespace CousinPCMS.Domain
         public string AKI_Layout_Template { get; set; }
         public string AKI_Color { get; set; }
         public string AKI_Featured_Prod_BG_Color { get; set; }
+    }
+
+    public class DeleteDepartmentRequestModel
+    {
+        public int departmentID { get; set; }
     }
 
     public class DepartmentLayoutModel

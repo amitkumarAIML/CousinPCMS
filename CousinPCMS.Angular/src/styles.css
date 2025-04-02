@@ -15,9 +15,9 @@
     --color-white: #ffffff;
     --color-bg: #edeff4;
     --color-table-heightlighted: #e9f8fc;
-    --color-highlighted: #DB9F27;
+    --color-highlighted: #9C6800;
     --shadow-cousins-box: 0px 1px 3px 0px #00000029;
-    --font-family: Inter;
+    --font-family: 'Inter', sans-serif;
 }
 
 * {
@@ -100,6 +100,10 @@ textarea[nz-input] {
     font-family: var(--font-family);
 }
 
+.ant-input[disabled] {
+    background-color: #EFF2F7;
+}
+
 .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     font-size: 12px;
     font-family: var(--font-family);
@@ -159,8 +163,8 @@ button[nz-button] {
 }
 
 .ant-select-disabled {
-    background-color: #CBD5E1 !important;
-    color: #CBD5E1 !important; /* Dim text color */
+    background-color: #313438 !important;
+    color: #EFF2F7 !important; /* Dim text color */
     cursor: not-allowed;
 }
 

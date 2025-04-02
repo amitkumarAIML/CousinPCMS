@@ -129,5 +129,39 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+        /// <summary>
+        /// Deletes the existing department.
+        /// </summary>
+        /// <param name="deptId">department Id is passed.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpGet("DeleteDepartment")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteDepartment(int deptId)
+        {
+            log.Info($"Request of {nameof(DeleteDepartment)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+            DeleteDepartmentRequestModel obj = new DeleteDepartmentRequestModel();
+            obj.departmentID = deptId;
+
+            var responseValue = _deptService.DeleteDepartment(obj);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteDepartment)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteDepartment)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
     }
 }

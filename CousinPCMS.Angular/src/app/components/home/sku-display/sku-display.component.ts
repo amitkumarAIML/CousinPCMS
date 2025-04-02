@@ -32,11 +32,13 @@ export class SkuDisplayComponent {
       next: (data) => {
         if (data && data.length > 0) {
           this.skus = data
+          this.homeService.setSelectedSkU(this.skus);
           this.displayText = ''; // Clear message if data exists
         } else {
           this.skus = [];
           this.displayText = 'No SKU Found';
         }
+        this.homeService.setSelectedSkU(this.skus);
         this.loading = false;
 
       },

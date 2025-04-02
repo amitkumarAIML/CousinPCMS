@@ -9,6 +9,7 @@ import { HomeService } from '../home.service';
 import { lastValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
+import { DepartmentResponse } from '../../../shared/models/departmentModel';
 
 @Component({
   selector: 'cousins-tree-view',
@@ -103,7 +104,8 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       this.homeService.getDepartments().subscribe({
         next: (departments) => {
           this.departments = departments;
-          const treeData = departments.map((dept: any) => ({
+          // this.departments = departments.filter((res: DepartmentResponse) => !res.akiDepartmentWebActive);
+          const treeData = this.departments.map((dept: any) => ({
               title: dept.akiDepartmentName.toUpperCase(),
               key: dept.akiDepartmentID,
               parentId: null,

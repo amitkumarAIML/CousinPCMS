@@ -19,6 +19,10 @@ namespace CousinPCMS.Domain
         [JsonProperty("relationType")]
         public string RelationType { get; set; }
     }
+    public class DeleteSkusRequestModel
+    {
+        public int skuITEMNO { get; set; }
+    }
 
     public class SkusRelationTypeModel
     {

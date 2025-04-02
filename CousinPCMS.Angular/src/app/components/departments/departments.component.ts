@@ -33,6 +33,7 @@ export class DepartmentsComponent implements AfterViewInit {
   departmentForm!: FormGroup;
   catalogForm!: FormGroup;
   loading: boolean = false;
+  deleteLoading: boolean = false;
 
   private departmentSubscription!: Subscription;
 
@@ -121,25 +122,16 @@ export class DepartmentsComponent implements AfterViewInit {
 
   delete() {
     const departmentData = this.departmentInfoComp.getFormData();
-    const catalogData = this.catalogComp.getFormData();
-
-    // Merge the data from both forms
-    const mergedData = {
-      ...departmentData,
-      ...catalogData,
-      akiDepartmentWebActive : true
-    };
-    console.log('mergedData ', mergedData)
-    this.loading = true;
-    this.departmentService.updateDepartment(mergedData).subscribe({
+    this.deleteLoading = true;
+    this.departmentService.deleteDepartment(departmentData.akiDepartmentID).subscribe({
       next: (response) => {
         this.dataService.ShowNotification('success', '', 'Department Successfully deleted');
         this.router.navigate(['/home']);
-        this.loading = false;
+        this.deleteLoading = false;
         
       },
       error: (error) => {
-        this.loading = false;
+        this.deleteLoading = false;
         this.dataService.ShowNotification('error', '', error.error);
         console.error('Error fetching departments:', error.error);
       }
