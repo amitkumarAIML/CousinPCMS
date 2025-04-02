@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button'; // ✅ Import ng-zorro modules
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -9,7 +9,14 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { Subscription } from 'rxjs';
 import { HomeService } from '../home/home.service';
-
+import { RouterLink } from '@angular/router';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { CategoryService } from '../../shared/services/category.service';
+import { CommonModule } from '@angular/common';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { CategoryListModel } from '../../shared/models/CategoryListModel';
 @Component({
   selector: 'cousins-category',
   imports: [ 
@@ -21,7 +28,14 @@ import { HomeService } from '../home/home.service';
     NzCheckboxModule,
     NzCardModule,
     NzDividerModule ,
-    NzCardModule
+    NzCardModule,
+    RouterLink,
+    NzTableModule,
+    NzIconModule,
+    CommonModule,
+    FormsModule,
+    NzModalModule,
+    NzSwitchModule
   ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css'
@@ -36,8 +50,18 @@ export class CategoryComponent {
 
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
+  categoriesList: CategoryListModel[] = []
+  categoryId:string='';
+  editingId: number | null = null;
+  editedRow: any = {};
+  editCategoryProductForm:FormGroup;
+  addCategoryProductForm:FormGroup;
+  isVisibleAddProductModal:boolean=false;
+  CommodityCode:any[]=[];
 
-  constructor(private fb: FormBuilder, private homeService: HomeService) {
+  constructor(private fb: FormBuilder, private homeService: HomeService,
+    private categoryService:CategoryService
+  ) {
     this.categoryForm = this.fb.group({
       akiCategoryID: [{ value: '', disabled: true }],
       akiCategoryParentID: [{ value: '', disabled: true }],
@@ -62,7 +86,7 @@ export class CategoryComponent {
       akiCategoryImageWidth: [''],
       akiCategoryIncludeInSearchByManufacture: [false],
       akiCategoryLogInAndGreenTickOnly: [false],
-      akiCategoryMinimumDigits: [''],
+      akiCategoryMinimumDigits: [{ value: '', disabled: true }],
       akiCategoryReturnType: [''],
       akiCategoryPrintCatActive: [false],
       showCategoryText: [false],
@@ -76,6 +100,25 @@ export class CategoryComponent {
       akiCategoryIndex4: [''],
       akiCategoryIndex5: ['']
     });
+
+    this.editCategoryProductForm = this.fb.group({
+      listOrder:[],
+      webActive:[true],
+      productName:[''],
+      product:[],
+      categoryName:[],
+      additionalCategory:[],
+      oDataEtag:[],
+    })
+    this.addCategoryProductForm = this.fb.group({
+      listOrder:[],
+      webActive:[true],
+      productName:[''],
+      product:[],
+      categoryName:[],
+      additionalCategory:[],
+      oDataEtag:[],
+    })
   }
 
   ngOnInit(): void {
@@ -83,9 +126,13 @@ export class CategoryComponent {
       if (category) {
         this.categoryDetails = category[0];
         this.categoryForm.patchValue(this.categoryDetails);
+        this.categoryId=this.categoryDetails.akiCategoryID
         console.log('Received Category:', category);
       }
     });
+    this.GetAdditionalCategory();
+    this.GetCountryOrigin();
+    this.GetCommodityCodes();
   }
 
   ngOnDestroy() {
@@ -114,4 +161,91 @@ export class CategoryComponent {
       reader.readAsDataURL(file);
     }
   }
+  DeleteCategory(){
+    this.categoryService.DeleteCategory(this.categoryId).subscribe({
+      next: (response) => {
+        if (response != null) {
+          console.log('deleted successfully');                  
+        } else {
+          console.log('error',response.value);       
+        }
+      },error(err) {
+        console.log('something went wrong',err);
+      },
+    }); 
+  }
+
+  GetCountryOrigin(){
+    this.categoryService.GetCountryOrigin().subscribe({
+      next:(response)=> {
+        this.countries=response;
+      },error(err) {
+        console.log(err);        
+      },
+    })
+  }
+
+  GetCommodityCodes(){
+    this.categoryService.GetCommodityCodes().subscribe({
+      next:(response)=> {
+        this.CommodityCode=response;
+      },error(err) {
+        console.log(err);        
+      },
+    })
+  }
+  GetAdditionalCategory() { 
+    this.categoryService.GetAdditionalCategory(this.categoryId).subscribe({
+      next: (response) => {
+        if (response != null) {
+          this.categoriesList=response;         
+        } else {
+          console.log('error',response.value);       
+        }
+      },error(err) {
+        console.log('something went wrong',err);
+      },
+    }); 
+  }
+
+  startEdit(row: any) {
+    this.editingId = row.listOrder;
+    this.editCategoryProductForm.patchValue({
+      listOrder: row.listOrder,
+      productName: row.productName,
+      webActive: row.webActive
+    });
+  }
+
+  saveEdit(row: any) {
+    Object.assign(row, this.editedRow);
+    this.editingId = null;
+  }
+
+  cancelEdit() {
+    this.editingId = null;
+  }
+
+  showAddProductModal(): void {
+    this.isVisibleAddProductModal = true;
+  }
+
+  addCategoryProductSubmitForm(): void {
+    this.isVisibleAddProductModal = false;
+    if(this.addCategoryProductForm.valid){
+
+    }else {
+      Object.values(this.addCategoryProductForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
+  }
+
+  handleCancel(): void {
+    this.isVisibleAddProductModal = false;
+  }
+
 }
