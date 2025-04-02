@@ -48,6 +48,10 @@ namespace CousinPCMS.Domain
         public string AKI_Show_Category_Text { get; set; }
     }
 
+    public class DeleteCategoryRequestModel
+    {
+        public string categoryID { get; set; }
+    }
     public class LinkedAttributeModel
     {
         [JsonPropertyName("@odata.etag")]

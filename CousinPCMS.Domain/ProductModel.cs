@@ -33,6 +33,10 @@ namespace CousinPCMS.Domain
         public string Category_Name { get; set; }
     }
 
+    public class DeleteProductRequestModel
+    {
+        public int producttID { get; set; }
+    }
     public class ProductLayoutModel
     {
         [JsonProperty("@odata.etag")]
