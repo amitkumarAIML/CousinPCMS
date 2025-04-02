@@ -30,7 +30,7 @@ namespace CousinPCMS.Domain
         public bool AkiCategoryUseComplexSearch { get; set; }
         public decimal AkiCategoryDiscount { get; set; }
         public bool AkiCategoryLogInAndGreenTickOnly { get; set; }
-        public bool AkiCategoryPrintCatActive { get; set; }
+        public bool akiCategoryIsActive { get; set; }
         public string AkiCategoryPrintCatText { get; set; }
         public string AkiCategoryPrintCatImage { get; set; }
         public bool AkiCategoryPrintCatTemp { get; set; }

@@ -43,8 +43,8 @@ namespace CousinPCMS.Domain
         [JsonProperty("AKI_Dept_Parent")]
         public int AKI_Dept_Parent { get; set; }
 
-        [JsonProperty("AKI_Catalogue_Active")]
-        public bool AKI_Catalogue_Active { get; set; }
+        [JsonProperty("AKI_DepartmentIsActive")]
+        public bool AKI_DepartmentIsActive { get; set; }
 
         [JsonProperty("AKI_Layout_Template")]
         public string AKI_Layout_Template { get; set; }
