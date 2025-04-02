@@ -93,6 +93,57 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<CategoryModel> UpdateCategory(AddCategoryRequestModel objModel)
+        {
+            APIResult<CategoryModel> returnValue = new APIResult<CategoryModel>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}categorys({objModel.akiCategoryID})?company={HardcodedValues.CompanyName}";
+
+                RestClient client = new RestClient();
+                RestRequest request = new RestRequest(urlToQuery);
+
+                request.Method = Method.Patch;
+                request.AddHeader("Authorization", "Bearer " + Oauth.Token);
+                request.AddHeader("If-Match", "*");
+                request.AddHeader("Content-Type", "application/json");
+
+                if (!string.IsNullOrEmpty(postData))
+                {
+                    request.AddBody(postData, ContentType.Json);
+                }
+
+                var response = client.Execute(request);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var objResponse = JsonConvert.DeserializeObject<CategoryModel>(response.Content);
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = objResponse;
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
         public APIResult<List<LinkedAttributeModel>> GetLinkedAttributes()
         {
             APIResult<List<LinkedAttributeModel>> returnValue = new APIResult<List<LinkedAttributeModel>>

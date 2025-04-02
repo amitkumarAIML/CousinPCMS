@@ -216,5 +216,37 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Updates an existing department.
+        /// </summary>
+        /// <param name="objModel">The department object with updated details.</param>
+        /// <returns>Returns object of category update detail or null.</returns>
+        [HttpPatch("UpdateCategory")]
+        [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateCategory(AddCategoryRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateCategory)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.UpdateCategory(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateCategory)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateCategory)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }
