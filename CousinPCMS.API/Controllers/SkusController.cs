@@ -97,5 +97,33 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets all Skus layouts.
+        /// </summary>       
+        /// <returns>returns skus layout object if details are available. Else empty object.</returns>
+        [HttpGet("GetSkusLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<SkusLayoutModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSkusLayouts()
+        {
+            log.Info($"Request of {nameof(GetSkusLayouts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.GetSkusLayouts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetSkusLayouts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetSkusLayouts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

@@ -31,4 +31,18 @@ namespace CousinPCMS.Domain
         [JsonProperty("relationDescription")]
         public string RelationDescription { get; set; }
     }
+    public class SkusLayoutModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string ODataEtag { get; set; }
+
+        [JsonProperty("itemId")]
+        public int ItemId { get; set; }
+
+        [JsonProperty("templateCode")]
+        public string TemplateCode { get; set; }
+
+        [JsonProperty("layoutDescription")]
+        public string LayoutDescription { get; set; }
+    }
 }

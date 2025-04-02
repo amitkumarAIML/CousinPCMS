@@ -201,5 +201,42 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
+
+        public APIResult<List<CategoryLayoutModel>> GetCategoryLayouts()
+        {
+            APIResult<List<CategoryLayoutModel>> returnValue = new APIResult<List<CategoryLayoutModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}categorylayouts?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var categoryResponse = JsonConvert.DeserializeObject<ODataResponse<List<CategoryLayoutModel>>>(response);
+                    if (categoryResponse != null && categoryResponse.Value != null && categoryResponse.Value.Any() && categoryResponse.Value.Count > 0)
+                    {
+                        returnValue.Value = categoryResponse.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = false;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
     }
 }

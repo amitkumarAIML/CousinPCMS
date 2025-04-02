@@ -153,5 +153,34 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+
+        /// <summary>
+        /// Gets all Category layouts.
+        /// </summary>       
+        /// <returns>returns category layout object if details are available. Else empty object.</returns>
+        [HttpGet("GetCategoryLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryLayoutModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCategoryLayouts()
+        {
+            log.Info($"Request of {nameof(GetCategoryLayouts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetCategoryLayouts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCategoryLayouts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCategoryLayouts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

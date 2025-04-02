@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace CousinPCMS.Domain
 {
@@ -30,5 +31,20 @@ namespace CousinPCMS.Domain
         public string AkiProductIndexText4 { get; set; }
         public string AkiProductIndexText5 { get; set; }
         public string Category_Name { get; set; }
+    }
+
+    public class ProductLayoutModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string ODataEtag { get; set; }
+
+        [JsonProperty("productId")]
+        public int ProductId { get; set; }
+
+        [JsonProperty("templateCode")]
+        public string TemplateCode { get; set; }
+
+        [JsonProperty("layoutDescription")]
+        public string LayoutDescription { get; set; }
     }
 }

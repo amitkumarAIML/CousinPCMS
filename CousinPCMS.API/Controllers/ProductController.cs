@@ -68,5 +68,33 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets all Product layouts.
+        /// </summary>       
+        /// <returns>returns product layout object if details are available. Else empty object.</returns>
+        [HttpGet("GetProductLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<ProductLayoutModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetProductLayouts()
+        {
+            log.Info($"Request of {nameof(GetProductLayouts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetProductLayouts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetProductLayouts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetProductLayouts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }
