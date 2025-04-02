@@ -337,42 +337,7 @@
                             <button nz-button nzType="primary" (click)="showAddProductModal()" class="text-white mr-0">Add</button>
                         </div>
                         <div class="">
-                            <!-- <nz-table #dataTable [nzData]="categoriesList" 
-                                nzShowPagination="true"                                           
-                                class="rounded-lg"
-                                [nzScroll]="{ x: 'w-full' }" 
-                                nzBordered="true">
-                                <thead class="text-xs">
-                                  <tr>
-                                    <th [nzWidth]="'70px'">List Order</th>
-                                    <th [nzWidth]="'250px'">Product Name</th>
-                                    <th [nzWidth]="'70px'">Web Active</th>
-                                    <th [nzWidth]="'70px'">Action</th>
-                                  </tr>
-                                </thead>
-                                <tbody class="text-color-secondary-font text-xs">
-                                  @for (data of categoriesList; track data) {
-                                    <tr>
-                                      <td>{{ data.listOrder }}</td>
-                                      <td>{{ data.productName }}</td>
-                                      <td>
-                                       @if(data.webActive==true) {
-                                        <img src="../imgs/Check boxTrue.svg" alt="trueIcon">
-                                       }@else{
-                                        <img src="../imgs/CheckboxFalse.svg" alt="falseIcon">
-                                       }
-                                      </td>
-                                      <td>
-                                       <span class="flex gap-3">
-                                        <a href="#"> <img src="../imgs/Edit-Icon.svg" alt="trueIcon"></a>
-                                        <a href="#" ><img src="../imgs/Delete-Icon.svg" alt="trueIcon"></a>
-                                       </span>         
-                                      </td>
-                                    </tr>
-                                  }
-                                </tbody>
-                            </nz-table> -->
-                            
+                                                       
                         <form nz-form [formGroup]="editCategoryProductForm" (ngSubmit)="submitForm()">
                             
                             <nz-table #dataTable [nzData]="categoriesList" nzShowPagination="true"
@@ -388,7 +353,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-color-secondary-font text-xs">
-                                    @for (data of categoriesList; track data) {
+                                    @for (data of dataTable.data; track data) {
                                     <tr>
                                         <!-- List Order -->
                                         <td>
@@ -462,6 +427,11 @@
                 <nz-form-item>
                     <nz-form-label [nzNoColon]="true">Product Name</nz-form-label>
                     <nz-form-control>
+                        <nz-select formControlName="productName">
+                            @for (productName of productNameList;track $index) {
+                                <nz-option [nzValue]="productName.value" [nzLabel]="productName.label"></nz-option>
+                            }
+                        </nz-select>
                         <input nz-input formControlName="productName" class="w-full" />
                     </nz-form-control>
                 </nz-form-item>
