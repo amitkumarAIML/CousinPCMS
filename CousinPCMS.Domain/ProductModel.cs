@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace CousinPCMS.Domain
 {
@@ -17,7 +18,7 @@ namespace CousinPCMS.Domain
         public string AkiProductImageURL { get; set; }
         public int AkiProductImageHeight { get; set; }
         public int AkiProductImageWidth { get; set; }
-        public bool AkiProductPrintCatActive { get; set; }
+        public bool akiProductIsActive { get; set; }
         public string AkiProductPrintTitle { get; set; }
         public bool AkiProductShowPriceBreaks { get; set; }
         public string AkiProductHeading { get; set; }
@@ -30,5 +31,24 @@ namespace CousinPCMS.Domain
         public string AkiProductIndexText4 { get; set; }
         public string AkiProductIndexText5 { get; set; }
         public string Category_Name { get; set; }
+    }
+
+    public class DeleteProductRequestModel
+    {
+        public int producttID { get; set; }
+    }
+    public class ProductLayoutModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string ODataEtag { get; set; }
+
+        [JsonProperty("productId")]
+        public int ProductId { get; set; }
+
+        [JsonProperty("templateCode")]
+        public string TemplateCode { get; set; }
+
+        [JsonProperty("layoutDescription")]
+        public string LayoutDescription { get; set; }
     }
 }

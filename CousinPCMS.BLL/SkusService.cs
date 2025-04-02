@@ -5,28 +5,28 @@ using RestSharp;
 
 namespace CousinPCMS.BLL
 {
-    public class ProductService
+    public class SkusService
     {
         OauthToken Oauth;
-        public ProductService(OauthToken oauthToken)
+        public SkusService(OauthToken oauthToken)
         {
             Oauth = oauthToken;
         }
 
-        public APIResult<List<ProductModel>> GetAllProducts()
+        public APIResult<List<RelatedSkusModel>> GetRelatedSkus()
         {
-            APIResult<List<ProductModel>> returnValue = new APIResult<List<ProductModel>>
+            APIResult<List<RelatedSkusModel>> returnValue = new APIResult<List<RelatedSkusModel>>
             {
                 IsError = false,
                 IsSuccess = true,
             };
             try
             {
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}relatedskus?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ProductModel>>>(response);
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<RelatedSkusModel>>>(response);
                     if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
                     {
                         returnValue.Value = responseOfOrderLine.Value;
@@ -50,26 +50,20 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<List<ProductModel>> GetProductsByCategory(string akiCategoryID)
+        public APIResult<List<SkusRelationTypeModel>> GetSkusRelationType()
         {
-            APIResult<List<ProductModel>> returnValue = new APIResult<List<ProductModel>>
+            APIResult<List<SkusRelationTypeModel>> returnValue = new APIResult<List<SkusRelationTypeModel>>
             {
                 IsError = false,
                 IsSuccess = true,
             };
             try
             {
-                var allFilters = new List<Filters>();
-
-                allFilters.Add(new Filters { ParameterName = "akiCategoryID", ParameterValue = akiCategoryID, DataType = typeof(string), Compare = ComparisonType.Equals });
-
-                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
-
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}skurelationtypes?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ProductModel>>>(response);
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<SkusRelationTypeModel>>>(response);
                     if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
                     {
                         returnValue.Value = responseOfOrderLine.Value;
@@ -93,20 +87,20 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<List<ProductLayoutModel>> GetProductLayouts()
+        public APIResult<List<SkusLayoutModel>> GetSkusLayouts()
         {
-            APIResult<List<ProductLayoutModel>> returnValue = new APIResult<List<ProductLayoutModel>>
+            APIResult<List<SkusLayoutModel>> returnValue = new APIResult<List<SkusLayoutModel>>
             {
                 IsError = false,
                 IsSuccess = true,
             };
             try
             {
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}productlayouts?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}itemskulayouts?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var productResponse = JsonConvert.DeserializeObject<ODataResponse<List<ProductLayoutModel>>>(response);
+                    var productResponse = JsonConvert.DeserializeObject<ODataResponse<List<SkusLayoutModel>>>(response);
                     if (productResponse != null && productResponse.Value != null && productResponse.Value.Any() && productResponse.Value.Count > 0)
                     {
                         returnValue.Value = productResponse.Value;
@@ -130,7 +124,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> DeleteProduct(DeleteProductRequestModel objModel)
+        public APIResult<string> DeleteItem(DeleteSkusRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -141,7 +135,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteProduct?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteSKUITEM?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -165,6 +159,5 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
-
     }
 }

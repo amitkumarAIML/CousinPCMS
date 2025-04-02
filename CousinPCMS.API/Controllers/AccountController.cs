@@ -266,7 +266,7 @@ namespace CousinPCMS.API.Controllers
         /// Gets country details.
         /// </summary>       
         /// <returns>returns country object if details are available. Else empty object.</returns>
-        [HttpGet("GetDepartmentLayouts")]
+        [HttpGet("GetCountryOrigin")]
         [ProducesResponseType(typeof(APIResult<List<CountryRegionModel>>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]

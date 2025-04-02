@@ -68,5 +68,95 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets all product details.
+        /// </summary>       
+        /// <returns>returns product object if details are available. Else empty object.</returns>
+        [HttpGet("GetAllProducts")]
+        [ProducesResponseType(typeof(APIResult<List<ProductModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            log.Info($"Request of {nameof(GetAllProducts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetAllProducts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAllProducts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAllProducts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all Product layouts.
+        /// </summary>       
+        /// <returns>returns product layout object if details are available. Else empty object.</returns>
+        [HttpGet("GetProductLayouts")]
+        [ProducesResponseType(typeof(APIResult<List<ProductLayoutModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetProductLayouts()
+        {
+            log.Info($"Request of {nameof(GetProductLayouts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetProductLayouts();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetProductLayouts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetProductLayouts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Deletes the existing Product.
+        /// </summary>
+        /// <param name="productId">product Id is passed.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpGet("DeleteProduct")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteProduct(int productId)
+        {
+            log.Info($"Request of {nameof(DeleteProduct)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+            DeleteProductRequestModel obj = new DeleteProductRequestModel();
+            obj.producttID = productId;
+
+            var responseValue = _productService.DeleteProduct(obj);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteProduct)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteProduct)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }
