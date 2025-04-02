@@ -218,9 +218,9 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Updates an existing department.
+        /// Updates an existing category.
         /// </summary>
-        /// <param name="objModel">The department object with updated details.</param>
+        /// <param name="objModel">The category object with updated details.</param>
         /// <returns>Returns object of category update detail or null.</returns>
         [HttpPatch("UpdateCategory")]
         [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
@@ -244,6 +244,70 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(UpdateCategory)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Updates an associate product detail for category.
+        /// </summary>
+        /// <param name="objModel">The object with updated details.</param>
+        /// <returns>Returns object of associated product update detail or null.</returns>
+        [HttpPatch("UpdateAssociatedProduct")]
+        [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateAssociatedProduct(AssociatedProductRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateAssociatedProduct)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.UpdateAssociatedProduct(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateAssociatedProduct)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateAssociatedProduct)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add an associate product detail for category.
+        /// </summary>
+        /// <param name="objModel">The object with add details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateAssociatedProduct")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddAssociatedProduct(AssociatedProductRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddAssociatedProduct)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.AddAssociatedProduct(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddAssociatedProduct)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddAssociatedProduct)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
             return Ok(responseValue);
