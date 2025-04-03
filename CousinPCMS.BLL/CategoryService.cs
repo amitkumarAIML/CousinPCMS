@@ -144,6 +144,93 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<AdditionalCategoryModel> UpdateAssociatedProduct(AssociatedProductRequestModel objModel)
+        {
+            APIResult<AdditionalCategoryModel> returnValue = new APIResult<AdditionalCategoryModel>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts(Product ={objModel.Product},additionalcategory={objModel.additionalCategory})?company={HardcodedValues.CompanyName}";
+
+                RestClient client = new RestClient();
+                RestRequest request = new RestRequest(urlToQuery);
+
+                request.Method = Method.Patch;
+                request.AddHeader("Authorization", "Bearer " + Oauth.Token);
+                request.AddHeader("If-Match", "*");
+                request.AddHeader("Content-Type", "application/json");
+
+                if (!string.IsNullOrEmpty(postData))
+                {
+                    request.AddBody(postData, ContentType.Json);
+                }
+
+                var response = client.Execute(request);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var objResponse = JsonConvert.DeserializeObject<AdditionalCategoryModel>(response.Content);
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = objResponse;
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<string> AddAssociatedProduct(AssociatedProductRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts(Product ={objModel.Product},additionalcategory={objModel.additionalCategory})?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
         public APIResult<List<LinkedAttributeModel>> GetLinkedAttributes()
         {
             APIResult<List<LinkedAttributeModel>> returnValue = new APIResult<List<LinkedAttributeModel>>

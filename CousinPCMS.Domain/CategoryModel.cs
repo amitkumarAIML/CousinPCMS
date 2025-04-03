@@ -95,6 +95,14 @@ namespace CousinPCMS.Domain
     {
         public string categoryID { get; set; }
     }
+
+    public class AssociatedProductRequestModel
+    {
+        public int Product { get; set; }
+        public string additionalCategory { get; set; }
+        public int Listorder { get; set; }
+    }
+
     public class LinkedAttributeModel
     {
         [JsonPropertyName("@odata.etag")]
