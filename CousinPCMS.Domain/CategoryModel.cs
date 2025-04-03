@@ -52,7 +52,6 @@ namespace CousinPCMS.Domain
     {
         public string akiCategoryID { get; set; }
         public string akiCategoryName { get; set; }
-        public string akiCategoryParentID { get; set; }
         public string AKIDepartment { get; set; }
         public int akiCategoryGuidePrice { get; set; }
         public int akiCategoryGuideWeight { get; set; }
@@ -73,7 +72,6 @@ namespace CousinPCMS.Domain
         public bool akiCategoryLogInAndGreenTickOnly { get; set; }
         public int akiCategoryMinimumDigits { get; set; }
         public string akiCategoryReturnType { get; set; }
-        public bool akiCategoryIsActive { get; set; }
         public bool AKI_Show_Category_Text { get; set; }
         public bool AKI_Show_Category_Image { get; set; }
         public string AKI_Layout_Template { get; set; }
