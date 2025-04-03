@@ -58,7 +58,8 @@ export class CategoryComponent {
   addCategoryProductForm:FormGroup;
   isVisibleAddProductModal:boolean=false;
   CommodityCode:any[]=[];
-
+  productNameList:any[]=[];
+  
   constructor(private fb: FormBuilder, private homeService: HomeService,
     private categoryService:CategoryService
   ) {
