@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, Renderer2, ViewEncapsulation} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {FlatNode, TreeNode} from '../../../shared/models/treeModel';
 import {NzIconModule} from 'ng-zorro-antd/icon';
@@ -27,7 +27,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
 
   @Output() categorySelected = new EventEmitter<string>();
 
-  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef) {
+  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private renderer: Renderer2, private el: ElementRef) {
   }
 
   ngOnInit(): void {
@@ -104,7 +104,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       this.homeService.getDepartments().subscribe({
         next: (departments) => {
           this.departments = departments;
-          // this.departments = departments.filter((res: DepartmentResponse) => !res.akiDepartmentWebActive);
+          // this.departments = departments.filter((res: DepartmentResponse) => res.akI_DepartmentIsActive);
           const treeData = this.departments.map((dept: any) => ({
               title: dept.akiDepartmentName.toUpperCase(),
               key: dept.akiDepartmentID,
@@ -112,7 +112,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
               level: 0, // Add level tracking
               isDepartment: true, // First parent gets 'partition' icon
               isLeaf: false,
-              children: []
+              children: [],
           }));
           this.nodes = treeData;
           this.loading = false;
@@ -130,9 +130,11 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       // this.loading = true;
       this.homeService.getCategoriesByDepartment(node.key).subscribe({
         next: (categories) => {
+          // this.categories = categories.filter((res: any) => res.akiCategoryIsActive);
           this.categories = categories;
-          if (categories && categories.length > 0) {
-            const treeData = this.buildCategoryTree(categories);
+          console.log('this.categories ', this.categories)
+          if (this.categories && this.categories.length > 0) {
+            const treeData = this.buildCategoryTree(this.categories);
             resolve(treeData);
           } else {
             resolve([]); // No children
@@ -161,6 +163,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         isLeaf: true, // Assume leaf initially
         children: [], // Ensure children exist
         level: index, // Add level tracking
+        isLast: false, // Default value
       });
     });
   
@@ -185,8 +188,10 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         tree.push(node);
       }
     });
-    // this.loading = false;
-  
+
+   // Mark the last nodes recursively
+    this.markLastNodes(tree);
+
     return tree;
   }
 
@@ -229,36 +234,51 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   }
 
 
-// Remove node from its previous parent
-removeNodeFromParent(nodeKey: string, nodes: TreeNode[]): boolean {
-  for (const node of nodes) {
-      if (node.children) {
-          const index = node.children.findIndex(child => child.key === nodeKey);
-          if (index !== -1) {
-              node.children.splice(index, 1);
-              return true;
-          }
-          // Recursively check in child nodes
-          if (this.removeNodeFromParent(nodeKey, node.children)) {
-              return true;
-          }
-      }
+  // Remove node from its previous parent
+  removeNodeFromParent(nodeKey: string, nodes: TreeNode[]): boolean {
+    for (const node of nodes) {
+        if (node.children) {
+            const index = node.children.findIndex(child => child.key === nodeKey);
+            if (index !== -1) {
+                node.children.splice(index, 1);
+                return true;
+            }
+            // Recursively check in child nodes
+            if (this.removeNodeFromParent(nodeKey, node.children)) {
+                return true;
+            }
+        }
+    }
+    return false;
   }
-  return false;
-}
 
-// Find parent node of a given key
-findParentNode(nodeKey: string, nodes: TreeNode[]): TreeNode | null {
-  for (const node of nodes) {
-      if (node.children) {
-          if (node.children.some(child => child.key === nodeKey)) {
-              return node;
-          }
-          const found = this.findParentNode(nodeKey, node.children);
-          if (found) return found;
-      }
+  // Find parent node of a given key
+  findParentNode(nodeKey: string, nodes: TreeNode[]): TreeNode | null {
+    for (const node of nodes) {
+        if (node.children) {
+            if (node.children.some(child => child.key === nodeKey)) {
+                return node;
+            }
+            const found = this.findParentNode(nodeKey, node.children);
+            if (found) return found;
+        }
+    }
+    return null;
   }
-  return null;
-}
 
+  markLastNodes(nodes: TreeNode[]): TreeNode[] {
+    console.log('nodes ', nodes)
+    nodes.forEach((node, index1, arr1) => {
+      if (node.children && node.children.length) {
+        node.children.forEach((child, index, arr) => {
+          child.isLast = index === arr.length - 1;
+        });
+        // Recursively mark last nodes for the children
+        this.markLastNodes(node.children || []);
+      } else {
+        node.isLast = index1 === arr1.length - 1 ;
+      }
+    });
+    return nodes;
+  }
 }

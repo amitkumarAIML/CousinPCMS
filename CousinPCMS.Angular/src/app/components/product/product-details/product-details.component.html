@@ -207,8 +207,8 @@
                         <nz-form-label nzFor="layoutTemplate" [nzNoColon]="true">Layout Template</nz-form-label>
                         <nz-form-control>
                             <nz-select formControlName="akiProductPrintLayoutTemp" class="w-full">
-                                @for (option of layoutOptions; track option.value) {
-                                    <nz-option  [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+                                @for (option of layoutOptions; track option.templateCode) {
+                                    <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                                 }
                             </nz-select>
                         </nz-form-control>

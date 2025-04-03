@@ -7,15 +7,37 @@
   </div>
 }
 
-<nz-tree [nzData]="nodes" 
+<nz-tree
+  [nzData]="nodes"
   *ngIf="!loading"
-   nzAsyncData 
-   nzDraggable 
-   nzShowLine (nzExpandChange)="nzEvent($event)" 
-   [nzShowIcon]="false" (nzOnDrop)="nzEvent($event)"
-   (nzClick)="selectCategory($event.node)" 
-   [nzTreeTemplate]="nzTreeTemplate"> 
+  nzAsyncData
+  nzDraggable
+  nzShowLine
+  [nzShowIcon]="false"
+  (nzExpandChange)="nzEvent($event)"
+  (nzOnDrop)="nzEvent($event)"
+  (nzClick)="selectCategory($event.node)"
+  [nzTreeTemplate]="nzTreeTemplate"
+>
 </nz-tree>
+
+
+<ng-template #nzTreeTemplate let-node let-origin="origin">
+  <span class="custom-node">
+    <span class="node-icon">
+      <ng-container>
+         <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
+         <nz-icon *ngIf="node.level === 0" nzType="partition" nzTheme="outline"></nz-icon>
+
+         
+         <!-- 🟡 Folder Icon ONLY for Actual Leaf Nodes -->
+         <nz-icon *ngIf="node.isLeaf" [nzType]="node.isSelected ? 'folder-open' : 'folder'" nzTheme="outline"></nz-icon>
+      </ng-container>
+    </span>
+    <span class="node-name">{{ node.title }}</span>
+  </span>
+</ng-template>
+
 
 <!-- <ng-template #nzTreeTemplate let-node let-origin="origin">
   <span class="custom-node">
@@ -38,21 +60,4 @@
     <span class="node-name">{{ node.title }}</span>
   </span>
 </ng-template> -->
-
-
-<ng-template #nzTreeTemplate let-node let-origin="origin">
-  <span class="custom-node">
-    <span class="node-icon">
-      <ng-container>
-         <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
-         <nz-icon *ngIf="node.level === 0" nzType="partition" nzTheme="outline"></nz-icon>
-
-         <!-- 🟡 Folder Icon ONLY for Actual Leaf Nodes -->
-         <nz-icon *ngIf="node.isLeaf" [nzType]="node.isSelected ? 'folder-open' : 'folder'" nzTheme="outline"></nz-icon>
-      </ng-container>
-    </span>
-    <span class="node-name">{{ node.title }}</span>
-  </span>
-</ng-template>
-
 

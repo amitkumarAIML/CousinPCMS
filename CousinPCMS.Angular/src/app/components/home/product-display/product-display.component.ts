@@ -31,11 +31,11 @@ export class ProductDisplayComponent {
       this.loading = true;
       this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
         next: (data) => { 
-          if (data && data.length > 0) {
-            this.products = data
+          // this.products = data.filter((res: any) => res.akiProductIsActive);
+          this.products = data;
+          if (this.products && this.products.length > 0) {
             this.displayText = ''; // Clear message if data exists
           } else {
-            this.products = [];
             this.displayText = 'No Product Found';
           }
           this.loading = false;

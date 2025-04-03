@@ -81,8 +81,14 @@
           </nz-form-item>
     
           <nz-form-item>
-            <nz-form-label [nzNoColon]="true">Commodity Code</nz-form-label>
-            <input nz-input formControlName="akiDepartmentCommodityCode" />
+            <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
+              <nz-form-control >
+                  <nz-select formControlName="akiDepartmentCommodityCode" class="w-full" nzShowSearch>
+                    @for (commodity of commodityCode; track $index) {
+                        <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
+                      }
+                    </nz-select>
+              </nz-form-control>
           </nz-form-item>
         </div>
     </form>

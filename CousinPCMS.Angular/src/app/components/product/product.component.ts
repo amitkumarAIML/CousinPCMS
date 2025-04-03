@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DataService } from '../../shared/services/data.service';
@@ -7,6 +7,7 @@ import { HomeService } from '../home/home.service';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { Subscription } from 'rxjs';
 import { SkusListComponent } from './skus-list/skus-list.component';
+import { ProductsService } from './products.service';
 
 @Component({
   selector: 'cousins-product',
@@ -21,12 +22,15 @@ import { SkusListComponent } from './skus-list/skus-list.component';
 export class ProductComponent {
 
   activeTab: number = 0; // Default tab
+  deleteLoading: boolean = false;
   loading: boolean = false;
   productData!: any;
   
  private productSubscription!: Subscription;
+ @ViewChild(ProductDetailsComponent) productDetailsComp!: ProductDetailsComponent;
 
-  constructor(private homeService: HomeService,private dataService : DataService, private readonly router: Router) {
+  constructor(private homeService: HomeService,private dataService : DataService, 
+    private readonly router: Router, private productService : ProductsService) {
   }
 
   ngOnInit(): void {
@@ -41,6 +45,25 @@ export class ProductComponent {
 
   cancle() {
     this.router.navigate(['/home']);
+  }
+
+  delete() {
+    const proData = this.productDetailsComp.getFormData();
+    this.deleteLoading = true;
+    this.productService.deleteProduct(proData.akiProductID).subscribe({
+      next: (response) => {
+        this.dataService.ShowNotification('success', '', 'Product Successfully deleted');
+        this.router.navigate(['/home']);
+        this.deleteLoading = false;
+        
+      },
+      error: (error) => {
+        this.deleteLoading = false;
+        this.dataService.ShowNotification('error', '', error.error);
+        console.error('Error fetching departments:', error.error);
+      }
+    });
+
   }
  
 

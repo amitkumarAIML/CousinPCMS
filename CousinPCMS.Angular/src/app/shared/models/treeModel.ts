@@ -9,6 +9,7 @@ export interface TreeNode {
   parentId?: string | null; // Added for parent tracking
   parentNode?: TreeNode | null;
   level?: number;
+  isLast?: boolean;
 }
 
 export interface FlatNode {

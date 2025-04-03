@@ -7,6 +7,9 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { DepartmentResponse } from '../../../shared/models/departmentModel';
 import { CommonModule } from '@angular/common';
+import { CategoryService } from '../../../shared/services/category.service';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { DataService } from '../../../shared/services/data.service';
 
 @Component({
   selector: 'cousins-department-info',
@@ -17,7 +20,8 @@ import { CommonModule } from '@angular/common';
          NzCheckboxModule, // ✅ Import Checkbox
          NzInputModule, // ✅ Import Input
          NzButtonModule,
-         NzUploadModule
+         NzUploadModule,
+         NzSelectModule,
   ],
   templateUrl: './department-info.component.html',
   styleUrl: './department-info.component.css'
@@ -25,9 +29,10 @@ import { CommonModule } from '@angular/common';
 export class DepartmentInfoComponent {
 
   departmentForm: FormGroup;
+  commodityCode: any[] = [];
   @Input() deptData!: DepartmentResponse;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private dataService: DataService) {
     this.departmentForm = this.fb.group({
       akiDepartmentID: [{ value: '' , disabled: true }, [Validators.required]],
       akiDepartmentName: ['',  [Validators.required]],
@@ -44,6 +49,10 @@ export class DepartmentInfoComponent {
     
   }
 
+  ngOnInit(): void {
+    this.getCommodityCodes();
+  }
+
   getFormData() {
     return this.departmentForm.getRawValue();
   }
@@ -54,6 +63,16 @@ export class DepartmentInfoComponent {
         this.departmentForm.patchValue(this.deptData);
       }
     }
+  }
+
+  getCommodityCodes(){
+    this.dataService.getCommodityCodes().subscribe({
+      next:(response)=> {
+        this.commodityCode = response;
+      },error(err) {
+        console.log(err);        
+      },
+    })
   }
 
 }

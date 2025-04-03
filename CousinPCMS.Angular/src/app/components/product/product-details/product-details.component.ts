@@ -9,6 +9,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { ProductComponent } from '../product.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { ProductsService } from '../products.service';
 
 @Component({
   selector: 'cousins-product-details',
@@ -32,7 +33,7 @@ export class ProductDetailsComponent {
   layoutOptions: any[] = [];
   @Input() productData!: any;
 
-   constructor(private fb: FormBuilder, private homeService: HomeService) {
+    constructor(private fb: FormBuilder, private productService: ProductsService) {
       this.productForm = this.fb.group({
         akiCategoryID: [],
         akiProductCommodityCode: [],
@@ -61,6 +62,25 @@ export class ProductDetailsComponent {
         additionalImages: [{value: '', disabled: true }]
       });
     }
+
+    ngOnInit() {
+      this.getLayoutTemplate();
+    }
+
+    getFormData() {
+      return this.productForm.getRawValue();
+    }
+
+    getLayoutTemplate() {
+      this.productService.getLayoutTemplateList().subscribe({
+        next: (reponse) => {
+          this.layoutOptions = reponse;
+        },
+        error: (error) => {
+          console.error('Error fetching departments:', error);
+        }
+      });
+    } 
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['productData']) {

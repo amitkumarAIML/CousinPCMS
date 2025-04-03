@@ -17,4 +17,5 @@ export interface DepartmentResponse {
     akiDepartmentListOrder: number;
     akiDepartmentName: string;
     akiDepartmentWebActive: boolean;
+    akI_DepartmentIsActive: boolean;
 }

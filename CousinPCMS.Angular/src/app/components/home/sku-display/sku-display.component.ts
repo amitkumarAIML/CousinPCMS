@@ -30,12 +30,11 @@ export class SkuDisplayComponent {
     this.loading = true;
     this.homeService.getSkuByProductId(this.selectedProductId).subscribe({
       next: (data) => {
-        if (data && data.length > 0) {
-          this.skus = data
-          this.homeService.setSelectedSkU(this.skus);
+        // this.skus = data.filter((res: any) => res.akiSKUIsActive);
+        this.skus = data;
+        if (this.skus && this.skus.length > 0) {
           this.displayText = ''; // Clear message if data exists
         } else {
-          this.skus = [];
           this.displayText = 'No SKU Found';
         }
         this.homeService.setSelectedSkU(this.skus);

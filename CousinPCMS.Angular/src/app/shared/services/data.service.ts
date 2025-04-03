@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {NzTableSortFn} from 'ng-zorro-antd/table';
 import { LoginRequestModel } from '../models/loginModel';
 import { APIResult } from '../models/generalModel';
+import { HttpService } from './http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ export class DataService {
     private readonly message: NzMessageService,
     private readonly translate: TranslateService,
     private readonly router: Router,
+    private httpService: HttpService
   ) {
     const storedUser = sessionStorage.getItem('valid-user');
     if (storedUser) {
@@ -161,5 +163,19 @@ export class DataService {
       }
     }
     return null;
+  }
+
+  getCountryOrigin(): Observable<any> {
+    return this.httpService.get<any>('Account/GetCountryOrigin').pipe(
+      map(response => response.value),
+      catchError(error => error)
+    );
+  }
+
+  getCommodityCodes(): Observable<any> {
+    return this.httpService.get<any>('Account/GetCommodityCodes').pipe(
+      map(response => response.value),
+      catchError(error => error)
+    );
   }
 }

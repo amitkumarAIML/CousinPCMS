@@ -47,4 +47,56 @@ nz-tree {
 
 :host ::ng-deep .ant-tree-treenode {
   padding: 0 0 0 0 !important; /* Adjust padding */
+} 
+
+
+:host ::ng-deep .ant-tree {
+  font-size: 14px;
 }
+
+/* Ensure styles apply inside nz-tree-indent */
+:host ::ng-deep .ant-tree-indent + .ant-tree-switcher {
+  position: relative;
+  z-index: 2;
+  padding: 0 5px;
+}
+
+/* 🌿 Add vertical line BELOW the switcher (Only if no expand icon) */
+:host ::ng-deep .ant-tree-indent + .ant-tree-switcher:not(.ant-tree-switcher_open):not(.ant-tree-switcher_close)::before {
+  content: "";
+  position: absolute;
+  left: 11px; 
+  top: 0px; 
+  bottom: 0;
+  width: 1px;
+  background-color: #d9d9d9;
+}
+
+/* 🔹 Horizontal line connecting to child nodes (Only if no expand icon) */
+:host ::ng-deep .ant-tree-indent + .ant-tree-switcher:not(.ant-tree-switcher_open):not(.ant-tree-switcher_close)::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  width: 10px;
+  height: 1px;
+  background-color: #d9d9d9;
+}
+
+/* ❌ Remove vertical and horizontal lines if there's an expand/collapse icon */
+:host ::ng-deep .ant-tree-switcher_open::before,
+:host ::ng-deep .ant-tree-switcher_close::before,
+:host ::ng-deep .ant-tree-switcher_open::after,
+:host ::ng-deep .ant-tree-switcher_close::after {
+  display: none;
+}
+
+:host ::ng-deep .ant-tree-indent + .ant-tree-switcher.isLast:not(.ant-tree-switcher_open):not(.ant-tree-switcher_close)::before {
+  height: 10px !important;
+}
+
+
+
+
+
+
