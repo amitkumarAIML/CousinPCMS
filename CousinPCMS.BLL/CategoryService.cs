@@ -318,12 +318,12 @@ namespace CousinPCMS.BLL
                 {
                     var products = category.Value.Select(additionalCategory => new AdditionalCategoryModel
                     {
-                        AdditionalCategory = additionalCategory.AkiCategoryID,
-                        Product = additionalCategory.AkiProductID,
-                        ListOrder = additionalCategory.AkiProductListOrder,
-                        ProductName = additionalCategory.AkiProductName,
+                        AdditionalCategory = additionalCategory.akiCategoryID,
+                        Product = additionalCategory.akiProductID,
+                        ListOrder = additionalCategory.akiProductListOrder,
+                        ProductName = additionalCategory.akiProductName,
                         CategoryName = additionalCategory.Category_Name,
-                        WebActive = additionalCategory.AkiProductWebActive
+                        WebActive = additionalCategory.akiProductWebActive
                     }).ToList();
 
                     returnValue.Value.AddRange(products);

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cousins": {
+    "CousinPCMS.Angular": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,20 +64,47 @@
             "scripts": []
           },
           "configurations": {
-            "production": {
+            "live": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "4MB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.live.ts"
+                }
+              ]
+            },
+            "prodtest": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "4MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "1MB",
+                  "maximumError": "4MB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prodtest.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -85,16 +112,19 @@
               "sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "live"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {
-              "buildTarget": "cousins:build:production"
+            "live": {
+              "buildTarget": "CousinPCMS.Angular:build:live"
+            },
+            "prodtest": {
+              "buildTarget": "CousinPCMS.Angular:build:prodtest"
             },
             "development": {
-              "buildTarget": "cousins:build:development"
+              "buildTarget": "CousinPCMS.Angular:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -121,6 +151,15 @@
               "src/styles.css"
             ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }

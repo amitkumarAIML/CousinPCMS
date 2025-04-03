@@ -177,7 +177,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products({objModel.AkiProductID})?company={HardcodedValues.CompanyName}";
+                var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products({objModel.akiProductID})?company={HardcodedValues.CompanyName}";
 
                 RestClient client = new RestClient();
                 RestRequest request = new RestRequest(urlToQuery);
