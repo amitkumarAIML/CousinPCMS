@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  baseUrl: 'https://portaltest.akkomplish.com/api/', //URL OF API
+  baseUrl: 'https://portaltest.akkomplish.com/api/api', //URL OF API
   redirectUrl: 'https://portaltest.akkomplish.com/',
   imgPath: './assets/img/',
   version: '1.0.0',

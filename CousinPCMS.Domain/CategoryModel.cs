@@ -99,6 +99,14 @@ namespace CousinPCMS.Domain
         public int Product { get; set; }
         public string additionalCategory { get; set; }
         public int Listorder { get; set; }
+        public bool isAdditionalProduct { get; set; }
+    }
+
+    public class UpdateCategoryListOrder
+    {
+        public int Product { get; set; }
+        public string additionalCategory { get; set; }
+        public int Listorder { get; set; }
     }
 
     public class LinkedAttributeModel
@@ -136,6 +144,8 @@ namespace CousinPCMS.Domain
 
         [JsonProperty("CategoryName")]
         public string CategoryName { get; set; }
+
+        public bool isAdditionalProduct { get; set; }
     }
 
     public class CategoryLayoutModel

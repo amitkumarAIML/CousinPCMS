@@ -153,6 +153,22 @@ namespace CousinPCMS.BLL
             };
             try
             {
+                if (objModel.isAdditionalProduct)
+                {
+                    var objUpdate = new AddCategoryRequestModel();
+                    objUpdate.akiCategoryID = objModel.additionalCategory;
+                    objUpdate.akiCategoryListOrder = objModel.Listorder;
+                    var category = UpdateCategory(objUpdate);
+                    var catResponse = new AdditionalCategoryModel();
+                    catResponse.isAdditionalProduct = true;
+                    catResponse.ListOrder = category.Value.akiCategoryListOrder;
+                    catResponse.AdditionalCategory = category.Value.akiCategoryID;
+
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = catResponse;
+                    return returnValue;
+                }
+
                 var postData = JsonConvert.SerializeObject(objModel);
 
                 var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts(Product ={objModel.Product},additionalcategory={objModel.additionalCategory})?company={HardcodedValues.CompanyName}";
@@ -206,7 +222,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts(Product ={objModel.Product},additionalcategory={objModel.additionalCategory})?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -311,6 +327,7 @@ namespace CousinPCMS.BLL
                     if (responseOfOrderLine?.Value != null && responseOfOrderLine.Value.Any())
                     {
                         returnValue.Value.AddRange(responseOfOrderLine.Value);
+                        returnValue.Value.Select(x => x.isAdditionalProduct = true).ToList();
                     }
                 }
 
@@ -323,7 +340,8 @@ namespace CousinPCMS.BLL
                         ListOrder = additionalCategory.akiProductListOrder,
                         ProductName = additionalCategory.akiProductName,
                         CategoryName = additionalCategory.Category_Name,
-                        WebActive = additionalCategory.akiProductWebActive
+                        WebActive = additionalCategory.akiProductWebActive,
+                        isAdditionalProduct = false
                     }).ToList();
 
                     returnValue.Value.AddRange(products);
