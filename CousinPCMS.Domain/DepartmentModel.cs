@@ -69,8 +69,6 @@ namespace CousinPCMS.Domain
         public string AkiDepartmentKeyWords { get; set; }
         public string AkiDepartmentCommodityCode { get; set; }
         public bool AKI_DeptPromptUserIfBlank { get; set; }
-        public int AKI_Dept_Parent { get; set; }
-        public bool AKI_Catalogue_Active { get; set; }
         public string AKI_Layout_Template { get; set; }
         public string AKI_Color { get; set; }
         public string AKI_Featured_Prod_BG_Color { get; set; }
