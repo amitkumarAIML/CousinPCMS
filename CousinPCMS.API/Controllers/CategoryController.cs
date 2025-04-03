@@ -286,7 +286,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The object with add details.</param>
         /// <returns>Returns success or not.</returns>
-        [HttpPost("UpdateAssociatedProduct")]
+        [HttpPost("AddAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
