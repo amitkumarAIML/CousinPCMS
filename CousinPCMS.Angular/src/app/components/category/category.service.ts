@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
-import { HttpService } from './http.service';
+import { HttpService } from '../../shared/services/http.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
@@ -10,7 +10,7 @@ export class CategoryService {
 
  constructor(private httpService: HttpService) {}
   
- GetAdditionalCategory(categoryId:string): Observable<any> {
+ getAdditionalCategory(categoryId:string): Observable<any> {
   return this.httpService.get<any>('Category/GetAdditionalCategory', {
     categoryId: `${categoryId}`,
   }).pipe(
@@ -19,7 +19,7 @@ export class CategoryService {
    ) 
   }
 
-  DeleteCategory(categoryId:string): Observable<any> {
+  deleteCategory(categoryId:string): Observable<any> {
     return this.httpService.get<any>('Category/DeleteCategory', {
       categoryId: `${categoryId}`,
     }).pipe(
@@ -28,18 +28,29 @@ export class CategoryService {
      ) 
     }
 
-  GetCountryOrigin(): Observable<any> {
-    return this.httpService.get<any>('Account/GetCountryOrigin').pipe(
+  getCategoryLayouts(): Observable<any> {
+    return this.httpService.get<any>('Category/GetCategoryLayouts').pipe(
       map(response => response.value),
       catchError(this.handleError)
     );
   }
 
-  GetCommodityCodes(): Observable<any> {
-    return this.httpService.get<any>('Account/GetCommodityCodes').pipe(
+  getAllProducts(): Observable<any> {
+    return this.httpService.get<any>('Product/GetAllProducts').pipe(
       map(response => response.value),
       catchError(this.handleError)
     );
+  }
+
+   // Call the PATCH API to update category
+   updateCategory(categoryData: any) {
+    return this.httpService.patch(`Category/UpdateCategory`, categoryData);
+  }
+  addAssociatedProduct(associatedFormProductData: any) {
+    return this.httpService.post(`Category/AddAssociatedProduct`, associatedFormProductData);
+  }
+  updateAssociatedProduct(associatedFormProductData: any) {
+    return this.httpService.patch(`Category/UpdateAssociatedProduct`, associatedFormProductData);
   }
   private handleError(error: HttpErrorResponse): Observable<never> {
       let errorMessage = 'An unknown error occurred';
