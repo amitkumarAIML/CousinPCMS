@@ -329,7 +329,7 @@ namespace CousinPCMS.BLL
                         Product = additionalCategory.akiProductID,
                         ListOrder = additionalCategory.akiProductListOrder,
                         ProductName = additionalCategory.akiProductName,
-                        CategoryName = additionalCategory.Category_Name,
+                        CategoryName = additionalCategory.category_Name,
                         WebActive = additionalCategory.akiProductWebActive,
                         isAdditionalProduct = false
                     }).ToList();

@@ -50,42 +50,43 @@ namespace CousinPCMS.Domain
 
     public class UpdateCategoryModel
     {
-        public string AkiCategoryID { get; set; }                      // Code[50]
-        public string AkiCategoryParentID { get; set; }                // Code[50]
-        public string AkiCategoryName { get; set; }                    // Text[100]
-        public decimal AkiCategoryGuidePrice { get; set; }            // Decimal
-        public int AkiCategoryGuideWeight { get; set; }               // Integer
-        public int AkiCategoryListOrder { get; set; }                 // Integer
-        public bool AkiCategoryPopular { get; set; }                  // Boolean
-        public string AkiCategoryImageURL { get; set; }               // Text[250]
-        public int AkiCategoryImageHeight { get; set; }               // Integer
-        public int AkiCategoryImageWidth { get; set; }                // Integer
-        public bool AkiCategoryIncludeInSearchByManufacture { get; set; } // Boolean
-        public int AkiCategoryMinimumDigits { get; set; }             // Integer
-        public string AkiCategoryReturnType { get; set; }             // Text[50]
-        public bool AkiCategoryShowPriceBreaks { get; set; }          // Boolean
-        public string AkiCategoryCommodityCode { get; set; }          // Text[50]
-        public bool AkiCategoryPromptUserIfPriceGroupIsBlank { get; set; } // Boolean
-        public string AkiCategoryCountryOfOrigin { get; set; }        // Code[50]
-        public bool AkiCategoryTickBoxNotInUse { get; set; }          // Boolean
-        public bool AkiCategoryUseComplexSearch { get; set; }         // Boolean
-        public decimal AkiCategoryDiscount { get; set; }              // Decimal
-        public bool AkiCategoryLogInAndGreenTickOnly { get; set; }    // Boolean
-        public string AkiCategoryPrintCatImage { get; set; }          // Text[100]
-        public bool AkiCategoryPrintCatTemp { get; set; }             // Boolean
-        public string AkiCategoryAlternativeTitle { get; set; }       // Text[2000]
-        public string AkiCategoryIndex1 { get; set; }                 // Text[250]
-        public string AkiCategoryIndex2 { get; set; }                 // Text[250]
-        public string AkiCategoryIndex3 { get; set; }                 // Text[250]
-        public string AkiCategoryIndex4 { get; set; }                 // Text[250]
-        public string AkiCategoryIndex5 { get; set; }                 // Text[250]
-        public int AkiIndentation { get; set; }                       // Integer
-        public string AkiDepartment { get; set; }                     // Text[250]
-        public string AkiDepartmentName { get; set; }                 // Text[250]
-        public bool AkiShowCategoryText { get; set; }                 // Boolean
-        public bool AkiShowCategoryImage { get; set; }                // Boolean
-        public string AkiLayoutTemplate { get; set; }                 // Text[250]
+        public string akiCategoryID { get; set; }
+        public string akiCategoryParentID { get; set; }
+        public string akiCategoryName { get; set; }
+        public int akiCategoryGuidePrice { get; set; }
+        public int akiCategoryGuideWeight { get; set; }
+        public int akiCategoryListOrder { get; set; }
+        public bool akiCategoryPopular { get; set; }
+        public string akiCategoryImageURL { get; set; }
+        public int akiCategoryImageHeight { get; set; }
+        public int akiCategoryImageWidth { get; set; }
+        public bool akiCategoryIncludeInSearchByManufacture { get; set; }
+        public int akiCategoryMinimumDigits { get; set; }
+        public string akiCategoryReturnType { get; set; }
+        public bool akiCategoryShowPriceBreaks { get; set; }
+        public string akiCategoryCommodityCode { get; set; }
+        public bool akiCategoryPromptUserIfPriceGroupIsBlank { get; set; }
+        public string akiCategoryCountryOfOrigin { get; set; }
+        public bool akiCategoryTickBoxNotInUse { get; set; }
+        public bool akiCategoryUseComplexSearch { get; set; }
+        public int akiCategoryDiscount { get; set; }
+        public bool akiCategoryLogInAndGreenTickOnly { get; set; }
+        public string akiCategoryPrintCatImage { get; set; }
+        public bool akiCategoryPrintCatTemp { get; set; }
+        public string akiCategoryAlternativeTitle { get; set; }
+        public string akiCategoryIndex1 { get; set; }
+        public string akiCategoryIndex2 { get; set; }
+        public string akiCategoryIndex3 { get; set; }
+        public string akiCategoryIndex4 { get; set; }
+        public string akiCategoryIndex5 { get; set; }
+        public int aki_Indentation { get; set; }
+        public string akiDepartment { get; set; }
+        public string akidepartmentname { get; set; }
+        public bool aki_Show_Category_Text { get; set; }
+        public bool aki_Show_Category_Image { get; set; }
+        public string aki_Layout_Template { get; set; }
         public bool akiCategoryWebActive { get; set; }
+        public string akiCategoryDescriptionText { get; set; }
     }
 
     public class DeleteCategoryRequestModel
