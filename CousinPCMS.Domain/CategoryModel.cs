@@ -52,7 +52,7 @@ namespace CousinPCMS.Domain
     {
         public string akiCategoryID { get; set; }
         public string akiCategoryName { get; set; }
-        public string AKIDepartment { get; set; }
+        public string aKIDepartment { get; set; }
         public int akiCategoryGuidePrice { get; set; }
         public int akiCategoryGuideWeight { get; set; }
         public string akiCategoryCommodityCode { get; set; }
@@ -72,9 +72,9 @@ namespace CousinPCMS.Domain
         public bool akiCategoryLogInAndGreenTickOnly { get; set; }
         public int akiCategoryMinimumDigits { get; set; }
         public string akiCategoryReturnType { get; set; }
-        public bool AKI_Show_Category_Text { get; set; }
-        public bool AKI_Show_Category_Image { get; set; }
-        public string AKI_Layout_Template { get; set; }
+        public bool aKI_Show_Category_Text { get; set; }
+        public bool aKI_Show_Category_Image { get; set; }
+        public string aKI_Layout_Template { get; set; }
         public string akiCategoryAlternativeTitle { get; set; }
         public bool akiCategoryShowPriceBreaks { get; set; }
         public string akiCategoryIndex1 { get; set; }
@@ -85,8 +85,8 @@ namespace CousinPCMS.Domain
         public string akiCategoryPrintCatText { get; set; }
         public string akiCategoryPrintCatImage { get; set; }
         public bool akiCategoryPrintCatTemp { get; set; }
-        public int AKI_Indentation { get; set; }
-        public string AKIdepartmentname { get; set; }
+        public int aKI_Indentation { get; set; }
+        public string aKIdepartmentname { get; set; }
     }
 
     public class DeleteCategoryRequestModel
@@ -102,11 +102,18 @@ namespace CousinPCMS.Domain
         public bool isAdditionalProduct { get; set; }
     }
 
-    public class UpdateCategoryListOrder
+    public class CategoryListOrderModel
     {
-        public int Product { get; set; }
+        public int product { get; set; }
         public string additionalCategory { get; set; }
-        public int Listorder { get; set; }
+        public int listorder { get; set; }
+    }
+
+    public class UpdateListOrderModel
+    {
+        public int product { get; set; }
+        public string prodCategory { get; set; }
+        public int listorder { get; set; }
     }
 
     public class LinkedAttributeModel

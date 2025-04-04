@@ -250,7 +250,7 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Updates an associate product detail for category.
+        /// Updates an associated product detail for category.
         /// </summary>
         /// <param name="objModel">The object with updated details.</param>
         /// <returns>Returns object of associated product update detail or null.</returns>
@@ -262,13 +262,30 @@ namespace CousinPCMS.API.Controllers
         {
             log.Info($"Request of {nameof(UpdateAssociatedProduct)} method called.");
 
+            // Refresh token if expired
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _categoryService.UpdateAssociatedProduct(objModel);
+            APIResult<string> responseValue;
 
+            var objRequest = new UpdateListOrderModel
+            {
+                prodCategory = objModel.additionalCategory,
+                product = objModel.Product,
+                listorder = objModel.Listorder
+            };
+            if (objModel.isAdditionalProduct)
+            {
+                responseValue = _categoryService.UpdateAssociatedProduct(objRequest);
+            }
+            else
+            {
+                responseValue = _categoryService.UpdateProductListorder(objRequest);
+            }
+
+            // Logging result
             if (!responseValue.IsError)
             {
                 log.Info($"Response of {nameof(UpdateAssociatedProduct)} is success.");
@@ -280,6 +297,7 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
 
         /// <summary>
         /// add an associate product detail for category.
@@ -299,7 +317,12 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _categoryService.AddAssociatedProduct(objModel);
+            var objRequest = new CategoryListOrderModel();
+            objRequest.additionalCategory = objModel.additionalCategory;
+            objRequest.product = objModel.Product;
+            objRequest.listorder = objModel.Listorder;
+
+            var responseValue = _categoryService.AddAssociatedProduct(objRequest);
 
             if (!responseValue.IsError)
             {
