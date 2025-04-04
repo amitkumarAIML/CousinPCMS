@@ -9,7 +9,8 @@ import { HomeService } from '../home.service';
 import { lastValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
-import { DepartmentResponse } from '../../../shared/models/departmentModel';
+import { Department, DepartmentResponse } from '../../../shared/models/departmentModel';
+import { DataService } from '../../../shared/services/data.service';
 
 @Component({
   selector: 'cousins-tree-view',
@@ -27,7 +28,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
 
   @Output() categorySelected = new EventEmitter<string>();
 
-  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private renderer: Renderer2, private el: ElementRef) {
+  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService ) {
   }
 
   ngOnInit(): void {
@@ -53,7 +54,6 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
 
   // New method to handle drag and drop events
   async nzEvent(event: any): Promise<void> {
-    console.log('event ', event)
 
     // load child async
 
@@ -86,7 +86,6 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
           return;
       }
 
-      console.log(`Dragging "${dragNode.title}" onto "${targetNode.title}" at position ${pos}`);
 
       // Prevent self-drop
       if (dragNode.key === targetNode.key) {
@@ -102,9 +101,9 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   loadDepartments(): void {
       this.loading = true;
       this.homeService.getDepartments().subscribe({
-        next: (departments) => {
-          this.departments = departments;
-          // this.departments = departments.filter((res: DepartmentResponse) => res.akI_DepartmentIsActive);
+        next: (departments: Department[]) => {
+          // this.departments = departments;
+          this.departments = departments.filter((res: Department) => res.akI_DepartmentIsActive);
           const treeData = this.departments.map((dept: any) => ({
               title: dept.akiDepartmentName.toUpperCase(),
               key: dept.akiDepartmentID,
@@ -119,7 +118,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         },
         error: (error) => {
           this.loading = false;
-          console.error('Error fetching departments:', error);
+          this.dataService.ShowNotification('error', '', "Something went wrong");
         }
       });
   }
@@ -130,9 +129,8 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       // this.loading = true;
       this.homeService.getCategoriesByDepartment(node.key).subscribe({
         next: (categories) => {
-          // this.categories = categories.filter((res: any) => res.akiCategoryIsActive);
-          this.categories = categories;
-          console.log('this.categories ', this.categories)
+          this.categories = categories.filter((res: any) => res.akiCategoryIsActive);
+          // this.categories = categories;
           if (this.categories && this.categories.length > 0) {
             const treeData = this.buildCategoryTree(this.categories);
             resolve(treeData);
@@ -141,7 +139,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
           }
         },
         error: (error) => {
-          console.log('Error loading categories:', error);
+          this.dataService.ShowNotification('error', '', "Something went wrong");
           this.loading = false;
           resolve([]); // Handle error gracefully
         }
@@ -206,9 +204,9 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         this.homeService.setSelectedDepartment(dep);
         this.homeService.setSelectedCategory(cat);
       }
-    }
+      this.categorySelected.emit(event.origin.key); // Emit selected category
 
-    this.categorySelected.emit(event.origin.key); // Emit selected category
+    }
   }
 
    // Helper method to get the icon type based on node properties
@@ -267,7 +265,6 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   }
 
   markLastNodes(nodes: TreeNode[]): TreeNode[] {
-    console.log('nodes ', nodes)
     nodes.forEach((node, index1, arr1) => {
       if (node.children && node.children.length) {
         node.children.forEach((child, index, arr) => {

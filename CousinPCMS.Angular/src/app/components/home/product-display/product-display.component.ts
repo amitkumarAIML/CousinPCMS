@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { HomeService } from '../home.service';
 import { CommonModule } from '@angular/common';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { Product } from '../../../shared/models/productModel';
+import { DataService } from '../../../shared/services/data.service';
 
 @Component({
   selector: 'cousins-product-display',
@@ -12,13 +14,13 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 export class ProductDisplayComponent {
 
   @Input() selectedCategory: string = '';
-  @Output() productSelected = new EventEmitter<string>();
-  selectedProduct : string = ''; 
-  products: any[] = [];
+  @Output() productSelected = new EventEmitter<number>();
+  selectedProduct!: number; 
+  products: Product[] = [];
   displayText: string = 'Click a category to view the product';
   loading: boolean = false;
 
-  constructor(private homeService: HomeService) {}
+  constructor(private homeService: HomeService, private dataService: DataService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedCategory']) {
@@ -30,11 +32,11 @@ export class ProductDisplayComponent {
     if (this.selectedCategory) {
       this.loading = true;
       this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
-        next: (data) => { 
-          // this.products = data.filter((res: any) => res.akiProductIsActive);
-          this.products = data;
+        next: (data: Product[]) => { 
+          this.products = data.filter((res: Product) => res.akiProductIsActive);
+          // this.products = data;
           if (this.products && this.products.length > 0) {
-            this.displayText = ''; // Clear message if data exists
+            this.displayText = ''; 
           } else {
             this.displayText = 'No Product Found';
           }
@@ -43,6 +45,7 @@ export class ProductDisplayComponent {
         error: () => { 
           this.displayText = 'Failed to load products';
           this.loading = false; 
+          this.dataService.ShowNotification('error', '', "Something went wrong");
         }
       });
     } else {
@@ -51,14 +54,12 @@ export class ProductDisplayComponent {
     }
   }
 
-  onProductClick(productId: string) {
+  onProductClick(productId: number) {
     if (!productId) return; // Prevents undefined errors
     this.selectedProduct = productId;
     const pro = this.products.filter((res) => res.akiProductID === productId);
     if (pro.length > 0) {
       this.homeService.setSelectedProduct(pro);
-      console.log('productId ', productId,pro)
-
     }
     this.productSelected.emit(productId);
   }

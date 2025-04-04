@@ -11,14 +11,14 @@ import { SkuDisplayComponent } from './sku-display/sku-display.component';
 })
 export class HomeComponent {
   selectedCategory: string = '';
-  selectedProductId: string = '';
+  selectedProductId!: number;
 
   onCategorySelected(categoryId: string) {
     this.selectedCategory = categoryId;
-    this.selectedProductId = '';
+    this.selectedProductId = 0;
   }
 
-  onProductSelected(productId: string) {
+  onProductSelected(productId: number) {
     this.selectedProductId = productId;
   }
 

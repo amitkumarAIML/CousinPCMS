@@ -8,6 +8,7 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { Subscription } from 'rxjs';
 import { SkusListComponent } from './skus-list/skus-list.component';
 import { ProductsService } from './products.service';
+import { ProductRequest, ProductUpdateResponse } from '../../shared/models/productModel';
 
 @Component({
   selector: 'cousins-product',
@@ -37,7 +38,6 @@ export class ProductComponent {
     this.productSubscription = this.homeService.selectedProduct$.subscribe(product => {
       if (product) {
           this.productData = product[0];
-          console.log('Received product:', product);
       }
     });
     
@@ -52,29 +52,74 @@ export class ProductComponent {
     this.deleteLoading = true;
     this.productService.deleteProduct(proData.akiProductID).subscribe({
       next: (response) => {
-        this.dataService.ShowNotification('success', '', 'Product Successfully deleted');
-        this.router.navigate(['/home']);
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Product Successfully Deleted');
+          this.router.navigate(['/home']);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Product Details Failed Deleted');
+        }
         this.deleteLoading = false;
-        
       },
-      error: (error) => {
+      error: (err) => {
         this.deleteLoading = false;
-        this.dataService.ShowNotification('error', '', error.error);
-        console.error('Error fetching departments:', error.error);
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
       }
     });
 
   }
  
-
   saveDetails () {
-   
+     this.productDetailsComp.productForm.markAllAsTouched();
+
+     if (!this.productDetailsComp.productForm.valid) {
+       this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+       return;
+     }
+ 
+     // Get data from both components (if forms are valid)
+     const productData = this.productDetailsComp.getFormData();
+
+     if (productData.aki_Layout_Template) {
+        productData.akiProductPrintLayoutTemp = true;
+     }
+
+     const req: ProductRequest = {
+      ...productData,
+      categoryName: productData.category_Name,
+    };
+
+    delete (req as any).category_Name;
+    delete (req as any).akiProductDescription;
+
+     this.loading = true;
+     this.productService.updateProduct(req).subscribe({
+       next: (response: ProductUpdateResponse) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Product Details Updated Successfully');
+          this.router.navigate(['/home']);
+        } else {
+          this.dataService.ShowNotification('error', '', "Product Details Failed Updated");
+        }
+         this.loading = false;
+       },
+       error: (err) => {
+          this.loading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+       }
+     });
   }
 
   ngOnDestroy() {
     if (this.productSubscription) {
       this.productSubscription.unsubscribe();
-      console.log('Unsubscribed from selectedProduct$');
     }
   }
 

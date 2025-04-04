@@ -29,12 +29,12 @@
             <label  formControlName="akiDepartmentWebActive" nz-checkbox nzValue="false"> 
                 Web Active
             </label >
-            <label  formControlName="akI_DeptPromptUserIfBlank" nz-checkbox nzValue="false">
+            <!-- <label  formControlName="akI_DeptPromptUserIfBlank" nz-checkbox nzValue="false">
               Prompt User If Price Group Is Blank
-            </label >
+            </label > -->
           </div>
     
-          <nz-form-item class="col-span-2">
+          <!-- <nz-form-item class="col-span-2">
             <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
             <div class="input-wrapper">
               <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-24"  maxlength="2000"></textarea>
@@ -42,7 +42,7 @@
                 {{ 2000 - departmentForm.get('akiDepartmentDescText')?.value?.length || 2000 }}
               </span>
             </div>
-          </nz-form-item>
+          </nz-form-item> -->
     
           <nz-form-item class="col-span-2">
               <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
@@ -55,7 +55,7 @@
                 </div>
                </nz-form-control> 
           </nz-form-item>
-    
+<!--     
           <nz-form-item >
               <nz-form-label [nzNoColon]="true">Image Height</nz-form-label>
               <nz-form-control [nzSm]="18" [nzXs]="24">
@@ -69,8 +69,8 @@
               <input nz-input formControlName="akiDepartmentImageWidth" type="number"/>
             </nz-form-control>
           </nz-form-item>
-    
-          <nz-form-item class="col-span-2">
+     -->
+          <!-- <nz-form-item class="col-span-2">
             <nz-form-label [nzNoColon]="true">Key Words</nz-form-label>
             <div class="input-wrapper">
               <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" maxlength="500"/>
@@ -78,18 +78,18 @@
                 {{ 500 - departmentForm.get('akiDepartmentKeyWords')?.value?.length || 500 }}
               </span>
             </div>
-          </nz-form-item>
+          </nz-form-item> -->
     
-          <nz-form-item>
+          <!-- <nz-form-item>
             <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
               <nz-form-control >
-                  <nz-select formControlName="akiDepartmentCommodityCode" class="w-full" nzShowSearch>
+                  <nz-select formControlName="akiDepartmentCommodityCode" class="w-full" nzShowSearch >
                     @for (commodity of commodityCode; track $index) {
                         <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
                       }
                     </nz-select>
               </nz-form-control>
-          </nz-form-item>
+          </nz-form-item> -->
         </div>
     </form>
 </div>

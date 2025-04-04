@@ -23,3 +23,16 @@
 .heading {
     background-color: var(--color-primary-font);
 }
+
+.ellipsis-btn {
+    border: none !important;
+    cursor: pointer;
+}
+
+:host ::ng-deep .ant-input-group-addon {
+    padding: 0 0;
+    font-size: 11px;
+    background-color: #EFF2F7;
+}
+
+

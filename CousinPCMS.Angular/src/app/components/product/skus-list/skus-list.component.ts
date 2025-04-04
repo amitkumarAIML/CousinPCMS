@@ -485,7 +485,6 @@ export class SkusListComponent {
     this.skusSubscription = this.homeService.selectedSkU$.subscribe(skus => {
       if (skus) {
           this.skusList = skus;
-          console.log('Received product:', skus);
       }
     });
   }
@@ -501,7 +500,6 @@ export class SkusListComponent {
   ngOnDestroy() {
     if (this.skusSubscription) {
       this.skusSubscription.unsubscribe();
-      console.log('Unsubscribed from skusSubscription$');
     }
   }
 

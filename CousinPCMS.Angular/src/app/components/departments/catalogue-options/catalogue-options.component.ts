@@ -7,7 +7,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DepartmentResponse } from '../../../shared/models/departmentModel';
 import { DataService } from '../../../shared/services/data.service';
 import { DepartmentService } from '../department.service';
-import { layoutDepartmentResponse } from '../../../shared/models/layoutTemplateModel';
+import { layoutDepartment, layoutDepartmentResponse } from '../../../shared/models/layoutTemplateModel';
 
 @Component({
   selector: 'cousins-catalogue-options',
@@ -23,7 +23,7 @@ import { layoutDepartmentResponse } from '../../../shared/models/layoutTemplateM
 })
 export class CatalogueOptionsComponent {
   catalogueForm: FormGroup;
-  layoutOptions: layoutDepartmentResponse[] = [];
+  layoutOptions: layoutDepartment[] = [];
   @Input() deptData!: DepartmentResponse;
 
     constructor(private fb: FormBuilder,
@@ -67,7 +67,7 @@ export class CatalogueOptionsComponent {
 
     getLayoutTemplate() {
       this.departmentService.getLayoutTemplateList().subscribe({
-        next: (reponse) => {
+        next: (reponse: layoutDepartment[]) => {
           this.layoutOptions = reponse;
         },
         error: (error) => {

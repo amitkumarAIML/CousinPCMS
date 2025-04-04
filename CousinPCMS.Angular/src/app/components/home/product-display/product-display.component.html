@@ -1,8 +1,3 @@
-<!-- <div class="p-4 rounded-lg">
-    <h2 class="font-bold bg-gray-100">Product Name</h2>
-    <p>{{ displayText   }}</p>
-</div> -->
-
 <div class="product-container">
     <div class="product-header">
       Product Name
@@ -18,7 +13,7 @@
     @if (!loading && products && products.length > 0) {
         <ul class="product-list divide-y divide-gray-200">
           @for (product of products; track product.akiProductID) {
-                <li *ngIf="product" class="product-item" (click)="onProductClick(product?.akiProductID)"  
+                <li *ngIf="product" class="product-item" (click)="onProductClick(product.akiProductID)"  
                     [ngClass]="{'selected': selectedProduct === product?.akiProductID}">
                     {{ product.akiProductName}}
                 </li>
