@@ -20,17 +20,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             return next(newReq);
           }),
           catchError((refreshErr) => {
-             // Handle 500 Server Error
-              if (refreshErr.status === 500) {
-                console.error('Server Error:', refreshErr);
-                dataService.ShowNotification('error', '' , 'An unexpected error occurred on the server.');
-              }
-              
-              // Handle other errors
-              if (refreshErr.status !== 400 && refreshErr.status !== 500) {
-                console.error('Error:', refreshErr);
-                dataService.ShowNotification('error', '' , `Error: ${refreshErr.message || 'An error occurred'}`);
-              }
               return throwError(() => refreshErr);
           }),
         );

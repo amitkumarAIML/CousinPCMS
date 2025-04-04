@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../category/category.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DataService } from '../../../shared/services/data.service';
+import { CommodityCode } from '../../../shared/models/commodityCodeModel';
 
 @Component({
   selector: 'cousins-department-info',
@@ -67,10 +68,9 @@ export class DepartmentInfoComponent {
 
   getCommodityCodes(){
     this.dataService.getCommodityCodes().subscribe({
-      next:(response)=> {
+      next:(response: CommodityCode[])=> {
         this.commodityCode = response;
       },error(err) {
-        console.log(err);        
       },
     })
   }

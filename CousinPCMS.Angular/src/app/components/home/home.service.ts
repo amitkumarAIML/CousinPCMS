@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, throwError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
+import { Department, DepartmentResponse } from '../../shared/models/departmentModel';
+import { Product, ProductResponse } from '../../shared/models/productModel';
 
 @Injectable({
   providedIn: 'root',
@@ -38,10 +40,10 @@ export class HomeService {
     this.selectedSkU.next(sku);
   }
 
-  getDepartments(): Observable<any> {
-    return this.httpService.get<any>('Department/GetAllDepartment').pipe(
-      map(response => response.value),
-      catchError(this.handleError)
+  getDepartments(): Observable<Department[]> {
+    return this.httpService.get<DepartmentResponse>('Department/GetAllDepartment').pipe(
+      map((response: DepartmentResponse) => response.value),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -50,36 +52,25 @@ export class HomeService {
       deptId: `${departmentId}`,
     }).pipe(
       map(response => response.value),
-      catchError(this.handleError)
+      catchError(error => throwError(() => error))
     );
   }
 
-  getProductListByCategoryId(categoryID: string): Observable<any> {
-    return this.httpService.get<any>('Product/GetProductsByCategory', {
+  getProductListByCategoryId(categoryID: string): Observable<Product[]> {
+    return this.httpService.get<ProductResponse>('Product/GetProductsByCategory', {
       CategoryID: `${categoryID}`,
     }).pipe(
-      map(response => response.value),
-      catchError(this.handleError)
+      map((response: ProductResponse) => response.value),
+      catchError(error => throwError(() => error))
     );
   }
 
-  getSkuByProductId(productID: string): Observable<any> {
+  getSkuByProductId(productID: number): Observable<any> {
     return this.httpService.get<any>('Item/GetAllItemsByProductId', {
       akiProductID: `${productID}`,
     }).pipe(
       map(response => response.value),
-      catchError(this.handleError)
+      catchError(error => throwError(() => error))
     );
-  }
-  
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'An unknown error occurred';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Client-side error: ${error.error.message}`;
-    } else {
-      errorMessage = `Server-side error: ${error.status} - ${error.message}`;
-    }
-    console.error(errorMessage);
-    return throwError(() => new Error(errorMessage));
   }
 }

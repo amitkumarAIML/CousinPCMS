@@ -272,25 +272,27 @@ export class CategoryComponent {
     })
   }
 
-  getAdditionalCategory() { 
-    this.categoryService.getAdditionalCategory(this.categoryId).subscribe({
-      next: (response) => {
-        if (response != null) {
-          this.categoriesList=response;           
-          const maxListOrder = this.categoriesList.length > 0 
-            ? Math.max(...this.categoriesList.map((category: any) => Number(category.listOrder) || 0)) 
-            : 0;
-
-          // Set the incremented value in form
-          this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });
-          this.getAllProducts();     
-        } else {
-          this.dataService.ShowNotification('error', '', 'Data are not found');        
+  getAdditionalCategory() {  
+    if (this.categoryId) {
+      this.categoryService.getAdditionalCategory(this.categoryId).subscribe({
+        next: (response) => {
+          if (response != null) {
+            this.categoriesList=response;           
+            const maxListOrder = this.categoriesList.length > 0 
+              ? Math.max(...this.categoriesList.map((category: any) => Number(category.listOrder) || 0)) 
+              : 0;
+  
+            // Set the incremented value in form
+            this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });
+            this.getAllProducts();     
+          } else {
+            this.dataService.ShowNotification('error', '', 'Data are not found');        
+          }
+        },error: (error) => {        
+          this.dataService.ShowNotification('error', '', error.error || 'Error fetching category list data');
         }
-      },error: (error) => {        
-        this.dataService.ShowNotification('error', '', error.error || 'Error fetching category list data');
-      }
-    }); 
+      }); 
+    }
   }
 
   getCategoryLayouts(){
@@ -320,6 +322,7 @@ export class CategoryComponent {
       }
     })
   }
+  
   selectProduct(data: any) {
     this.productId=data.akiProductID
     this.addAssociatedProductForm.patchValue({

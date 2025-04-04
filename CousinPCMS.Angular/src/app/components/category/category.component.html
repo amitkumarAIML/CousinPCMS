@@ -1,13 +1,12 @@
-
-<div class="p-6 bg-white rounded-md shadow-md m-5">
-    <div class="header-container">
-        <span>Category Form</span>
-        <div class="button-group">
-            <button nz-button nzType="default" [routerLink]="'/home'" class=""> Cancel </button>
-            <button nz-button nzType="default" [nzLoading]="deleteLoading"  (click)="deleteCategory()" class=""> Delete </button>
-            <button nz-button nzType="primary" [nzLoading]="loading" (click)="submitCategoryUpdateForm()" class="text-white ">Save </button>
+ <div class="p-4 bg-white rounded-ls shadow-md m-5">
+        <div class="header-container">
+            <span>Category Form</span>
+            <div class="button-group">
+                <button nz-button nzType="default" [routerLink]="'/home'" class=""> Cancel </button>
+                <button nz-button nzType="default" [nzLoading]="deleteLoading"  (click)="deleteCategory()" class=""> Delete </button>
+                <button nz-button nzType="primary" [nzLoading]="loading" (click)="submitCategoryUpdateForm()" class="text-white ">Save </button>
+            </div>
         </div>
-    </div>
         <nz-divider nzPlain></nz-divider>
         <form nz-form [formGroup]="categoryForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
@@ -135,26 +134,19 @@
                                 </nz-form-item>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2">          
-                                <nz-form-item >
-                                    <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
-                                    <nz-form-control [nzSm]="18" [nzXs]="24" [nzMd]="24">
-                                            <input nz-input nzType="file" formControlName="akiCategoryImageURL" #fileInput
-                                                accept="image/*"
-                                                (change)="onFileSelected($event)"
-                                                class="hidden" />
-
-                                             <!-- Image URL Input (Display Selected File Name or URL) -->
-                                            <input
-                                                nz-input
-                                                formControlName="akiCategoryImageURL"                                              
-                                                class="w-full" nzType="text"
-                                            />
-                                              
-                                            <!-- <button nz-button class="absolute m-0 top-0 h-full px-4 rounded-l-none" (click)="fileInput.click()" nzType="primary">FTP</button> -->
-                                    </nz-form-control>
+                            <div class="grid grid-cols-1 ">     
+                                <nz-form-item>
+                                    <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
+                                    <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
+                                      <div class="input-wrapper">
+                                        <input nz-input formControlName="akiCategoryImageURL" class="w-full" maxlength="255"/>
+                                        <span class="char-count">
+                                          {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
+                                        </span> 
+                                      </div>
+                                     </nz-form-control> 
                                 </nz-form-item>
-                                <nz-form-label class="mt-auto" [nzMd]="12" [nzNoColon]="true">{{ 255 - categoryForm.get('imageUrl')?.value?.length || 255 }}</nz-form-label>
+
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
@@ -249,7 +241,86 @@
                                 </nz-form-item>
                                 <nz-form-label class="mt-auto" [nzMd]="24" [nzNoColon]="true"> This will roll down to all sub-categories.</nz-form-label>
                             </div>                           -->
-                    </div>
+                   
+                             <!-- Associated Products Section -->
+                            <div class="mt-1">
+                                <label >Associated Products</label>
+                                <div class="border border-gray-300 rounded-lg p-2">
+                                    <div class="flex justify-end space-x-2">
+                                        <!-- <button nz-button nzType="default" >Edit / Order</button> -->
+                                        <button nz-button nzType="primary" (click)="showAddProductModal()" class="text-white mr-0 ant-btn-category-add">Add</button>
+                                    </div>
+                                    <div class="">
+                                                                
+                                    <form nz-form [formGroup]="editAssociatedProductForm">
+                                        
+                                        <nz-table #dataTable [nzData]="categoriesList"
+                                            class="rounded-lg"
+                                            [nzScroll]="{ x: '700px',
+                                                y: '200px'
+                                            }"
+                                            nzBordered="true"
+                                            [nzFrontPagination]="false"
+                                            nzSize="small" >
+                                            <thead class="text-xs ">
+                                                <tr>
+                                                <th [nzWidth]="'70px'">List Order</th>
+                                                <th [nzWidth]="'250px'">Product Name</th>                                   
+                                                <th [nzWidth]="'70px'">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-color-secondary-font text-xs">
+                                                @for (data of dataTable.data; track data) {
+                                                <tr>
+                                                    <!-- List Order -->
+                                                    <td>
+                                                    @if(editingId === data.product) {
+                                                        <input nz-input formControlName="listOrder" value="listOrder" type="number" />
+                                                        <input nz-input formControlName="product" value="listOrder" type="number" class="hidden" />
+                                                        <input nz-input formControlName="additionalCategory" value="listOrder" type="text" class="hidden" />
+                                                    } @else {
+                                                        {{ data.listOrder }}                                          
+                                                    }
+                                                    </td>
+                                                    <!-- Product Name -->
+                                                    <td>                                       
+                                                        {{ data.productName }}
+                                                    </td>
+                                                    <!-- Actions -->
+                                                    <td>
+                                                        <span class="flex gap-3">
+                                                            @if (editingId === data.product) {
+                                                                <a (click)="saveAssociatedProEdit(data)"> Save</a>
+                                                                <a (click)="cancelEdit()">Cancel</a>
+                                                            } @else if (savedId === data.product) {
+                                                                <a (click)="startEdit(data)"> 
+                                                                    <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                                </a>
+                                                                <a href="#">
+                                                                    <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                                </a>
+                                                            } @else {
+                                                                <a (click)="startEdit(data)"> 
+                                                                    <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                                </a>
+                                                                <a href="#">
+                                                                    <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                                </a>
+                                                            }
+                                                        </span>
+                                                        
+                                                    </td>
+                                                </tr>
+                                                }
+                                            </tbody>
+                                        </nz-table>
+
+                                    </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 
                     <!-- Right Section -->
                     <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
@@ -264,7 +335,7 @@
                             </div>
 
                             <!-- Layout Template Dropdown -->
-                            <div class="mt-1">
+                            <div class="">
                                 <nz-form-item class="w-full">
                                     <nz-form-label nzFor="akI_Layout_Template" [nzNoColon]="true">Layout Template</nz-form-label>
                                     <nz-form-control>
@@ -280,11 +351,11 @@
                             </div>
 
                             <!-- Alternative Title -->
-                            <div class="mt-1">
-                                <nz-form-item class="w-full">
+                            <div class="">
+                                <nz-form-item>
                                     <nz-form-label nzFor="akiCategoryAlternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
                                     <nz-form-control>
-                                        <textarea nz-input rows="4" formControlName="akiCategoryAlternativeTitle" id="akiCategoryAlternativeTitle" class="w-full p-2"></textarea>
+                                        <textarea nz-input rows="3" formControlName="akiCategoryAlternativeTitle" id="akiCategoryAlternativeTitle" class="w-full p-2"></textarea>
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
@@ -297,9 +368,9 @@
                             </div>
 
                             <!-- Index Entry Text Section -->
-                            <div class="mt-2">
+                            <div class="mt-1">
                                 <label >Index Entry Text</label>
-                                <div class="border border-gray-300 rounded-lg p-4">
+                                <div class="border border-gray-300 rounded-lg p-2">
                                     <div class="grid grid-cols-1 gap-3">
                                         <nz-form-item>
                                             <nz-form-label [nzNoColon]="true">Index Entry 1</nz-form-label>
@@ -337,87 +408,12 @@
                             </div>
                     </div>
                 </div> 
-                <!-- Associated Products Section -->
-                <div class="mt-2">
-                    <label >Associated Products</label>
-                    <div class="border border-gray-300 rounded-lg p-4">
-                        <div class="flex justify-end space-x-2">
-                            <!-- <button nz-button nzType="default" >Edit / Order</button> -->
-                            <button nz-button nzType="primary" (click)="showAddProductModal()" class="text-white mr-0">Add</button>
-                        </div>
-                        <div class="">
-                                                       
-                        <form nz-form [formGroup]="editAssociatedProductForm">
-                            
-                            <nz-table #dataTable [nzData]="categoriesList"
-                                class="rounded-lg"
-                                [nzScroll]="{ x: '1000px',
-                                    y: '600px'
-                                 }"
-                                nzBordered="true"
-                                [nzFrontPagination]="false"
-                                nzSize="small" >
-                                <thead class="text-xs">
-                                    <tr>
-                                    <th [nzWidth]="'70px'">List Order</th>
-                                    <th [nzWidth]="'250px'">Product Name</th>                                   
-                                    <th [nzWidth]="'70px'">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-color-secondary-font text-xs">
-                                    @for (data of dataTable.data; track data) {
-                                    <tr>
-                                        <!-- List Order -->
-                                        <td>
-                                        @if(editingId === data.product) {
-                                            <input nz-input formControlName="listOrder" value="listOrder" type="number" />
-                                            <input nz-input formControlName="product" value="listOrder" type="number" class="hidden" />
-                                            <input nz-input formControlName="additionalCategory" value="listOrder" type="text" class="hidden" />
-                                        } @else {
-                                            {{ data.listOrder }}                                          
-                                        }
-                                        </td>
-                                        <!-- Product Name -->
-                                        <td>                                       
-                                            {{ data.productName }}
-                                        </td>
-                                        <!-- Actions -->
-                                        <td>
-                                            <span class="flex gap-3">
-                                                @if (editingId === data.product) {
-                                                    <a (click)="saveAssociatedProEdit(data)"> Save</a>
-                                                    <a (click)="cancelEdit()">Cancel</a>
-                                                } @else if (savedId === data.product) {
-                                                    <a (click)="startEdit(data)"> 
-                                                        <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
-                                                    </a>
-                                                    <a href="#">
-                                                        <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
-                                                    </a>
-                                                } @else {
-                                                    <a (click)="startEdit(data)"> 
-                                                        <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
-                                                    </a>
-                                                    <a href="#">
-                                                        <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
-                                                    </a>
-                                                }
-                                            </span>
-                                            
-                                        </td>
-                                    </tr>
-                                    }
-                                </tbody>
-                            </nz-table>
-
-                        </form>
-
-                        </div>
-                    </div>
-                </div>   
+                  
         </form>
 </div>  
-      <!-- Add product modal -->
+
+
+<!-- Add product modal -->
 <nz-modal [(nzVisible)]="isVisibleAddProductModal" 
     [nzTitle]="addProductTitletemplate"
     (nzOnCancel)="handleCancel()"

@@ -10,6 +10,13 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { ProductComponent } from '../product.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { ProductsService } from '../products.service';
+import { DataService } from '../../../shared/services/data.service';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { Country } from '../../../shared/models/countryOriginModel';
+import { CommodityCode } from '../../../shared/models/commodityCodeModel';
+import { layoutDepartment, layoutProduct } from '../../../shared/models/layoutTemplateModel';
 
 @Component({
   selector: 'cousins-product-details',
@@ -22,7 +29,11 @@ import { ProductsService } from '../products.service';
               NzCardModule,
               NzDividerModule ,
               NzCardModule,
-              NzTableModule],
+              NzTableModule,
+              NzModalModule,
+              NzPaginationModule,
+              NzIconModule
+            ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
 })
@@ -31,16 +42,27 @@ export class ProductDetailsComponent {
   productForm: FormGroup;
   countries : any[]= [];
   layoutOptions: any[] = [];
+  commodityCode: any[] = [];
+
+  isCategoryModalVisible = false;
+  selectedCategoryId: string | null = null;
+  selectedCategoryName: string | null = null;
+
+  categoryList: any[] = [];
+  searchValue: string = '';
+  filteredCategories: any[] = []; // Displayed data
+
+  loading = false; // Initially false
+
   @Input() productData!: any;
 
-    constructor(private fb: FormBuilder, private productService: ProductsService) {
+    constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService) {
       this.productForm = this.fb.group({
         akiCategoryID: [],
         akiProductCommodityCode: [],
         akiProductCountryOfOrigin: [''],
-        akiProductDescription: [''],
         akiProductHeading: [''],
-        akiProductID: [{ value: '' , disabled: true}],
+        akiProductID: [{ value: '' , disabled: true}, [Validators.required]],
         akiProductImageHeight: [0],
         akiProductImageURL: [''],
         akiProductImageWidth: [0],
@@ -50,44 +72,118 @@ export class ProductDetailsComponent {
         akiProductIndexText4: [''],
         akiProductIndexText5: [''],
         akiProductListOrder: [0],
-        akiProductName: [''],
-        akiProductPrintCatActive: [false],
+        akiProductName: ['',[ Validators.required ]],
         akiProductPrintLayoutTemp: [false],
-        akiProductPrintTitle: [null],
+        aki_Layout_Template: [''],
+        akiProductAlternativeTitle: [''],
         akiProductShowPriceBreaks: [false],
-        akiProductText: [''],
         akiProductWebActive: [true],
         category_Name: [''],
-        urlLinks: [{value: '', disabled: true }],
-        additionalImages: [{value: '', disabled: true }]
+        akiProductText: [''],
+        
+        akiProductDescription: [''],
+
       });
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+      if (changes['productData']) {
+        if (this.productData) {
+          this.productForm.patchValue(this.productData);
+        }
+      }
     }
 
     ngOnInit() {
       this.getLayoutTemplate();
+      this.getCommodityCodes();
+      this.getCountryOrigin();
+      this.getAllCategory();
     }
 
     getFormData() {
       return this.productForm.getRawValue();
     }
 
+    getCountryOrigin(){
+      this.dataService.getCountryOrigin().subscribe({
+        next:(response: Country[])=> {
+          this.countries = response;
+        },
+        error: (err) => {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');  
+        },
+      })
+    }
+  
+    getCommodityCodes(){
+      this.dataService.getCommodityCodes().subscribe({
+        next:(response: CommodityCode[])=> {
+          this.commodityCode = response;
+        },
+        error: (err) => {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        },
+      })
+    }
+
     getLayoutTemplate() {
       this.productService.getLayoutTemplateList().subscribe({
-        next: (reponse) => {
+        next: (reponse: layoutProduct[]) => {
           this.layoutOptions = reponse;
         },
         error: (error) => {
-          console.error('Error fetching departments:', error);
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
         }
       });
     } 
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['productData']) {
-          if (this.productData) {
-            this.productForm.patchValue(this.productData);
-          }
-        }
+    getAllCategory() {
+      this.loading = true; // Show loader
+      this.dataService.getAllCategory().subscribe({
+        next:(response)=> {
+          this.categoryList = response;
+          this.filteredCategories = response; 
+          this.loading = false; 
+        },error(err) {
+          console.log(err);       
+        },
+      })
     }
+    
+    openCategoryModal() {
+      this.isCategoryModalVisible = true;
+    }
+  
+    closeCategoryModal() {
+      this.isCategoryModalVisible = false;
+    }
+
+    onCategorySelect(selectedCategory: any) {
+      // Unselect all categories first
+      this.categoryList.forEach(category => {
+        if (category.akiCategoryID !== selectedCategory.akiCategoryID) {
+          category.selected = false;
+        }
+      });
+  
+      // Set the selected category
+      this.productForm.get('akiCategoryID')?.setValue(selectedCategory.selected ? selectedCategory.akiCategoryID : null);
+      this.productForm.get('category_Name')?.setValue(selectedCategory.selected ? selectedCategory.akiCategoryName : null);
+    }
+  
+    selectCategory() {
+      this.isCategoryModalVisible = false;
+    }
+
+    // Search filter function
+    onSearch() {
+      const searchText = this.searchValue.toLowerCase();
+      this.filteredCategories = this.categoryList.filter(category =>
+        category.akiCategoryName.toLowerCase().includes(searchText)
+      );
+    }
+
+   
 
 }
