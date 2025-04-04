@@ -10,18 +10,30 @@
                         </nz-form-control>
                     </nz-form-item>
                 
-                    <nz-form-item>
+                    <!-- <nz-form-item>
                         <nz-form-label  [nzNoColon]="true">Category Id</nz-form-label>
                         <nz-form-control >
                             <input nz-input formControlName="akiCategoryID" id="categoryId"  />
                         </nz-form-control>
-                    </nz-form-item>
+                    </nz-form-item> -->
+                    <nz-form-item>
+                        <nz-form-label [nzNoColon]="true" nzFor="categoryId">Category Id</nz-form-label>
+                        <nz-form-control>
+                          <nz-input-group [nzAddOnAfter]="ellipsisButton">
+                            <input nzRequired nz-input id="categoryId"  formControlName="akiCategoryID" readonly />
+                          </nz-input-group>
+                          <ng-template #ellipsisButton>
+                            <button nz-button nzType="default" class="ellipsis-btn" (click)="openCategoryModal()">...</button>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+
                 
                 </div>
                 
                 <div class="grid grid-cols-1">
                     <nz-form-item>
-                            <nz-form-label [nzNoColon]="true" nzFor="productName" [nzSm]="6" [nzXs]="24">Product Name</nz-form-label>
+                            <nz-form-label nzRequired [nzNoColon]="true" nzFor="productName" [nzSm]="6" [nzXs]="24">Product Name</nz-form-label>
                             <nz-form-control >
                             <div class="input-wrapper">
                                 <input nz-input formControlName="akiProductName" maxlength="100" />
@@ -119,10 +131,10 @@
                         <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
                         <nz-form-control >
                             <!-- <input nz-input formControlName="akiProductCommodityCode" id="commodityCode"/> -->
-                            <nz-select formControlName="akiProductCommodityCode" class="w-full">
-                                @for (country of countries; track country.value) {
-                                    <nz-option  [nzValue]="country.value" [nzLabel]="country.label"></nz-option>
-                                }
+                            <nz-select formControlName="akiProductCommodityCode" class="w-full" nzShowSearch >
+                                @for (commodity of commodityCode; track $index) {
+                                    <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
+                                  }
                             </nz-select>
                         </nz-form-control>
                     </nz-form-item>
@@ -131,8 +143,8 @@
                         <nz-form-label nzFor="countryOfOrigin"  [nzNoColon]="true">Country of Origin</nz-form-label>
                         <nz-form-control>
                             <nz-select formControlName="akiProductCountryOfOrigin" class="w-full">
-                                @for (country of countries; track country.value) {
-                                    <nz-option  [nzValue]="country.value" [nzLabel]="country.label"></nz-option>
+                                @for (country of countries; track $index) {
+                                    <nz-option  [nzValue]="country.code" [nzLabel]="country.name"></nz-option>
                                 }
                             </nz-select>
                         </nz-form-control>
@@ -158,7 +170,7 @@
                             <a href="#" class="underline">No of Additional Images</a>
                         </nz-form-label>
                         <nz-form-control>
-                            <input nz-input formControlName="additionalImages" id="additionalImages" [disabled]="true"/>
+                            <input nz-input  id="additionalImages" [disabled]="true"/>
                         </nz-form-control>
                     </nz-form-item>
                 </div>
@@ -186,7 +198,7 @@
                             <a href="#" class="underline">No of URL Links</a>
                         </nz-form-label>
                         <nz-form-control>
-                            <input nz-input formControlName="urlLinks" id="urlLinks" [disabled]="true" />
+                            <input nz-input id="urlLinks" [disabled]="true" />
                         </nz-form-control>
                     </nz-form-item>
                 </div>              
@@ -194,19 +206,18 @@
     
         <!-- Right Section -->
         <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
-                <div class="grid grid-cols-1 gap-4 mt-2">
-                    <!-- Checkboxes -->
+                <!-- <div class="grid grid-cols-1  mt-2">
                     <div class="flex flex-col items-start space-y-2 nz-checkbox-wrapper nz-checkbox-wrapper-website">
                         <label class=""  formControlName="akiProductPrintCatActive" nz-checkbox nzValue="false">Cat Active </label >
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Layout Template Dropdown -->
                 <div class="mt-1">
                     <nz-form-item class="w-full">
                         <nz-form-label nzFor="layoutTemplate" [nzNoColon]="true">Layout Template</nz-form-label>
                         <nz-form-control>
-                            <nz-select formControlName="akiProductPrintLayoutTemp" class="w-full">
+                            <nz-select formControlName="aki_Layout_Template" class="w-full">
                                 @for (option of layoutOptions; track option.templateCode) {
                                     <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                                 }
@@ -220,7 +231,7 @@
                     <nz-form-item class="w-full">
                         <nz-form-label nzFor="alternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
                         <nz-form-control>
-                            <textarea nz-input rows="4" formControlName="akiProductPrintTitle" id="alternativeTitle" class="w-full p-2"></textarea>
+                            <textarea nz-input rows="4" formControlName="akiProductAlternativeTitle" id="alternativeTitle" class="w-full p-2"></textarea>
                         </nz-form-control>
                     </nz-form-item>
                 </div>
@@ -274,3 +285,45 @@
         </div>
     </div> 
 </form>
+
+<nz-modal [(nzVisible)]="isCategoryModalVisible" nzTitle="Select Category" (nzOnCancel)="closeCategoryModal()" (nzOnOk)="selectCategory()">
+    <ng-container *nzModalContent>
+
+        <div class="grid grid-cols-1 mb-2">
+            <nz-form-item>
+                <nz-form-label [nzNoColon]="true" >Search</nz-form-label>
+                <nz-form-control>
+                    <nz-input-group [nzSuffix]="suffixIcon">
+                        <input nz-input [(ngModel)]="searchValue" (ngModelChange)="onSearch()" />
+                    </nz-input-group>
+                    <!-- Icon for Search -->
+                    <ng-template #suffixIcon>
+                        <i nz-icon nzType="search"></i>
+                    </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        </div>
+
+        <nz-table #basicTable [nzBordered]="true" [nzData]="filteredCategories" [nzLoading]="loading"  nzSize="small" [nzShowPagination]="true">
+            <thead>
+              <tr> 
+                <th nzWidth="50"></th> <!-- Checkbox Column -->
+                <th nzWidth="50">ID</th>
+                <th nzWidth="200">Category Name</th>
+              </tr>
+            </thead>
+            <tbody>    
+              @for ( category of basicTable.data; track $index) {
+                  <tr>
+                      <td>
+                          <label nz-checkbox [(ngModel)]="category.selected" (ngModelChange)="onCategorySelect(category)"></label>
+                      </td>
+                      <td>{{ category.akiCategoryID }}</td>
+                      <td>{{ category.akiCategoryName }}</td>
+                  </tr>
+              }
+            </tbody>
+        </nz-table>
+
+      </ng-container>
+</nz-modal>

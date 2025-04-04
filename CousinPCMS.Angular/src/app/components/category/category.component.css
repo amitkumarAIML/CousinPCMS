@@ -16,6 +16,8 @@
 
 .ant-divider-horizontal {
     margin: 0px 0;
+    border-color: #E2E8F0 !important;
+
 }
 
 .input-wrapper {
@@ -55,4 +57,15 @@
     font-family: var(--font-family);
     color: var(--color-primary-thems);
     font-size: 12px;
+}
+
+.ant-btn-category-add {
+    height: 31px;
+    margin-bottom: 5px;
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+.nz-table-hide-scrollbar {
+    scrollbar-color: #fafafa #fafafa;
 }

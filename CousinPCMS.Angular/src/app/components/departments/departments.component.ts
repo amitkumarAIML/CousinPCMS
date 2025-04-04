@@ -5,7 +5,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { DepartmentInfoComponent } from './department-info/department-info.component';
 import { CatalogueOptionsComponent } from './catalogue-options/catalogue-options.component';
 import { HomeService } from '../home/home.service';
-import { DepartmentResponse } from '../../shared/models/departmentModel';
+import { DepartmentResponse, DepartmentUpdateResponse } from '../../shared/models/departmentModel';
 import { Subscription } from 'rxjs';
 import { DepartmentService } from './department.service';
 import { DataService } from '../../shared/services/data.service';
@@ -48,7 +48,6 @@ export class DepartmentsComponent implements AfterViewInit {
     this.departmentSubscription = this.homeService.selectedDepartment$.subscribe(department => {
       if (department) {
         this.departmentData = department[0];
-        console.log('Received Category:', department);
       }
     });
   }
@@ -106,16 +105,22 @@ export class DepartmentsComponent implements AfterViewInit {
 
     this.loading = true;
     this.departmentService.updateDepartment(mergedData).subscribe({
-      next: (response) => {
-        this.dataService.ShowNotification('success', '', 'Department Details Updated Successfully');
-        this.router.navigate(['/home']);
+      next: (response: DepartmentUpdateResponse) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Department Details Updated Successfully');
+          this.router.navigate(['/home']);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Department Details Failed Updated');
+        }        
         this.loading = false;
-        
       },
-      error: (error) => {
+      error: (err) => {
         this.loading = false;
-        this.dataService.ShowNotification('error', '', error.error);
-        console.error('Error fetching departments:', error.error);
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
       }
     });
   }
@@ -125,15 +130,21 @@ export class DepartmentsComponent implements AfterViewInit {
     this.deleteLoading = true;
     this.departmentService.deleteDepartment(departmentData.akiDepartmentID).subscribe({
       next: (response) => {
-        this.dataService.ShowNotification('success', '', 'Department Successfully deleted');
-        this.router.navigate(['/home']);
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Department Successfully deleted');
+          this.router.navigate(['/home']);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Department Details Failed Deleted');
+        }
         this.deleteLoading = false;
-        
       },
-      error: (error) => {
+      error: (err) => {
         this.deleteLoading = false;
-        this.dataService.ShowNotification('error', '', error.error);
-        console.error('Error fetching departments:', error.error);
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
       }
     });
 
@@ -143,7 +154,6 @@ export class DepartmentsComponent implements AfterViewInit {
   ngOnDestroy() {
     if (this.departmentSubscription) {
       this.departmentSubscription.unsubscribe();
-      console.log('Unsubscribed from selectedCategory$');
     }
   }
     

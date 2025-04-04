@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of, retry, tap} from 'rxjs';
+import {BehaviorSubject, catchError, map, Observable, of, retry, tap, throwError} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {HttpClient} from '@angular/common/http';
@@ -9,6 +9,8 @@ import {NzTableSortFn} from 'ng-zorro-antd/table';
 import { LoginRequestModel } from '../models/loginModel';
 import { APIResult } from '../models/generalModel';
 import { HttpService } from './http.service';
+import { CommodityCode, CommodityCodeResponse } from '../models/commodityCodeModel';
+import { Country, CountryResponse } from '../models/countryOriginModel';
 
 @Injectable({
   providedIn: 'root',
@@ -165,17 +167,24 @@ export class DataService {
     return null;
   }
 
-  getCountryOrigin(): Observable<any> {
-    return this.httpService.get<any>('Account/GetCountryOrigin').pipe(
-      map(response => response.value),
-      catchError(error => error)
+  getCountryOrigin(): Observable<Country[]> {
+    return this.httpService.get<CountryResponse>('Account/GetCountryOrigin').pipe(
+      map((response: CountryResponse) => response.value),
+      catchError(error => throwError(() => error))
     );
   }
 
-  getCommodityCodes(): Observable<any> {
-    return this.httpService.get<any>('Account/GetCommodityCodes').pipe(
+  getCommodityCodes(): Observable<CommodityCode[]> {
+    return this.httpService.get<CommodityCodeResponse>('Account/GetCommodityCodes').pipe(
+      map((response: CommodityCodeResponse) => response.value),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  getAllCategory(): Observable<any> {
+    return this.httpService.get<any>('Category/GetAllCategory').pipe(
       map(response => response.value),
-      catchError(error => error)
+      catchError(error => throwError(() => error))
     );
   }
 }
