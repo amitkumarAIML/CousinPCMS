@@ -18,7 +18,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { DataService } from '../../shared/services/data.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { addAssociatedProductModel, categoryListModel } from '../../shared/models/CategoryListModel';
+import { addAssociatedProductModel, categoryDetailUpdatedModel, categoryListModel } from '../../shared/models/CategoryListModel';
 
 @Component({
   selector: 'cousins-category',
@@ -76,46 +76,47 @@ export class CategoryComponent {
   ) {
     this.categoryForm = this.fb.group({
       akiCategoryID: [{ value: '', disabled: true }],
-      akiDepartment: [{ value: '', disabled: true }],
+      akiCategoryParentID:[''],
       akiCategoryName: ['', [Validators.required]],
       akiCategoryGuidePrice: [''],
-      akiCategoryGuideWeight: [''],
-      akiCategoryCommodityCode: [''],
-      akiCategoryListOrder: [''],
-      akiCategoryPromptUserIfPriceGroupIsBlank: [false],
-      akiCategoryCountryOfOrigin: [''],
-      akiCategoryWebActive: [false],
-      akiCategoryPopular: [false],
-      akiCategoryTickBoxNotInUse: [false],
-      akiCategoryUseComplexSearch: [false],
-      akiCategoryDescriptionText: [''],
+      akiCategoryGuideWeight:[''],
+      akiCategoryListOrder: [''],      
+      akiCategoryPopular: [true],
       akiCategoryImageURL: [''],
-      additionalImages: [{ value: '', disabled: true }],
-      akiCategoryDiscount: [''],
-      urlLinks: [{ value: '', disabled: true }],
       akiCategoryImageHeight: [''],
       akiCategoryImageWidth: [''],
       akiCategoryIncludeInSearchByManufacture: [false],
-      akiCategoryLogInAndGreenTickOnly: [false],
       akiCategoryMinimumDigits: [{ value: '', disabled: true }],
-      akiCategoryReturnType: [''],
-      akiCategoryPrintCatActive: [false],
-      akI_Show_Category_Text:[false],
-      akI_Show_Category_Image:[false],
-      akI_Layout_Template:[''],
+      akiCategoryReturnType: [null],      
+      akiCategoryShowPriceBreaks: [true],      
+      akiCategoryCommodityCode: [''],
+      akiCategoryPromptUserIfPriceGroupIsBlank: [true],      
+      akiCategoryCountryOfOrigin: [''],
+      akiCategoryTickBoxNotInUse: [true],
+      akiCategoryUseComplexSearch: [true],      
+      akiCategoryDiscount: [0],
+      akiCategoryLogInAndGreenTickOnly: [false],
+      akiCategoryPrintCatImage: [''],      
+      akiCategoryPrintCatTemp: [true],
       akiCategoryAlternativeTitle: [''],
-      akiCategoryShowPriceBreaks: [false],
       akiCategoryIndex1: [''],
       akiCategoryIndex2: [''],
       akiCategoryIndex3: [''],
       akiCategoryIndex4: [''],
       akiCategoryIndex5: [''],
-      akiCategoryPrintCatText:[''],
-      akiCategoryPrintCatImage: [''],
-      akiCategoryPrintCatTemp: true,
-      akI_Indentation: 0,
-      akIdepartmentname: [''],
-     
+      akI_Indentation:[0],
+      akiDepartment: [{ value: '', disabled: true }],
+      akIdepartmentname:[''], 
+      akI_Show_Category_Text:[true],
+      akI_Show_Category_Image:[true],
+      akI_Layout_Template:[''],
+      akiCategoryWebActive: [true],
+      akiCategoryDescriptionText: [''],
+
+      akiCategoryPrintCatActive: [false],
+      additionalImages: [{ value: '', disabled: true }],     
+      urlLinks: [{ value: '', disabled: true }],     
+      
     });
 
     this.editAssociatedProductForm = this.fb.group({
@@ -139,7 +140,6 @@ export class CategoryComponent {
         this.categoryDetails = category[0];
         this.categoryForm.patchValue(this.categoryDetails);
         this.categoryId=this.categoryDetails.akiCategoryID
-        console.log('Received Category:', category);
       }
     });
     this.getAdditionalCategory();
@@ -151,15 +151,53 @@ export class CategoryComponent {
   ngOnDestroy() {
     if (this.categorySubscription) {
       this.categorySubscription.unsubscribe();
-      console.log('Unsubscribed from selectedCategory$');
     }
   }
     
   submitCategoryUpdateForm(): void {
-    console.log('Form Data:', this.categoryForm.getRawValue());
+
+    const updateCategory:categoryDetailUpdatedModel={
+      akiCategoryID: this.categoryForm.get('akiCategoryID')?.value,
+      akiCategoryParentID:'',
+      akiCategoryName:this.categoryForm.get('akiCategoryName')?.value,
+      akiCategoryGuidePrice:this.categoryForm.get('akiCategoryGuidePrice')?.value,
+      akiCategoryGuideWeight: this.categoryForm.get('akiCategoryGuideWeight')?.value,     
+      akiCategoryListOrder: this.categoryForm.get('akiCategoryListOrder')?.value,
+      akiCategoryPopular: this.categoryForm.get('akiCategoryPopular')?.value,
+      akiCategoryImageURL: this.categoryForm.get('akiCategoryImageURL')?.value,
+      akiCategoryImageHeight:this.categoryForm.get('akiCategoryImageHeight')?.value,
+      akiCategoryImageWidth:this.categoryForm.get('akiCategoryImageWidth')?.value,
+      akiCategoryIncludeInSearchByManufacture: this.categoryForm.get('akiCategoryIncludeInSearchByManufacture')?.value,
+      akiCategoryMinimumDigits:this.categoryForm.get('akiCategoryMinimumDigits')?.value,
+      akiCategoryReturnType:this.categoryForm.get('akiCategoryReturnType')?.value,
+      akiCategoryShowPriceBreaks: this.categoryForm.get('akiCategoryShowPriceBreaks')?.value,
+      akiCategoryCommodityCode:this.categoryForm.get('akiCategoryCommodityCode')?.value,
+      akiCategoryPromptUserIfPriceGroupIsBlank:this.categoryForm.get('akiCategoryPromptUserIfPriceGroupIsBlank')?.value,
+      akiCategoryCountryOfOrigin: this.categoryForm.get('akiCategoryCountryOfOrigin')?.value,
+      akiCategoryTickBoxNotInUse: this.categoryForm.get('akiCategoryTickBoxNotInUse')?.value,
+      akiCategoryUseComplexSearch: this.categoryForm.get('akiCategoryUseComplexSearch')?.value,
+      akiCategoryDiscount: this.categoryForm.get('akiCategoryDiscount')?.value,
+      akiCategoryLogInAndGreenTickOnly: this.categoryForm.get('akiCategoryLogInAndGreenTickOnly')?.value,
+      akiCategoryPrintCatImage: '',
+      akiCategoryPrintCatTemp: false,
+      akiCategoryAlternativeTitle: this.categoryForm.get('akiCategoryAlternativeTitle')?.value,
+      akiCategoryIndex1:  this.categoryForm.get('akiCategoryIndex1')?.value,
+      akiCategoryIndex2:  this.categoryForm.get('akiCategoryIndex2')?.value,
+      akiCategoryIndex3:  this.categoryForm.get('akiCategoryIndex3')?.value,
+      akiCategoryIndex4:  this.categoryForm.get('akiCategoryIndex4')?.value,
+      akiCategoryIndex5:  this.categoryForm.get('akiCategoryIndex5')?.value,
+      aki_Indentation: 0,
+      akiDepartment: this.categoryForm.get('akiDepartment')?.value,
+      akidepartmentname:'' ,
+      aki_Show_Category_Text: this.categoryForm.get('akI_Show_Category_Text')?.value,
+      aki_Show_Category_Image: this.categoryForm.get('akI_Show_Category_Image')?.value,
+      aki_Layout_Template: this.categoryForm.get('akI_Layout_Template')?.value,
+      akiCategoryWebActive: this.categoryForm.get('akiCategoryWebActive')?.value,
+      akiCategoryDescriptionText:this.categoryForm.get('akiCategoryDescriptionText')?.value 
+    }      
     this.loading = true; 
     if(this.categoryForm.valid){
-      this.categoryService.updateCategory(this.categoryForm.value).subscribe({
+      this.categoryService.updateCategory(updateCategory).subscribe({
         next: (response:any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Category details updated successfully');
@@ -170,8 +208,7 @@ export class CategoryComponent {
           }
         }, error: (error) => {
           this.loading = false;
-          this.dataService.ShowNotification('error', '', error.error);
-          console.error('Error fetching category details:', error.error);
+          this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
         }
       });
     }else {
@@ -203,16 +240,14 @@ export class CategoryComponent {
     this.deleteLoading = true;
     this.categoryService.deleteCategory(this.categoryId).subscribe({
       next: (response) => {
-        if (response != null) {
+        if (response) {
           this.dataService.ShowNotification('success', '', 'Category Successfully deleted');
           this.router.navigate(['/home']);
-          this.deleteLoading = false;                 
-        } else {
-          console.log('error',response.value);       
+          this.deleteLoading = false;                     
         }
       },error: (error) => {
         this.deleteLoading = false;
-        this.dataService.ShowNotification('error', '', error.error);
+        this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
       }
     }); 
   }
@@ -271,22 +306,17 @@ export class CategoryComponent {
   getAllProducts(){
     this.loadingProduct = true;
     this.categoryService.getAllProducts().subscribe({
-      next:(response:any)=> {
-        if(response.isSuccess){
+      next:(response)=> {       
         this.productNameList=response;       
         // Filter only if categoriesList is available
         if (this.categoriesList && this.categoriesList.length > 0) {
           const existingIds = this.categoriesList.map((category: any) => category.product);
           this.productNameList = this.productNameList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
-        this.loadingProduct = false;  
-      }else{
-        this.dataService.ShowNotification('error', '', 'Data are not found');
-      }     
+        this.loadingProduct = false;         
       },error: (error) => {
         this.loadingProduct = false;
-        this.dataService.ShowNotification('error', '', error.error);
-        console.error('Error fetching product list data:', error.error);
+        this.dataService.ShowNotification('error', '', error.error ||'Error fetching product list data');
       }
     })
   }
