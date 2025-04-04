@@ -143,7 +143,7 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
             DeleteProductRequestModel obj = new DeleteProductRequestModel();
-            obj.producttID = productId;
+            obj.productID = productId;
 
             var responseValue = _productService.DeleteProduct(obj);
 

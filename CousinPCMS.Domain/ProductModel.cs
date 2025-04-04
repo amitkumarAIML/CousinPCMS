@@ -61,7 +61,7 @@ namespace CousinPCMS.Domain
 
     public class DeleteProductRequestModel
     {
-        public int producttID { get; set; }
+        public int productID { get; set; }
     }
     public class ProductLayoutModel
     {
