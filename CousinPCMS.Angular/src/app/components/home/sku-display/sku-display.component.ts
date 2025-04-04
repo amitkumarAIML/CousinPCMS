@@ -31,8 +31,8 @@ export class SkuDisplayComponent {
     this.loading = true;
     this.homeService.getSkuByProductId(this.selectedProductId).subscribe({
       next: (data) => {
-        // this.skus = data.filter((res: any) => res.akiSKUIsActive);
-        this.skus = data;
+        this.skus = data.filter((res: any) => res?.akiSKUIsActive);
+        // this.skus = data;
         if (this.skus && this.skus.length > 0) {
           this.displayText = ''; // Clear message if data exists
         } else {
