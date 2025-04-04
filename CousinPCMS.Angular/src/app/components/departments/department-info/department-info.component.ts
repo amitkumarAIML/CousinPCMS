@@ -7,7 +7,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { DepartmentResponse } from '../../../shared/models/departmentModel';
 import { CommonModule } from '@angular/common';
-import { CategoryService } from '../../../shared/services/category.service';
+import { CategoryService } from '../../category/category.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DataService } from '../../../shared/services/data.service';
 
