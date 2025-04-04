@@ -384,7 +384,7 @@
                                         <td>
                                             <span class="flex gap-3">
                                                 @if (editingId === data.product) {
-                                                    <a (click)="saveEdit(data)"> Save</a>
+                                                    <a (click)="saveAssociatedProEdit(data)"> Save</a>
                                                     <a (click)="cancelEdit()">Cancel</a>
                                                 } @else if (savedId === data.product) {
                                                     <a (click)="startEdit(data)"> 

@@ -67,6 +67,7 @@ export class CategoryComponent {
   loadingProduct: boolean = false;
   deleteLoading: boolean = false;
   productId:number=0;
+  savedId: number | null = null;
 
   constructor(private fb: FormBuilder, private homeService: HomeService,
     private categoryService:CategoryService,
@@ -145,7 +146,6 @@ export class CategoryComponent {
     this.getCountryOrigin();
     this.getCommodityCodes();
     this.getCategoryLayouts();
-    // this.getAllProducts();
   }
 
   ngOnDestroy() {
@@ -185,12 +185,11 @@ export class CategoryComponent {
   }
 
    // Handle File Selection
-   onFileSelected(event: Event) {
+  onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
 
-    if (file) {
+  if (file) {
       this.selectedFileName = file.name;
-
       // Show Preview
       const reader = new FileReader();
       reader.onload = () => {
@@ -214,7 +213,6 @@ export class CategoryComponent {
       },error: (error) => {
         this.deleteLoading = false;
         this.dataService.ShowNotification('error', '', error.error);
-        console.error('Error fetching category:', error.error);
       }
     }); 
   }
@@ -243,8 +241,7 @@ export class CategoryComponent {
     this.categoryService.getAdditionalCategory(this.categoryId).subscribe({
       next: (response) => {
         if (response != null) {
-          this.categoriesList=response;  
-          console.log('categoriesList=', this.categoriesList); 
+          this.categoriesList=response;           
           const maxListOrder = this.categoriesList.length > 0 
             ? Math.max(...this.categoriesList.map((category: any) => Number(category.listOrder) || 0)) 
             : 0;
@@ -257,7 +254,6 @@ export class CategoryComponent {
         }
       },error: (error) => {        
         this.dataService.ShowNotification('error', '', error.error || 'Error fetching category list data');
-        console.error('Error fetching category list data:', error.error);
       }
     }); 
   }
@@ -275,18 +271,18 @@ export class CategoryComponent {
   getAllProducts(){
     this.loadingProduct = true;
     this.categoryService.getAllProducts().subscribe({
-      next:(response)=> {
-        this.productNameList=response;
-        console.log('datawihtout filter',this.productNameList);
-
+      next:(response:any)=> {
+        if(response.isSuccess){
+        this.productNameList=response;       
         // Filter only if categoriesList is available
         if (this.categoriesList && this.categoriesList.length > 0) {
           const existingIds = this.categoriesList.map((category: any) => category.product);
           this.productNameList = this.productNameList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
-        this.loadingProduct = false;
-        console.log('data fitter',this.productNameList);
-                     
+        this.loadingProduct = false;  
+      }else{
+        this.dataService.ShowNotification('error', '', 'Data are not found');
+      }     
       },error: (error) => {
         this.loadingProduct = false;
         this.dataService.ShowNotification('error', '', error.error);
@@ -299,8 +295,7 @@ export class CategoryComponent {
     this.addAssociatedProductForm.patchValue({
       product: data.akiProductName, // Set Product Name
       webActive: data.akiProductIsActive // Set Web Active if required
-    });
-    
+    });    
   }
  
   addAssociatedProductSubmitForm(): void {
@@ -363,7 +358,6 @@ export class CategoryComponent {
     }
   }
 }
-savedId: number | null = null;
 
   startEdit(row: any) {
     this.editingId = row.product;
@@ -376,7 +370,7 @@ savedId: number | null = null;
   });
   }
 
-  saveEdit(row: any) {
+  saveAssociatedProEdit(row: any) {
     const listOrder = Number(this.editAssociatedProductForm.get('listOrder')?.value);  
     this.editingId = null;
     this.savedId = row.product; 
