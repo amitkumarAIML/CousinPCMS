@@ -31,16 +31,19 @@ export class SkuDisplayComponent {
     this.loading = true;
     this.homeService.getSkuByProductId(this.selectedProductId).subscribe({
       next: (data) => {
-        this.skus = data.filter((res: any) => res?.akiSKUIsActive);
         // this.skus = data;
-        if (this.skus && this.skus.length > 0) {
-          this.displayText = ''; // Clear message if data exists
+        if (data && data.length > 0) {
+            this.skus = data.filter((res: any) => res?.akiSKUIsActive);
+            if (this.skus && this.skus.length > 0) {
+              this.displayText = ''; // Clear message if data exists
+              this.homeService.setSelectedSkU(this.skus);
+            } else {
+              this.displayText = 'No SKU Found';
+            }   
         } else {
           this.displayText = 'No SKU Found';
         }
-        this.homeService.setSelectedSkU(this.skus);
         this.loading = false;
-
       },
       error: () => { 
         this.loading = false;

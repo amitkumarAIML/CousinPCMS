@@ -103,17 +103,19 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       this.homeService.getDepartments().subscribe({
         next: (departments: Department[]) => {
           // this.departments = departments;
-          this.departments = departments.filter((res: Department) => res.akI_DepartmentIsActive);
-          const treeData = this.departments.map((dept: any) => ({
-              title: dept.akiDepartmentName.toUpperCase(),
-              key: dept.akiDepartmentID,
-              parentId: null,
-              level: 0, // Add level tracking
-              isDepartment: true, // First parent gets 'partition' icon
-              isLeaf: false,
-              children: [],
-          }));
-          this.nodes = treeData;
+          if (departments && departments.length > 0) {
+            this.departments = departments.filter((res: Department) => res.akI_DepartmentIsActive);
+            const treeData = this.departments.map((dept: any) => ({
+                title: dept.akiDepartmentName.toUpperCase(),
+                key: dept.akiDepartmentID,
+                parentId: null,
+                level: 0, // Add level tracking
+                isDepartment: true, // First parent gets 'partition' icon
+                isLeaf: false,
+                children: [],
+            }));
+            this.nodes = treeData;
+          }
           this.loading = false;
         },
         error: (error) => {

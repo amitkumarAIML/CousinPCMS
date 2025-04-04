@@ -33,15 +33,18 @@ export class ProductDisplayComponent {
       this.loading = true;
       this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
         next: (data: Product[]) => { 
-          this.products = data.filter((res: Product) => res.akiProductIsActive);
-          // this.products = data;
-          if (this.products && this.products.length > 0) {
-            this.displayText = ''; 
+          if (data && data.length > 0) {
+            this.products = data.filter((res: Product) => res?.akiProductIsActive);
+            if (this.products && this.products.length > 0) {
+              this.displayText = ''; 
+            } else {
+              this.displayText = 'No Product Found';
+            } 
           } else {
             this.displayText = 'No Product Found';
           }
           this.loading = false;
-        },
+        }, 
         error: () => { 
           this.displayText = 'Failed to load products';
           this.loading = false; 
@@ -50,6 +53,7 @@ export class ProductDisplayComponent {
       });
     } else {
       this.products = [];
+      this.loading = false; 
       this.displayText = 'Click on a category to view the product';
     }
   }
