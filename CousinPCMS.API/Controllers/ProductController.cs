@@ -168,7 +168,7 @@ namespace CousinPCMS.API.Controllers
         [ProducesResponseType(typeof(APIResult<ProductModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> UpdateProduct(AddProductModel objModel)
+        public async Task<IActionResult> UpdateProduct(UpdateProductModel objModel)
         {
             log.Info($"Request of {nameof(UpdateProduct)} method called.");
 

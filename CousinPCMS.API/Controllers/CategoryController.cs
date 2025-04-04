@@ -226,7 +226,7 @@ namespace CousinPCMS.API.Controllers
         [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> UpdateCategory(AddCategoryRequestModel objModel)
+        public async Task<IActionResult> UpdateCategory(UpdateCategoryModel objModel)
         {
             log.Info($"Request of {nameof(UpdateCategory)} method called.");
 
