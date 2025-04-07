@@ -56,4 +56,13 @@ namespace CousinPCMS.Domain
         [JsonProperty("countyName")]
         public string CountyName { get; set; }
     }
+
+    public class DropdownListModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public string code { get; set; }
+        public string description { get; set; }
+    }
+
 }

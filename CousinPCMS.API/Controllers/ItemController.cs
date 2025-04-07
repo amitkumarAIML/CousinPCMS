@@ -126,5 +126,90 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets all items price group details.
+        /// </summary>       
+        /// <returns>returns dropdown list object if details are available. Else empty object.</returns>
+        [HttpGet("GetItemPriceGroupDetails")]
+        [ProducesResponseType(typeof(APIResult<List<DropdownListModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetItemPriceGroupDetails()
+        {
+            log.Info($"Request of {nameof(GetItemPriceGroupDetails)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.GetItemPriceGroupDetails();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetItemPriceGroupDetails)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetItemPriceGroupDetails)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all items price group details.
+        /// </summary>       
+        /// <returns>returns dropdown list object if details are available. Else empty object.</returns>
+        [HttpGet("GetItemPriceBreaksDetails")]
+        [ProducesResponseType(typeof(APIResult<List<DropdownListModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetItemPriceBreaksDetails()
+        {
+            log.Info($"Request of {nameof(GetItemPriceBreaksDetails)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.GetItemPriceBreaksDetails();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetItemPriceBreaksDetails)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetItemPriceBreaksDetails)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all items price group details.
+        /// </summary>       
+        /// <returns>returns dropdown list object if details are available. Else empty object.</returns>
+        [HttpGet("GetItemPricingFormulasDetails")]
+        [ProducesResponseType(typeof(APIResult<List<DropdownListModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetItemPricingFormulasDetails()
+        {
+            log.Info($"Request of {nameof(GetItemPricingFormulasDetails)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.GetItemPricingFormulasDetails();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetItemPricingFormulasDetails)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetItemPricingFormulasDetails)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
     }
 }

@@ -43,28 +43,29 @@ namespace CousinPCMS.API.Controllers
 
         /// <summary>
         /// Gets related skus.
+        /// <paramref name="itemNumber"> Pass item number </paramref>
         /// </summary>       
         /// <returns>returns skus object if details are available. Else empty object.</returns>
-        [HttpGet("GetRelatedSkus")]
+        [HttpGet("GetRelatedSkusByItemNumber")]
         [ProducesResponseType(typeof(APIResult<List<RelatedSkusModel>>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetRelatedSkus()
+        public async Task<IActionResult> GetRelatedSkusByItemNumber(string itemNumber)
         {
-            log.Info($"Request of {nameof(GetRelatedSkus)} method called.");
+            log.Info($"Request of {nameof(GetRelatedSkusByItemNumber)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _skusService.GetRelatedSkus();
+            var responseValue = _skusService.GetRelatedSkus(itemNumber);
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(GetRelatedSkus)} is success.");
+                log.Info($"Response of {nameof(GetRelatedSkusByItemNumber)} is success.");
             }
             else
             {
-                log.Error($"Response of {nameof(GetRelatedSkus)} is failed.");
+                log.Error($"Response of {nameof(GetRelatedSkusByItemNumber)} is failed.");
             }
             return Ok(responseValue);
         }
@@ -129,13 +130,13 @@ namespace CousinPCMS.API.Controllers
         /// <summary>
         /// Deletes the existing department.
         /// </summary>
-        /// <param name="itemId">Item Id is passed.</param>
+        /// <param name="itemno">Item number is passed.</param>
         /// <returns>Returns success or error message.</returns>
         [HttpGet("DeleteItem")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> DeleteItem(int itemId)
+        public async Task<IActionResult> DeleteItem(string itemno)
         {
             log.Info($"Request of {nameof(DeleteItem)} method called.");
 
@@ -144,7 +145,7 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
             DeleteSkusRequestModel obj = new DeleteSkusRequestModel();
-            obj.skuITEMNO = itemId;
+            obj.itemno = itemno;
 
             var responseValue = _skusService.DeleteItem(obj);
 
@@ -157,6 +158,99 @@ namespace CousinPCMS.API.Controllers
                 log.Error($"Response of {nameof(DeleteItem)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// updates related item of respective sku.
+        /// </summary>
+        /// <param name="objModel">pass the object with required details to update.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpPost("UpdateItemRelatedSku")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateItemRelatedSku(UpdateItemRelatedSkuModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateItemRelatedSku)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateItemRelatedSku(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateItemRelatedSku)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateItemRelatedSku)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// updates sku item.
+        /// </summary>
+        /// <param name="objModel">pass the object with required details to update.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpPost("UpdateItemSKU")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateItemSKU(UpdateSkuItemRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateItemSKU)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateItemSKU(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateItemSKU)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateItemSKU)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all items by item number.
+        /// </summary>       
+        /// <param name="itemNumber">Pass item number</param>
+        /// <returns>returns Items object if details are available. Else empty object.</returns>
+        [HttpGet("GetAllItemsByitemNumber")]
+        [ProducesResponseType(typeof(APIResult<List<ItemResponseModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllItemsByitemNumber(string itemNumber)
+        {
+            log.Info($"Request of {nameof(GetAllItemsByitemNumber)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.GetAllItemsByitemNumber(itemNumber);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAllItemsByitemNumber)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAllItemsByitemNumber)} is failed.");
+            }
             return Ok(responseValue);
         }
     }
