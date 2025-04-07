@@ -1,6 +1,5 @@
-<div class="p-4 bg-white rounded-lg m-5">
-    <span >Product Form</span>
-
+<div class="bg-white rounded-lg m-5">
+    <label class="px-4 pt-3 mb-0 [color:var(--color-primary-font)] text-sm font-medium">Product Form</label>
     <!-- Tabs -->
     <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
       <nz-tab nzTitle="Product Details">
@@ -13,14 +12,14 @@
     </nz-tabset>
 
     <ng-template #extraTemplate>
-      <div class="flex gap-x-3 mb-2">
+      <div class="flex gap-x-3 mb-2 ">
             <button nz-button nzType="default" class="" (click)="cancle()">
               Cancel
             </button>
             <button nz-button nzType="default" class="" [nzLoading]="deleteLoading" (click)="delete()">
               Delete
             </button>
-            <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading"  (click)="saveDetails()">
+            <button nz-button nzType="primary" class="text-white me-3"  [nzLoading]="loading"  (click)="saveDetails()">
               Save
             </button>
       </div>

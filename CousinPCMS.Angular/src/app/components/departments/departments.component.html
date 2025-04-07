@@ -29,8 +29,8 @@
 
 
 
-<div class="p-4 bg-white rounded-lg m-5">
-  <div class="flex justify-between items-center">
+<div class="bg-white rounded-lg m-5">
+  <div class="flex justify-between items-center p-4 pb-1">
     <span>Department Form</span>
     <div class="flex gap-x-3">
       <button nz-button nzType="default" class="" (click)="cancle()">
@@ -44,8 +44,8 @@
       </button>
     </div>
   </div>
-  <hr class="mt-2 mb-2">
-  <div class="">
+  <hr class="mt-2 mb-2 border-light-border">
+  <div class="p-4">
     <cousins-department-info [deptData]="departmentData"></cousins-department-info>
   </div>
 </div>

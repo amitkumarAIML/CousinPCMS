@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { addAssociatedProductModel, AdditionalCategoryModel, AdditionalCategoryResponse, categorylayout, categorylayoutResponse, editAssociatedProductModel, UpdateCategoryModel } from '../../shared/models/additionalCategoryModel';
+import { Product, ProductResponse } from '../../shared/models/productModel';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +12,8 @@ export class CategoryService {
 
  constructor(private httpService: HttpService) {}
   
- getAdditionalCategory(categoryId:string): Observable<any> {
-  return this.httpService.get<any>('Category/GetAdditionalCategory', {
+ getAdditionalCategory(categoryId:string): Observable<AdditionalCategoryModel[]> {
+  return this.httpService.get<AdditionalCategoryResponse>('Category/GetAdditionalCategory', {
     categoryId: `${categoryId}`,
   }).pipe(
     map(response=>response.value),
@@ -23,33 +25,33 @@ export class CategoryService {
     return this.httpService.get<any>('Category/DeleteCategory', {
       categoryId: `${categoryId}`,
     }).pipe(
-      map(response=>response.value),
+      map(response=>response),
       catchError(this.handleError)
      ) 
     }
 
-  getCategoryLayouts(): Observable<any> {
-    return this.httpService.get<any>('Category/GetCategoryLayouts').pipe(
-      map(response => response.value),
+  getCategoryLayouts(): Observable<categorylayout[]> {
+    return this.httpService.get<categorylayoutResponse>('Category/GetCategoryLayouts').pipe(
+      map((response:categorylayoutResponse )=> response.value),
       catchError(this.handleError)
     );
   }
 
-  getAllProducts(): Observable<any> {
-    return this.httpService.get<any>('Product/GetAllProducts').pipe(
-      map(response => response.value),
+  getAllProducts(): Observable<Product[]> {
+    return this.httpService.get<ProductResponse>('Product/GetAllProducts').pipe(
+      map((response:ProductResponse)=> response.value),
       catchError(this.handleError)
     );
   }
 
    // Call the PATCH API to update category
-   updateCategory(categoryData: any) {
+   updateCategory(categoryData:UpdateCategoryModel) {
     return this.httpService.patch(`Category/UpdateCategory`, categoryData);
   }
-  addAssociatedProduct(associatedFormProductData: any) {
+  addAssociatedProduct(associatedFormProductData: addAssociatedProductModel) {
     return this.httpService.post(`Category/AddAssociatedProduct`, associatedFormProductData);
   }
-  updateAssociatedProduct(associatedFormProductData: any) {
+  updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
     return this.httpService.patch(`Category/UpdateAssociatedProduct`, associatedFormProductData);
   }
   private handleError(error: HttpErrorResponse): Observable<never> {
