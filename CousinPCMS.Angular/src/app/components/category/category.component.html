@@ -163,6 +163,8 @@
                                             nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                                             [nzHeaders]="{ authorization: 'authorization-text' }"
                                             (nzChange)="onFileSelected($event)"
+                                            [nzShowUploadList]="false"
+                                            nzAccept=".png,.jpeg,.jpg"
                                         >
                                             <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
                                                  Upload
