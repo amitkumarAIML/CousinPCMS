@@ -134,21 +134,11 @@
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
-                            <div class="grid ">          
+                            <div class="grid grid-cols-1">          
                                 <nz-form-item >
                                     <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
-                                    <nz-form-control>
-                                        <!-- Hidden File Input -->
-                                        <!-- <input
-                                          nz-input
-                                          nzType="file"
-                                          formControlName="akiCategoryImageURL"
-                                          #fileInput
-                                          accept="image/*"
-                                          (change)="onFileSelected($event)"
-                                          class="hidden"
-                                        /> -->
-                                      
+                                    <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
+                                        <!-- Hidden File Input -->                                        
                                         <!-- Flex container for input, char count, and button -->
                                         <div class="flex items-center space-x-2 relative">
                                           <!-- Text Input -->
@@ -179,22 +169,7 @@
                                       </nz-form-control>
                                       
                                 </nz-form-item>
-                            </div>
-                            <!-- <div class="grid grid-cols-1 ">                                     
-                                <nz-form-item>
-                                    <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
-                                    <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
-                                      <div class="input-wrapper">
-                                        
-                                        <input nz-input formControlName="akiCategoryImageURL" class="w-full" maxlength="255"/>
-                                        <span class="char-count">
-                                          {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
-                                        </span> 
-                                      </div>
-                                     </nz-form-control> 
-                                </nz-form-item>
-
-                            </div> -->
+                            </div>                        
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                 <!-- No of Additional Images -->
