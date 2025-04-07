@@ -1,5 +1,5 @@
- <div class="p-4 bg-white rounded-ls shadow-md m-5">
-        <div class="header-container">
+ <div class="bg-white rounded-ls shadow-md m-5">
+        <div class="header-container p-4 pb-1">
             <span>Category Form</span>
             <div class="button-group">
                 <button nz-button nzType="default" [routerLink]="'/home'" class=""> Cancel </button>
@@ -8,11 +8,12 @@
             </div>
         </div>
         <nz-divider nzPlain></nz-divider>
-        <form nz-form [formGroup]="categoryForm">
+        <div class="p-4">
+            <form nz-form [formGroup]="categoryForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
                     <!-- Left Section -->
                     <div class="lg:col-span-5 md:col-span-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                                 <!-- Category ID -->
                                 <nz-form-item>
@@ -23,12 +24,12 @@
                                 </nz-form-item>
                             
                                 <!-- Parent ID -->
-                                <!-- <nz-form-item>
+                                <nz-form-item>
                                     <nz-form-label  [nzNoColon]="true">Parent Id</nz-form-label>
                                     <nz-form-control >
                                         <input nz-input formControlName="akiCategoryParentID" id="parentId" />
                                     </nz-form-control>
-                                </nz-form-item> -->
+                                </nz-form-item>
                             
                                 <!-- Department ID -->
                                 <nz-form-item>
@@ -133,12 +134,56 @@
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
-
-                            <div class="grid grid-cols-1 ">     
+                            <div class="grid ">          
+                                <nz-form-item >
+                                    <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
+                                    <nz-form-control>
+                                        <!-- Hidden File Input -->
+                                        <!-- <input
+                                          nz-input
+                                          nzType="file"
+                                          formControlName="akiCategoryImageURL"
+                                          #fileInput
+                                          accept="image/*"
+                                          (change)="onFileSelected($event)"
+                                          class="hidden"
+                                        /> -->
+                                      
+                                        <!-- Flex container for input, char count, and button -->
+                                        <div class="flex items-center space-x-2 relative">
+                                          <!-- Text Input -->
+                                          <input
+                                            nz-input
+                                            formControlName="akiCategoryImageURL"
+                                            class="flex-grow"
+                                            nzType="text"
+                                          />
+                                        <!-- Upload Button -->
+                                        <nz-upload
+                                            nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                                            [nzHeaders]="{ authorization: 'authorization-text' }"
+                                            (nzChange)="onFileSelected($event)"
+                                        >
+                                            <button nz-button>                                            
+                                                 Upload
+                                            </button>
+                                        </nz-upload>
+                                          <!-- Char Count -->
+                                          <span class="text-gray-400 text-sm whitespace-nowrap">
+                                            {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
+                                          </span>                                     
+                                        
+                                        </div>
+                                      </nz-form-control>
+                                      
+                                </nz-form-item>
+                            </div>
+                            <!-- <div class="grid grid-cols-1 ">                                     
                                 <nz-form-item>
                                     <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
                                     <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
                                       <div class="input-wrapper">
+                                        
                                         <input nz-input formControlName="akiCategoryImageURL" class="w-full" maxlength="255"/>
                                         <span class="char-count">
                                           {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
@@ -147,7 +192,7 @@
                                      </nz-form-control> 
                                 </nz-form-item>
 
-                            </div>
+                            </div> -->
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                 <!-- No of Additional Images -->
@@ -226,7 +271,7 @@
                             </div>
 
                             <!-- Return Type Section -->
-                             <!-- <div class="grid grid-cols-1 md:grid-cols-2"> 
+                             <div class="grid grid-cols-1 md:grid-cols-2"> 
                                 <nz-form-item >
                                     <nz-form-label nzFor="returnType" [nzNoColon]="true">Return Type</nz-form-label>
                                     <nz-form-control [nzSm]="18" [nzXs]="24" [nzMd]="24">
@@ -240,7 +285,7 @@
                                     </nz-form-control>
                                 </nz-form-item>
                                 <nz-form-label class="mt-auto" [nzMd]="24" [nzNoColon]="true"> This will roll down to all sub-categories.</nz-form-label>
-                            </div>                           -->
+                            </div> 
                    
                              <!-- Associated Products Section -->
                             <div class="mt-1">
@@ -254,14 +299,15 @@
                                                                 
                                     <form nz-form [formGroup]="editAssociatedProductForm">
                                         
-                                        <nz-table #dataTable [nzData]="categoriesList"
-                                            class="rounded-lg"
+                                        <nz-table #dataTable [nzData]="AdditionalCategoryList"
+                                            class="rounded-lg no-header-scroll"
                                             [nzScroll]="{ x: '700px',
                                                 y: '200px'
                                             }"
                                             nzBordered="true"
                                             [nzFrontPagination]="false"
-                                            nzSize="small" >
+                                            nzSize="small"
+                                            [nzLoading]="isAssociatePloading" >
                                             <thead class="text-xs ">
                                                 <tr>
                                                 <th [nzWidth]="'70px'">List Order</th>
@@ -410,6 +456,8 @@
                 </div> 
                   
         </form>
+        </div>
+        
 </div>  
 
 
@@ -458,21 +506,20 @@
                 </div>
             </div>            
         </form>
-        <nz-spin *ngIf="loadingProduct" nzSize="large" 
-        class="flex justify-center rounded-lg items-center p-4 h-32"></nz-spin>
-        <div class="p-4" *ngIf="!loadingProduct">
+        <div class="p-4">
             <nz-table                      
             #associateDataTable nzSize="small"
             nzBordered="true"
             [nzData]="productNameList"
             class="rounded-lg"
-            [nzShowPagination]="true"      
+            [nzShowPagination]="true"
+            [nzLoading]="loadingProduct"      
             >
             <thead class="text-xs">
               <tr>
-                <th>List Order</th>
+                <th>Product Id</th>
                 <th [nzWidth]="'250px'">Product Name</th>                                   
-                <th>Web Active</th>
+                <th>Product Active</th>
               </tr>
             </thead>
             <tbody class="text-color-secondary-font text-xs">

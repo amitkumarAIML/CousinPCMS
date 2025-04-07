@@ -201,3 +201,15 @@ button[nz-button] {
     margin: 10px 0;
     font-size: 12px;
 }
+.ant-tabs-nav-wrap {
+    padding: 0px 16px !important;
+}
+.no-header-scroll .ant-table-header {
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+  }
+  
+  .no-header-scroll .ant-table-header::-webkit-scrollbar {
+    display: none;
+  }
+  

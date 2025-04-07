@@ -18,7 +18,10 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { DataService } from '../../shared/services/data.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { addAssociatedProductModel, categoryDetailUpdatedModel, categoryListModel } from '../../shared/models/CategoryListModel';
+import { addAssociatedProductModel, AdditionalCategoryModel, UpdateCategoryModel, categorylayout } from '../../shared/models/additionalCategoryModel';
+import { CommodityCode } from '../../shared/models/commodityCodeModel';
+import { Country } from '../../shared/models/countryOriginModel';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';;
 
 @Component({
   selector: 'cousins-category',
@@ -39,7 +42,8 @@ import { addAssociatedProductModel, categoryDetailUpdatedModel, categoryListMode
     FormsModule,
     NzModalModule,
     NzSwitchModule,
-    NzSpinModule
+    NzSpinModule,
+    NzUploadModule
   ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css'
@@ -54,7 +58,7 @@ export class CategoryComponent {
 
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
-  categoriesList: categoryListModel[] = []
+  AdditionalCategoryList: AdditionalCategoryModel[] = []
   categoryId:string='';
   editingId: number | null = null;
   editedRow: any = {};
@@ -68,6 +72,7 @@ export class CategoryComponent {
   deleteLoading: boolean = false;
   productId:number=0;
   savedId: number | null = null;
+  isAssociatePloading:boolean=false;
 
   constructor(private fb: FormBuilder, private homeService: HomeService,
     private categoryService:CategoryService,
@@ -76,7 +81,7 @@ export class CategoryComponent {
   ) {
     this.categoryForm = this.fb.group({
       akiCategoryID: [{ value: '', disabled: true }],
-      akiCategoryParentID:[''],
+      akiCategoryParentID:[{ value: '', disabled: true }],
       akiCategoryName: ['', [Validators.required]],
       akiCategoryGuidePrice: [''],
       akiCategoryGuideWeight:[''],
@@ -156,9 +161,9 @@ export class CategoryComponent {
     
   submitCategoryUpdateForm(): void {
 
-    const updateCategory:categoryDetailUpdatedModel={
+    const updateCategory:UpdateCategoryModel={
       akiCategoryID: this.categoryForm.get('akiCategoryID')?.value,
-      akiCategoryParentID:'',
+      akiCategoryParentID:this.categoryForm.get('akiCategoryParentID')?.value,
       akiCategoryName:this.categoryForm.get('akiCategoryName')?.value,
       akiCategoryGuidePrice:this.categoryForm.get('akiCategoryGuidePrice')?.value,
       akiCategoryGuideWeight: this.categoryForm.get('akiCategoryGuideWeight')?.value,     
@@ -222,8 +227,8 @@ export class CategoryComponent {
   }
 
    // Handle File Selection
-  onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  onFileSelected(event: NzUploadChangeParam) {
+    const file = event.file?.originFileObj;
 
   if (file) {
       this.selectedFileName = file.name;
@@ -240,10 +245,13 @@ export class CategoryComponent {
     this.deleteLoading = true;
     this.categoryService.deleteCategory(this.categoryId).subscribe({
       next: (response) => {
-        if (response) {
+        if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Category Successfully deleted');
           this.router.navigate(['/home']);
           this.deleteLoading = false;                     
+        }else{
+          this.dataService.ShowNotification('error', '', 'Category not deleted');
+          this.deleteLoading = false; 
         }
       },error: (error) => {
         this.deleteLoading = false;
@@ -254,42 +262,45 @@ export class CategoryComponent {
 
   getCountryOrigin(){
     this.dataService.getCountryOrigin().subscribe({
-      next:(response)=> {
+      next:(response:Country[])=> {
         this.countries=response;
-      },error(err) {
-        console.log(err);        
+      },error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');          
       },
     })
   }
 
   getCommodityCodes(){
     this.dataService.getCommodityCodes().subscribe({
-      next:(response)=> {
+      next:(response:CommodityCode[])=> {
         this.CommodityCode=response;
-      },error(err) {
-        console.log(err);        
+      },error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');       
       },
     })
   }
 
-  getAdditionalCategory() {  
+  getAdditionalCategory() { 
+    this.isAssociatePloading=true; 
     if (this.categoryId) {
       this.categoryService.getAdditionalCategory(this.categoryId).subscribe({
-        next: (response) => {
+        next: (response:any) => {
           if (response != null) {
-            this.categoriesList=response;           
-            const maxListOrder = this.categoriesList.length > 0 
-              ? Math.max(...this.categoriesList.map((category: any) => Number(category.listOrder) || 0)) 
+            this.AdditionalCategoryList=response;           
+            const maxListOrder = this.AdditionalCategoryList.length > 0 
+              ? Math.max(...this.AdditionalCategoryList.map((category: any) => Number(category.listOrder) || 0)) 
               : 0;
   
             // Set the incremented value in form
-            this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });
+            this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });           
             this.getAllProducts();     
           } else {
-            this.dataService.ShowNotification('error', '', 'Data are not found');        
+            this.dataService.ShowNotification('error', '', 'Data are not found');                   
           }
+          this.isAssociatePloading=false;
         },error: (error) => {        
           this.dataService.ShowNotification('error', '', error.error || 'Error fetching category list data');
+          this.isAssociatePloading=false;
         }
       }); 
     }
@@ -297,10 +308,10 @@ export class CategoryComponent {
 
   getCategoryLayouts(){
     this.categoryService.getCategoryLayouts().subscribe({
-      next:(response)=> {
+      next:(response:categorylayout[])=> {
         this.layoutOptions=response;
-      },error(err) {
-        console.log(err);        
+      },error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');        
       },
     })
   }
@@ -310,9 +321,9 @@ export class CategoryComponent {
     this.categoryService.getAllProducts().subscribe({
       next:(response)=> {       
         this.productNameList=response;       
-        // Filter only if categoriesList is available
-        if (this.categoriesList && this.categoriesList.length > 0) {
-          const existingIds = this.categoriesList.map((category: any) => category.product);
+        // Filter only if AdditionalCategoryList is available
+        if (this.AdditionalCategoryList && this.AdditionalCategoryList.length > 0) {
+          const existingIds = this.AdditionalCategoryList.map((category: any) => category.product);
           this.productNameList = this.productNameList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
         this.loadingProduct = false;         
@@ -349,13 +360,13 @@ export class CategoryComponent {
       listorder: listOrder,
       isAdditionalProduct:true 
     };
-    // Ensure categoriesList is available before checking for duplicates
-    if (!this.categoriesList || this.categoriesList.length === 0) {
+    // Ensure AdditionalCategoryList is available before checking for duplicates
+    if (!this.AdditionalCategoryList || this.AdditionalCategoryList.length === 0) {
       this.dataService.ShowNotification('error', '', 'Categories list is empty. Please try again.');
       return;
     }
-    // Check if listorder already exists in categoriesList
-    const isListOrderExist = this.categoriesList.some((category: any) => {
+    // Check if listorder already exists in AdditionalCategoryList
+    const isListOrderExist = this.AdditionalCategoryList.some((category: any) => {
         return Number(category.listOrder) === listOrder; // Ensure number comparison
     });
 
@@ -413,13 +424,13 @@ export class CategoryComponent {
       listorder: listOrder,
       isAdditionalProduct:row.isAdditionalProduct  
     };
-     // Ensure categoriesList is available before checking for duplicates
-     if (!this.categoriesList || this.categoriesList.length === 0) {
+     // Ensure AdditionalCategoryList is available before checking for duplicates
+     if (!this.AdditionalCategoryList || this.AdditionalCategoryList.length === 0) {
       this.dataService.ShowNotification('error', '', 'Categories list is empty. Please try again.');
       return;
     }
-    // Check if listorder already exists in categoriesList
-    const isListOrderExist = this.categoriesList.some((category: any) => {
+    // Check if listorder already exists in AdditionalCategoryList
+    const isListOrderExist = this.AdditionalCategoryList.some((category: any) => {
         return Number(category.listOrder) === listOrder; // Ensure number comparison
     });
 
