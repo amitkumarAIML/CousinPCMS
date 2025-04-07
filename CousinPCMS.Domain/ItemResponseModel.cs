@@ -18,7 +18,7 @@ namespace CousinPCMS.Domain
         public int unitPrice { get; set; }
         public string priceProfitCalculation { get; set; }
         public int profit { get; set; }
-        public int unitCost { get; set; }
+        public double unitCost { get; set; }
         public int standardCost { get; set; }
         public int lastDirectCost { get; set; }
         public int indirectCost { get; set; }
@@ -173,5 +173,8 @@ namespace CousinPCMS.Domain
         public int akiTemplateID { get; set; }
         public string akiAltSKUName { get; set; }
         public string AKI_Layout_Template { get; set; }
+        public string akiPricingFormula { get; set; }
+        public string akiPriceBreak { get; set; }
+        public string akiPriceGroup { get; set; }
     }
 }
