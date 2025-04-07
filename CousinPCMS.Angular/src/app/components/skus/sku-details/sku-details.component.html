@@ -1,0 +1,292 @@
+<form nz-form [formGroup]="skuForm">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
+        <!-- Left Section -->
+        <div class="lg:col-span-5 md:col-span-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">Sku Id</nz-form-label>
+                        <nz-form-control>
+                            <input nz-input formControlName="akiSKUID" id="skuId" [disabled]="true"  />
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">Product Id</nz-form-label>
+                        <nz-form-control>
+                            <input nz-input formControlName="akiProductID" id="productId" [disabled]="true"  />
+                        </nz-form-control>
+                    </nz-form-item>
+                
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">Category Id</nz-form-label>
+                        <nz-form-control >
+                            <input nz-input formControlName="akiCategoryID" id="categoryId"  />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                
+                <div class="grid grid-cols-1">
+                    <nz-form-item>
+                            <nz-form-label nzRequired [nzNoColon]="true" nzFor="skuName" [nzSm]="6" [nzXs]="24">Sku Name</nz-form-label>
+                            <nz-form-control >
+                            <div class="input-wrapper">
+                                <input nz-input formControlName="skuName" maxlength="100" />
+                                <span class="char-count">
+                                    {{ 100 - skuForm.get('skuName')?.value?.length || 100 }}
+                                </span>
+                            </div>
+                            </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div class="grid grid-cols-1">
+                    <nz-form-item class="w-full">
+                        <div class="flex flex-wrap justify-between items-center w-full mt-2">
+                            <nz-form-label [nzNoColon]="true">SKu Description</nz-form-label>
+                            <!-- <button nz-button nzType="default" class="border border-gray-300 px-3 py-1 rounded-md mr-8">
+                                Spelling
+                            </button> -->
+                        </div>
+                        <nz-form-control >
+                            <div class="input-wrapper">
+                            <textarea nz-input formControlName="akiSKUDescription" maxlength="2000" class=""></textarea>
+                            <span class="char-count">
+                                {{ 2000 - skuForm.get('akiSKUDescription')?.value?.length || 2000 }}
+                              </span>
+                              </div>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">Manufacturer Ref</nz-form-label>
+                            <nz-form-control >
+                                <div class="input-wrapper">
+                                    <input nz-input formControlName="akiManufacturerRef"/>
+                                    <span class="char-count">
+                                        {{ 50 - skuForm.get('akiManufacturerRef')?.value?.length || 50 }}
+                                    </span> 
+                                </div>
+                            </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">Item Number</nz-form-label>
+                            <nz-form-control >
+                                <div class="input-wrapper">
+                                    <input nz-input formControlName="itemNumber" type="number"/>
+                                    <span class="char-count">
+                                        {{ 31 - skuForm.get('itemNumber')?.value?.length || 31 }}
+                                    </span> 
+                                </div>
+                            </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <nz-form-item>
+                        <nz-form-label  [nzNoColon]="true">List Order</nz-form-label>
+                        <nz-form-control >
+                            <input nz-input formControlName="akiListOrder" type="number"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                
+                    <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
+                        <label formControlName="akiObsolete" nz-checkbox nzValue="false"> 
+                            Obsolete
+                        </label >
+                    </div>
+                    <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
+                        <label formControlName="akiWebActive" nz-checkbox nzValue="false"> 
+                            Web Active
+                        </label >
+                    </div>
+                    <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
+                        <label formControlName="akiCurrentlyPartRestricted" nz-checkbox nzValue="false"> 
+                            Currently Part Restricted / Unavaliable
+                        </label >
+                    </div>  
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2"> 
+                    <nz-form-item>
+                        <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
+                        <nz-form-control >
+                            <!-- <input nz-input formControlName="akiProductCommodityCode" id="commodityCode"/> -->
+                            <nz-select formControlName="akiCommodityCode" class="w-full" nzShowSearch >
+                                @for (commodity of commodityCode; track $index) {
+                                    <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
+                                  }
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-label nzFor="countryOfOrigin"  [nzNoColon]="true">Country of Origin</nz-form-label>
+                        <nz-form-control>
+                            <nz-select formControlName="akiCountryOfOrigin" class="w-full">
+                                @for (country of countries; track $index) {
+                                    <nz-option  [nzValue]="country.code" [nzLabel]="country.name"></nz-option>
+                                }
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    <nz-form-item class="col-span-2">
+                        <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
+                            <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
+                            <div class="input-wrapper">
+                                <input nz-input formControlName="akiImageURL" class="w-full" maxlength="255"/>
+                                <span class="char-count">
+                                {{ 255 - skuForm.get('akiImageURL')?.value?.length || 255 }}
+                                </span> 
+                            </div>
+                            </nz-form-control> 
+                    </nz-form-item>
+
+                    <!-- No of Additional Images -->
+                    <nz-form-item class="w-full">
+                        <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="product-link">
+                            <a href="#" class="underline">No of Additional Images</a>
+                        </nz-form-label>
+                        <nz-form-control>
+                            <input nz-input  id="additionalImages" [disabled]="true"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    <!-- Image Height -->
+                    <nz-form-item class="w-full">
+                        <nz-form-label nzFor="guidePrice" [nzNoColon]="true">Guide Price</nz-form-label>
+                        <nz-form-control>
+                            <input nz-input formControlName="akiGuidePriceTBC" id="guidePrice" type="number" />
+                        </nz-form-control>
+                    </nz-form-item>
+                
+                    <!-- Image Width -->
+                    <nz-form-item class="w-full">
+                        <nz-form-label nzFor="guideWeight" [nzNoColon]="true">Guide Weight</nz-form-label>
+                        <nz-form-control>
+                            <input nz-input formControlName="akiGuideWeightTBC" id="guideWeight" type="number" />
+                        </nz-form-control>
+                    </nz-form-item>
+
+                     <!-- No of URL Links -->
+                     <nz-form-item class="w-full">
+                        <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
+                            <a href="#" class="underline">No of URL Links</a>
+                        </nz-form-label>
+                        <nz-form-control>
+                            <input nz-input id="urlLinks" [disabled]="true" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>     
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 col-span-2">
+                        <nz-form-item class="w-full">
+                            <nz-form-label [nzNoColon]="true">Attribute Names</nz-form-label>
+                            <nz-form-control >
+                                <textarea nz-input  maxlength="2000" rows="4" class=""></textarea>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <div class="grid grid-cols-1 col-span-1 mt-6">
+                        <button nz-button nzType="primary" class="text-white" >
+                            Attribute Multi Upload
+                        </button>
+                     </div>
+                </div>
+        </div>
+    
+        <!-- Right Section -->
+        <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
+                <div class="mt-2">
+                    <label >Catalogue Options</label>
+                    <div class="border border-gray-300 rounded-lg p-4">
+
+                        <div class="flex flex-col items-start space-y-2 nz-checkbox-wrapper nz-checkbox-wrapper-website">
+                            <label class=""  formControlName="akiSKUIsActive" nz-checkbox nzValue="false">Cat Active </label >
+                        </div>
+
+                        <!-- Layout Template Dropdown -->
+                        <nz-form-item class="w-full">
+                            <nz-form-label nzFor="layoutTemplate" [nzNoColon]="true">Layout Template</nz-form-label>
+                            <nz-form-control>
+                                <nz-select formControlName="akI_Layout_Template" class="w-full">
+                                    @for (option of layoutOptions; track option.templateCode) {
+                                        <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
+                                    }
+                                </nz-select>
+                            </nz-form-control>
+                        </nz-form-item>
+
+                        <!-- Alternative Title -->
+                        <nz-form-item class="w-full">
+                            <nz-form-label nzFor="alternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
+                            <nz-form-control>
+                                <textarea nz-input rows="4" formControlName="akiAlternativeTitle" id="alternativeTitle" class="w-full p-2"></textarea>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <label >Price Details</label>
+                    <div class="border border-gray-300 rounded-lg p-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <nz-form-item>
+                                <nz-form-label  [nzNoColon]="true">Price Formula</nz-form-label>
+                                <nz-form-control >
+                                    <nz-select formControlName="akiCommodityCode" class="w-full" nzShowSearch >
+                                        @for (option of pricingFormulas; track $index) {
+                                            <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
+                                          }
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+        
+                            <nz-form-item>
+                                <nz-form-label  [nzNoColon]="true">Competitors</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="akiCompetitorsTBC" class="w-full">
+                                        @for (option of competitors; track $index) {
+                                            <nz-option  [nzValue]="option.akiCompetitorID" [nzLabel]="option.akiCompetitorName"></nz-option>
+                                        }
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                            
+                            <nz-form-item>
+                                <nz-form-label  [nzNoColon]="true">Price Break</nz-form-label>
+                                <nz-form-control >
+                                    <nz-select formControlName="akiPriceBreaksTBC" class="w-full" nzShowSearch >
+                                        @for (option of priceBreaks; track $index) {
+                                            <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
+                                          }
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+        
+                            <nz-form-item>
+                                <nz-form-label [nzNoColon]="true">Price Group</nz-form-label>
+                                <nz-form-control>
+                                    <nz-select formControlName="akiCountryOfOrigin" class="w-full">
+                                        @for (option of priceGroupItem; track $index) {
+                                            <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
+                                        }
+                                    </nz-select>
+                                </nz-form-control>
+                            </nz-form-item>
+                            
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div> 
+</form>

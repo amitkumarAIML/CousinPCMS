@@ -1,0 +1,182 @@
+import { Component, Input, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { DataService } from '../../../shared/services/data.service';
+import { ProductsService } from '../../product/products.service';
+import { Country } from '../../../shared/models/countryOriginModel';
+import { CommodityCode } from '../../../shared/models/commodityCodeModel';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { layoutSkus } from '../../../shared/models/layoutTemplateModel';
+import { SkusService } from '../skus.service';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { CompetitorItem } from '../../../shared/models/CompetitorModel';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
+
+@Component({
+  selector: 'cousins-sku-details',
+  imports: [ FormsModule,
+             ReactiveFormsModule,
+             NzInputModule,
+             NzFormModule,
+             NzSelectModule,
+             NzCheckboxModule,
+             NzButtonModule,
+             NzIconModule
+  ],
+  templateUrl: './sku-details.component.html',
+  styleUrl: './sku-details.component.css'
+})
+export class SkuDetailsComponent {
+
+   skuForm!: FormGroup;
+   countries : Country[]= [];
+   layoutOptions: layoutSkus[] = [];
+   commodityCode: CommodityCode[] = [];
+   competitors: CompetitorItem[] = [];
+   priceGroupItem: ItemModel[] = [];
+   priceBreaks: ItemModel[] = [];
+   pricingFormulas: ItemModel[] = [];
+
+  @Input() skuData!: any;
+  constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService) {
+      this.skuForm = this.fb.group({
+          akiProductID: [{ value: '' , disabled: true}],
+          akiCategoryID: [{ value: '' , disabled: true}],
+          akiSKUID: [{ value: '' , disabled: true}],
+          skuName: ['',[ Validators.required ]],
+          akiSKUDescription: [''],
+          akiManufacturerRef: [''],
+          itemNumber: [''],
+          akiListOrder: [''],
+          akiObsolete: [false],
+          akiWebActive: [false],
+          akiCurrentlyPartRestricted: [false],
+          akiImageURL: [''],
+          akiCommodityCode: [''],
+          akiCountryOfOrigin: [''],
+          akiSKUIsActive: [false],
+          akiGuidePriceTBC: [10],
+          akiGuideWeightTBC: [0],
+          akiAlternativeTitle: [''],
+          akI_Layout_Template: [''],
+          akiCompetitorsTBC: [''],
+          akiPriceBreaksTBC: [false]
+      });
+  }
+
+  ngOnInit() {
+    this.getLayoutTemplate();
+    this.getCommodityCodes();
+    this.getCountryOrigin();
+    this.getCompetitorDetails();
+    this.getPriceGroupDetails();
+    this.getPriceBreaksDetails();
+    this.getPricingFormulasDetails();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['skuData']) {
+      if (this.skuData) {
+          this.skuForm.patchValue(this.skuData);
+      }
+    }
+  }
+
+  getFormData() {
+    return this.skuForm.getRawValue();
+  }
+
+  getCountryOrigin(){
+    this.dataService.getCountryOrigin().subscribe({
+      next:(response: Country[])=> {
+          this.countries = response;
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');  
+      },
+    })
+  }
+    
+  getCommodityCodes(){
+    this.dataService.getCommodityCodes().subscribe({
+      next:(response: CommodityCode[])=> {
+          this.commodityCode = response;
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    })
+  }
+  
+  getLayoutTemplate() {
+    this.skusService.getLayoutTemplateList().subscribe({
+      next: (reponse: layoutSkus[]) => {
+        this.layoutOptions = reponse;
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
+    });
+  } 
+
+  getCompetitorDetails() {
+    this.skusService.getCompetitorDetails().subscribe({
+      next: (reponse: CompetitorItem[]) => {
+        this.competitors = reponse;
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
+    });
+  } 
+
+  getPriceGroupDetails() {
+    this.skusService.getPriceGroupDetails().subscribe({
+      next: (reponse: ItemModelResponse) => {
+        if (reponse.isSuccess) {
+            this.priceGroupItem = reponse.value;
+        } else {
+          this.dataService.ShowNotification('error', '',  reponse.exceptionInformation);
+        }
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
+    });
+  }
+
+  getPriceBreaksDetails() {
+    this.skusService.getPriceBreaksDetails().subscribe({
+      next: (reponse: ItemModelResponse) => {
+        if (reponse.isSuccess) {
+            this.priceBreaks = reponse.value;
+        } else {
+          this.dataService.ShowNotification('error', '',  reponse.exceptionInformation);
+        }
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
+    });
+  }
+
+  getPricingFormulasDetails() {
+    this.skusService.getPricingFormulasDetails().subscribe({
+      next: (reponse: ItemModelResponse) => {
+        if (reponse.isSuccess) {
+            this.pricingFormulas = reponse.value;
+        } else {
+          this.dataService.ShowNotification('error', '',  reponse.exceptionInformation);
+        }
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
+    });
+  }
+  
+
+}

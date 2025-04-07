@@ -28,3 +28,18 @@ export interface layoutProductResponse {
     isError: boolean;
     exceptionInformation: any;
 }
+
+export interface layoutSkus {
+    oDataEtag: string;
+    itemId: number;
+    templateCode: string;
+    layoutDescription: string;
+}
+
+  
+export interface layoutSkusResponse {
+    value: layoutSkus[];
+    isSuccess: boolean;
+    isError: boolean;
+    exceptionInformation: any;
+}

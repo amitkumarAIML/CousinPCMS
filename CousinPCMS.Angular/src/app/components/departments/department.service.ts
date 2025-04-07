@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { DepartmentRequest } from '../../shared/models/departmentModel';
@@ -28,7 +27,7 @@ export class DepartmentService {
 
   deleteDepartment(departmentId :  number) : Observable<any> {
     return this.httpService.get<any>(`Department/DeleteDepartment`,{deptId: departmentId}).pipe(
-      map(response => response.value),
+      map(response => response),
       catchError(error => throwError(() => error))
     );
   }

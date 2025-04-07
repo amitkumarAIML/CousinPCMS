@@ -7,13 +7,13 @@
         <cousins-product-details [productData]="productData" ></cousins-product-details>
       </nz-tab>
   
-      <!-- Catalogue Options Tab -->
       <nz-tab nzTitle="SKUs">
        <cousins-skus-list ></cousins-skus-list>
       </nz-tab>
     </nz-tabset>
 
     <ng-template #extraTemplate>
+      <div class="flex gap-x-3 mb-2">
             <button nz-button nzType="default" class="" (click)="cancle()">
               Cancel
             </button>
@@ -23,6 +23,7 @@
             <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading"  (click)="saveDetails()">
               Save
             </button>
+      </div>
     </ng-template>
 </div>
   

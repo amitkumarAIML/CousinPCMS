@@ -5,6 +5,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { Subscription } from 'rxjs';
 import { HomeService } from '../../home/home.service';
+import { SKuList } from '../../../shared/models/skusModel';
 
 interface ItemData {
   name: string;
@@ -24,8 +25,6 @@ interface ItemData {
   styleUrl: './skus-list.component.css'
 })
 export class SkusListComponent {
-
-  // listOfData: ItemData[] = [];
 
   listOfData = [
     {
@@ -475,7 +474,7 @@ export class SkusListComponent {
 
   ];
 
-  skusList: any[] = [];
+  skusList: SKuList[] = [];
   selectedRow: any = null; // Store the selected row
   private skusSubscription!: Subscription;
 

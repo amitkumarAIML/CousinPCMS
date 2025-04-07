@@ -1,6 +1,6 @@
 @import "tailwindcss" important;
 
-:root {
+@theme {
     --color-primary-theme: #21b6e1;
     --color-primary-theme-hover: #4acfed;
     --color-primary-font: #343941;
@@ -17,7 +17,6 @@
     --color-table-heightlighted: #e9f8fc;
     --color-highlighted: #9C6800;
     --shadow-cousins-box: 0px 1px 3px 0px #00000029;
-    --font-family: 'Inter', sans-serif;
 }
 
 * {
@@ -55,13 +54,11 @@ label {
     font-weight: 500; /* Medium font weight */
     color: var(--color-secondary-font);
     margin-bottom: 5px; /* Space between label and input */
-    font-family: var(--font-family);
 }
 
 .ant-form-item-explain-error {
     color: var(--color-danger);
     font-size: 12px;
-    font-family: var(--font-family);
 }
 
 .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
@@ -83,21 +80,18 @@ label {
     font-weight: 500; /* Medium font weight */
     color: var(--color-secondary-font);
     margin-bottom: 5px; /* Space between label and input */
-    font-family: var(--font-family);
 }
   
 /* Input & Textarea Styling */
 input[nz-input], 
 textarea[nz-input] {
     width: 100%;
-    /* padding: 8px 12px; */
     font-size: 12px;
-    border: 1px solid #d1d5db; /* Gray-300 */
+    border: 1px solid #d1d5db;
     border-radius: 5px;
     outline: none;
     transition: border 0.2s ease-in-out;
     color: var(--color-secondary-font);
-    font-family: var(--font-family);
 }
 
 .ant-input[disabled] {
@@ -110,29 +104,12 @@ textarea[nz-input] {
 
 .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     font-size: 12px;
-    font-family: var(--font-family);
 }
 
 .ant-tabs-tab-btn {
     font-size: 12px; 
     font-family: var(--font-family);
     color: var(--color-secondary-font);
-}
-
-button[nz-button] {
-    margin-right: 8px;
-    margin-bottom: 12px;
-    border-radius: 5px;
-    border: 1px solid #CBD5E1; /* Gray-300 */
-    font-size: 12px;
-    font-family: var(--font-family);
-    color: #67768C;
-    padding-right: 20px;
-    padding-left: 20px;
-}
-
-.ant-btn-primary {
-    background: var(--color-primary-theme);
 }
 
 

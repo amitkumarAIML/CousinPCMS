@@ -1,0 +1,66 @@
+
+
+<div class="grid grid-cols-1 md:grid-cols-5">
+        <nz-form-item>
+            <nz-form-label [nzNoColon]="true" >Search</nz-form-label>
+            <nz-form-control>
+                <nz-input-group [nzSuffix]="suffixIcon">
+                    <input nz-input [(ngModel)]="searchValue" (ngModelChange)="onSearch()" />
+                </nz-input-group>
+                <!-- Icon for Search -->
+                <ng-template #suffixIcon>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </nz-form-control>
+        </nz-form-item>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2">
+    <div class="grid grid-cols-1 md:grid-cols-1 ">
+        <nz-form-item>
+            <nz-form-label  [nzNoColon]="true" nzFor="skuName" >Sku Name</nz-form-label>
+            <nz-form-control >
+                <input nz-input [(ngModel)]="skuName" maxlength="100" [disabled]="true"/>
+            </nz-form-control>
+        </nz-form-item>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <nz-form-item>
+            <nz-form-label  [nzNoColon]="true"></nz-form-label>
+            <nz-form-control >
+                <input nz-input [(ngModel)]="skuName"  [disabled]="true"/>
+            </nz-form-control>
+        </nz-form-item>
+    </div>
+  
+</div>
+
+<nz-table #headerTable [nzData]="relatedSkusList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
+      [nzScroll]="{ y: '660px' }">
+    <thead>
+      <tr>
+        <th nzWidth="200px">Related</th>
+        <th>RelationType</th>
+        <th>RelatedSkuName</th>
+        <th>ManufacturerRef</th>
+        <th>ITEM_NUMBER</th>
+        <th>Obsolete</th>
+        <th>Unavaliable</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of headerTable.data; track $index) {
+        <tr >
+            <td>{{ data.skuName }}</td>
+            <td>{{ data.akiManufacturerRef }}</td>
+            <td>{{ data.itemNumber }}</td>
+            <td>{{ data.akiListOrder }}</td>
+            <td><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
+            <td>{{ data.akiTemplateID }}</td>
+            <td>{{ data.akiAltSKUName }}</td>
+            <td>{{ data.akiCommodityCode }}</td>
+        </tr>
+      }
+    </tbody>
+</nz-table>

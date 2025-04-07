@@ -4,6 +4,7 @@ import { BehaviorSubject, catchError, map, Observable, of, throwError } from 'rx
 import { HttpService } from '../../shared/services/http.service';
 import { Department, DepartmentResponse } from '../../shared/models/departmentModel';
 import { Product, ProductResponse } from '../../shared/models/productModel';
+import { SKuList, SkuListResponse } from '../../shared/models/skusModel';
 
 @Injectable({
   providedIn: 'root',
@@ -65,11 +66,11 @@ export class HomeService {
     );
   }
 
-  getSkuByProductId(productID: number): Observable<any> {
-    return this.httpService.get<any>('Item/GetAllItemsByProductId', {
+  getSkuByProductId(productID: number): Observable<SkuListResponse> {
+    return this.httpService.get<SkuListResponse>('Item/GetAllItemsByProductId', {
       akiProductID: `${productID}`,
     }).pipe(
-      map(response => response.value),
+      map((response: SkuListResponse) => response),
       catchError(error => throwError(() => error))
     );
   }

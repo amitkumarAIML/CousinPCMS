@@ -12,7 +12,6 @@
     background-color: #E2E8F0; /* Light gray */
     color: var(--color-primary-font); /* Dark gray text */
     font-size: 12px;
-    font-family: var(--font-family);
     font-weight: 82px;
     padding: 10px 16px;
     border-bottom: 1px solid #d1d5db;
@@ -26,12 +25,18 @@
     overflow-y: auto;
   }
   
+    /* Selected Product */
+  .selected {
+      color: var(--color-highlighted) /* Orange text */
+  }
+
   .sku-item {
     padding: 8px 16px;
+    cursor: pointer;
     font-size: 10px;
-    color: var(--color-secondary-font);
+    color: #67768C; /* Dark gray text */
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    font-family: Inter;
+    
   }
     
   /* Empty Message */
@@ -43,7 +48,6 @@
     color: var(--color-secondary-font);
     font-size: 10px;
     text-align: center;
-    font-family: Inter;
   }
 
     

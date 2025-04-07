@@ -1,0 +1,25 @@
+<nz-table #headerTable [nzData]="linkedAttributeList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
+      [nzScroll]="{ y: '660px' }">
+    <thead>
+      <tr>
+        <th nzWidth="200px"></th>
+        <th>AttributeName</th>
+        <th>AttributeValue</th>
+        <th>Link</th>
+        <th>Stage 2 User</th>
+        <th>Stagw 3 User</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of headerTable.data; track $index) {
+        <tr >
+            <th nzWidth="200px"></th>
+            <td>{{ data.skuName }}</td>
+            <td>{{ data.akiManufacturerRef }}</td>
+            <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
+            <td>{{ data.akiTemplateID }}</td>
+            <td>{{ data.akiAltSKUName }}</td>
+        </tr>
+      }
+    </tbody>
+</nz-table>

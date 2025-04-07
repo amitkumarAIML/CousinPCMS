@@ -39,8 +39,7 @@ export class ProductComponent {
       if (product) {
           this.productData = product[0];
       }
-    });
-    
+    });   
   }
 
   cancle() {
