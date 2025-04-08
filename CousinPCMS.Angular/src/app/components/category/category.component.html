@@ -137,8 +137,7 @@
                         <div class="grid grid-cols-1">          
                             <nz-form-item >
                                 <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
-                                <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
-                                    <!-- Hidden File Input -->                                        
+                                <nz-form-control [nzErrorTip]="'Please enter a valid URL'">                                                                           
                                     <!-- Flex container for input, char count, and button -->
                                     <div class="flex items-center space-x-2 relative">
                                       <!-- Text Input -->
@@ -149,8 +148,7 @@
                                         nzType="text"
                                       />
                                     <!-- Upload Button -->
-                                    <nz-upload
-                                        nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                                    <nz-upload                                        
                                         [nzHeaders]="{ authorization: 'authorization-text' }"
                                         (nzChange)="onFileSelected($event)"
                                         [nzShowUploadList]="false"

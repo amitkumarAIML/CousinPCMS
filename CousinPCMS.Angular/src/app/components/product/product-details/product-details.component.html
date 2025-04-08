@@ -156,8 +156,20 @@
                         <nz-form-item class="col-span-2">
                             <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
                                 <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
-                                <div class="input-wrapper">
+                                <div class="flex items-center space-x-2 relative">
                                     <input nz-input formControlName="akiProductImageURL" class="w-full" maxlength="255"/>
+                                      <!-- Upload Button -->
+                                      <nz-upload
+                                      nzAction=""
+                                      [nzHeaders]="{ authorization: 'authorization-text' }"
+                                      (nzChange)="onFileSelected($event)"
+                                      [nzShowUploadList]="false"
+                                      nzAccept=".png,.jpeg,.jpg"
+                                  >
+                                      <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
+                                           Upload
+                                      </button>
+                                  </nz-upload>
                                     <span class="char-count">
                                     {{ 255 - productForm.get('akiProductImageURL')?.value?.length || 255 }}
                                     </span> 
