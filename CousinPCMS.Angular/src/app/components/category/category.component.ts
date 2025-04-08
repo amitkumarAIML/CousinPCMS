@@ -72,7 +72,7 @@ export class CategoryComponent {
   productId:number=0;
   savedId: number | null = null;
   isAssociatePloading:boolean=false;
-
+  selectedFiles!: File;
   constructor(private fb: FormBuilder, private homeService: HomeService,
     private categoryService:CategoryService,
     private dataService : DataService,
@@ -228,18 +228,24 @@ export class CategoryComponent {
    // Handle File Selection
   onFileSelected(event: NzUploadChangeParam) {
     const file = event.file?.originFileObj;
-
-  if (file) {
-      this.selectedFileName = file.name;
-      // Show Preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
+       if (file) {
+        this.selectedFileName = file.name;
+        // Show Preview
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result;
       };
+      this.categoryForm.get('akiCategoryImageURL')?.setValue( this.selectedFileName); // Set it immediately
+  
       reader.readAsDataURL(file);
+
+      if (event.file.status === 'uploading') {
+        this.dataService.ShowNotification('success','',`${event.file.name} file uploaded successfully`);
+      }      
     }
   }
-
+  
+  
   deleteCategory(){ 
     this.deleteLoading = true;
     this.categoryService.deleteCategory(this.categoryId).subscribe({

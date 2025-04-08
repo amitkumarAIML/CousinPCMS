@@ -17,6 +17,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Country } from '../../../shared/models/countryOriginModel';
 import { CommodityCode } from '../../../shared/models/commodityCodeModel';
 import { layoutDepartment, layoutProduct } from '../../../shared/models/layoutTemplateModel';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @Component({
   selector: 'cousins-product-details',
@@ -32,7 +34,9 @@ import { layoutDepartment, layoutProduct } from '../../../shared/models/layoutTe
               NzTableModule,
               NzModalModule,
               NzPaginationModule,
-              NzIconModule
+              NzIconModule,
+              NzUploadModule,
+              NzButtonModule
             ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
@@ -53,6 +57,8 @@ export class ProductDetailsComponent {
   filteredCategories: any[] = []; // Displayed data
 
   loading = false; // Initially false
+  selectedFileName: string = '';
+  imagePreview: string | ArrayBuffer | null = null;
 
   @Input() productData!: any;
 
@@ -185,5 +191,25 @@ export class ProductDetailsComponent {
     }
 
    
+ // Handle File Selection
+ onFileSelected(event: NzUploadChangeParam) {
+  const file = event.file?.originFileObj;
+     if (file) {
+      this.selectedFileName = file.name;
+      // Show Preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+    };
+    this.productForm.get('akiProductImageURL')?.setValue( this.selectedFileName); // Set it immediately
+
+    reader.readAsDataURL(file);
+
+    if (event.file.status === 'uploading') {
+      this.dataService.ShowNotification('success','',`${event.file.name} file uploaded successfully`);
+    }
+    
+  }
+}
 
 }
