@@ -32,4 +32,11 @@ export class ProductsService {
     );
   }
 
+  getAdditionalProduct(productId :  number): Observable<any> {
+    return this.httpService.get<any>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
 }

@@ -7,7 +7,7 @@
                         <nz-form-item>
                             <nz-form-label  [nzNoColon]="true">Product Id</nz-form-label>
                             <nz-form-control>
-                                <input nz-input formControlName="akiProductID" id="productId" [disabled]="true"  />
+                                <input nz-input formControlName="akiProductID" id="productId" />
                             </nz-form-control>
                         </nz-form-item>
                     
@@ -24,12 +24,10 @@
                                 <input nzRequired nz-input id="categoryId"  formControlName="akiCategoryID" readonly />
                               </nz-input-group>
                               <ng-template #ellipsisButton>
-                                <button nz-button nzType="default" class="ellipsis-btn" (click)="openCategoryModal()">...</button>
+                                <button class="border-0 h-5 w-10 text-center align-middle cursor-pointer" (click)="openCategoryModal()">...</button>
                               </ng-template>
                             </nz-form-control>
-                          </nz-form-item>
-    
-                    
+                          </nz-form-item>  
                     </div>
                     
                     <div class="grid grid-cols-1">
@@ -214,7 +212,84 @@
                                 <input nz-input id="urlLinks" [disabled]="true" />
                             </nz-form-control>
                         </nz-form-item>
-                    </div>              
+                    </div>
+                    
+                      <!-- Associated Products Section -->
+                      <div class="mt-1">
+                        <label >Associated Products</label>
+                        <div class="border border-gray-300 rounded-lg p-2">
+                            <div class="flex justify-end space-x-2">                                
+                                <button nz-button nzType="primary" (click)="showAddProductModal()" class="text-white mr-0 ant-btn-category-add">Add</button>
+                            </div>
+                            <div class="pt-2">                                                       
+                                <form nz-form [formGroup]="editAssociatedProductForm">
+                                
+                                    <nz-table #dataTable [nzData]="AdditionalProductList"
+                                        class="rounded-lg no-header-scroll"
+                                        [nzScroll]="{ x: '700px',
+                                            y: '200px'
+                                        }"
+                                        nzBordered="true"
+                                        [nzFrontPagination]="false"
+                                        nzSize="small"
+                                        [nzLoading]="isAdditionalPloading" >
+                                        <thead class="text-xs ">
+                                            <tr>
+                                            <th [nzWidth]="'70px'">List Order</th>
+                                            <th [nzWidth]="'250px'">Product Name</th>                                  
+                                            <th [nzWidth]="'70px'">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-color-secondary-font text-xs">
+                                            @for (data of dataTable.data; track data) {
+                                            <tr>
+                                                <!-- List Order -->
+                                                <td>
+                                                @if(editingId === data.product) {
+                                                    <input nz-input formControlName="listOrder" value="listOrder" type="number" />
+                                                    <input nz-input formControlName="product" value="product" type="number" class="hidden" />
+                                                    <input nz-input formControlName="additionalCategory" value="additionalCategory" type="text" class="hidden" />
+                                                } @else {
+                                                    {{ data.listOrder }}                                          
+                                                }
+                                                </td>
+                                                <!-- Product Name -->
+                                                <td>                                      
+                                                    {{ data.productName }}
+                                                </td>
+                                                <!-- Actions -->
+                                                <td>
+                                                    <span class="flex gap-3">
+                                                        @if (editingId === data.product) {
+                                                            <a (click)="saveAssociatedProEdit(data)"> Save</a>
+                                                            <a (click)="cancelEdit()">Cancel</a>
+                                                        } @else if (savedId === data.product) {
+                                                            <a (click)="startEdit(data)">
+                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                            </a>
+                                                            <a href="#">
+                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                            </a>
+                                                        } @else {
+                                                            <a (click)="startEdit(data)">
+                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                            </a>
+                                                            <a href="#">
+                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                            </a>
+                                                        }
+                                                    </span>
+                                                
+                                                </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </nz-table>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
             </div>
         
             <!-- Right Section -->
@@ -340,3 +415,99 @@
 
       </ng-container>
 </nz-modal>
+<!-- Add product modal -->
+<nz-modal [(nzVisible)]="isVisibleAddProductModal"
+[nzTitle]="addProductTitletemplate"
+(nzOnCancel)="handleCancel()"
+[nzFooter]="null"
+nzClosable="false"
+nzWidth="500px"
+>
+<ng-container *nzModalContent>
+    <form nz-form [formGroup]="addAssociatedProductForm">
+        <div class="grid grid-cols-1 px-3 py-1 gap-3">                
+            <nz-form-item>
+                <nz-form-label [nzNoColon]="true">List Order</nz-form-label>
+                <nz-form-control nzErrorTip="list order is required" >
+                    <input nz-input formControlName="listorder" class="w-full" type="number" />
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Product Name</nz-form-label>
+                <nz-form-control nzErrorTip="Product name is required">
+                    <input nz-input formControlName="product" class="w-full" />                                            
+                </nz-form-control>
+            </nz-form-item>                
+            <div class="flex justify-center">
+                <!-- <nz-form-label [nzNoColon]="true">Web Active</nz-form-label>
+                <nz-switch                          
+                    formControlName="webActive"
+                ></nz-switch>                      -->
+            </div>
+            <div class="flex justify-end gap-3 mt-5">
+                <button nz-button nzType="default"
+                (click)="handleCancel()">
+                  Cancel
+                </button>
+                <button
+                  (click)="addAssociatedProductSubmitForm()"                  
+                  nz-button
+                  class="text-white"
+                  nzType="primary"                                          
+                >
+                Save
+                </button>
+            </div>
+        </div>            
+    </form>
+    <div class="p-4">
+        <nz-table                      
+        #associateDataTable nzSize="small"
+        nzBordered="true"
+        [nzData]="productList"
+        class="rounded-lg"
+        [nzShowPagination]="true"
+        [nzLoading]="loadingProduct"      
+        >
+        <thead class="text-xs">
+          <tr>
+            <th>Product Id</th>
+            <th [nzWidth]="'250px'">Product Name</th>                                  
+            <th>Product Active</th>
+          </tr>
+        </thead>
+        <tbody class="text-color-secondary-font text-xs">
+          @for (data of associateDataTable.data; track data) {
+            <tr><!-- List Order -->
+                <td>                  
+                    {{ data.akiProductID }}
+                 </td>    
+                <!-- Product Name -->
+                <td>                                      
+                   <a (click)="selectProduct(data)" class="text-gray-500 cursor-pointer"> {{ data.akiProductName }}</a>
+                </td>
+                <!-- web Active -->
+                <td>
+                <span class="flex gap-3">
+                    @if(data.akiProductIsActive==true)
+                    {
+                        <img src="../imgs/Check boxTrue.svg" alt="true checkIcon">
+                    }
+                    @if(data.akiProductIsActive==false)
+                    {
+                          <img src="../imgs/CheckboxFalse.svg" alt="false deleteIcon">  
+                    }                  
+                </span>
+                </td>
+            </tr>
+
+          }
+        </tbody>
+        </nz-table>        
+    </div>
+   
+</ng-container>
+</nz-modal>
+<ng-template #addProductTitletemplate>
+<span class="text-gray-600">Add Product</span>
+</ng-template>
