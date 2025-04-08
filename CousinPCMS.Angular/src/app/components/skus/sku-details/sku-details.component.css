@@ -1,0 +1,20 @@
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.char-count {
+    right: 10px;
+    font-size: 12px;
+    color: #888;
+    background: white;
+    padding-left: 5px;
+}
+.ant-checkbox-inner {
+    margin-left: 70px !important;
+}
+.nz-checkbox-wrapper-price {
+    align-items: flex-end !important;
+    margin-bottom: 12px !important;;
+}

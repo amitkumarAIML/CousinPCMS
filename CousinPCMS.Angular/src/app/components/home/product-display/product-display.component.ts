@@ -24,6 +24,7 @@ export class ProductDisplayComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedCategory']) {
+      this.selectedProduct = 0;
        this.loadProductsForCategory();
     }
   }

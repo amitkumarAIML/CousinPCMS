@@ -40,9 +40,9 @@ import { layoutDepartment, layoutProduct } from '../../../shared/models/layoutTe
 export class ProductDetailsComponent {
 
   productForm: FormGroup;
-  countries : any[]= [];
-  layoutOptions: any[] = [];
-  commodityCode: any[] = [];
+  countries : Country[]= [];
+  layoutOptions: layoutProduct[] = [];
+  commodityCode: CommodityCode[] = [];
 
   isCategoryModalVisible = false;
   selectedCategoryId: string | null = null;

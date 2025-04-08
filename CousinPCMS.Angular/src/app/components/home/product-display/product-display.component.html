@@ -14,7 +14,7 @@
         <ul class="product-list divide-y divide-gray-200">
           @for (product of products; track product.akiProductID) {
                 <li *ngIf="product" class="product-item" (click)="onProductClick(product.akiProductID)"  
-                    [ngClass]="{'selected': selectedProduct === product?.akiProductID}">
+                    [ngClass]="{'text-highlighted': selectedProduct === product?.akiProductID}">
                     {{ product.akiProductName}}
                 </li>
             }

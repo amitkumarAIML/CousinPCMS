@@ -1,14 +1,12 @@
 
 ::ng-deep .ant-table-thead > tr > th { 
     font-size: 10px !important;
-    font-family: inter !important;;
     background-color: var(--color-light-border) !important;;
     
     color: #343941;
 }
 ::ng-deep .ant-table-tbody > tr > td {
     font-size: 10px !important;
-    font-family: inter !important;;
     color: #67768C;
 }
 
