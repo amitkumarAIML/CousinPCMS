@@ -32,6 +32,54 @@ namespace CousinPCMS.Domain
         public string category_Name { get; set; }
     }
 
+    public class ProductLinkedURlModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public int productID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class ProductAdditionalImageModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public int productID { get; set; }
+        public string imageURL { get; set; }
+        public string imageName { get; set; }
+    }
+
+    public class AddProductAdditionalImageRequestModel
+    {
+        public int productID { get; set; }
+        public string imageURL { get; set; }
+        public string imageName { get; set; }
+    }
+
+    public class AddProductAdditionalLinkUrlRequestModel
+    {
+        public int productID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class DeleteProductURLRequestModel
+    {
+        public int productID { get; set; }
+        public string linkURL { get; set; }
+    }
+
+    public class DeleteProductImageRequestModel
+    {
+        public int productID { get; set; }
+        public string imageURL { get; set; }
+    }
+
     public class UpdateProductModel
     {
         public int akiProductID { get; set; }

@@ -335,5 +335,191 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets linked urls for resp category.
+        /// <paramref name="categoryId"/> 
+        /// </summary>       
+        /// <returns>returns category linked url object if details are available. Else empty object.</returns>
+        [HttpGet("GetCategoryUrls")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryLinkedURlModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCategoryUrls(string categoryId)
+        {
+            log.Info($"Request of {nameof(GetCategoryUrls)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetCategoryUrls(categoryId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCategoryUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCategoryUrls)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets category additional images details.
+        /// <paramref name="categoryId"/> 
+        /// </summary>       
+        /// <returns>returns category images object if details are available. Else empty object.</returns>
+        [HttpGet("GetCategoryAdditionalImages")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryAdditionalImageModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCategoryAdditionalImages(string categoryId)
+        {
+            log.Info($"Request of {nameof(GetCategoryAdditionalImages)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetCategoryAdditionalImages(categoryId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCategoryAdditionalImages)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCategoryAdditionalImages)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the linked url for that category
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteCategoryLinkUrl")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteCategoryLinkUrl(DeleteCategoryURLRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteCategoryLinkUrl)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.DeleteCategoryLinkUrl(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteCategoryLinkUrl)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteCategoryLinkUrl)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the additional images for that category
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteCategoryAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteCategoryAdditionalImage(DeleteCategoryImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteCategoryAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.DeleteCategoryAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteCategoryAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteCategoryAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add additional images for the category
+        /// </summary>
+        /// <param name="objModel">The object with add image details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddCategoryAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddCategoryAdditionalImage(AddCategoryAdditionalImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddCategoryAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.AddCategoryAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddCategoryAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddCategoryAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add linked urls for the category
+        /// </summary>
+        /// <param name="objModel">The object with add url details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddCategoryLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddCategoryLinkUrls(AddCategoryAdditionalLinkUrlRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddCategoryLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.AddCategoryLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddCategoryLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddCategoryLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }
