@@ -13,11 +13,13 @@
     @if (!loading && products && products.length > 0) {
         <ul class="product-list divide-y divide-gray-200">
           @for (product of products; track product.akiProductID) {
-                <li *ngIf="product" class="product-item" (click)="onProductClick(product.akiProductID)"  
-                    [ngClass]="{'text-highlighted': selectedProduct === product?.akiProductID}">
+            @if (product) {
+                <li class="product-item" (click)="onProductClick(product.akiProductID)"  
+                    [ngClass]="{'bg-bg-light': selectedProduct === product?.akiProductID}">
                     {{ product.akiProductName}}
                 </li>
             }
+        }
         </ul>
     } @else if (!loading) {
         <div class="empty-message h-48">

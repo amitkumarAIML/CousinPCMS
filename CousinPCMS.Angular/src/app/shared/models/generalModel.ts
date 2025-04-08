@@ -7,4 +7,5 @@ export interface APIResult<T> {
 export interface NavItem {
   label: string;
   path: string;
+  keywords?: string[]; // optional
 }

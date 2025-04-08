@@ -2,7 +2,3 @@
 .header {
     font-size: 14px;
 }
-
-.selected-color {
-    color: var(--color-primary-theme)
-}

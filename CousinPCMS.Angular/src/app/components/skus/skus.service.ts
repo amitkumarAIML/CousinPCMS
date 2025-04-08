@@ -4,8 +4,8 @@ import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutSkus, layoutSkusResponse } from '../../shared/models/layoutTemplateModel';
 import { ProductRequest } from '../../shared/models/productModel';
-import { CompetitorItem, CompetitorItemResponse } from '../../shared/models/CompetitorModel';
 import { ItemModelResponse } from '../../shared/models/itemModel';
+import { CompetitorItem, CompetitorItemResponse } from '../../shared/models/competitorModel';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,14 @@ export class SkusService {
   constructor(private httpService: HttpService) {}
 
   updateSkus(skusData: ProductRequest): Observable<any> {
-    return this.httpService.patch(`Skus/UpdateSkus`, skusData).pipe(
+    return this.httpService.post(`Skus/UpdateItemSKU`, skusData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  deleteSkus(itemId :  number): Observable<any> {
+    return this.httpService.get<any>(`Skus/DeleteItem`,{ itemId: itemId }).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
     );
@@ -55,11 +62,12 @@ export class SkusService {
     );
   }
   
-  deleteSkus(itemId :  number): Observable<any> {
-    return this.httpService.get<any>(`Skus/DeleteItem`,{ itemId: itemId }).pipe(
-      map(response => response),
+  getRelatedSkuItem(itemNumber: number) : Observable<ItemModelResponse> {
+    return this.httpService.get<ItemModelResponse>(`Skus/GetRelatedSkusByItemNumber`, {itemNumber: itemNumber}).pipe(
+      map((response: ItemModelResponse) => response),
       catchError(error => throwError(() => error))
     );
   }
+ 
 
 }

@@ -40,7 +40,7 @@ export class SkuDisplayComponent {
               this.skus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
               if (this.skus && this.skus.length > 0) {
                 this.displayText = ''; 
-                this.homeService.setSelectedSkU(this.skus);
+                this.homeService.setSelectedSkUList(this.skus);
               } else {
                 this.displayText = 'No SKU Found';
               }   
@@ -62,13 +62,12 @@ export class SkuDisplayComponent {
   }
 
   onSkuClick(skuId: number) {
-    if (!skuId) return; // Prevents undefined errors
+    if (!skuId) return;
     this.selectedSku = skuId;
     const pro = this.skus.filter((res) => res.akiSKUID === skuId);
     if (pro.length > 0) {
-      this.homeService.setSelectedProduct(pro);
+      this.homeService.setSelectedSkU(pro);
     }
-    // this.productSelected.emit(productId);
   }
 
 }

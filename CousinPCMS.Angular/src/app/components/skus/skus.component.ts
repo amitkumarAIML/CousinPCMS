@@ -10,12 +10,12 @@ import { DataService } from '../../shared/services/data.service';
 import { RelatedSkuComponent } from './related-sku/related-sku.component';
 import { SkusService } from './skus.service';
 import { AttributeSkuComponent } from './attribute-sku/attribute-sku.component';
+import { SKuList } from '../../shared/models/skusModel';
 
 @Component({
   selector: 'cousins-skus',
   imports: [ NzTabsModule,  // ✅ Import Tabs
              NzButtonModule,
-             CommonModule,
              SkuDetailsComponent,
              RelatedSkuComponent,
              AttributeSkuComponent
@@ -28,7 +28,7 @@ export class SkusComponent {
   deleteLoading: boolean = false;
   loading: boolean = false;
   
-  skuData!: any;
+  skuData!: SKuList;
   private skuSubscription!: Subscription;
  @ViewChild(SkuDetailsComponent) skusDetailsComp!: SkuDetailsComponent;
 
@@ -72,6 +72,44 @@ export class SkusComponent {
     });
 
   }
+
+   saveDetails () {
+       this.skusDetailsComp.skuForm.markAllAsTouched();
+  
+       if (!this.skusDetailsComp.skuForm.valid) {
+         this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+         return;
+       }
+   
+       // Get data from both components (if forms are valid)
+       const skuData = this.skusDetailsComp.getFormData();
+  
+       if (skuData.aki_Layout_Template) {
+        skuData.akiPrintLayoutTemp = true;
+       }
+  
+       this.loading = true;
+       this.skuService.updateSkus(skuData).subscribe({
+         next: (response) => {
+          if (response.isSuccess) {
+            this.dataService.ShowNotification('success', '', 'Sku Details Updated Successfully');
+            this.router.navigate(['/home']);
+          } else {
+            this.dataService.ShowNotification('error', '', "Sku Details Failed To Updated");
+          }
+           this.loading = false;
+         },
+         error: (err) => {
+            this.loading = false;
+            if (err?.error) {
+              this.dataService.ShowNotification('error', '', err.error.title);
+            } else {
+              this.dataService.ShowNotification('error', '', 'Something went wrong');
+            }
+         }
+       });
+    }
+  
 
   ngOnDestroy() {
     if (this.skuSubscription) {

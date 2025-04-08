@@ -36,6 +36,7 @@ export class HeaderComponent {
       path: '/skus',
     },
   ];
+
   isActive(navItem: NavItem | {label: string; path: string}): boolean {
     const currentUrl = this.router.url;
     return currentUrl.startsWith(navItem.path);

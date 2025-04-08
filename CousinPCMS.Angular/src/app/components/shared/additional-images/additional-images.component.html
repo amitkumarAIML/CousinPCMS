@@ -1,0 +1,85 @@
+<div class="bg-white rounded-lg m-5">
+  <div class="flex justify-between items-center p-4 pb-1">
+    <span>Additional Images</span>
+    @if(!showForm) {
+    <button nz-button nzType="primary" (click)="back()">Back</button>
+    }
+  </div>
+  <hr class="mt-2 mb-2 border-light-border" />
+  <div class="p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Link List Section -->
+      <div class="bg-white p-4">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-2">
+          <label>Additional Images</label>
+          <button nz-button nzType="primary" (click)="onAdd()">Add</button>
+        </div>
+
+        <!-- List -->
+        <ul class="border-light-border border rounded divide-y divide-light-border max-h-[90%]">
+          @for(image of fileList; track $index) {
+          <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
+            <span class="text-secondary-font truncate">
+              {{ image.name }}
+            </span>
+            <button nz-button nzType="text" nzDanger (click)="deleteImage()" class="ml-2">
+              <nz-icon nzType="delete" class="text-danger" nzTheme="outline" />
+            </button>
+          </li>
+          }
+
+          <li class="h-20"></li>
+        </ul>
+      </div>
+
+      <!-- Link Creator Section -->
+      <div *ngIf="showForm" class="mb-2 p-4">
+        <label class="block mb-2">Upload image to ftp site</label>
+        <div class="border-light-border border rounded mt-2">
+          <div class="p-2 space-y-6">
+            <!-- Image URL input + Browse Button -->
+            <div class="w-full">
+              <nz-form-item class="flex items-end gap-4">
+                <div class="flex-1">
+                  <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input [(ngModel)]="imageUrl" name="imageUrl" />
+                  </nz-form-control>
+                </div>
+                <input type="file" #fileInput class="hidden" (change)="onFileSelect($event)" />
+                <button nz-button nzType="primary" (click)="fileInput.click()" class="mt-1">Browse</button>
+              </nz-form-item>
+            </div>
+
+            <!-- Upload Area + Button -->
+            <div class="flex gap-4 items-start">
+              <!-- Upload Zone -->
+              <!-- <nz-upload nzListType="picture-card" [nzShowUploadList]="false"  (nzChange)="handleChange($event)" class="w-32 h-32 bg-gray-100" >
+                <div class="flex justify-center items-center w-full h-full text-gray-400 text-xl">
+                  <i nz-icon nzType="plus"></i>
+                </div>
+              </nz-upload> -->
+
+              <nz-upload nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" (nzChange)="handleChange($event)">
+                <ng-container *ngIf="!imageUrl">
+                  <div class="upload-box">
+                    <div class="flex justify-center items-center w-full h-full text-gray-400 text-xl">
+                      <i nz-icon nzType="plus"></i>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="imageUrl">
+                  <img [src]="imageUrl" alt="image thumbnail" class="w-[100px] h-[100px] object-cover rounded" />
+                </ng-container>
+              </nz-upload>
+
+              <!-- Upload Button -->
+              <button nz-button nzType="primary" (click)="uploadFile()">Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,7 @@
   <div class="flex justify-end items-center shadow-cousins-box px-6 py-2 bg-white mb-4">
     <ul class="flex gap-x-10 items-center text-base font-medium my-1">
       @for (navItem of navItems; track $index) {
-      <span class="cursor-pointer header" [routerLink]="[navItem.path]" [ngClass]="{'selected-color': isActive(navItem)}">
+      <span class="cursor-pointer header" [routerLink]="[navItem.path]" [ngClass]="{'text-primary-theme font-semibold': isActive(navItem)}">
         {{ navItem.label | translate }}
       </span>
       }

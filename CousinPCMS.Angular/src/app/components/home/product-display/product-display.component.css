@@ -34,18 +34,7 @@
     color: #67768C; /* Dark gray text */
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   }
-  
-  /* Hover Effect */
-  .product-item:hover {
-    background-color: #f8f9fa;
-    /* background-color: #bae7ff; */
-  }
-  
-  /* Selected Product */
-  .selected {
-    color: var(--color-highlighted) /* Orange text */
-  }
-  
+    
   /* Empty Message Styling */
   .empty-message {
     display: flex;

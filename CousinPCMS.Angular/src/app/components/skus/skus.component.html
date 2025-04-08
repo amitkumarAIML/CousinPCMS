@@ -1,9 +1,13 @@
 <div class="p-4 bg-white rounded-lg m-5">
     
-    <span *ngIf="activeTab === 0">Sku Form</span>
-    <span *ngIf="activeTab === 1">Related Skus</span>
-    <span *ngIf="activeTab === 2">All Linked Attributes</span>
-
+    @if(activeTab === 0) {
+      <span>Sku Form</span>
+    } @else if (activeTab === 1) {
+      <span>Related Skus</span>
+    } @else {
+      <span>All Linked Attributes</span>
+    }
+   
     <!-- Tabs -->
     <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
 
@@ -12,7 +16,7 @@
       </nz-tab>
   
       <nz-tab nzTitle="Related Skus">
-       <cousins-related-sku ></cousins-related-sku>
+       <cousins-related-sku  [skuData]="skuData"></cousins-related-sku>
       </nz-tab>
 
       <nz-tab nzTitle="All Linked Attributes">
@@ -20,7 +24,9 @@
        </nz-tab>
     </nz-tabset>
 
-    <ng-template #extraTemplate>
+
+    <ng-template #extraTemplate >
+      @if(activeTab === 0) {
         <div class="flex gap-x-3 mb-2">
             <button nz-button nzType="default" class="" (click)="cancle()">
               Cancel
@@ -28,10 +34,11 @@
             <button nz-button nzType="default" class="" [nzLoading]="deleteLoading" (click)="delete()">
               Delete
             </button>
-            <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading" >
+            <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading" (click)="saveDetails()" >
               Save
             </button>
         </div>
+      }
     </ng-template>
 </div>
   

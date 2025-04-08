@@ -32,18 +32,6 @@ nz-tree {
   opacity: 0.8;
 }
 
-/* Hover state styling */
-:host ::ng-deep .ant-tree-node-content-wrapper:hover {
-  /* background-color: #e6f7ff; */
-  background-color: #f8f9fa;
-}
-
-/* Selected node styling */
-:host ::ng-deep .ant-tree-node-selected {
-  background-color: #bae7ff;
- 
-}
-
 :host ::ng-deep .ant-tree-treenode {
   padding: 0 0 0 0 !important; /* Adjust padding */
 } 

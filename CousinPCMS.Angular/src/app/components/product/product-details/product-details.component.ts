@@ -16,7 +16,8 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Country } from '../../../shared/models/countryOriginModel';
 import { CommodityCode } from '../../../shared/models/commodityCodeModel';
-import { layoutDepartment, layoutProduct } from '../../../shared/models/layoutTemplateModel';
+import { layoutProduct } from '../../../shared/models/layoutTemplateModel';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cousins-product-details',
@@ -56,7 +57,7 @@ export class ProductDetailsComponent {
 
   @Input() productData!: any;
 
-    constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService) {
+    constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private router: Router) {
       this.productForm = this.fb.group({
         akiCategoryID: [],
         akiProductCommodityCode: [],
@@ -80,7 +81,7 @@ export class ProductDetailsComponent {
         akiProductWebActive: [true],
         category_Name: [''],
         akiProductText: [''],
-        
+        akiProductIsActive: [false],
         akiProductDescription: [''],
 
       });
@@ -182,6 +183,13 @@ export class ProductDetailsComponent {
       this.filteredCategories = this.categoryList.filter(category =>
         category.akiCategoryName.toLowerCase().includes(searchText)
       );
+    }
+
+    goToLinkMaintenance(): void {
+      console.log('ss', this.productForm.getRawValue())
+      if (!this.productForm.getRawValue().akiProductID)  return;
+      sessionStorage.setItem('productId',this.productForm.getRawValue().akiProductID);
+      this.router.navigate(['/products/link-maintenance']);
     }
 
    
