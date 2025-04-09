@@ -12,7 +12,8 @@ import {NzSpinModule} from 'ng-zorro-antd/spin';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {CategoryService} from '../../category/category.service';
-import {ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../../../shared/models/linkMaintenanaceModel';
+import { LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../../../shared/models/linkMaintenanaceModel';
+import { ApiResponse } from '../../../shared/models/generalModel';
 
 @Component({
   selector: 'cousins-link-maintenance',
@@ -21,15 +22,17 @@ import {ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '
   styleUrl: './link-maintenance.component.css',
 })
 export class LinkMaintenanceComponent {
+
   links: LinkValue[] = [];
-  newLink = '';
   showForm = false;
   linkForm!: FormGroup;
 
   displayText: string = '';
-  loadingdata = false;
-  loading = false;
+  loadingdata: boolean = false;
+  loading: boolean = false;
   currentUrl: string = '';
+  isDuplicateUrl = false;
+
   constructor(
     private fb: FormBuilder,
     private location: Location,
@@ -53,7 +56,7 @@ export class LinkMaintenanceComponent {
     } else if (this.currentUrl.includes('/category')) {
       this.getCategoryLink();
     } else if (this.currentUrl.includes('/skus')) {
-      // this.callDepartmentAPI();
+      this.getSkusLink();
     }
   }
 
@@ -65,14 +68,34 @@ export class LinkMaintenanceComponent {
     this.location.back();
     sessionStorage.removeItem('productId');
     sessionStorage.removeItem('categoryId');
+    sessionStorage.removeItem('skuId');
+    
   }
 
   getProductLink() {
     this.loadingdata = true;
     const productId = sessionStorage.getItem('productId');
-    this.handleGetApiResponse(
+    this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
       this.productService.getProductUrls(productId),
-      (data) => {
+      (data: any) => {
+        this.links = data;
+      },
+      {
+        loadingRef: (state) => (this.loadingdata = state),
+        emptyCheck: (data) => !data || data.length === 0,
+        onEmpty: () => (this.displayText = 'No Data'),
+        notifyOnError: true,
+      }
+    );
+    
+  }
+
+  getCategoryLink() {
+    this.loadingdata = true;
+    const categoryId = sessionStorage.getItem('categoryId');
+    this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
+      this.categoryService.getCategoryUrls(categoryId),
+      (data: any) => {
         this.links = data;
       },
       {
@@ -84,11 +107,11 @@ export class LinkMaintenanceComponent {
     );
   }
 
-  getCategoryLink() {
+  getSkusLink() {
     this.loadingdata = true;
-    const categoryId = sessionStorage.getItem('categoryId');
-    this.handleGetApiResponse(
-      this.categoryService.getCategoryUrls(categoryId),
+    const skuId = sessionStorage.getItem('skuId');
+    this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
+      this.categoryService.getCategoryUrls(skuId),
       (data: any) => {
         this.links = data;
       },
@@ -256,5 +279,13 @@ export class LinkMaintenanceComponent {
         if (context.notifyOnError) this.dataService.ShowNotification('error', '', 'Something went wrong');
       },
     });
+  }
+
+  checkDuplicateUrl(): void {
+    const inputValue = this.linkForm.get('linkURL')?.value?.trim().toLowerCase();
+  
+    this.isDuplicateUrl = this.links.some(link =>
+      link.linkURL?.trim().toLowerCase() === inputValue
+    );
   }
 }

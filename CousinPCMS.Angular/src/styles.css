@@ -32,9 +32,9 @@ body {
     background-color: var(--color-bg);
 }
 
-.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
-    /* background-color: var(--color-primary-theme-hover) !important; */
-    /* color: var(--color-highlighted) !important; */
+.ant-upload.ant-upload-select-picture-card  {
+    width: 150px !important;
+    height: 150px !important;
 }
 
 nz-icon .ant-tree-switcher-line-icon,
