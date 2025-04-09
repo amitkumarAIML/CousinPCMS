@@ -89,8 +89,8 @@ export class LinkMaintenanceComponent {
     const categoryId = sessionStorage.getItem('categoryId');
     this.handleGetApiResponse(
       this.categoryService.getCategoryUrls(categoryId),
-      (data: ApiResponse<LinkValue[]>) => {
-        this.links = data.value;
+      (data: any) => {
+        this.links = data;
       },
       {
         loadingRef: (state) => (this.loadingdata = state),
@@ -103,8 +103,8 @@ export class LinkMaintenanceComponent {
 
   save() {
     if (!this.linkForm.valid) {
-      this.dataService.ShowNotification('error', '', 'Please fill all required fields.');
-      return;
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return; // Stop the save process
     }
     if (this.currentUrl.includes('/products')) {
       const productId = sessionStorage.getItem('productId');

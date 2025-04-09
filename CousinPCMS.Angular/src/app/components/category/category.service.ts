@@ -60,9 +60,9 @@ export class CategoryService {
   }
 
 
-  getCategoryUrls(CategoryId: any): Observable<ApiResponse<LinkValue[]>>  {
-    return this.httpService.get<ApiResponse<LinkValue[]>>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
-      map((response: ApiResponse<LinkValue[]>) => response),
+  getCategoryUrls(CategoryId: any): Observable<any> {
+    return this.httpService.get<any>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
+      map((response: any) => response),
       catchError(error => throwError(() => error))
     );
   }
