@@ -58,6 +58,50 @@ export class CategoryService {
     return this.httpService.post(`Product/DeleteAssocatedProduct`, deleteAssocatedProduct);
   }
 
+
+  getCategoryUrls(CategoryId: any): Observable<any>  {
+    return this.httpService.get<any>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  getGetCategoryAdditionalImages(CategoryId: number): Observable<any[]>  {
+    return this.httpService.get<any>('Category/GetCategoryAdditionalImages',{ CategoryId: CategoryId }).pipe(
+      map((response: any) => response.value),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  deleteCategoryImagesUrl(CategoryData: any): Observable<any> {
+    return this.httpService.post(`Category/DeleteCategoryAdditionalImage`, CategoryData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  deleteCategoryLinkUrl(CategoryData: any): Observable<any> {
+    return this.httpService.post(`Category/DeleteCategoryLinkUrl`, CategoryData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  saveCategoryImagesUrl(CategoryData: any): Observable<any> {
+    return this.httpService.post(`Category/AddCategoryAdditionalImage`, CategoryData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  saveCategoryLinkUrl(CategoryData: any): Observable<any> {
+    return this.httpService.post(`Category/AddCategoryLinkUrls`, CategoryData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+  
+
   private handleError(error: HttpErrorResponse): Observable<never> {
       let errorMessage = 'An unknown error occurred';
       if (error.error instanceof ErrorEvent) {

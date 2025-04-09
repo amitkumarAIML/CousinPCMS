@@ -11,7 +11,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { layoutSkus } from '../../../shared/models/layoutTemplateModel';
 import { SkusService } from '../skus.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { CompetitorItem } from '../../../shared/models/CompetitorModel';
+import { CompetitorItem } from '../../../shared/models/competitorModel';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
 
@@ -63,7 +63,9 @@ export class SkuDetailsComponent {
           akiAlternativeTitle: [''],
           akI_Layout_Template: [''],
           akiCompetitorsTBC: [''],
-          akiPriceBreaksTBC: [false]
+          akiPriceBreak: [''],
+          akiPriceGroup: [''],
+          akiPricingFormula: ['']
       });
   }
 

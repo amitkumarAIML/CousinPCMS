@@ -4,6 +4,8 @@ import { DepartmentsComponent } from './components/departments/departments.compo
 import { CategoryComponent } from './components/category/category.component';
 import { ProductComponent } from './components/product/product.component';
 import { SkusComponent } from './components/skus/skus.component';
+import { LinkMaintenanceComponent } from './components/shared/link-maintenance/link-maintenance.component';
+import { AdditionalImagesComponent } from './components/shared/additional-images/additional-images.component';
 
 export const routes: Routes = [
   {
@@ -30,6 +32,19 @@ export const routes: Routes = [
   { 
     path: 'skus',
     component: SkusComponent,
-  }
+  },
+  { 
+    path: 'products/link-maintenance',
+    component: LinkMaintenanceComponent,
+  },
+  { 
+    path: 'products/additional-images',
+    component: AdditionalImagesComponent,
+  },
+  { 
+    path: 'category/link-maintenance',
+    component: LinkMaintenanceComponent,
+  },
+
   
 ];

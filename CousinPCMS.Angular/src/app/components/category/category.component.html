@@ -194,8 +194,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                             <!-- No of URL Links -->
                              <nz-form-item class="w-full">
-                                <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="">
-                                    <a href="#" class="underline">No of URL Links</a>
+                                <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
+                                    <a (click)="goToLinkMaintenance()" class="underline">No of URL Links</a>
                                 </nz-form-label>
                                 <nz-form-control>
                                     <input nz-input formControlName="urlLinks" id="urlLinks" />

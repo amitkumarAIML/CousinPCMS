@@ -504,4 +504,11 @@ deleteAssociatedProduct(data:any){
     this.addAssociatedProductForm.get('product')?.value;
   }
 
+  goToLinkMaintenance(): void {
+    console.log('ss', this.categoryForm.getRawValue())
+    if (!this.categoryForm.getRawValue().akiCategoryID)  return;
+    sessionStorage.setItem('categoryId',this.categoryForm.getRawValue().akiCategoryID);
+    this.router.navigate(['/category/link-maintenance']);
+  }
+
 }

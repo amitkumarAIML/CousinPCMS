@@ -33,12 +33,55 @@ export class ProductsService {
     );
   }
 
+  getProductUrls(productId: any): Observable<any>  {
+    return this.httpService.get<any>('Product/GetProductUrls',{ productId: productId }).pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  getGetProductAdditionalImages(productId: number): Observable<any[]>  {
+    return this.httpService.get<any>('Product/GetProductAdditionalImages',{ productId: productId }).pipe(
+      map((response: any) => response.value),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  deleteProductImagesUrl(productData: any): Observable<any> {
+    return this.httpService.post(`Product/DeleteProductAdditionalImage`, productData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  deleteProductLinkUrl(productData: any): Observable<any> {
+    return this.httpService.post(`Product/DeleteProductLinkUrl`, productData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  saveProductImagesUrl(productData: any): Observable<any> {
+    return this.httpService.post(`Product/AddProductAdditionalImage`, productData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  saveProductLinkUrl(productData: any): Observable<any> {
+    return this.httpService.post(`Product/AddProductLinkUrls`, productData).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
   getAdditionalProduct(productId :  number): Observable<any> {
     return this.httpService.get<any>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
     );
   }
+
   addAssociatedProduct(associatedFormProductData: addAssociatedProductModel) {
     return this.httpService.post(`Product/AddAssociatedProduct`, associatedFormProductData);
   }

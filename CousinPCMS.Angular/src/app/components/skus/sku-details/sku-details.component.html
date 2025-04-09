@@ -243,7 +243,7 @@
                             <nz-form-item>
                                 <nz-form-label  [nzNoColon]="true">Price Formula</nz-form-label>
                                 <nz-form-control >
-                                    <nz-select formControlName="akiCommodityCode" class="w-full" nzShowSearch >
+                                    <nz-select formControlName="akiPricingFormula" class="w-full" nzShowSearch >
                                         @for (option of pricingFormulas; track $index) {
                                             <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
                                           }
@@ -265,7 +265,7 @@
                             <nz-form-item>
                                 <nz-form-label  [nzNoColon]="true">Price Break</nz-form-label>
                                 <nz-form-control >
-                                    <nz-select formControlName="akiPriceBreaksTBC" class="w-full" nzShowSearch >
+                                    <nz-select formControlName="akiPriceBreak" class="w-full" nzShowSearch >
                                         @for (option of priceBreaks; track $index) {
                                             <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
                                           }
@@ -276,7 +276,7 @@
                             <nz-form-item>
                                 <nz-form-label [nzNoColon]="true">Price Group</nz-form-label>
                                 <nz-form-control>
-                                    <nz-select formControlName="akiCountryOfOrigin" class="w-full">
+                                    <nz-select formControlName="akiPriceGroup" class="w-full">
                                         @for (option of priceGroupItem; track $index) {
                                             <nz-option  [nzValue]="option.code" [nzLabel]="option.description"></nz-option>
                                         }

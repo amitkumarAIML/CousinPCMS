@@ -178,7 +178,7 @@
                         <!-- No of Additional Images -->
                         <nz-form-item class="w-full">
                             <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="product-link">
-                                <a href="#" class="underline">No of Additional Images</a>
+                                <a href="products/additional-images" class="underline">No of Additional Images</a>
                             </nz-form-label>
                             <nz-form-control>
                                 <input nz-input  id="additionalImages" [disabled]="true"/>
@@ -206,7 +206,8 @@
                          <!-- No of URL Links -->
                          <nz-form-item class="w-full">
                             <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
-                                <a href="#" class="underline">No of URL Links</a>
+                                <!-- <a href="products/link-maintenance" class="underline">No of URL Links</a> -->
+                                <a (click)="goToLinkMaintenance()" class="underline">No of URL Links</a>
                             </nz-form-label>
                             <nz-form-control>
                                 <input nz-input id="urlLinks" [disabled]="true" />
@@ -294,11 +295,11 @@
         
             <!-- Right Section -->
             <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
-                    <!-- <div class="grid grid-cols-1  mt-2">
+                    <div class="grid grid-cols-1  mt-2">
                         <div class="flex flex-col items-start space-y-2 nz-checkbox-wrapper nz-checkbox-wrapper-website">
-                            <label class=""  formControlName="akiProductPrintCatActive" nz-checkbox nzValue="false">Cat Active </label >
+                            <label class=""  formControlName="akiProductIsActive" nz-checkbox nzValue="false">Cat Active </label >
                         </div>
-                    </div> -->
+                    </div>
     
                     <!-- Layout Template Dropdown -->
                     <div class="mt-1">

@@ -14,7 +14,7 @@ import { DataService } from '../../../shared/services/data.service';
 
 @Component({
   selector: 'cousins-tree-view',
-  imports: [NzTreeModule, NzIconModule, CommonModule, NzSpinModule],
+  imports: [NzTreeModule, NzIconModule, NzSpinModule],
   templateUrl: './tree-view.component.html',
   styleUrl: './tree-view.component.css',
 })
