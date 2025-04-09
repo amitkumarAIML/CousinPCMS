@@ -314,27 +314,20 @@ export class ProductDetailsComponent {
       listorder: listOrder,
       isAdditionalProduct:true 
     };
-    // // Ensure AdditionalProductList is available before checking for duplicates
-    // if (!this.AdditionalProductList || this.AdditionalProductList.length === 0) {
-    //   this.dataService.ShowNotification('error', '', 'Product list is empty. Please try again.');
-    //   return;
-    // }
-    //Check if listorder already exists in AdditionalCategoryList
-    const isListOrderExist = this.AdditionalProductList?.some((category: any) => {
-        return Number(category.listOrder) === listOrder; // Ensure number comparison
+   
+    const isListOrderExist = this.AdditionalProductList && this.AdditionalProductList.length > 0 &&
+    this.AdditionalProductList.some((category: any) => {
+      return Number(category.listOrder) === listOrder;
     });
 
-    if (isListOrderExist) {
-      this.dataService.ShowNotification(
-        'error',
-        '',
-        'List order already exists, please choose another number'
-      );
-      this.isVisibleAddProductModal=true;
-      return; // Stop execution if listorder already exists
-    }else{
-    if(this.addAssociatedProductForm.valid){
-      this.categoryService.addAssociatedProduct(associatedProduct).subscribe({
+  if (isListOrderExist) {
+    this.dataService.ShowNotification('error', '', 'List order already exists, please choose another number');
+    this.isVisibleAddProductModal = true;
+    return;
+  }
+ 
+  if(this.addAssociatedProductForm.valid){
+      this.productService.addAssociatedProduct(associatedProduct).subscribe({
         next: (response:any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Associated product added successfully');
@@ -355,7 +348,7 @@ export class ProductDetailsComponent {
       });
     }
   }
-  }
+  
   selectProduct(data: any) {
     this.productId=data.akiProductID
     this.addAssociatedProductForm.patchValue({
@@ -402,7 +395,7 @@ export class ProductDetailsComponent {
       return; // Stop execution if listorder already exists
     }else{      
       if(this.editAssociatedProductForm.valid){
-        this.categoryService.updateAssociatedProduct(associatedProduct).subscribe({
+        this.productService.updateAssociatedProduct(associatedProduct).subscribe({
           next: (response:any) => {
             if (response.isSuccess) {
               this.dataService.ShowNotification('success', '', 'Associated product updated successfully');
@@ -436,5 +429,23 @@ export class ProductDetailsComponent {
   handleCancel(): void {
     this.isVisibleAddProductModal = false;
     this.addAssociatedProductForm.get('product')?.value;
+  }
+
+  deleteAssociatedProduct(data:any){  
+    const deleteAssocatedProduct:any={
+        product: data.product,
+        prodCategory:data.additionalCategory,
+    }
+    this.categoryService.deleteAssocatedProduct(deleteAssocatedProduct).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');          
+        }else{
+          this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
+        }
+      },error: (error) => {
+        this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+      }
+    }); 
   }
 }
