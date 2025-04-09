@@ -5,6 +5,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
 import { ProductRequest } from '../../shared/models/productModel';
 import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
+import { LinkDeleteRequestModel, LinkRequestModel } from '../../shared/models/linkMaintenanaceModel';
 
 @Injectable({
   providedIn: 'root',
@@ -54,7 +55,7 @@ export class ProductsService {
     );
   }
 
-  deleteProductLinkUrl(productData: any): Observable<any> {
+  deleteProductLinkUrl(productData: LinkDeleteRequestModel): Observable<any> {
     return this.httpService.post(`Product/DeleteProductLinkUrl`, productData).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
@@ -68,7 +69,7 @@ export class ProductsService {
     );
   }
 
-  saveProductLinkUrl(productData: any): Observable<any> {
+  saveProductLinkUrl(productData: LinkRequestModel): Observable<any> {
     return this.httpService.post(`Product/AddProductLinkUrls`, productData).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
