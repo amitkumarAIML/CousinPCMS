@@ -137,8 +137,7 @@
                         <div class="grid grid-cols-1">          
                             <nz-form-item >
                                 <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
-                                <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
-                                    <!-- Hidden File Input -->                                        
+                                <nz-form-control [nzErrorTip]="'Please enter a valid URL'">                                                                           
                                     <!-- Flex container for input, char count, and button -->
                                     <div class="flex items-center space-x-2 relative">
                                       <!-- Text Input -->
@@ -149,8 +148,7 @@
                                         nzType="text"
                                       />
                                     <!-- Upload Button -->
-                                    <nz-upload
-                                        nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                                    <nz-upload                                        
                                         [nzHeaders]="{ authorization: 'authorization-text' }"
                                         (nzChange)="onFileSelected($event)"
                                         [nzShowUploadList]="false"
@@ -174,7 +172,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                             <!-- No of Additional Images -->
                             <nz-form-item class="w-full">
-                                <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="product-link">
+                                <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="">
                                     <a href="#" class="underline">No of Additional Images</a>
                                 </nz-form-label>
                                 <nz-form-control>
@@ -196,7 +194,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                             <!-- No of URL Links -->
                              <nz-form-item class="w-full">
-                                <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
+                                <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="">
                                     <a href="#" class="underline">No of URL Links</a>
                                 </nz-form-label>
                                 <nz-form-control>
@@ -227,7 +225,7 @@
                             <div class="border border-gray-300 rounded-lg p-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                                     <!-- Checkbox Section -->
-                                    <div class="nz-checkbox-wrapper nz-checkbox-wrapper-website">
+                                     <div class="nz-checkbox-wrapper nz-checkbox-wrapper-website">
                                         <label class="nz-checkbox-wrapper-label"  formControlName="akiCategoryIncludeInSearchByManufacture" nz-checkbox nzValue="false">
                                             <span class="pl-2"> Include Search by Manufacturer</span>
                                         </label >
@@ -235,7 +233,8 @@
                                             <span class="pl-2"> Log in and green tick only </span>
                                         </label >
                                     </div>
-
+                                    
+                                      
                                     <!-- Minimum Digits Input -->
                                     <nz-form-item class="w-full">
                                         <nz-form-label nzFor="minDigits" [nzNoColon]="true">Minimum Digits</nz-form-label>
@@ -272,7 +271,7 @@
                                     <!-- <button nz-button nzType="default" >Edit / Order</button> -->
                                     <button nz-button nzType="primary" (click)="showAddProductModal()" class="text-white mr-0 ant-btn-category-add">Add</button>
                                 </div>
-                                <div class="">
+                                <div class="pt-2">
                                                            
                                 <form nz-form [formGroup]="editAssociatedProductForm">
                                    
@@ -319,14 +318,14 @@
                                                             <a (click)="startEdit(data)">
                                                                 <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
                                                             </a>
-                                                            <a href="#">
+                                                            <a (click)="deleteAssociatedProduct(data)">
                                                                 <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
                                                             </a>
                                                         } @else {
                                                             <a (click)="startEdit(data)">
                                                                 <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
                                                             </a>
-                                                            <a href="#">
+                                                            <a (click)="deleteAssociatedProduct(data)">
                                                                 <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
                                                             </a>
                                                         }

@@ -94,6 +94,54 @@ namespace CousinPCMS.Domain
         public string categoryID { get; set; }
     }
 
+    public class CategoryLinkedURlModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public string categoryID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class CategoryAdditionalImageModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public string categoryID { get; set; }
+        public string imageURL { get; set; }
+        public string imageName { get; set; }
+    }
+
+    public class AddCategoryAdditionalImageRequestModel
+    {
+        public int categoryID { get; set; }
+        public string imageURL { get; set; }
+        public string imageName { get; set; }
+    }
+
+    public class AddCategoryAdditionalLinkUrlRequestModel
+    {
+        public int categoryID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class DeleteCategoryURLRequestModel
+    {
+        public int categoryID { get; set; }
+        public string linkURL { get; set; }
+    }
+
+    public class DeleteCategoryImageRequestModel
+    {
+        public int categoryID { get; set; }
+        public string imageURL { get; set; }
+    }
+
     public class AssociatedProductRequestModel
     {
         public int Product { get; set; }

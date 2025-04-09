@@ -190,5 +190,191 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets linked urls for resp Product.
+        /// <paramref name="productId"/> 
+        /// </summary>       
+        /// <returns>returns Product linked url object if details are available. Else empty object.</returns>
+        [HttpGet("GetProductUrls")]
+        [ProducesResponseType(typeof(APIResult<List<ProductLinkedURlModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetProductUrls(string productId)
+        {
+            log.Info($"Request of {nameof(GetProductUrls)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetProductUrls(productId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetProductUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetProductUrls)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets Product additional images details.
+        /// <paramref name="ProductId"/> 
+        /// </summary>       
+        /// <returns>returns Product images object if details are available. Else empty object.</returns>
+        [HttpGet("GetProductAdditionalImages")]
+        [ProducesResponseType(typeof(APIResult<List<ProductAdditionalImageModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetProductAdditionalImages(string ProductId)
+        {
+            log.Info($"Request of {nameof(GetProductAdditionalImages)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetProductAdditionalImages(ProductId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetProductAdditionalImages)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetProductAdditionalImages)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the linked url for that Product
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteProductLinkUrl")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteProductLinkUrl(DeleteProductURLRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteProductLinkUrl)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.DeleteProductLinkUrl(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteProductLinkUrl)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteProductLinkUrl)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the additional images for that Product
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteProductAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteProductAdditionalImage(DeleteProductImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteProductAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.DeleteProductAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteProductAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteProductAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add additional images for the Product
+        /// </summary>
+        /// <param name="objModel">The object with add image details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddProductAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddProductAdditionalImage(AddProductAdditionalImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddProductAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.AddProductAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddProductAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddProductAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add linked urls for the Product
+        /// </summary>
+        /// <param name="objModel">The object with add url details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddProductLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddProductLinkUrls(AddProductAdditionalLinkUrlRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddProductLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.AddProductLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddProductLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddProductLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }

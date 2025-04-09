@@ -24,7 +24,7 @@ namespace CousinPCMS.BLL
             {
                 var allFilters = new List<Filters>();
 
-                allFilters.Add(new Filters { ParameterName = "itemNumber", ParameterValue = itemNumber, DataType = typeof(string), Compare = ComparisonType.Equals });
+                allFilters.Add(new Filters { ParameterName = "itemNo", ParameterValue = itemNumber, DataType = typeof(string), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 

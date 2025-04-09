@@ -4,7 +4,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
 import { DepartmentResponse } from '../../../shared/models/departmentModel';
 import { CommonModule } from '@angular/common';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -35,6 +35,8 @@ export class DepartmentInfoComponent {
   layoutOptions: layoutDepartment[] = [];
 
   @Input() deptData!: DepartmentResponse;
+  selectedFileName: string = '';
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(private fb: FormBuilder, private dataService: DataService, private departmentService: DepartmentService) {
     this.departmentForm = this.fb.group({
@@ -106,4 +108,24 @@ export class DepartmentInfoComponent {
     });
   } 
 
+  onFileSelected(event: NzUploadChangeParam) {
+    const file = event.file?.originFileObj;
+       if (file) {
+        this.selectedFileName = file.name;
+        // Show Preview
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result;
+      };
+      this.departmentForm.get('akiDepartmentImageURL')?.setValue( this.selectedFileName); // Set it immediately
+  
+      reader.readAsDataURL(file);
+
+      if (event.file.status === 'uploading') {
+        this.dataService.ShowNotification('success','',`${event.file.name} file uploaded successfully`);
+      }
+      
+    }
+  }
+ 
 }
