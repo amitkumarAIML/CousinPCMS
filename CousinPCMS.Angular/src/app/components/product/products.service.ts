@@ -5,7 +5,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
 import { ProductRequest } from '../../shared/models/productModel';
 import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
-import { LinkDeleteRequestModel, LinkRequestModel } from '../../shared/models/linkMaintenanaceModel';
+import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 
 @Injectable({
   providedIn: 'root',
