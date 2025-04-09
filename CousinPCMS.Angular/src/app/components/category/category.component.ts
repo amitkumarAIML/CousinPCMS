@@ -408,6 +408,24 @@ export class CategoryComponent {
   }
 }
 
+deleteAssociatedProduct(data:any){  
+  const deleteAssocatedProduct:any={
+      product: data.product,
+      prodCategory:data.additionalCategory,
+  }
+  this.categoryService.deleteAssocatedProduct(deleteAssocatedProduct).subscribe({
+    next: (response) => {
+      if (response.isSuccess) {
+        this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');          
+      }else{
+        this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
+      }
+    },error: (error) => {
+      this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+    }
+  }); 
+}
+
   startEdit(row: any) {
     this.editingId = row.product;
     this.savedId = null;

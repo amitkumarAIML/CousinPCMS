@@ -54,6 +54,10 @@ export class CategoryService {
   updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
     return this.httpService.patch(`Category/UpdateAssociatedProduct`, associatedFormProductData);
   }
+  deleteAssocatedProduct(deleteAssocatedProduct:any): Observable<any> {
+    return this.httpService.post(`Product/DeleteAssocatedProduct`, deleteAssocatedProduct);
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
       let errorMessage = 'An unknown error occurred';
       if (error.error instanceof ErrorEvent) {

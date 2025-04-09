@@ -4,6 +4,7 @@ import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
 import { ProductRequest } from '../../shared/models/productModel';
+import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
 
 @Injectable({
   providedIn: 'root',
@@ -32,4 +33,16 @@ export class ProductsService {
     );
   }
 
+  getAdditionalProduct(productId :  number): Observable<any> {
+    return this.httpService.get<any>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
+      map(response => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+  addAssociatedProduct(associatedFormProductData: addAssociatedProductModel) {
+    return this.httpService.post(`Product/AddAssociatedProduct`, associatedFormProductData);
+  }
+  updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
+    return this.httpService.patch(`Product/UpdateAssociatedProduct`, associatedFormProductData);
+  }
 }
