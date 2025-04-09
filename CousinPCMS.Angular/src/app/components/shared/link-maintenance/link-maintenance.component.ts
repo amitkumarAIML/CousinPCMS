@@ -10,6 +10,8 @@ import {ProductsService} from '../../product/products.service';
 import {DataService} from '../../../shared/services/data.service';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { CategoryService } from '../../category/category.service';
 
 @Component({
   selector: 'cousins-link-maintenance',
@@ -24,10 +26,13 @@ export class LinkMaintenanceComponent {
   linkForm!: FormGroup;
 
   displayText: string = '';
+  loadingdata = false;
   loading = false;
   deleteLoading = false;
-
-  constructor(private fb: FormBuilder, private location: Location, private productService: ProductsService, private dataService: DataService,private router: Router) {
+  currentUrl: string = ''
+  constructor(private fb: FormBuilder, private location: Location, private productService: ProductsService, private dataService: DataService,private router: Router,
+    private categoryService: CategoryService
+  ) {
     this.linkForm = this.fb.group({
       linkText: [''],
       linkURL: [''],
@@ -37,14 +42,14 @@ export class LinkMaintenanceComponent {
   }
 
   ngOnInit(): void {
-    const currentUrl = this.router.url;
-  if (currentUrl.includes('/products')) {
-    this.callProductAPI();
-  } else if (currentUrl.includes('/category')) {
-    // this.callCategoryAPI();
-  } else if (currentUrl.includes('/skus')) {
-    // this.callDepartmentAPI();
-  }
+    this.currentUrl = this.router.url;
+    if ( this.currentUrl.includes('/products')) {
+      this.getProductLink();
+    } else if ( this.currentUrl.includes('/category')) {
+      this.getCategoryLink();
+    } else if (this.currentUrl.includes('/skus')) {
+      // this.callDepartmentAPI();
+    }
 
   }
 
@@ -55,61 +60,102 @@ export class LinkMaintenanceComponent {
   goBack() {
     this.location.back();
     sessionStorage.removeItem('productId');
+    sessionStorage.removeItem('categoryId');
   }
 
-  callProductAPI() {
-    this.loading = true;
+  getProductLink() {
     const productId = sessionStorage.getItem('productId');
-    this.productService.getProductUrls(productId).subscribe({
-      next: (response: any) => {
-        if (response.isSuccess) {
-          if (response.value && response.value.length > 0) {
-            this.links = response.value;
-          } else {
-            this.displayText = 'No Data';
-          }
-        } else {
-          this.displayText = 'No Data';
-          this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
-        this.loading = false;
+    this.handleGetApiResponse(
+      this.productService.getProductUrls(productId),
+      (data) => {
+        this.links = data;
       },
-      error: (err) => {
-        this.loading = false;
-        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      {
+        loadingRef: (state) => this.loadingdata = state,
+        emptyCheck: (data) => !data || data.length === 0,
+        onEmpty: () => this.displayText = 'No Data',
+        notifyOnError: true
+      }
+    );
+  }
+
+  getCategoryLink() {
+    const categoryId = sessionStorage.getItem('categoryId');
+    this.handleGetApiResponse(
+      this.categoryService.getCategoryUrls(categoryId),
+      (data) => {
+        this.links = data;
       },
-    });
+      {
+        loadingRef: (state) => this.loadingdata = state,
+        emptyCheck: (data) => !data || data.length === 0,
+        onEmpty: () => this.displayText = 'No Data',
+        notifyOnError: true
+      }
+    );
   }
 
   save() {
-    const productId = sessionStorage.getItem('productId');
-    if (this.linkForm.valid) {
-      const requestData = {
-        ...this.linkForm.value,
-        productID: productId,
-      };
-      this.loading = true;
-      this.productService.saveProductLinkUrl(requestData).subscribe({
-        next: (response: any) => {
-          if (response.isSuccess) {
-            this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
-            this.links.push(requestData);
-            this.showForm = false;
-          } else {
-            this.dataService.ShowNotification('error', '', 'LinkUrl Failed Add');
-          }
-          this.loading = false;
-        },
-        error: (err) => {
-          this.loading = false;
-          if (err?.error) {
-            this.dataService.ShowNotification('error', '', err.error.title);
-          } else {
-            this.dataService.ShowNotification('error', '', 'Something went wrong');
-          }
-        },
-      });
+    if ( this.currentUrl.includes('/products')) {
+      const productId = sessionStorage.getItem('productId');
+      if (this.linkForm.valid) {
+        const requestData = {
+          ...this.linkForm.value,
+          productID: productId,
+        };
+        this.loading = true;
+        this.productService.saveProductLinkUrl(requestData).subscribe({
+          next: (response: any) => {
+            if (response.isSuccess) {
+              this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
+              this.links.push(requestData);
+              this.showForm = false;
+            } else {
+              this.dataService.ShowNotification('error', '', 'LinkUrl Failed Add');
+            }
+            this.loading = false;
+          },
+          error: (err) => {
+            this.loading = false;
+            if (err?.error) {
+              this.dataService.ShowNotification('error', '', err.error.title);
+            } else {
+              this.dataService.ShowNotification('error', '', 'Something went wrong');
+            }
+          },
+        });
 
+      }
+    } else if (this.currentUrl.includes('/category')) { 
+      const categoryId = sessionStorage.getItem('categoryId');
+      if (this.linkForm.valid) {
+        const requestData = {
+          ...this.linkForm.value,
+          categoryID: categoryId,
+        };
+        this.loading = true;
+        this.categoryService.saveCategoryLinkUrl(requestData).subscribe({
+          next: (response: any) => {
+            if (response.isSuccess) {
+              this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
+              this.links.push(requestData);
+              this.showForm = false;
+            } else {
+              this.dataService.ShowNotification('error', '', 'LinkUrl Failed Add');
+            }
+            this.loading = false;
+          },
+          error: (err) => {
+            this.loading = false;
+            if (err?.error) {
+              this.dataService.ShowNotification('error', '', err.error.title);
+            } else {
+              this.dataService.ShowNotification('error', '', 'Something went wrong');
+            }
+          },
+        });
+
+      }
     }
   }
 
@@ -120,29 +166,93 @@ export class LinkMaintenanceComponent {
 
   deleteLink(data: any, index: number) {
     this.deleteLoading = true;
-    const req = {
-      productID: data.productID,
-      linkURL: data.linkURL,
-    };
-    this.productService.deleteProductLinkUrl(req).subscribe({
-      next: (response) => {
+    if (this.currentUrl.includes('/products')) {
+      const req = {
+        productID: data.productID,
+        linkURL: data.linkURL,
+      };
+      this.productService.deleteProductLinkUrl(req).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.links.splice(index, 1);
+            this.dataService.ShowNotification('success', '', 'Product Successfully Deleted');
+          } else {
+            this.dataService.ShowNotification('error', '', 'Product Url Failed Deleted');
+          }
+          this.deleteLoading = false;
+        },
+        error: (err) => {
+          this.deleteLoading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else if (this.currentUrl.includes('/category')) {
+      const req = {
+        categoryID: data.categoryID,
+        linkURL: data.linkURL,
+      };
+      this.categoryService.deleteCategoryLinkUrl(req).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.links.splice(index, 1);
+            this.dataService.ShowNotification('success', '', 'Category Successfully Deleted');
+          } else {
+            this.dataService.ShowNotification('error', '', 'Category Url Failed Deleted');
+          }
+          this.deleteLoading = false;
+        },
+        error: (err) => {
+          this.deleteLoading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    }
+  }
+
+  handleGetApiResponse<T>(
+    observable: Observable<T>,
+    onSuccess: (data: T) => void,
+    context: {
+      loadingRef?: (state: boolean) => void,
+      emptyCheck?: (data: any) => boolean,
+      emptyMessage?: string,
+      onEmpty?: () => void,
+      onError?: () => void,
+      notifyOnError?: boolean
+    } = {}
+  ) {
+    if (context.loadingRef) context.loadingRef(true);
+  
+    observable.subscribe({
+      next: (response: any) => {
+        if (context.loadingRef) context.loadingRef(false);
+  
         if (response.isSuccess) {
-          this.links.splice(index, 1);
-          this.dataService.ShowNotification('success', '', 'Product Successfully Deleted');
+          if (context.emptyCheck && context.emptyCheck(response.value)) {
+            if (context.onEmpty) context.onEmpty();
+          } else {
+            onSuccess(response.value);
+          }
         } else {
-          this.dataService.ShowNotification('error', '', 'Product Details Failed Deleted');
+          if (context.onEmpty) context.onEmpty();
+          if (context.notifyOnError) this.dataService.ShowNotification('error', '', 'Something went wrong');
         }
-        this.deleteLoading = false;
       },
       error: (err) => {
-        this.deleteLoading = false;
-        if (err?.error) {
-          this.dataService.ShowNotification('error', '', err.error.title);
-        } else {
-          this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
-      },
+        if (context.loadingRef) context.loadingRef(false);
+        if (context.onError) context.onError();
+        if (context.notifyOnError) this.dataService.ShowNotification('error', '', 'Something went wrong');
+      }
     });
   }
+  
 
 }

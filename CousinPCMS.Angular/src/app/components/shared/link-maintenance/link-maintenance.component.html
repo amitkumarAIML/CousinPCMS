@@ -18,11 +18,11 @@
 
         <!-- List -->
         <ul class="border-light-border border rounded divide-y divide-light-border max-h-[90%]">
-          @if (loading) {
+          @if (loadingdata) {
           <div class="loading-container">
             <nz-spin nzSize="large"></nz-spin>
           </div>
-          } @if (!loading && links && links.length > 0) {
+          } @if (!loadingdata && links && links.length > 0) {
              @for(link of links; track $index) {
             <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
                 <span class="text-secondary-font truncate">
@@ -34,7 +34,7 @@
             </li>
             }
           <li class="h-20"></li>
-          } @else if (!loading) {
+          } @else if (!loadingdata) {
           <div class="flex justify-center items-center h-48">
             {{ displayText }}
           </div>
@@ -70,9 +70,9 @@
           <nz-form-item>
             <nz-form-label [nzNoColon]="true" [nzSpan]="6">Link Type</nz-form-label>
             <nz-form-control [nzSpan]="18">
-              <nz-select formControlName="linkType" name="type" nzPlaceHolder="Select type">
-                <nz-option nzValue="product" nzLabel="Product"></nz-option>
-                <nz-option nzValue="category" nzLabel="Category"></nz-option>
+              <nz-select formControlName="linkType" name="type">
+                <nz-option nzValue="Youtube" nzLabel="Youtube"></nz-option>
+                <nz-option nzValue="Web site" nzLabel="Web site"></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
