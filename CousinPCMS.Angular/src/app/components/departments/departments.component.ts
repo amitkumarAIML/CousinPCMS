@@ -58,7 +58,7 @@ export class DepartmentsComponent  {
     // Check if both forms are valid
     if (!this.departmentInfoComp.departmentForm.valid) {
       // If any form is invalid, display error message
-      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      this.dataService.ShowNotification('error', '', 'Please fill all required fields.');
       return; // Stop the save process
     }
 

@@ -4,6 +4,7 @@ import { HttpService } from '../../shared/services/http.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { addAssociatedProductModel, AdditionalCategoryModel, AdditionalCategoryResponse, categorylayout, categorylayoutResponse, editAssociatedProductModel, UpdateCategoryModel } from '../../shared/models/additionalCategoryModel';
 import { Product, ProductResponse } from '../../shared/models/productModel';
+import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 
 @Injectable({
   providedIn: 'root'
@@ -59,9 +60,9 @@ export class CategoryService {
   }
 
 
-  getCategoryUrls(CategoryId: any): Observable<any>  {
-    return this.httpService.get<any>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
-      map((response: any) => response),
+  getCategoryUrls(CategoryId: any): Observable<ApiResponse<LinkValue[]>>  {
+    return this.httpService.get<ApiResponse<LinkValue[]>>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
+      map((response: ApiResponse<LinkValue[]>) => response),
       catchError(error => throwError(() => error))
     );
   }
@@ -80,7 +81,7 @@ export class CategoryService {
     );
   }
 
-  deleteCategoryLinkUrl(CategoryData: any): Observable<any> {
+  deleteCategoryLinkUrl(CategoryData: LinkDeleteRequestModel): Observable<any> {
     return this.httpService.post(`Category/DeleteCategoryLinkUrl`, CategoryData).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
@@ -94,7 +95,7 @@ export class CategoryService {
     );
   }
 
-  saveCategoryLinkUrl(CategoryData: any): Observable<any> {
+  saveCategoryLinkUrl(CategoryData: LinkRequestModel): Observable<any> {
     return this.httpService.post(`Category/AddCategoryLinkUrls`, CategoryData).pipe(
       map(response => response),
       catchError(error => throwError(() => error))
