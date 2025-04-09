@@ -69,3 +69,13 @@ export interface ProductUpdateResponse {
     isError: boolean;
     exceptionInformation: any;
 }
+export interface AssociatedProductRequestModelForProduct{
+    product:number;
+    addproduct:string;
+    listorder:number;
+}
+
+export interface DeleteAssociatedProductModelForProduct{
+  product:number;
+  addproduct:string;
+}

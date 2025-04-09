@@ -8,13 +8,7 @@ export interface AdditionalCategoryModel {
     categoryName:string;
     isAdditionalProduct: boolean
 }
-export interface addAssociatedProductModel{
-  product:number,
-  additionalCategory: string,
-  listorder: number,
-  isAdditionalProduct:boolean
-}
-export interface editAssociatedProductModel{
+export interface AssociatedProductRequestModel{
   product:number,
   additionalCategory: string,
   listorder: number,
@@ -134,4 +128,8 @@ export interface AdditionalCategoryResponse {
   isSuccess: boolean;
   isError: boolean;
   exceptionInformation: any;
+}
+export interface DeleteAssociatedProductModel{
+  product: number
+  prodCategory:string
 }

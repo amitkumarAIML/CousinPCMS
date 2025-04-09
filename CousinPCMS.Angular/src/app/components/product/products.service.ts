@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
-import { ProductRequest } from '../../shared/models/productModel';
-import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
+import { AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, ProductRequest } from '../../shared/models/productModel';
 import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
+import { AdditionalCategoryModel, AdditionalCategoryResponse } from '../../shared/models/additionalCategoryModel';
 
 @Injectable({
   providedIn: 'root',
@@ -76,17 +76,21 @@ export class ProductsService {
     );
   }
 
-  getAdditionalProduct(productId :  number): Observable<any> {
-    return this.httpService.get<any>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
-      map(response => response),
+  getAdditionalProduct(productId :  number): Observable<AdditionalCategoryModel[]> {
+    return this.httpService.get<AdditionalCategoryResponse>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
+      map(response => response.value),
       catchError(error => throwError(() => error))
     );
   }
 
-  addAssociatedProduct(associatedFormProductData: addAssociatedProductModel) {
+  addAssociatedProduct(associatedFormProductData: AssociatedProductRequestModelForProduct) {
     return this.httpService.post(`Product/AddAssociatedProduct`, associatedFormProductData);
   }
-  updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
+  updateAssociatedProduct(associatedFormProductData: AssociatedProductRequestModelForProduct) {
     return this.httpService.patch(`Product/UpdateAssociatedProduct`, associatedFormProductData);
+  }
+  
+  deleteAssociatedProduct(associatedProductData: DeleteAssociatedProductModelForProduct) {
+    return this.httpService.post(`Product/DeleteAssociatedProduct`, associatedProductData);
   }
 }
