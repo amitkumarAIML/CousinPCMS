@@ -70,6 +70,34 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Gets departments by Id.
+        /// </summary>       
+        /// <returns>returns department object if details are available. Else empty object.</returns>
+        [HttpGet("GetDepartmentById")]
+        [ProducesResponseType(typeof(APIResult<List<DepartmentModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetDepartmentById(string deptId)
+        {
+            log.Info($"Request of {nameof(GetDepartmentById)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _deptService.GetDepartmentById(deptId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetDepartmentById)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetDepartmentById)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Gets all department layout.
         /// </summary>       
         /// <returns>returns department layout object if details are available. Else empty object.</returns>

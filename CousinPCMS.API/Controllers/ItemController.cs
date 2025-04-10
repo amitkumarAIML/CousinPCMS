@@ -69,6 +69,35 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+        /// <summary>
+        /// Gets all items by itemNumber.
+        /// </summary>     
+        /// <param name="itemNumber">pass item number</param>
+        /// <returns>returns Items object if details are available. Else empty object.</returns>
+        [HttpGet("GetItemsByItemNo")]
+        [ProducesResponseType(typeof(APIResult<List<ItemResponseModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetItemsByItemNo(string itemNumber)
+        {
+            log.Info($"Request of {nameof(GetItemsByItemNo)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.GetItemsByItemNo(itemNumber);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetItemsByItemNo)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetItemsByItemNo)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
 
         /// <summary>
         /// Gets all items by Product Id.
