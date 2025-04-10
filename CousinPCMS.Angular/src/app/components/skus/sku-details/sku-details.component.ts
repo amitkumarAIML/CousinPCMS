@@ -204,5 +204,9 @@ export class SkuDetailsComponent {
    }
   }
 
-
+  goToLinkMaintenance(): void {
+    if (!this.skuForm.getRawValue().akiSKUID) return;
+    sessionStorage.setItem('skuId', this.skuForm.getRawValue().akiSKUID);
+    this.router.navigate(['/skus/link-maintenance']);
+  }
 }
