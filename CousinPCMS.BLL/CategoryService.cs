@@ -129,7 +129,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateProductListorder(UpdateListOrderModel objModel)
+        public APIResult<string> UpdateProductListorder(AddAdditionalProductforCategoryRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -165,7 +165,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateAssociatedProduct(UpdateListOrderModel objModel)
+        public APIResult<string> UpdateAssociatedProduct(AddAdditionalProductforCategoryRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -176,7 +176,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateAddProdListOrder?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateAddProdForCategoryListOrder?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -201,7 +201,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> AddAssociatedProduct(CategoryListOrderModel objModel)
+        public APIResult<string> AddAssociatedProduct(AddAdditionalProductforCategoryRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -212,9 +212,9 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddDataAddProdForCategory?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
-                if (response.StatusCode == System.Net.HttpStatusCode.Created)
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     returnValue.IsSuccess = true;
                     returnValue.Value = "Success";
@@ -301,7 +301,7 @@ namespace CousinPCMS.BLL
                 // Fetch Additional Category Data
                 var response = ServiceClient.PerformAPICallWithToken(
                     Method.Get,
-                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproducts?company={HardcodedValues.CompanyName}{filter}",
+                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproductforcategorys?company={HardcodedValues.CompanyName}{filter}",
                     ParameterType.GetOrPost,
                     Oauth.Token
                 ).Content;
@@ -641,6 +641,42 @@ namespace CousinPCMS.BLL
                 var postData = JsonConvert.SerializeObject(objModel);
 
                 var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddCategoryURL?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<string> DeleteAssociatedProduct(DeleteAssociatedProductCatRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteAddProductForCategory?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {

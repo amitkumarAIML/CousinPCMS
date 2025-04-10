@@ -116,14 +116,14 @@ namespace CousinPCMS.Domain
 
     public class AddCategoryAdditionalImageRequestModel
     {
-        public int categoryID { get; set; }
+        public string categoryID { get; set; }
         public string imageURL { get; set; }
-        public string imageName { get; set; }
+        public string imagename { get; set; }
     }
 
     public class AddCategoryAdditionalLinkUrlRequestModel
     {
-        public int categoryID { get; set; }
+        public string categoryID { get; set; }
         public string linkURL { get; set; }
         public string linkText { get; set; }
         public string toolTip { get; set; }
@@ -132,13 +132,13 @@ namespace CousinPCMS.Domain
 
     public class DeleteCategoryURLRequestModel
     {
-        public int categoryID { get; set; }
+        public string categoryID { get; set; }
         public string linkURL { get; set; }
     }
 
     public class DeleteCategoryImageRequestModel
     {
-        public int categoryID { get; set; }
+        public string categoryID { get; set; }
         public string imageURL { get; set; }
     }
 
@@ -157,11 +157,17 @@ namespace CousinPCMS.Domain
         public int listorder { get; set; }
     }
 
-    public class UpdateListOrderModel
+    public class AddAdditionalProductforCategoryRequestModel
     {
         public int product { get; set; }
         public string prodCategory { get; set; }
         public int listorder { get; set; }
+    }
+
+    public class DeleteAssociatedProductCatRequestModel
+    {
+        public int product { get; set; }
+        public string prodCategory { get; set; }
     }
 
     public class LinkedAttributeModel
