@@ -19,11 +19,12 @@ import {CommodityCode} from '../../../shared/models/commodityCodeModel';
 import {layoutProduct} from '../../../shared/models/layoutTemplateModel';
 import {NzUploadChangeParam, NzUploadModule} from 'ng-zorro-antd/upload';
 import {NzButtonModule} from 'ng-zorro-antd/button';
-import {addAssociatedProductModel, AdditionalCategoryModel} from '../../../shared/models/additionalCategoryModel';
+import {AdditionalCategoryModel} from '../../../shared/models/additionalCategoryModel';
 import {error} from 'jquery';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
 import {CategoryService} from '../../category/category.service';
 import {Router} from '@angular/router';
+import { AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
 
 @Component({
   selector: 'cousins-product-details',
@@ -69,12 +70,11 @@ export class ProductDetailsComponent {
   editAssociatedProductForm: FormGroup;
   addAssociatedProductForm: FormGroup;
   isVisibleAddProductModal: boolean = false;
-  AdditionalProductList: any[] = [];
+  AdditionalProductList: AdditionalProductModel[] = [];
   savedId: number | null = null;
   isAdditionalPloading: boolean = false;
   editingId: number | null = null;
-  productId: number = 0;
-  categoryId: string = '';
+  rowProductId: number | null=null;
   productList: any[] = [];
   loadingProduct: boolean = false;
   akiProductID: number = 0;
@@ -111,15 +111,14 @@ export class ProductDetailsComponent {
 
     this.addAssociatedProductForm = this.fb.group({
       product: [{value: '', disabled: true}, Validators.required],
-      additionalCategory: [''],
+      addproduct:[],
       listorder: [, Validators.required],
-      isAdditionalProduct: true,
+      
     });
     this.editAssociatedProductForm = this.fb.group({
       product: [],
-      additionalCategory: [''],
+      addproduct:[],
       listOrder: [],
-      isAdditionalProduct: true,
     });
   }
 
@@ -127,9 +126,9 @@ export class ProductDetailsComponent {
     if (changes['productData']) {
       if (this.productData) {
         this.productForm.patchValue(this.productData);
-        console.log('product data===', this.productData.akiProductID);
-        this.akiProductID = this.productData.akiProductID;
-        this.categoryId = this.productData.akiCategoryID;
+        this.akiProductID = this.productData.akiProductID;         
+      } else {
+        this.dataService.ShowNotification('error', '', 'Please select product name from home page');
       }
     }
   }
@@ -139,7 +138,7 @@ export class ProductDetailsComponent {
     this.getCommodityCodes();
     this.getCountryOrigin();
     this.getAllCategory();
-    this.GetAdditionalProduct();
+    this.getAdditionalProduct();
   }
 
   getFormData() {
@@ -251,7 +250,7 @@ export class ProductDetailsComponent {
       reader.readAsDataURL(file);
 
       if (event.file.status === 'uploading') {
-        this.dataService.ShowNotification('success', '', `${event.file.name} file uploaded successfully`);
+        this.dataService.ShowNotification('success', '', 'file uploaded successfully');
       }
     }
   }
@@ -263,11 +262,10 @@ export class ProductDetailsComponent {
         this.productList = response;
         // Filter only if AdditionalProductList is available
         if (this.AdditionalProductList && this.AdditionalProductList.length > 0) {
-          const existingIds = this.AdditionalProductList.map((category: any) => category.product);
+          const existingIds = this.AdditionalProductList.map((category: any) => category.additionalProduct);
           this.productList = this.productList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
         this.loadingProduct = false;
-        console.log('data', this.productList);
       },
       error: (error) => {
         this.loadingProduct = false;
@@ -277,7 +275,7 @@ export class ProductDetailsComponent {
   }
 
   // GetAdditionalProduct
-  GetAdditionalProduct() {
+  getAdditionalProduct() {
     this.isAdditionalPloading = true;
     if (this.akiProductID) {
       const isValidProductId = this.akiProductID;
@@ -303,20 +301,27 @@ export class ProductDetailsComponent {
     }
   }
 
+  selectProduct(data: any) {
+    this.rowProductId = data.akiProductID;
+    this.addAssociatedProductForm.patchValue({
+      product: data.akiProductName, // Set Product Name
+      webActive: data.akiProductIsActive, // Set Web Active if required
+    });
+  }
   addAssociatedProductSubmitForm(): void {
     this.isVisibleAddProductModal = false;
     const listOrder = Number(this.addAssociatedProductForm.get('listorder')?.value);
-    if (!this.productId) {
+    if (!this.rowProductId) {
       // Checks for null, undefined, 0, empty string, or false
       this.dataService.ShowNotification('error', '', 'Please select product name from grid');
       this.isVisibleAddProductModal = true;
       return;
     }
-    const associatedProduct: addAssociatedProductModel = {
-      product: this.productId,
-      additionalCategory: this.categoryId,
+    
+    const associatedProduct: AssociatedProductRequestModelForProduct = {
+      product: this.akiProductID,
+      addproduct:this.rowProductId.toString(),
       listorder: listOrder,
-      isAdditionalProduct: true,
     };
 
     const isListOrderExist =
@@ -337,7 +342,9 @@ export class ProductDetailsComponent {
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Associated product added successfully');
-            this.GetAdditionalProduct();
+            this.getAdditionalProduct();
+            this.rowProductId = null
+            this.addAssociatedProductForm.get('product')?.reset();
           } else {
             this.dataService.ShowNotification('error', '', 'Associated product not added ');
           }
@@ -356,38 +363,24 @@ export class ProductDetailsComponent {
     }
   }
 
-  selectProduct(data: any) {
-    this.productId = data.akiProductID;
-    this.addAssociatedProductForm.patchValue({
-      product: data.akiProductName, // Set Product Name
-      webActive: data.akiProductIsActive, // Set Web Active if required
-    });
-  }
   startEdit(row: any) {
-    this.editingId = row.product;
+    this.editingId = row.additionalProduct;
     this.savedId = null;
     this.editAssociatedProductForm.patchValue({
       listOrder: row.listOrder,
-      product: row.product,
-      additionalCategory: row.additionalCategory,
-      isAdditionalProduct: row.isAdditionalProduct,
+      product: row.additionalProduct,
     });
   }
-  saveAssociatedProEdit(row: any) {
+  updateAssociatedProduct(row: any) {
     const listOrder = Number(this.editAssociatedProductForm.get('listOrder')?.value);
     this.editingId = null;
-    this.savedId = row.product;
-    const associatedProduct: addAssociatedProductModel = {
+    this.savedId = row.additionalProduct;
+    const associatedProduct: AssociatedProductRequestModelForProduct = {
       product: row.product,
-      additionalCategory: row.additionalCategory,
+      addproduct: row.additionalProduct.toString(),
       listorder: listOrder,
-      isAdditionalProduct: row.isAdditionalProduct,
     };
-    // Ensure AdditionalProductList is available before checking for duplicates
-    if (!this.AdditionalProductList || this.AdditionalProductList.length === 0) {
-      this.dataService.ShowNotification('error', '', 'Product list is empty. Please try again.');
-      return;
-    }
+   
     // Check if listorder already exists in AdditionalCategoryList
     const isListOrderExist = this.AdditionalProductList?.some((category: any) => {
       return Number(category.listOrder) === listOrder; // Ensure number comparison
@@ -402,6 +395,7 @@ export class ProductDetailsComponent {
           next: (response: any) => {
             if (response.isSuccess) {
               this.dataService.ShowNotification('success', '', 'Associated product updated successfully');
+              this.getAdditionalProduct();
             } else {
               this.dataService.ShowNotification('error', '', 'Associated product not updated ');
             }
@@ -430,18 +424,20 @@ export class ProductDetailsComponent {
   }
   handleCancel(): void {
     this.isVisibleAddProductModal = false;
-    this.addAssociatedProductForm.get('product')?.value;
+    this.addAssociatedProductForm.get('product')?.reset();
+    this.rowProductId = null;
   }
 
   deleteAssociatedProduct(data: any) {
-    const deleteAssocatedProduct: any = {
+    const deleteAssocatedProduct: DeleteAssociatedProductModelForProduct = {
       product: data.product,
-      prodCategory: data.additionalCategory,
+      addproduct:data.additionalProduct.toString(),
     };
-    this.categoryService.deleteAssocatedProduct(deleteAssocatedProduct).subscribe({
-      next: (response) => {
+    this.productService.deleteAssociatedProduct(deleteAssocatedProduct).subscribe({
+      next: (response:any) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');
+          this.getAdditionalProduct();
         } else {
           this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
         }

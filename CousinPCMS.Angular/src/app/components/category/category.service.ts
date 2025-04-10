@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { addAssociatedProductModel, AdditionalCategoryModel, AdditionalCategoryResponse, categorylayout, categorylayoutResponse, editAssociatedProductModel, UpdateCategoryModel } from '../../shared/models/additionalCategoryModel';
+import { AdditionalCategoryModel, AdditionalCategoryResponse, AssociatedProductRequestModel, categorylayout, categorylayoutResponse, DeleteAssociatedProductModel, UpdateCategoryModel } from '../../shared/models/additionalCategoryModel';
 import { Product, ProductResponse } from '../../shared/models/productModel';
 import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 import { AdditionalImageDeleteRequestModel, AdditionalImagesModel } from '../../shared/models/additionalImagesModel';
@@ -51,14 +51,14 @@ export class CategoryService {
    updateCategory(categoryData:UpdateCategoryModel) {
     return this.httpService.patch(`Category/UpdateCategory`, categoryData);
   }
-  addAssociatedProduct(associatedFormProductData: addAssociatedProductModel) {
+  addAssociatedProduct(associatedFormProductData: AssociatedProductRequestModel) {
     return this.httpService.post(`Category/AddAssociatedProduct`, associatedFormProductData);
   }
-  updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
+  updateAssociatedProduct(associatedFormProductData: AssociatedProductRequestModel) {
     return this.httpService.patch(`Category/UpdateAssociatedProduct`, associatedFormProductData);
   }
-  deleteAssocatedProduct(deleteAssocatedProduct:any): Observable<any> {
-    return this.httpService.post(`Product/DeleteAssocatedProduct`, deleteAssocatedProduct);
+  deleteAssocatedProduct(deleteAssocatedProduct:DeleteAssociatedProductModel) {
+    return this.httpService.post(`Category/DeleteAssociatedProduct`, deleteAssocatedProduct);
   }
 
 

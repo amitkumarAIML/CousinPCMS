@@ -40,6 +40,8 @@ export class SkusComponent {
     this.skuSubscription = this.homeService.selectedSkU$.subscribe(skus => {
       if (skus) {
           this.skuData = skus[0];
+      }else {
+        this.dataService.ShowNotification('error', '', 'Please select sku name from home page');
       }
     });   
   }

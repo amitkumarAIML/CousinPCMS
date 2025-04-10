@@ -15,6 +15,7 @@ import { CompetitorItem } from '../../../shared/models/competitorModel';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
 import { Router } from '@angular/router';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
 
 @Component({
   selector: 'cousins-sku-details',
@@ -25,7 +26,8 @@ import { Router } from '@angular/router';
              NzSelectModule,
              NzCheckboxModule,
              NzButtonModule,
-             NzIconModule
+             NzIconModule,
+             NzUploadModule
   ],
   templateUrl: './sku-details.component.html',
   styleUrl: './sku-details.component.css'
@@ -40,6 +42,8 @@ export class SkuDetailsComponent {
    priceGroupItem: ItemModel[] = [];
    priceBreaks: ItemModel[] = [];
    pricingFormulas: ItemModel[] = [];
+   selectedFileName: string = '';
+   imagePreview: string | ArrayBuffer | null = null;
 
   @Input() skuData!: any;
   constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
@@ -180,12 +184,29 @@ export class SkuDetailsComponent {
       }
     });
   }
+  
+  onFileSelected(event: NzUploadChangeParam) {
+    const file = event.file?.originFileObj;
+       if (file) {
+        this.selectedFileName = file.name;
+        // Show Preview
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result;
+      };
+      this.skuForm.get('akiImageURL')?.setValue( this.selectedFileName); // Set it immediately
+  
+      reader.readAsDataURL(file);
+
+      if (event.file.status === 'uploading') {
+        this.dataService.ShowNotification('success','', 'file uploaded successfully');
+      }      
+   }
+  }
 
   goToLinkMaintenance(): void {
     if (!this.skuForm.getRawValue().akiSKUID) return;
     sessionStorage.setItem('skuId', this.skuForm.getRawValue().akiSKUID);
     this.router.navigate(['/skus/link-maintenance']);
   }
-  
-
 }

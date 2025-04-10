@@ -43,6 +43,8 @@ export class DepartmentsComponent  {
     this.departmentSubscription = this.homeService.selectedDepartment$.subscribe(department => {
       if (department) {
         this.departmentData = department[0];
+      }else {
+        this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
       }
     });
   }

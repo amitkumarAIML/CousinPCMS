@@ -277,7 +277,7 @@
                                    
                                     <nz-table #dataTable [nzData]="AdditionalCategoryList"
                                         class="rounded-lg no-header-scroll"
-                                        [nzScroll]="{ x: '700px',
+                                        [nzScroll]="{ x: '600px',
                                             y: '200px'
                                         }"
                                         nzBordered="true"
@@ -286,9 +286,9 @@
                                         [nzLoading]="isAssociatePloading" >
                                         <thead class="text-xs ">
                                             <tr>
-                                            <th [nzWidth]="'70px'">List Order</th>
+                                            <th [nzWidth]="'50px'">List Order</th>
                                             <th [nzWidth]="'250px'">Product Name</th>                                  
-                                            <th [nzWidth]="'70px'">Action</th>
+                                            <th [nzWidth]="'50px'">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody class="text-color-secondary-font text-xs">
@@ -303,7 +303,7 @@
                                                 } @else {
                                                     {{ data.listOrder }}                                          
                                                 }
-                                                </td>
+                                                </td> 
                                                 <!-- Product Name -->
                                                 <td>                                      
                                                     {{ data.productName }}
@@ -312,21 +312,21 @@
                                                 <td>
                                                     <span class="flex gap-3">
                                                         @if (editingId === data.product) {
-                                                            <a (click)="saveAssociatedProEdit(data)"> Save</a>
+                                                            <a (click)="updateCategoryAssociatedProduct(data)"> Save</a>
                                                             <a (click)="cancelEdit()">Cancel</a>
                                                         } @else if (savedId === data.product) {
-                                                            <a (click)="startEdit(data)">
-                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                            <a (click)="startEdit(data)">                                                                
+                                                                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
-                                                            <a (click)="deleteAssociatedProduct(data)">
-                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                            <a (click)="deleteAssociatedProduct(data)">                                                              
+                                                                <nz-icon nzType="delete" class="text-danger w-5 h-4"  nzTheme="outline" />
                                                             </a>
                                                         } @else {
                                                             <a (click)="startEdit(data)">
-                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
-                                                            <a (click)="deleteAssociatedProduct(data)">
-                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                            <a (click)="deleteAssociatedProduct(data)">                                                              
+                                                                <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline" />
                                                             </a>
                                                         }
                                                     </span>
@@ -459,12 +459,7 @@ nzWidth="500px"
                     <input nz-input formControlName="product" class="w-full" />                                            
                 </nz-form-control>
             </nz-form-item>                
-            <div class="flex justify-center">
-                <!-- <nz-form-label [nzNoColon]="true">Web Active</nz-form-label>
-                <nz-switch                          
-                    formControlName="webActive"
-                ></nz-switch>                      -->
-            </div>
+            
             <div class="flex justify-end gap-3 mt-5">
                 <button nz-button nzType="default"
                 (click)="handleCancel()">
@@ -512,11 +507,11 @@ nzWidth="500px"
                 <span class="flex gap-3">
                     @if(data.akiProductIsActive==true)
                     {
-                        <img src="../imgs/Check boxTrue.svg" alt="true checkIcon">
+                        <nz-icon nzType="check-circle" class="w-5 h-4 text-primary-theme" nzTheme="outline" />
                     }
                     @if(data.akiProductIsActive==false)
                     {
-                          <img src="../imgs/CheckboxFalse.svg" alt="false deleteIcon">  
+                        <nz-icon nzType="stop" nzTheme="outline" class="w-5 h-4 text-danger" />  
                     }                  
                 </span>
                 </td>
