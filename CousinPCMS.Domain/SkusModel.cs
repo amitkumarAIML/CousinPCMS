@@ -64,7 +64,7 @@ namespace CousinPCMS.Domain
         public string akiCountryofOrigin { get; set; }
         public bool akiPrintLayoutTemp { get; set; }
         public string akiAlternativeTitle { get; set; }
-        public string akiCompetiors { get; set; }
+        public string akiCompetitors { get; set; }
         public bool akiPricebreaks { get; set; }
         public int akiItemShippingWeight { get; set; }
         public string akiItemSiteID { get; set; }

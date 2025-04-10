@@ -6,7 +6,7 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
-        public string itemNumber { get; set; }
+        public string akiitemid { get; set; }
         public string skuName { get; set; }
         public int priceUnitConversion { get; set; }
         public string inventoryPostingGroup { get; set; }
@@ -155,7 +155,7 @@ namespace CousinPCMS.Domain
         public string akiCountryOfOrigin { get; set; }
         public bool akiPrintLayoutTemp { get; set; }
         public string akiAlternativeTitle { get; set; }
-        public string akiCompetitorsTBC { get; set; }
+        public string akiCompetitors { get; set; }
         public bool akiPriceBreaksTBC { get; set; }
         public string itemclasscode { get; set; }
         public int akiItemShippingWeight { get; set; }
@@ -172,7 +172,7 @@ namespace CousinPCMS.Domain
         public string akiItemShortDescription { get; set; }
         public int akiTemplateID { get; set; }
         public string akiAltSKUName { get; set; }
-        public string AKI_Layout_Template { get; set; }
+        public string akiLayoutTemplate { get; set; }
         public string akiPricingFormula { get; set; }
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
