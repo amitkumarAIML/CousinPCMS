@@ -3,14 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
-import { ProductRequest } from '../../shared/models/productModel';
-import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
-import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
-import { ApiResponse } from '../../shared/models/generalModel';
 import { AdditionalImagesModel, AdditionalImageDeleteRequestModel } from '../../shared/models/additionalImagesModel';
 import { AdditionalProductModel, AdditionalProductResponse, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, ProductRequest } from '../../shared/models/productModel';
-import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
-import { AdditionalCategoryModel, AdditionalCategoryResponse } from '../../shared/models/additionalCategoryModel';
+import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
+import { ApiResponse } from '../../shared/models/generalModel';
 
 @Injectable({
   providedIn: 'root',
