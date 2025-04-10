@@ -69,7 +69,7 @@ export class CategoryComponent {
   loading: boolean = false;
   loadingProduct: boolean = false;
   deleteLoading: boolean = false;
-  productId:number=0;
+  productId:number| null=null;
   savedId: number | null = null;
   isAssociatePloading:boolean=false;
   selectedFiles!: File;
@@ -300,7 +300,8 @@ export class CategoryComponent {
   
             // Set the incremented value in form
             this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });           
-            this.getAllProducts();     
+            this.getAllProducts();
+             
           } else {
             this.dataService.ShowNotification('error', '', 'Data are not found');                   
           }
@@ -384,7 +385,9 @@ export class CategoryComponent {
         next: (response:any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Associated product added successfully');
-            this.getAdditionalCategory();               
+            this.getAdditionalCategory(); 
+            this.addAssociatedProductForm.get('product')?.reset();
+            this.productId=null;                      
           } else {
              this.dataService.ShowNotification('error', '', 'Associated product not added ');                
           }
@@ -492,7 +495,8 @@ deleteAssociatedProduct(data:any){
 
   handleCancel(): void {
     this.isVisibleAddProductModal = false;
-    this.addAssociatedProductForm.get('product')?.value;
+    this.addAssociatedProductForm.get('product')?.reset();
+    this.productId=null;
   }
 
   goToLinkMaintenance(): void {

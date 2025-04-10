@@ -246,25 +246,24 @@
                                             <tr>
                                                 <!-- List Order -->
                                                 <td>
-                                                @if(editingId === data.product) {
+                                                @if(editingId === data.additionalProduct) {
                                                     <input nz-input formControlName="listOrder" value="listOrder" type="number" />
                                                     <input nz-input formControlName="product" value="product" type="number" class="hidden" />
-                                                    <input nz-input formControlName="additionalCategory" value="additionalCategory" type="text" class="hidden" />
                                                 } @else {
-                                                    {{ data.listOrder }}                                          
+                                                    {{ data.listOrder }}                                         
                                                 }
                                                 </td>
                                                 <!-- Product Name -->
                                                 <td>                                      
-                                                    {{ data.productName }}
+                                                    {{ data.additionalProductName }}
                                                 </td>
                                                 <!-- Actions -->
                                                 <td>
                                                     <span class="flex gap-3">
-                                                        @if (editingId === data.product) {
+                                                        @if (editingId === data.additionalProduct) {
                                                             <a (click)="updateAssociatedProduct(data)"> Save</a>
                                                             <a (click)="cancelEdit()">Cancel</a>
-                                                        } @else if (savedId === data.product) {
+                                                        } @else if (savedId === data.additionalProduct) {
                                                             <a (click)="startEdit(data)">
                                                                 <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
@@ -439,12 +438,6 @@ nzWidth="500px"
                     <input nz-input formControlName="product" class="w-full" />                                            
                 </nz-form-control>
             </nz-form-item>                
-            <div class="flex justify-center">
-                <!-- <nz-form-label [nzNoColon]="true">Web Active</nz-form-label>
-                <nz-switch                          
-                    formControlName="webActive"
-                ></nz-switch>                      -->
-            </div>
             <div class="flex justify-end gap-3 mt-5">
                 <button nz-button nzType="default"
                 (click)="handleCancel()">

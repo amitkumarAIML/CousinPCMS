@@ -24,7 +24,7 @@ import {error} from 'jquery';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
 import {CategoryService} from '../../category/category.service';
 import {Router} from '@angular/router';
-import { AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
+import { AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
 
 @Component({
   selector: 'cousins-product-details',
@@ -70,11 +70,11 @@ export class ProductDetailsComponent {
   editAssociatedProductForm: FormGroup;
   addAssociatedProductForm: FormGroup;
   isVisibleAddProductModal: boolean = false;
-  AdditionalProductList: AdditionalCategoryModel[] = [];
+  AdditionalProductList: AdditionalProductModel[] = [];
   savedId: number | null = null;
   isAdditionalPloading: boolean = false;
   editingId: number | null = null;
-  rowProductId: number = 0;
+  rowProductId: number | null=null;
   productList: any[] = [];
   loadingProduct: boolean = false;
   akiProductID: number = 0;
@@ -111,15 +111,14 @@ export class ProductDetailsComponent {
 
     this.addAssociatedProductForm = this.fb.group({
       product: [{value: '', disabled: true}, Validators.required],
-      additionalCategory: [''],
+      addproduct:[],
       listorder: [, Validators.required],
-      isAdditionalProduct: true,
+      
     });
     this.editAssociatedProductForm = this.fb.group({
       product: [],
-      additionalCategory: [''],
+      addproduct:[],
       listOrder: [],
-      isAdditionalProduct: true,
     });
   }
 
@@ -127,9 +126,7 @@ export class ProductDetailsComponent {
     if (changes['productData']) {
       if (this.productData) {
         this.productForm.patchValue(this.productData);
-        this.akiProductID = this.productData.akiProductID;      
-        console.log('product data',this.productData);
-        
+        this.akiProductID = this.productData.akiProductID;         
       } else {
         this.dataService.ShowNotification('error', '', 'Please select product name from home page');
       }
@@ -141,7 +138,7 @@ export class ProductDetailsComponent {
     this.getCommodityCodes();
     this.getCountryOrigin();
     this.getAllCategory();
-    this.GetAdditionalProduct();
+    this.getAdditionalProduct();
   }
 
   getFormData() {
@@ -260,7 +257,7 @@ export class ProductDetailsComponent {
         this.productList = response;
         // Filter only if AdditionalProductList is available
         if (this.AdditionalProductList && this.AdditionalProductList.length > 0) {
-          const existingIds = this.AdditionalProductList.map((category: any) => category.product);
+          const existingIds = this.AdditionalProductList.map((category: any) => category.additionalProduct);
           this.productList = this.productList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
         this.loadingProduct = false;
@@ -273,7 +270,7 @@ export class ProductDetailsComponent {
   }
 
   // GetAdditionalProduct
-  GetAdditionalProduct() {
+  getAdditionalProduct() {
     this.isAdditionalPloading = true;
     if (this.akiProductID) {
       const isValidProductId = this.akiProductID;
@@ -340,7 +337,9 @@ export class ProductDetailsComponent {
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Associated product added successfully');
-            this.GetAdditionalProduct();
+            this.getAdditionalProduct();
+            this.rowProductId = null
+            this.addAssociatedProductForm.get('product')?.reset();
           } else {
             this.dataService.ShowNotification('error', '', 'Associated product not added ');
           }
@@ -360,20 +359,20 @@ export class ProductDetailsComponent {
   }
 
   startEdit(row: any) {
-    this.editingId = row.product;
+    this.editingId = row.additionalProduct;
     this.savedId = null;
     this.editAssociatedProductForm.patchValue({
       listOrder: row.listOrder,
-      product: row.product,
+      product: row.additionalProduct,
     });
   }
   updateAssociatedProduct(row: any) {
     const listOrder = Number(this.editAssociatedProductForm.get('listOrder')?.value);
     this.editingId = null;
-    this.savedId = row.product;
+    this.savedId = row.additionalProduct;
     const associatedProduct: AssociatedProductRequestModelForProduct = {
       product: row.product,
-      addproduct: this.akiProductID.toString(),//row.additionalCategory,
+      addproduct: row.additionalProduct.toString(),
       listorder: listOrder,
     };
    
@@ -391,6 +390,7 @@ export class ProductDetailsComponent {
           next: (response: any) => {
             if (response.isSuccess) {
               this.dataService.ShowNotification('success', '', 'Associated product updated successfully');
+              this.getAdditionalProduct();
             } else {
               this.dataService.ShowNotification('error', '', 'Associated product not updated ');
             }
@@ -419,19 +419,20 @@ export class ProductDetailsComponent {
   }
   handleCancel(): void {
     this.isVisibleAddProductModal = false;
-    this.addAssociatedProductForm.get('product')?.value;
+    this.addAssociatedProductForm.get('product')?.reset();
+    this.rowProductId = null;
   }
 
   deleteAssociatedProduct(data: any) {
     const deleteAssocatedProduct: DeleteAssociatedProductModelForProduct = {
       product: data.product,
-      addproduct:this.akiProductID.toString(),
+      addproduct:data.additionalProduct.toString(),
     };
     this.productService.deleteAssociatedProduct(deleteAssocatedProduct).subscribe({
       next: (response:any) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');
-          this.GetAdditionalProduct();
+          this.getAdditionalProduct();
         } else {
           this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
         }

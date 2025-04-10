@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
-import { AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, ProductRequest } from '../../shared/models/productModel';
+import { AdditionalProductModel, AdditionalProductResponse, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, ProductRequest } from '../../shared/models/productModel';
 import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 import { AdditionalCategoryModel, AdditionalCategoryResponse } from '../../shared/models/additionalCategoryModel';
 
@@ -76,8 +76,8 @@ export class ProductsService {
     );
   }
 
-  getAdditionalProduct(productId :  number): Observable<AdditionalCategoryModel[]> {
-    return this.httpService.get<AdditionalCategoryResponse>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
+  getAdditionalProduct(productId :  number): Observable<AdditionalProductModel[]> {
+    return this.httpService.get<AdditionalProductResponse>(`Product/GetAdditionalProduct`,{ productId: productId }).pipe(
       map(response => response.value),
       catchError(error => throwError(() => error))
     );

@@ -303,7 +303,7 @@
                                                 } @else {
                                                     {{ data.listOrder }}                                          
                                                 }
-                                                </td>
+                                                </td> 
                                                 <!-- Product Name -->
                                                 <td>                                      
                                                     {{ data.productName }}
@@ -459,12 +459,7 @@ nzWidth="500px"
                     <input nz-input formControlName="product" class="w-full" />                                            
                 </nz-form-control>
             </nz-form-item>                
-            <div class="flex justify-center">
-                <!-- <nz-form-label [nzNoColon]="true">Web Active</nz-form-label>
-                <nz-switch                          
-                    formControlName="webActive"
-                ></nz-switch>                      -->
-            </div>
+            
             <div class="flex justify-end gap-3 mt-5">
                 <button nz-button nzType="default"
                 (click)="handleCancel()">

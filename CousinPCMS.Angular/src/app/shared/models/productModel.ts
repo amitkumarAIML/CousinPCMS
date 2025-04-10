@@ -79,3 +79,18 @@ export interface DeleteAssociatedProductModelForProduct{
   product:number;
   addproduct:string;
 }
+export interface AdditionalProductModel {
+    oDataEtag: string;
+    product: number;
+    additionalProduct: number;
+    listOrder: number;
+    productName: string;
+    webActive: boolean;
+    additionalProductName: string;
+  }
+  export interface AdditionalProductResponse {
+    value: AdditionalProductModel[];
+    isSuccess: boolean;
+    isError: boolean;
+    exceptionInformation: any;
+  }
