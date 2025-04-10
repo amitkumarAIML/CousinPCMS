@@ -178,7 +178,7 @@
                         <!-- No of Additional Images -->
                         <nz-form-item class="w-full">
                             <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="product-link">
-                                <a href="products/additional-images" class="underline">No of Additional Images</a>
+                                <a (click)="goToAdditionalImage()" class="underline">No of Additional Images</a>
                             </nz-form-label>
                             <nz-form-control>
                                 <input nz-input  id="additionalImages" [disabled]="true"/>

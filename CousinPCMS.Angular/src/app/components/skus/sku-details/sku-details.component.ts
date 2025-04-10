@@ -14,6 +14,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CompetitorItem } from '../../../shared/models/competitorModel';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
+import { Router } from '@angular/router';
 import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
 
 @Component({
@@ -45,7 +46,7 @@ export class SkuDetailsComponent {
    imagePreview: string | ArrayBuffer | null = null;
 
   @Input() skuData!: any;
-  constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService) {
+  constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
       this.skuForm = this.fb.group({
           akiProductID: [{ value: '' , disabled: true}],
           akiCategoryID: [{ value: '' , disabled: true}],

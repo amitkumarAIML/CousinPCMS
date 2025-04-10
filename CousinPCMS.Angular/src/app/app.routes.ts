@@ -45,6 +45,18 @@ export const routes: Routes = [
     path: 'category/link-maintenance',
     component: LinkMaintenanceComponent,
   },
+  { 
+    path: 'category/additional-images',
+    component: AdditionalImagesComponent,
+  },
+  { 
+    path: 'skus/link-maintenance',
+    component: LinkMaintenanceComponent,
+  },
+  { 
+    path: 'skus/additional-images',
+    component: AdditionalImagesComponent,
+  },
 
   
 ];

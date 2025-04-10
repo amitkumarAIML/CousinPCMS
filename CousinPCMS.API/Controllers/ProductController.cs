@@ -98,6 +98,35 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Gets product details by product id.
+        /// </summary>       
+        /// <param name="akiProductID">pass product id</param>
+        /// <returns>returns product object if details are available. Else empty object.</returns>
+        [HttpGet("GetProductById")]
+        [ProducesResponseType(typeof(APIResult<List<ProductModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetProductById(int akiProductID)
+        {
+            log.Info($"Request of {nameof(GetProductById)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.GetProductById(akiProductID.ToString());
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetProductById)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetProductById)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Gets all Product layouts.
         /// </summary>       
         /// <returns>returns product layout object if details are available. Else empty object.</returns>

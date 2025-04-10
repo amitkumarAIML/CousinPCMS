@@ -500,10 +500,15 @@ deleteAssociatedProduct(data:any){
   }
 
   goToLinkMaintenance(): void {
-    console.log('ss', this.categoryForm.getRawValue())
     if (!this.categoryForm.getRawValue().akiCategoryID)  return;
     sessionStorage.setItem('categoryId',this.categoryForm.getRawValue().akiCategoryID);
     this.router.navigate(['/category/link-maintenance']);
+  }
+
+  goToAdditionalImage(): void {
+    if (!this.categoryForm.getRawValue().akiCategoryID) return;
+    sessionStorage.setItem('categoryId', this.categoryForm.getRawValue().akiCategoryID);
+    this.router.navigate(['/category/additional-images']);
   }
 
 }

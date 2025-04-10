@@ -40,6 +40,7 @@ namespace CousinPCMS.API.Controllers
             Oauth = Helper.GetOauthToken(Oauth);
             _categoryService = new CategoryService(Oauth);
         }
+
         /// <summary>
         /// Gets all categories.
         /// </summary>       
@@ -64,6 +65,35 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(GetAllCategory)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all categories by Id.
+        /// </summary>       
+        /// <param name="categoryId">Pass category id</param>
+        /// <returns>returns category object if details are available. Else empty object.</returns>
+        [HttpGet("GetCategoryById")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCategoryById(string categoryId)
+        {
+            log.Info($"Request of {nameof(GetCategoryById)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetCategoryById(categoryId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCategoryById)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCategoryById)} is failed.");
             }
             return Ok(responseValue);
         }

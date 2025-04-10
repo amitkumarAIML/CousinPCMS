@@ -4,7 +4,9 @@ import { HttpService } from '../../shared/services/http.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AdditionalCategoryModel, AdditionalCategoryResponse, AssociatedProductRequestModel, categorylayout, categorylayoutResponse, DeleteAssociatedProductModel, UpdateCategoryModel } from '../../shared/models/additionalCategoryModel';
 import { Product, ProductResponse } from '../../shared/models/productModel';
-import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
+import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
+import { AdditionalImageDeleteRequestModel, AdditionalImagesModel } from '../../shared/models/additionalImagesModel';
+import { ApiResponse } from '../../shared/models/generalModel';
 
 @Injectable({
   providedIn: 'root'
@@ -59,44 +61,45 @@ export class CategoryService {
     return this.httpService.post(`Category/DeleteAssociatedProduct`, deleteAssocatedProduct);
   }
 
-  getCategoryUrls(CategoryId: any): Observable<any> {
-    return this.httpService.get<any>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
-      map((response: any) => response),
+
+  getCategoryUrls(CategoryId: any): Observable<ApiResponse<LinkValue[]>> {
+    return this.httpService.get<ApiResponse<LinkValue[]>>('Category/GetCategoryUrls',{ CategoryId: CategoryId }).pipe(
+      map((response: ApiResponse<LinkValue[]>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  getGetCategoryAdditionalImages(CategoryId: number): Observable<any[]>  {
-    return this.httpService.get<any>('Category/GetCategoryAdditionalImages',{ CategoryId: CategoryId }).pipe(
-      map((response: any) => response.value),
+  getGetCategoryAdditionalImages(CategoryId: any): Observable<ApiResponse<AdditionalImagesModel[]>>  {
+    return this.httpService.get<ApiResponse<AdditionalImagesModel[]>>('Category/GetCategoryAdditionalImages',{ CategoryId: CategoryId }).pipe(
+      map((response: ApiResponse<AdditionalImagesModel[]>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  deleteCategoryImagesUrl(CategoryData: any): Observable<any> {
-    return this.httpService.post(`Category/DeleteCategoryAdditionalImage`, CategoryData).pipe(
-      map(response => response),
+  deleteCategoryImagesUrl(CategoryData: AdditionalImageDeleteRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Category/DeleteCategoryAdditionalImage`, CategoryData).pipe(
+      map((response: ApiResponse<string>)  => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  deleteCategoryLinkUrl(CategoryData: LinkDeleteRequestModel): Observable<any> {
-    return this.httpService.post(`Category/DeleteCategoryLinkUrl`, CategoryData).pipe(
-      map(response => response),
+  deleteCategoryLinkUrl(CategoryData: LinkDeleteRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Category/DeleteCategoryLinkUrl`, CategoryData).pipe(
+      map((response: ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  saveCategoryImagesUrl(CategoryData: any): Observable<any> {
-    return this.httpService.post(`Category/AddCategoryAdditionalImage`, CategoryData).pipe(
-      map(response => response),
+  saveCategoryImagesUrl(CategoryData: AdditionalImagesModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Category/AddCategoryAdditionalImage`, CategoryData).pipe(
+      map((response: ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  saveCategoryLinkUrl(CategoryData: LinkRequestModel): Observable<any> {
-    return this.httpService.post(`Category/AddCategoryLinkUrls`, CategoryData).pipe(
-      map(response => response),
+  saveCategoryLinkUrl(CategoryData: LinkRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Category/AddCategoryLinkUrls`, CategoryData).pipe(
+      map((response: ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }

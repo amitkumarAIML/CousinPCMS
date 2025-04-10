@@ -253,5 +253,192 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets linked urls for resp Sku.
+        /// <paramref name="skuItemID"/> 
+        /// </summary>       
+        /// <returns>returns Sku linked url object if details are available. Else empty object.</returns>
+        [HttpGet("GetSkuUrls")]
+        [ProducesResponseType(typeof(APIResult<List<SkusLinkedURlModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSkuUrls(string skuItemID)
+        {
+            log.Info($"Request of {nameof(GetSkuUrls)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.GetSkuUrls(skuItemID);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetSkuUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetSkuUrls)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets Sku additional images details.
+        /// <paramref name="skuItemID"/> 
+        /// </summary>       
+        /// <returns>returns sku images object if details are available. Else empty object.</returns>
+        [HttpGet("GetSkuAdditionalImages")]
+        [ProducesResponseType(typeof(APIResult<List<SkusAdditionalImageModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSkuAdditionalImages(string skuItemID)
+        {
+            log.Info($"Request of {nameof(GetSkuAdditionalImages)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.GetSkuAdditionalImages(skuItemID);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetSkuAdditionalImages)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetSkuAdditionalImages)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the linked url for that sku
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteSkuLinkUrl")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteSkuLinkUrl(DeleteSkuURLRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteSkuLinkUrl)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.DeleteSkuLinkUrl(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteSkuLinkUrl)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteSkuLinkUrl)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the additional images for that sku
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteSkuAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteSkuAdditionalImage(DeleteSkuImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteSkuAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.DeleteSkuAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteSkuAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteSkuAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add additional images for the Sku
+        /// </summary>
+        /// <param name="objModel">The object with add image details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddSkuAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddSkuAdditionalImage(AddSkuAdditionalImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddSkuAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.AddSkuAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddSkuAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddSkuAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// add linked urls for the Sku
+        /// </summary>
+        /// <param name="objModel">The object with add url details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("AddSkuLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddSkuLinkUrls(AddSkuAdditionalLinkUrlRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddSkuLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.AddSkuLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddSkuLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddSkuLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
     }
 }

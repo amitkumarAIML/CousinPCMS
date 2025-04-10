@@ -190,7 +190,7 @@
                      <!-- No of URL Links -->
                      <nz-form-item class="w-full">
                         <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
-                            <a href="#" class="underline">No of URL Links</a>
+                            <a (click)="goToLinkMaintenance()" class="underline">No of URL Links</a>
                         </nz-form-label>
                         <nz-form-control>
                             <input nz-input id="urlLinks" [disabled]="true" />

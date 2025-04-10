@@ -43,46 +43,53 @@
       </div>
 
       <!-- Link Creator Section -->
-      <div *ngIf="showForm" class="border-light-border border rounded mt-2 mb-2 p-4">
-        <label class="block mb-2">Link Creator</label>
-        <form nz-form [formGroup]="linkForm" class="space-y-4">
-          <nz-form-item>
-            <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link Text</nz-form-label>
-            <nz-form-control [nzSpan]="18">
-              <input nz-input formControlName="linkText" name="text" />
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link URL</nz-form-label>
-            <nz-form-control [nzSpan]="18">
-              <input nz-input formControlName="linkURL" name="url" />
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Tooltip</nz-form-label>
-            <nz-form-control [nzSpan]="18">
-              <input nz-input formControlName="tooltip" name="tooltip" />
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link Type</nz-form-label>
-            <nz-form-control [nzSpan]="18">
-              <nz-select formControlName="linkType" name="type">
-                <nz-option nzValue="Youtube" nzLabel="Youtube"></nz-option>
-                <nz-option nzValue="Web site" nzLabel="Web site"></nz-option>
-              </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-
-          <div class="flex justify-end gap-2">
-            <button nz-button (click)="cancel()">Cancel</button>
-            <button nz-button nzType="primary"  [nzLoading]="loading" (click)="save()">Save</button>
-          </div>
-        </form>
-      </div>
+       @if (showForm) {
+        <div class="border-light-border border rounded mt-2 mb-2 p-4">
+          <label class="block mb-2">Link Creator</label>
+          <form nz-form [formGroup]="linkForm" class="space-y-4">
+            <nz-form-item>
+              <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link Text</nz-form-label>
+              <nz-form-control [nzSpan]="18">
+                <input nz-input formControlName="linkText" name="text" />
+              </nz-form-control>
+            </nz-form-item>
+  
+            <nz-form-item>
+              <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link URL</nz-form-label>
+              <nz-form-control [nzSpan]="18">
+                <input nz-input formControlName="linkURL" name="url" (input)="checkDuplicateUrl()"/>
+                @if (isDuplicateUrl) {
+                  <div class="text-danger mt-1">
+                    This URL already exists in the table.
+                  </div>
+                }
+              </nz-form-control>
+            </nz-form-item>
+  
+            <nz-form-item>
+              <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Tooltip</nz-form-label>
+              <nz-form-control [nzSpan]="18">
+                <input nz-input formControlName="tooltip" name="tooltip" />
+              </nz-form-control>
+            </nz-form-item>
+  
+            <nz-form-item>
+              <nz-form-label nzRequired [nzNoColon]="true" [nzSpan]="6">Link Type</nz-form-label>
+              <nz-form-control [nzSpan]="18">
+                <nz-select formControlName="linkType" name="type">
+                  <nz-option nzValue="Youtube" nzLabel="Youtube"></nz-option>
+                  <nz-option nzValue="Web site" nzLabel="Web site"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+  
+            <div class="flex justify-end gap-2">
+              <button nz-button (click)="cancel()">Cancel</button>
+              <button nz-button nzType="primary"  [nzLoading]="loading" (click)="save()">Save</button>
+            </div>
+          </form>
+        </div>
+       }
     </div>
   </div>
 </div>

@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
+import { ProductRequest } from '../../shared/models/productModel';
+import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
+import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
+import { ApiResponse } from '../../shared/models/generalModel';
+import { AdditionalImagesModel, AdditionalImageDeleteRequestModel } from '../../shared/models/additionalImagesModel';
 import { AdditionalProductModel, AdditionalProductResponse, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, ProductRequest } from '../../shared/models/productModel';
 import { ApiResponse, LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 import { AdditionalCategoryModel, AdditionalCategoryResponse } from '../../shared/models/additionalCategoryModel';
@@ -34,44 +39,44 @@ export class ProductsService {
     );
   }
 
-  getProductUrls(productId: any): Observable<any>  {
-    return this.httpService.get<any>('Product/GetProductUrls',{ productId: productId }).pipe(
-      map((response: any) => response),
+  getProductUrls(productId: any): Observable<ApiResponse<LinkValue[]>>  {
+    return this.httpService.get<ApiResponse<LinkValue[]>>('Product/GetProductUrls',{ productId: productId }).pipe(
+      map((response: ApiResponse<LinkValue[]>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  getGetProductAdditionalImages(productId: number): Observable<any[]>  {
-    return this.httpService.get<any>('Product/GetProductAdditionalImages',{ productId: productId }).pipe(
-      map((response: any) => response.value),
+  getGetProductAdditionalImages(productId: any): Observable<ApiResponse<AdditionalImagesModel[]>>  {
+    return this.httpService.get<ApiResponse<AdditionalImagesModel[]>>('Product/GetProductAdditionalImages',{ productId: productId }).pipe(
+      map((response: ApiResponse<AdditionalImagesModel[]>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  deleteProductImagesUrl(productData: any): Observable<any> {
-    return this.httpService.post(`Product/DeleteProductAdditionalImage`, productData).pipe(
-      map(response => response),
+  deleteProductImagesUrl(productData: AdditionalImageDeleteRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Product/DeleteProductAdditionalImage`, productData).pipe(
+      map((response: ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  deleteProductLinkUrl(productData: LinkDeleteRequestModel): Observable<any> {
-    return this.httpService.post(`Product/DeleteProductLinkUrl`, productData).pipe(
-      map(response => response),
+  deleteProductLinkUrl(productData: LinkDeleteRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Product/DeleteProductLinkUrl`, productData).pipe(
+      map((response: ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  saveProductImagesUrl(productData: any): Observable<any> {
-    return this.httpService.post(`Product/AddProductAdditionalImage`, productData).pipe(
-      map(response => response),
+  saveProductImagesUrl(productData: AdditionalImagesModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Product/AddProductAdditionalImage`, productData).pipe(
+      map((response:ApiResponse<string>) => response),
       catchError(error => throwError(() => error))
     );
   }
 
-  saveProductLinkUrl(productData: LinkRequestModel): Observable<any> {
-    return this.httpService.post(`Product/AddProductLinkUrls`, productData).pipe(
-      map(response => response),
+  saveProductLinkUrl(productData: LinkRequestModel): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(`Product/AddProductLinkUrls`, productData).pipe(
+      map((response: ApiResponse<string>)=> response),
       catchError(error => throwError(() => error))
     );
   }
