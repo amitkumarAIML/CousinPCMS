@@ -9,3 +9,10 @@ export interface NavItem {
   path: string;
   keywords?: string[]; // optional
 }
+
+export interface ApiResponse<T> {
+  isSuccess: boolean;
+  isError: boolean;
+  exceptionInformation: any;
+  value: T;
+}
