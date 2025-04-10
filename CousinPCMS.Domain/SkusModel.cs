@@ -26,13 +26,13 @@ namespace CousinPCMS.Domain
         public string ItemManufactureRef { get; set; }
 
         [JsonProperty("itemObsolte")]
-        public string ItemObsolte { get; set; }
+        public bool ItemObsolte { get; set; }
 
         [JsonProperty("itemIsUnavailable")]
-        public string ItemIsUnavailable { get; set; }
+        public bool ItemIsUnavailable { get; set; }
 
         [JsonProperty("isrelatedSKU")]
-        public string IsrelatedSKU { get; set; }
+        public bool IsrelatedSKU { get; set; }
     }
 
     public class DeleteSkusRequestModel
