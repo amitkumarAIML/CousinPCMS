@@ -12,10 +12,10 @@
     <!-- Product List -->
     @if (!loading && products && products.length > 0) {
         <ul class="product-list divide-y divide-gray-200">
-          @for (product of products; track product.akiProductID) {
+          @for (product of products; track $index) {
             @if (product) {
-                <li class="product-item" (click)="onProductClick(product.akiProductID)"  
-                    [ngClass]="{'bg-bg-light': selectedProduct === product?.akiProductID}">
+                <li class="product-item" (click)="onProductClick(product)"  
+                    [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
                     {{ product.akiProductName}}
                 </li>
             }

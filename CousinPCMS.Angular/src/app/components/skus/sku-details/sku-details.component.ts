@@ -50,7 +50,7 @@ export class SkuDetailsComponent {
           skuName: ['',[ Validators.required ]],
           akiSKUDescription: [''],
           akiManufacturerRef: [''],
-          itemNumber: [''],
+          akiitemid: [''],
           akiListOrder: [''],
           akiObsolete: [false],
           akiWebActive: [false],
@@ -62,11 +62,11 @@ export class SkuDetailsComponent {
           akiGuidePriceTBC: [10],
           akiGuideWeightTBC: [0],
           akiAlternativeTitle: [''],
-          akI_Layout_Template: [''],
-          akiCompetitorsTBC: [''],
+          akiLayoutTemplate: [''],
+          akiCompetitors: [''],
           akiPriceBreak: [''],
           akiPriceGroup: [''],
-          akiPricingFormula: ['']
+          akiPricingFormula: [''],
       });
   }
 
@@ -185,6 +185,12 @@ export class SkuDetailsComponent {
     if (!this.skuForm.getRawValue().akiSKUID) return;
     sessionStorage.setItem('skuId', this.skuForm.getRawValue().akiSKUID);
     this.router.navigate(['/skus/link-maintenance']);
+  }
+
+  goToAdditionalImage(): void {
+    if (!this.skuForm.getRawValue().akiProductID) return;
+    sessionStorage.setItem('skuId', this.skuForm.getRawValue().akiSKUID);
+    this.router.navigate(['/skus/additional-images']);
   }
   
 

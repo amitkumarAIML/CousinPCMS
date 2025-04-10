@@ -5,7 +5,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
-import { DepartmentResponse } from '../../../shared/models/departmentModel';
+import { Department, DepartmentResponse } from '../../../shared/models/departmentModel';
 import { CommonModule } from '@angular/common';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DataService } from '../../../shared/services/data.service';
@@ -34,7 +34,7 @@ export class DepartmentInfoComponent {
   commodityCode: any[] = [];
   layoutOptions: layoutDepartment[] = [];
 
-  @Input() deptData!: DepartmentResponse;
+  @Input() deptData!: Department;
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
 

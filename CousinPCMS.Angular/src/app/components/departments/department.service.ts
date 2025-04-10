@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
-import { DepartmentRequest } from '../../shared/models/departmentModel';
+import { Department, DepartmentRequest, DepartmentResponse, DepartmentUpdateResponse } from '../../shared/models/departmentModel';
 import { layoutDepartment, layoutDepartmentResponse } from '../../shared/models/layoutTemplateModel';
 
 @Injectable({
@@ -31,6 +31,15 @@ export class DepartmentService {
       catchError(error => throwError(() => error))
     );
   }
+
+  getDepartmentById(departmentId: string): Observable<DepartmentResponse> {
+    return this.httpService.get<DepartmentResponse>('Department/GetDepartmentById', {deptId: departmentId}).pipe(
+      map((response: DepartmentResponse) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  
 
 
 }

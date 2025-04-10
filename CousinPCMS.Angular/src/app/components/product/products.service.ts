@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { HttpService } from '../../shared/services/http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { layoutProduct, layoutProductResponse } from '../../shared/models/layoutTemplateModel';
-import { ProductRequest } from '../../shared/models/productModel';
+import { ProductRequest, ProductResponse } from '../../shared/models/productModel';
 import { addAssociatedProductModel, editAssociatedProductModel } from '../../shared/models/additionalCategoryModel';
 import { LinkDeleteRequestModel, LinkRequestModel, LinkValue } from '../../shared/models/linkMaintenanaceModel';
 import { ApiResponse } from '../../shared/models/generalModel';
@@ -90,5 +89,12 @@ export class ProductsService {
   }
   updateAssociatedProduct(associatedFormProductData: editAssociatedProductModel) {
     return this.httpService.patch(`Product/UpdateAssociatedProduct`, associatedFormProductData);
+  }
+
+  getProductById(productId: string): Observable<ProductResponse>  {
+    return this.httpService.get<ProductResponse>('Product/GetProductById',{ akiProductID: productId }).pipe(
+      map((response: ProductResponse) => response),
+      catchError(error => throwError(() => error))
+    );
   }
 }

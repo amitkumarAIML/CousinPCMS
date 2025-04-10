@@ -1,22 +1,16 @@
-
 <div class="bg-white rounded-lg m-5">
-  <div class="flex justify-between items-center p-4 pb-1">
-    <span>Department Form</span>
-    <div class="flex gap-x-3">
-      <button nz-button nzType="default" class="" (click)="cancle()">
-        Cancel
-      </button>
-      <button nz-button nzType="default" class="" [nzLoading]="deleteLoading"  (click)="delete()">
-        Delete
-      </button>
-      <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading"  (click)="saveDetails()">
-        Save
-      </button>
+  <nz-spin [nzSpinning]="loading">
+    <div class="flex justify-between items-center p-4 pb-1">
+      <span>Department Form</span>
+      <div class="flex gap-x-3">
+        <button nz-button nzType="default" class="" (click)="cancle()">Cancel</button>
+        <button nz-button nzType="default" class="" [nzLoading]="deleteLoading" (click)="delete()">Delete</button>
+        <button nz-button nzType="primary" class="text-white" [nzLoading]="btnLoading" (click)="saveDetails()">Save</button>
+      </div>
     </div>
-  </div>
-  <hr class="mt-2 mb-2 border-light-border">
-  <div class="p-4">
-    <cousins-department-info [deptData]="departmentData"></cousins-department-info>
-  </div>
+    <hr class="mt-2 mb-2 border-light-border" />
+    <div class="p-4">
+      <cousins-department-info [deptData]="departmentData"></cousins-department-info>
+    </div>
+  </nz-spin>
 </div>
-

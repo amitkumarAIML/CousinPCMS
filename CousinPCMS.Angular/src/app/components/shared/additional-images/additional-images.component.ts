@@ -14,6 +14,7 @@ import {CategoryService} from '../../category/category.service';
 import {ApiResponse} from '../../../shared/models/generalModel';
 import {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../../../shared/models/additionalImagesModel';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
+import {SkusService} from '../../skus/skus.service';
 
 @Component({
   selector: 'cousins-additional-images',
@@ -34,9 +35,17 @@ export class AdditionalImagesComponent {
 
   productId!: number | undefined;
   categoryId!: string | undefined;
+  skuId!: string | undefined;
   isDuplicateUrl = false;
 
-  constructor(private location: Location, private router: Router, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService) {}
+  constructor(
+    private location: Location,
+    private router: Router,
+    private productService: ProductsService,
+    private dataService: DataService,
+    private categoryService: CategoryService,
+    private skusService: SkusService
+  ) {}
 
   ngOnInit(): void {
     this.currentUrl = this.router.url;
@@ -51,6 +60,9 @@ export class AdditionalImagesComponent {
       this.categoryId = categoryId;
       this.getCategoryImages();
     } else if (this.currentUrl.includes('/skus')) {
+      const skuIdStr = sessionStorage.getItem('skuId');
+      const skuId: string | undefined = skuIdStr ? skuIdStr : undefined;
+      this.skuId = skuId;
       this.getSkusImages();
     }
   }
@@ -61,9 +73,9 @@ export class AdditionalImagesComponent {
 
   goBack() {
     this.location.back();
-    sessionStorage.removeItem('productId');
-    sessionStorage.removeItem('categoryId');
-    sessionStorage.removeItem('skuId');
+    // sessionStorage.removeItem('productId');
+    // sessionStorage.removeItem('categoryId');
+    // sessionStorage.removeItem('skuId');
   }
 
   onAdd() {
@@ -105,19 +117,18 @@ export class AdditionalImagesComponent {
 
   getSkusImages() {
     this.loadingdata = true;
-    const skuId = sessionStorage.getItem('skuId');
-    // this.handleGetApiResponse<ApiResponse<AdditionalImagesModel[]>>(
-    // this.categoryService.getCategoryUrls(skuId),
-    // (data: any) => {
-    //   this.fileList = data;
-    // },
-    // {
-    //   loadingRef: (state) => (this.loadingdata = state),
-    //   emptyCheck: (data) => !data || data.length === 0,
-    //   onEmpty: () => (this.displayText = 'No Data'),
-    //   notifyOnError: true,
-    // }
-    // );
+    this.handleGetApiResponse<ApiResponse<AdditionalImagesModel[]>>(
+      this.skusService.getSkuAdditionalImages(this.skuId),
+      (data: any) => {
+        this.fileList = data;
+      },
+      {
+        loadingRef: (state) => (this.loadingdata = state),
+        emptyCheck: (data) => !data || data.length === 0,
+        onEmpty: () => (this.displayText = 'No Data'),
+        notifyOnError: true,
+      }
+    );
   }
 
   handleGetApiResponse<T>(
@@ -159,12 +170,11 @@ export class AdditionalImagesComponent {
 
   deleteImage(data: AdditionalImagesModel, index: number) {
     this.loadingdata = true;
+    const req: AdditionalImageDeleteRequestModel = {
+      imageURL: data.imageURL,
+    };
     if (this.currentUrl.includes('/products')) {
-      const req: AdditionalImageDeleteRequestModel = {
-        productID: data.productID,
-        imageURL: data.imageURL,
-      };
-      this.productService.deleteProductImagesUrl(req).subscribe({
+      this.productService.deleteProductImagesUrl({...req, productID: data.productID}).subscribe({
         next: (response) => {
           if (response.isSuccess) {
             this.fileList.splice(index, 1);
@@ -184,11 +194,27 @@ export class AdditionalImagesComponent {
         },
       });
     } else if (this.currentUrl.includes('/category')) {
-      const req: AdditionalImageDeleteRequestModel = {
-        categoryID: data.categoryID,
-        imageURL: data.imageURL,
-      };
-      this.categoryService.deleteCategoryImagesUrl(req).subscribe({
+      this.categoryService.deleteCategoryImagesUrl({...req, categoryID: data.categoryID}).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.fileList.splice(index, 1);
+            this.dataService.ShowNotification('success', '', 'Category Successfully Deleted');
+          } else {
+            this.dataService.ShowNotification('error', '', 'Category Url Failed Deleted');
+          }
+          this.loadingdata = false;
+        },
+        error: (err) => {
+          this.loadingdata = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else if (this.currentUrl.includes('/skus')) {
+      this.skusService.deleteSkuImagesUrl({...req, skuItemID: data.skuItemID}).subscribe({
         next: (response) => {
           if (response.isSuccess) {
             this.fileList.splice(index, 1);
@@ -215,14 +241,13 @@ export class AdditionalImagesComponent {
       this.dataService.ShowNotification('error', '', 'Please select file.');
       return; // Stop the save process
     }
+    const requestData: AdditionalImagesModel = {
+      imageURL: this.imageUrl,
+      imagename: this.imageUrl.replace(/\.png$/i, ''),
+    };
     if (this.currentUrl.includes('/products')) {
-      const requestData: AdditionalImagesModel = {
-        imageURL: this.imageUrl,
-        imagename: this.imageUrl.replace(/\.png$/i, ''),
-        productID: this.productId,
-      };
       this.loading = true;
-      this.productService.saveProductImagesUrl(requestData).subscribe({
+      this.productService.saveProductImagesUrl({...requestData, productID: this.productId}).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Image Added Successfully');
@@ -243,13 +268,30 @@ export class AdditionalImagesComponent {
         },
       });
     } else if (this.currentUrl.includes('/category')) {
-      const requestData: AdditionalImagesModel = {
-        imageURL: this.imageUrl,
-        imagename: this.imageUrl.replace(/\.png$/i, ''),
-        categoryID: this.categoryId,
-      };
       this.loading = true;
-      this.categoryService.saveCategoryImagesUrl(requestData).subscribe({
+      this.categoryService.saveCategoryImagesUrl({...requestData, categoryID: this.categoryId,}).subscribe({
+        next: (response: any) => {
+          if (response.isSuccess) {
+            this.dataService.ShowNotification('success', '', 'Image Added Successfully');
+            this.fileList.push(requestData);
+            this.showForm = false;
+          } else {
+            this.dataService.ShowNotification('error', '', 'Image Failed Add');
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else if (this.currentUrl.includes('/skus')) {
+      this.loading = true;
+      this.skusService.saveSkuImagesUrl({...requestData, skuItemID: this.skuId,}).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Image Added Successfully');
@@ -282,9 +324,7 @@ export class AdditionalImagesComponent {
         this.imageUrl = file.name;
       };
       const inputValue = this.imageUrl?.trim().toLowerCase();
-      this.isDuplicateUrl = this.fileList.some(file =>
-        file.imageURL?.trim().toLowerCase() === inputValue
-      );
+      this.isDuplicateUrl = this.fileList.some((file) => file.imageURL?.trim().toLowerCase() === inputValue);
       reader.readAsDataURL(file as unknown as File); // force cast for FileReader
     }
   }
@@ -313,10 +353,8 @@ export class AdditionalImagesComponent {
   beforeUpload = (file: NzUploadFile): boolean => {
     const rawFile = file as any;
     const inputValue = file.name?.trim().toLowerCase();
-    this.isDuplicateUrl = this.fileList.some(file =>
-        file.imageURL?.trim().toLowerCase() === inputValue
-    );
-    
+    this.isDuplicateUrl = this.fileList.some((file) => file.imageURL?.trim().toLowerCase() === inputValue);
+
     this.compressImage(rawFile as File).then((compressedBase64: string) => {
       this.avatarUrl = compressedBase64;
       this.imageUrl = file.name;

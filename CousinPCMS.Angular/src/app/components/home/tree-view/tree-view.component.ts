@@ -3,14 +3,13 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {FlatNode, TreeNode} from '../../../shared/models/treeModel';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import { SelectionModel } from '@angular/cdk/collections';
-import { categories, department, treeData } from './tree-sample';
-import { NzTreeModule, NzFormatEmitEvent, NzTreeNode, NzTreeNodeOptions } from 'ng-zorro-antd/tree';
+import { treeData } from './tree-sample';
+import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { HomeService } from '../home.service';
-import { lastValueFrom } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import {NzSpinModule} from 'ng-zorro-antd/spin';
 import { Department, DepartmentResponse } from '../../../shared/models/departmentModel';
 import { DataService } from '../../../shared/services/data.service';
+import { DepartmentService } from '../../departments/department.service';
 
 @Component({
   selector: 'cousins-tree-view',
@@ -25,23 +24,17 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   departments: any[] = [];
   categories: any[] = [];
   loading: boolean = false;
-
+  selectedValue: any[] = [];
+  defaultExpandedKeys: any[] = [];
   @Output() categorySelected = new EventEmitter<string>();
 
-  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService ) {
+  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService, private departmentService: DepartmentService) {
   }
 
   ngOnInit(): void {
     this.loadDepartments();
   }
   
-  // Keep these for backward compatibility
-  treeControl = new FlatTreeControl<FlatNode>(
-    (node) => node.level,
-    (node) => node.expandable
-  );
-  selectListSelection = new SelectionModel<FlatNode>(false);
-
   getSampleData(): TreeNode[] {
     return treeData;
   }
@@ -54,9 +47,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
 
   // New method to handle drag and drop events
   async nzEvent(event: any): Promise<void> {
-
     // load child async
-
     if (event.eventName === 'expand') {
       const node = event.node;
       
@@ -113,8 +104,31 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
                 isDepartment: true, // First parent gets 'partition' icon
                 isLeaf: false,
                 children: [],
+
             }));
             this.nodes = treeData;
+
+            const departmentIdStr = sessionStorage.getItem('departmentId');
+            const departmentId: number | undefined = departmentIdStr ? +departmentIdStr : undefined;
+            const categoryIdStr = sessionStorage.getItem('categoryId');
+            const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
+            if (departmentId) {
+              const findParent = this.nodes.find(child => child.key ===  departmentId);
+              this.loadCategoriesForDepartments(findParent).then(data => {
+
+                if (data && data.length > 0) {
+                  findParent.children = data;
+                  findParent.isExpanded = true; 
+                  this.nodes = [...this.nodes]; 
+                  this.selectedValue = [categoryId]; 
+                  this.categorySelected.emit(categoryId);
+                } else {
+                  console.warn('No child data found for this node.');
+                }
+              })
+              this.defaultExpandedKeys = [departmentId]
+              this.cdRef.detectChanges();
+            }
           }
           this.loading = false;
         },
@@ -188,7 +202,6 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         tree.push(node);
       }
     });
-
    // Mark the last nodes recursively
     this.markLastNodes(tree);
 
@@ -198,13 +211,16 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   selectCategory(event: any) {
     if (event.origin.level === 0) {
       const dep = this.departments.filter(a => a.akiDepartmentID == event.origin.key);
-      this.homeService.setSelectedDepartment(dep);
+      sessionStorage.setItem('departmentId',  dep[0].akiDepartmentID);
+      sessionStorage.removeItem('categoryId');
     } else {
       const cat = this.categories.filter((r) => r.akiCategoryID == event.origin.key);
       if (cat.length > 0) {
         const dep = this.departments.filter(a => a.akiDepartmentID == cat[0].akiDepartment);
-        this.homeService.setSelectedDepartment(dep);
-        this.homeService.setSelectedCategory(cat);
+        sessionStorage.setItem('departmentId', dep[0].akiDepartmentID);
+        sessionStorage.setItem('categoryId', cat[0].akiCategoryID);
+
+        sessionStorage.removeItem('productId');
       }
       this.categorySelected.emit(event.origin.key); // Emit selected category
 

@@ -8,37 +8,39 @@
       <span>All Linked Attributes</span>
     }
    
-    <!-- Tabs -->
-    <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
+    <nz-spin [nzSpinning]="loading">
+      <!-- Tabs -->
+      <nz-tabset [(nzSelectedIndex)]="activeTab" [nzTabBarExtraContent]="extraTemplate">
 
-      <nz-tab nzTitle="Sku">
-        <cousins-sku-details [skuData]="skuData"></cousins-sku-details>
-      </nz-tab>
-  
-      <nz-tab nzTitle="Related Skus">
-       <cousins-related-sku  [skuData]="skuData"></cousins-related-sku>
-      </nz-tab>
+        <nz-tab nzTitle="Sku">
+          <cousins-sku-details [skuData]="skuData"></cousins-sku-details>
+        </nz-tab>
+    
+        <nz-tab nzTitle="Related Skus">
+        <cousins-related-sku  [skuData]="skuData"></cousins-related-sku>
+        </nz-tab>
 
-      <nz-tab nzTitle="All Linked Attributes">
-        <cousins-attribute-sku ></cousins-attribute-sku>
-       </nz-tab>
-    </nz-tabset>
+        <nz-tab nzTitle="All Linked Attributes">
+          <cousins-attribute-sku ></cousins-attribute-sku>
+        </nz-tab>
+      </nz-tabset>
 
 
-    <ng-template #extraTemplate >
-      @if(activeTab === 0) {
-        <div class="flex gap-x-3 mb-2">
-            <button nz-button nzType="default" class="" (click)="cancle()">
-              Cancel
-            </button>
-            <button nz-button nzType="default" class="" [nzLoading]="deleteLoading" (click)="delete()">
-              Delete
-            </button>
-            <button nz-button nzType="primary" class="text-white"  [nzLoading]="loading" (click)="saveDetails()" >
-              Save
-            </button>
-        </div>
-      }
-    </ng-template>
+      <ng-template #extraTemplate >
+        @if(activeTab === 0) {
+          <div class="flex gap-x-3 mb-2">
+              <button nz-button nzType="default" class="" (click)="cancle()">
+                Cancel
+              </button>
+              <button nz-button nzType="default" class="" [nzLoading]="deleteLoading" (click)="delete()">
+                Delete
+              </button>
+              <button nz-button nzType="primary" class="text-white"  [nzLoading]="btnSaveLoading" (click)="saveDetails()" >
+                Save
+              </button>
+          </div>
+        }
+      </ng-template>
+    </nz-spin>
 </div>
   

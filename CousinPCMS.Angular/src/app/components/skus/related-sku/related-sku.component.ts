@@ -6,6 +6,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { SkusService } from '../skus.service';
 import { DataService } from '../../../shared/services/data.service';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 @Component({
   selector: 'cousins-related-sku',
@@ -13,7 +14,9 @@ import { DataService } from '../../../shared/services/data.service';
              NzFormModule,
              NzInputModule,
              NzTableModule,
-             NzIconModule ],
+             NzIconModule,
+             NzCheckboxModule
+           ],
   templateUrl: './related-sku.component.html',
   styleUrl: './related-sku.component.css'
 })
@@ -50,8 +53,9 @@ export class RelatedSkuComponent {
   }
 
     loadRelatedSku() {
+      const itemNumber = sessionStorage.getItem('itemNumber') || '';
       this.loading = true;
-      this.skusService.getRelatedSkuItem(this.skuId).subscribe({
+      this.skusService.getRelatedSkuItem(itemNumber).subscribe({
         next: (data) => {
           if (data.isSuccess) {
               this.relatedSkusList = data.value;

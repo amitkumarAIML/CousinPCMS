@@ -14,6 +14,7 @@ import {Observable} from 'rxjs';
 import {CategoryService} from '../../category/category.service';
 import { LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../../../shared/models/linkMaintenanaceModel';
 import { ApiResponse } from '../../../shared/models/generalModel';
+import { SkusService } from '../../skus/skus.service';
 
 @Component({
   selector: 'cousins-link-maintenance',
@@ -33,13 +34,18 @@ export class LinkMaintenanceComponent {
   currentUrl: string = '';
   isDuplicateUrl = false;
 
+  productId!: number | undefined;
+  categoryId!: string | undefined;
+  skuId!: string | undefined;
+
   constructor(
     private fb: FormBuilder,
     private location: Location,
     private productService: ProductsService,
     private dataService: DataService,
     private router: Router,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private skusService: SkusService
   ) {
     this.linkForm = this.fb.group({
       linkText: ['', [Validators.required]],
@@ -52,10 +58,19 @@ export class LinkMaintenanceComponent {
   ngOnInit(): void {
     this.currentUrl = this.router.url;
     if (this.currentUrl.includes('/products')) {
+      const productIdStr = sessionStorage.getItem('productId');
+      const productId: number | undefined = productIdStr ? +productIdStr : undefined;
+      this.productId = productId;
       this.getProductLink();
     } else if (this.currentUrl.includes('/category')) {
+      const categoryIdStr = sessionStorage.getItem('categoryId');
+      const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
+      this.categoryId = categoryId;
       this.getCategoryLink();
     } else if (this.currentUrl.includes('/skus')) {
+      const skuIdStr = sessionStorage.getItem('skuId');
+      const skuId: string | undefined = skuIdStr ? skuIdStr : undefined;
+      this.skuId = skuId;
       this.getSkusLink();
     }
   }
@@ -66,9 +81,9 @@ export class LinkMaintenanceComponent {
 
   goBack() {
     this.location.back();
-    sessionStorage.removeItem('productId');
-    sessionStorage.removeItem('categoryId');
-    sessionStorage.removeItem('skuId');
+    // sessionStorage.removeItem('productId');
+    // sessionStorage.removeItem('categoryId');
+    // sessionStorage.removeItem('skuId');
     
   }
 
@@ -76,7 +91,7 @@ export class LinkMaintenanceComponent {
     this.loadingdata = true;
     const productId = sessionStorage.getItem('productId');
     this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
-      this.productService.getProductUrls(productId),
+      this.productService.getProductUrls(this.productId),
       (data: any) => {
         this.links = data;
       },
@@ -92,9 +107,8 @@ export class LinkMaintenanceComponent {
 
   getCategoryLink() {
     this.loadingdata = true;
-    const categoryId = sessionStorage.getItem('categoryId');
     this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
-      this.categoryService.getCategoryUrls(categoryId),
+      this.categoryService.getCategoryUrls(this.categoryId),
       (data: any) => {
         this.links = data;
       },
@@ -109,9 +123,8 @@ export class LinkMaintenanceComponent {
 
   getSkusLink() {
     this.loadingdata = true;
-    const skuId = sessionStorage.getItem('skuId');
     this.handleGetApiResponse<ApiResponse<LinkValue[]>>(
-      this.categoryService.getCategoryUrls(skuId),
+      this.skusService.getSkuUrls(this.skuId),
       (data: any) => {
         this.links = data;
       },
@@ -129,14 +142,12 @@ export class LinkMaintenanceComponent {
       this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
       return; // Stop the save process
     }
+    const requestData: LinkRequestModel = {
+      ...this.linkForm.value,
+    };
     if (this.currentUrl.includes('/products')) {
-      const productId = sessionStorage.getItem('productId');
-      const requestData: LinkRequestModel = {
-        ...this.linkForm.value,
-        productID: productId,
-      };
       this.loading = true;
-      this.productService.saveProductLinkUrl(requestData).subscribe({
+      this.productService.saveProductLinkUrl({ ... requestData, productID: this.productId}).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
@@ -157,13 +168,30 @@ export class LinkMaintenanceComponent {
         },
       });
     } else if (this.currentUrl.includes('/category')) {
-      const categoryId = sessionStorage.getItem('categoryId');
-      const requestData: LinkRequestModel = {
-        ...this.linkForm.value,
-        categoryID: categoryId,
-      };
       this.loading = true;
-      this.categoryService.saveCategoryLinkUrl(requestData).subscribe({
+      this.categoryService.saveCategoryLinkUrl({ ... requestData, categoryID: this.categoryId}).subscribe({
+        next: (response: any) => {
+          if (response.isSuccess) {
+            this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
+            this.links.push(requestData);
+            this.showForm = false;
+          } else {
+            this.dataService.ShowNotification('error', '', 'LinkUrl Failed Add');
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else if (this.currentUrl.includes('/skus')) {
+      this.loading = true;
+      this.skusService.saveSkuLinkUrl({ ... requestData, skuItemID: this.skuId}).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
@@ -191,14 +219,13 @@ export class LinkMaintenanceComponent {
     this.linkForm.reset();
   }
 
-  deleteLink(data: any, index: number) {
+  deleteLink(data: LinkRequestModel, index: number) {
     this.loadingdata = true;
+    const req: LinkDeleteRequestModel = {
+      linkURL: data.linkURL,
+    };
     if (this.currentUrl.includes('/products')) {
-      const req: LinkDeleteRequestModel = {
-        productID: data.productID,
-        linkURL: data.linkURL,
-      };
-      this.productService.deleteProductLinkUrl(req).subscribe({
+      this.productService.deleteProductLinkUrl({...req, productID: data.productID, }).subscribe({
         next: (response) => {
           if (response.isSuccess) {
             this.links.splice(index, 1);
@@ -218,11 +245,27 @@ export class LinkMaintenanceComponent {
         },
       });
     } else if (this.currentUrl.includes('/category')) {
-      const req: LinkDeleteRequestModel = {
-        categoryID: data.categoryID,
-        linkURL: data.linkURL,
-      };
-      this.categoryService.deleteCategoryLinkUrl(req).subscribe({
+      this.categoryService.deleteCategoryLinkUrl({...req,  categoryID: data.categoryID,}).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.links.splice(index, 1);
+            this.dataService.ShowNotification('success', '', 'Category Successfully Deleted');
+          } else {
+            this.dataService.ShowNotification('error', '', 'Category Url Failed Deleted');
+          }
+          this.loadingdata = false;
+        },
+        error: (err) => {
+          this.loadingdata = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else if (this.currentUrl.includes('/skus')) {
+      this.skusService.deleteSkuLinkUrl({...req, skuItemID: data.skuItemID}).subscribe({
         next: (response) => {
           if (response.isSuccess) {
             this.links.splice(index, 1);
@@ -242,7 +285,7 @@ export class LinkMaintenanceComponent {
         },
       });
     }
-  }
+  } 
 
   handleGetApiResponse<T>(
     observable: Observable<T>,

@@ -1,51 +1,73 @@
-import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzTabsModule } from 'ng-zorro-antd/tabs';
-import { SkuDetailsComponent } from './sku-details/sku-details.component';
-import { Subscription } from 'rxjs';
-import { HomeService } from '../home/home.service';
-import { DataService } from '../../shared/services/data.service';
-import { RelatedSkuComponent } from './related-sku/related-sku.component';
-import { SkusService } from './skus.service';
-import { AttributeSkuComponent } from './attribute-sku/attribute-sku.component';
-import { SKuList } from '../../shared/models/skusModel';
+import {CommonModule} from '@angular/common';
+import {Component, ViewChild} from '@angular/core';
+import {Router} from '@angular/router';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzTabsModule} from 'ng-zorro-antd/tabs';
+import {SkuDetailsComponent} from './sku-details/sku-details.component';
+import {Subscription} from 'rxjs';
+import {HomeService} from '../home/home.service';
+import {DataService} from '../../shared/services/data.service';
+import {RelatedSkuComponent} from './related-sku/related-sku.component';
+import {SkusService} from './skus.service';
+import {AttributeSkuComponent} from './attribute-sku/attribute-sku.component';
+import {SKuList, SkuRequestModel} from '../../shared/models/skusModel';
+import { ApiResponse } from '../../shared/models/generalModel';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'cousins-skus',
-  imports: [ NzTabsModule,  // ✅ Import Tabs
-             NzButtonModule,
-             SkuDetailsComponent,
-             RelatedSkuComponent,
-             AttributeSkuComponent
-          ],
+  imports: [
+    NzTabsModule, // ✅ Import Tabs
+    NzButtonModule,
+    SkuDetailsComponent,
+    RelatedSkuComponent,
+    AttributeSkuComponent,
+    NzSpinModule
+  ],
   templateUrl: './skus.component.html',
-  styleUrl: './skus.component.css'
+  styleUrl: './skus.component.css',
 })
 export class SkusComponent {
   activeTab: number = 0; // Default tab
   deleteLoading: boolean = false;
-  loading: boolean = false;
-  
+  loading: boolean = true;
+  btnSaveLoading: boolean = false;
+
   skuData!: SKuList;
   private skuSubscription!: Subscription;
- @ViewChild(SkuDetailsComponent) skusDetailsComp!: SkuDetailsComponent;
+  @ViewChild(SkuDetailsComponent) skusDetailsComp!: SkuDetailsComponent;
 
-  constructor(private readonly router: Router,private homeService: HomeService,private dataService : DataService,
-      private skuService: SkusService
-  ) {}
+  constructor(private readonly router: Router, private homeService: HomeService, private dataService: DataService, private skuService: SkusService) {}
 
   ngOnInit(): void {
-    this.skuSubscription = this.homeService.selectedSkU$.subscribe(skus => {
-      if (skus) {
-          this.skuData = skus[0];
-      }
-    });   
+    this.getSkuByItemNumber();
   }
 
   cancle() {
     this.router.navigate(['/home']);
+  }
+
+  getSkuByItemNumber() {
+    const itemNumber = sessionStorage.getItem('itemNumber') || '';
+    this.loading = true;
+    this.skuService.getSkuItemById(itemNumber).subscribe({
+      next: (response: ApiResponse<SKuList[]>) => {
+        if (response.isSuccess) {
+          this.skuData = response.value[0];
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
   }
 
   delete() {
@@ -55,6 +77,8 @@ export class SkusComponent {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Skus Successfully Deleted');
+          sessionStorage.removeItem('itemNumber');
+          sessionStorage.removeItem('skuId');
           this.router.navigate(['/home']);
         } else {
           this.dataService.ShowNotification('error', '', 'Skus Details Failed Deleted');
@@ -68,53 +92,50 @@ export class SkusComponent {
         } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
         }
-      }
+      },
     });
-
   }
 
-   saveDetails () {
-       this.skusDetailsComp.skuForm.markAllAsTouched();
-  
-       if (!this.skusDetailsComp.skuForm.valid) {
-         this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
-         return;
-       }
-   
-       // Get data from both components (if forms are valid)
-       const skuData = this.skusDetailsComp.getFormData();
-  
-       if (skuData.aki_Layout_Template) {
-        skuData.akiPrintLayoutTemp = true;
-       }
-  
-       this.loading = true;
-       this.skuService.updateSkus(skuData).subscribe({
-         next: (response) => {
-          if (response.isSuccess) {
-            this.dataService.ShowNotification('success', '', 'Sku Details Updated Successfully');
-            this.router.navigate(['/home']);
-          } else {
-            this.dataService.ShowNotification('error', '', "Sku Details Failed To Updated");
-          }
-           this.loading = false;
-         },
-         error: (err) => {
-            this.loading = false;
-            if (err?.error) {
-              this.dataService.ShowNotification('error', '', err.error.title);
-            } else {
-              this.dataService.ShowNotification('error', '', 'Something went wrong');
-            }
-         }
-       });
+  saveDetails() {
+    this.skusDetailsComp.skuForm.markAllAsTouched();
+
+    if (!this.skusDetailsComp.skuForm.valid) {
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return;
     }
-  
+
+    // Get data from both components (if forms are valid)
+    const skuData: SkuRequestModel = this.skusDetailsComp.getFormData();
+
+    if (skuData.akiLayoutTemplate) {
+      skuData.akiPrintLayoutTemp = true;
+    }
+    skuData.akiCompetitors = skuData?.akiCompetitors && skuData?.akiCompetitors.toString();
+    this.btnSaveLoading = true;
+    this.skuService.updateSkus(skuData).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Sku Details Updated Successfully');
+          this.router.navigate(['/home']);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Sku Details Failed To Updated');
+        }
+        this.btnSaveLoading = false;
+      },
+      error: (err) => {
+        this.btnSaveLoading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
 
   ngOnDestroy() {
     if (this.skuSubscription) {
       this.skuSubscription.unsubscribe();
     }
   }
-
 }
