@@ -215,9 +215,9 @@ namespace CousinPCMS.BLL
                 {
                     new Filters
                     {
-                        ParameterName = "ProductID",
+                        ParameterName = "productID",
                         ParameterValue = ProductId,
-                        DataType = typeof(string),
+                        DataType = typeof(int),
                         Compare = ComparisonType.Equals
                     }
                 };
@@ -265,9 +265,9 @@ namespace CousinPCMS.BLL
                 {
                     new Filters
                     {
-                        ParameterName = "ProductID",
+                        ParameterName = "productID",
                         ParameterValue = ProductId,
-                        DataType = typeof(string),
+                        DataType = typeof(int),
                         Compare = ComparisonType.Equals
                     }
                 };
@@ -446,5 +446,166 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<string> UpdateAssociatedProduct(AdditionalProductRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateAddProductsProductListOrder?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<string> AddAssociatedProduct(AdditionalProductRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddDataAddProdForProduct?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<List<AdditionalProductModel>> GetAdditionalProduct(string productId)
+        {
+            APIResult<List<AdditionalProductModel>> returnValue = new APIResult<List<AdditionalProductModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+                Value = new List<AdditionalProductModel>()
+            };
+
+            try
+            {
+                var allFilters = new List<Filters>
+                {
+                    new Filters
+                    {
+                        ParameterName = "product",
+                        ParameterValue = productId,
+                        DataType = typeof(int),
+                        Compare = ComparisonType.Equals
+                    }
+                };
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                // Fetch Additional Category Data
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}additionalproductsforproducts?company={HardcodedValues.CompanyName}{filter}",
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AdditionalProductModel>>>(response);
+
+                    if (responseOfOrderLine?.Value != null && responseOfOrderLine.Value.Any())
+                    {
+                        returnValue.Value.AddRange(responseOfOrderLine.Value);
+                    }
+                }
+
+                returnValue.IsSuccess = true;
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<string> DeleteAssociatedProduct(DeleteAssociatedProductRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteAddProduct?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
     }
 }
