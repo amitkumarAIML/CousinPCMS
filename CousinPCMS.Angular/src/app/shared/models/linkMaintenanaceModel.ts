@@ -20,11 +20,5 @@ export interface LinkValue {
     linkType: string;
     linkURL: string;
     toolTip: string;
-  }
-  
-export interface ApiResponse<T> {
-    isSuccess: boolean;
-    isError: boolean;
-    exceptionInformation: any;
-    value: T;
 }
+  

@@ -225,10 +225,15 @@ export class ProductDetailsComponent {
   }
 
   goToLinkMaintenance(): void {
-    console.log('ss', this.productForm.getRawValue());
     if (!this.productForm.getRawValue().akiProductID) return;
     sessionStorage.setItem('productId', this.productForm.getRawValue().akiProductID);
     this.router.navigate(['/products/link-maintenance']);
+  }
+
+  goToAdditionalImage(): void {
+    if (!this.productForm.getRawValue().akiProductID) return;
+    sessionStorage.setItem('productId', this.productForm.getRawValue().akiProductID);
+    this.router.navigate(['/products/additional-images']);
   }
 
   // Handle File Selection

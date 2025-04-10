@@ -14,6 +14,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CompetitorItem } from '../../../shared/models/competitorModel';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cousins-sku-details',
@@ -41,7 +42,7 @@ export class SkuDetailsComponent {
    pricingFormulas: ItemModel[] = [];
 
   @Input() skuData!: any;
-  constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService) {
+  constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
       this.skuForm = this.fb.group({
           akiProductID: [{ value: '' , disabled: true}],
           akiCategoryID: [{ value: '' , disabled: true}],
@@ -178,6 +179,12 @@ export class SkuDetailsComponent {
         this.dataService.ShowNotification('error', '', 'Something went wrong');
       }
     });
+  }
+
+  goToLinkMaintenance(): void {
+    if (!this.skuForm.getRawValue().akiSKUID) return;
+    sessionStorage.setItem('skuId', this.skuForm.getRawValue().akiSKUID);
+    this.router.navigate(['/skus/link-maintenance']);
   }
   
 
