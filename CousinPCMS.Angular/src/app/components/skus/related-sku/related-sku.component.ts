@@ -54,6 +54,7 @@ export class RelatedSkuComponent {
 
     loadRelatedSku() {
       const itemNumber = sessionStorage.getItem('itemNumber') || '';
+      if (!itemNumber)  return;
       this.loading = true;
       this.skusService.getRelatedSkuItem(itemNumber).subscribe({
         next: (data) => {

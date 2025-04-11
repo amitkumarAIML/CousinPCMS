@@ -15,29 +15,27 @@
         </div>
 
         <!-- List -->
-        <ul class="border-light-border border rounded divide-y divide-light-border max-h-[60vh] overflow-y-auto">
-          @if (loadingdata) {
-            <div class="loading-container">
-              <nz-spin nzSize="large"></nz-spin>
-            </div>
-          }  @if (!loadingdata && fileList && fileList.length > 0) {
-            @for(image of fileList; track $index) {
-            <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
-              <span class="text-secondary-font truncate">
-                {{ image.imageURL }}
-              </span>
-              <button nz-button nzType="text" nzDanger (click)="deleteImage(image, $index)" class="ml-2">
-                <nz-icon nzType="delete" class="text-danger" nzTheme="outline" />
-              </button>
-            </li>
-            }
-          <li class="h-20"></li>
-          } @else if (!loadingdata) {
-            <div class="flex justify-center items-center h-48">
-              {{ displayText }}
-            </div>
-            }
-        </ul>
+        <nz-spin [nzSpinning]="loadingdata">
+          <ul class="border-light-border border rounded divide-y divide-light-border max-h-[60vh] overflow-y-auto">
+            @if (fileList && fileList.length > 0) {
+              @for(image of fileList; track $index) {
+              <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
+                <span class="text-secondary-font truncate">
+                  {{ image.imageURL }}
+                </span>
+                <button nz-button nzType="text" nzDanger (click)="deleteImage(image, $index)" class="ml-2">
+                  <nz-icon nzType="delete" class="text-danger" nzTheme="outline" />
+                </button>
+              </li>
+              }
+            <li class="h-20"></li>
+            } @else {
+              <div class="flex justify-center items-center h-48">
+                {{ displayText }}
+              </div>
+              }
+          </ul>
+      </nz-spin>
       </div>
 
        @if(showForm) {

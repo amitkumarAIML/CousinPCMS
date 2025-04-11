@@ -10,13 +10,6 @@
                                 <input nz-input formControlName="akiProductID" id="productId" />
                             </nz-form-control>
                         </nz-form-item>
-                    
-                        <!-- <nz-form-item>
-                            <nz-form-label  [nzNoColon]="true">Category Id</nz-form-label>
-                            <nz-form-control >
-                                <input nz-input formControlName="akiCategoryID" id="categoryId"  />
-                            </nz-form-control>
-                        </nz-form-item> -->
                         <nz-form-item>
                             <nz-form-label [nzNoColon]="true" nzFor="categoryId">Category Id</nz-form-label>
                             <nz-form-control>
@@ -48,9 +41,6 @@
                         <nz-form-item class="w-full">
                             <div class="flex flex-wrap justify-between items-center w-full mt-2">
                                 <nz-form-label [nzNoColon]="true">Product Description</nz-form-label>
-                                <!-- <button nz-button nzType="default" class="border border-gray-300 px-3 py-1 rounded-md mr-8">
-                                    Spelling
-                                </button> -->
                             </div>
                             <nz-form-control >
                                 <div class="input-wrapper">
@@ -64,33 +54,6 @@
                     </div>
     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- <div class="border border-gray-300 rounded-lg shadow-sm">
-                            <div class="grid grid-cols-12">
-    
-                              <div class="col-span-1 border-b border-r border-gray-200 p-2"></div>
-                          
-                              <div class="col-span-2 border-b border-r border-gray-200 p-2">
-                                   <label>Heading</label>
-                              </div>
-                              
-                              <div class="col-span-3 border-b border-gray-200 p-2">
-                                   <label> Product Text </label>
-                               </div>
-    
-                              <div class="col-span-6 p-2 heading "></div>
-                            </div>
-                          
-                            <div class="grid grid-cols-12">
-                                <div class="col-span-1 border-r border-gray-200 p-2"></div>
-                                <div class="col-span-2 border-r border-gray-200 p-2">
-                                    <label> {{ productForm.get('akiProductHeading')?.value  }} </label> 
-                                </div>
-                                <div class="col-span-3 border-gray-200 p-2">
-                                    <label>  {{ productForm.get('akiProductText')?.value }}</label>
-                                </div>
-                                <div class="col-span-6 p-2 heading"></div>
-                            </div>
-                        </div> -->
                         <nz-form-item>
                             <nz-form-label  [nzNoColon]="true">Heading</nz-form-label>
                             <nz-form-control >
@@ -129,8 +92,7 @@
                         <nz-form-item class="w-full">
                             <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
                             <nz-form-control >
-                                <!-- <input nz-input formControlName="akiProductCommodityCode" id="commodityCode"/> -->
-                                <nz-select formControlName="akiProductCommodityCode" class="w-full" nzShowSearch >
+                                <nz-select  formControlName="akiProductCommodityCode" class="w-full" nzShowSearch >
                                     @for (commodity of commodityCode; track $index) {
                                         <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
                                       }

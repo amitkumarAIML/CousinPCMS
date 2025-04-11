@@ -26,6 +26,8 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   loading: boolean = false;
   selectedValue: any[] = [];
   defaultExpandedKeys: any[] = [];
+  displayText: string = 'No Data Found';
+
   @Output() categorySelected = new EventEmitter<string>();
 
   constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService, private departmentService: DepartmentService) {
@@ -92,50 +94,57 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   loadDepartments(): void {
       this.loading = true;
       this.homeService.getDepartments().subscribe({
-        next: (departments: Department[]) => {
+        next: (departments: DepartmentResponse) => {
           // this.departments = departments;
-          if (departments && departments.length > 0) {
-            this.departments = departments.filter((res: Department) => res.akI_DepartmentIsActive);
-            const treeData = this.departments.map((dept: any) => ({
-                title: dept.akiDepartmentName.toUpperCase(),
-                key: dept.akiDepartmentID,
-                parentId: null,
-                level: 0, // Add level tracking
-                isDepartment: true, // First parent gets 'partition' icon
-                isLeaf: false,
-                children: [],
-
-            }));
-            this.nodes = treeData;
-
-            const departmentIdStr = sessionStorage.getItem('departmentId');
-            const departmentId: number | undefined = departmentIdStr ? +departmentIdStr : undefined;
-            const categoryIdStr = sessionStorage.getItem('categoryId');
-            const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
-            if (departmentId) {
-              const findParent = this.nodes.find(child => child.key ===  departmentId);
-              if (categoryId) {
-                this.loadCategoriesForDepartments(findParent).then(data => {
-                  if (data && data.length > 0) {
-                    findParent.children = data;
-                    findParent.isExpanded = true; 
-                    this.nodes = [...this.nodes]; 
-                    this.selectedValue = [categoryId]; 
-                    const path = this.getNodePath(this.nodes, categoryId);
-                    if (path) {
-                      this.defaultExpandedKeys = path;  // Set all parents to expand
+          if (departments.isSuccess) {
+            if (departments.value && departments.value.length > 0) {
+              this.departments = departments.value.filter((res: Department) => res.akI_DepartmentIsActive);
+              const treeData = this.departments.map((dept: any) => ({
+                  title: dept.akiDepartmentName.toUpperCase(),
+                  key: dept.akiDepartmentID,
+                  parentId: null,
+                  level: 0, // Add level tracking
+                  isDepartment: true, // First parent gets 'partition' icon
+                  isLeaf: false,
+                  children: [],
+  
+              }));
+              this.nodes = treeData;
+  
+              const departmentIdStr = sessionStorage.getItem('departmentId');
+              const departmentId: number | undefined = departmentIdStr ? +departmentIdStr : undefined;
+              const categoryIdStr = sessionStorage.getItem('categoryId');
+              const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
+              if (departmentId) {
+                const findParent = this.nodes.find(child => child.key ===  departmentId);
+                if (categoryId) {
+                  this.loadCategoriesForDepartments(findParent).then(data => {
+                    if (data && data.length > 0) {
+                      findParent.children = data;
+                      findParent.isExpanded = true; 
+                      this.nodes = [...this.nodes]; 
+                      this.selectedValue = [categoryId]; 
+                      const path = this.getNodePath(this.nodes, categoryId);
+                      if (path) {
+                        this.defaultExpandedKeys = path;  // Set all parents to expand
+                      }
+                      this.categorySelected.emit(categoryId);
+                    } else {
+                      console.warn('No child data found for this node.');
                     }
-                    this.categorySelected.emit(categoryId);
-                  } else {
-                    console.warn('No child data found for this node.');
-                  }
-                })
-              } else {
-                this.selectedValue = [departmentId]; 
+                  })
+                } else {
+                  this.selectedValue = [departmentId]; 
+                }
+                this.cdRef.detectChanges();
               }
-              this.cdRef.detectChanges();
+            } else {
+              this.displayText = 'No Data Found';
             }
+          } else {
+            this.displayText = 'Failed to load Department';
           }
+       
           this.loading = false;
         },
         error: (error) => {
@@ -229,7 +238,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   }
 
   selectCategory(event: any) {
-    if (event.origin.level === 0) {
+    if (event.level === 0) {
       const dep = this.departments.filter(a => a.akiDepartmentID == event.origin.key);
       sessionStorage.setItem('departmentId',  dep[0].akiDepartmentID);
       sessionStorage.removeItem('categoryId');

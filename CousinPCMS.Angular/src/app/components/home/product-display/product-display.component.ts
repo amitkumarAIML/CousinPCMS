@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/
 import { HomeService } from '../home.service';
 import { CommonModule } from '@angular/common';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { Product } from '../../../shared/models/productModel';
+import { Product, ProductResponse } from '../../../shared/models/productModel';
 import { DataService } from '../../../shared/services/data.service';
 
 @Component({
@@ -38,17 +38,21 @@ export class ProductDisplayComponent {
       this.products = [];
       this.loading = true;
       this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
-        next: (data: Product[]) => { 
-          if (data && data.length > 0) {
-            this.products = data.filter((res: Product) => res?.akiProductIsActive);
-            if (this.products && this.products.length > 0) {
-              this.displayText = ''; 
-              this.productSelected.emit(this.selectedProduct);
+        next: (data: ProductResponse) => { 
+          if (data.isSuccess) {
+            if (data.value && data.value.length > 0) {
+              this.products = data.value.filter((res: Product) => res?.akiProductIsActive);
+              if (this.products && this.products.length > 0) {
+                this.displayText = ''; 
+                this.productSelected.emit(this.selectedProduct);
+              } else {
+                this.displayText = 'No Product Found';
+              } 
             } else {
               this.displayText = 'No Product Found';
-            } 
+            }
           } else {
-            this.displayText = 'No Product Found';
+            this.displayText = 'Failed to load products'
           }
           this.loading = false;
         }, 

@@ -8,6 +8,16 @@
     max-height: 70vh;
 }
 
+.empty-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    color: #6b7280; /* Gray text */
+    font-size: 10px;
+    text-align: center;
+  }
+
 
 /* For larger screens */
 @media (min-width: 1024px) {

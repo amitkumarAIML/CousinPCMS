@@ -39,7 +39,7 @@ export class SkuDisplayComponent {
     this.homeService.getSkuByProductId(this.selectedProductId).subscribe({
       next: (data: SkuListResponse) => {
         if (data.isSuccess) {
-            if (data && data.value.length > 0) {
+            if (data.value && data.value.length > 0) {
               this.skus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
               if (this.skus && this.skus.length > 0) {
                 this.displayText = ''; 

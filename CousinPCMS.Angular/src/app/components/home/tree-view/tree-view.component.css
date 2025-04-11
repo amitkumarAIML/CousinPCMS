@@ -82,6 +82,17 @@ nz-tree {
   height: 10px !important;
 }
 
+  /* Empty Message Styling */
+  .empty-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    color: #6b7280; /* Gray text */
+    font-size: 10px;
+    text-align: center;
+  }
+
 
 
 
