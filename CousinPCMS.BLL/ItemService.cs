@@ -50,6 +50,49 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<List<ItemResponseModel>> GetItemsByItemNo(string itemNumber)
+        {
+            APIResult<List<ItemResponseModel>> returnValue = new APIResult<List<ItemResponseModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "akiitemid", ParameterValue = itemNumber, DataType = typeof(string), Compare = ComparisonType.Equals });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}items?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ItemResponseModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = false;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
         public APIResult<List<ItemResponseModel>> GetAllItemsByProductId(string akiProductID)
         {
             APIResult<List<ItemResponseModel>> returnValue = new APIResult<List<ItemResponseModel>>

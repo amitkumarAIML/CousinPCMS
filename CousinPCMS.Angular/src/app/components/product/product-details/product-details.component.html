@@ -225,9 +225,9 @@
                             <div class="pt-2">                                                       
                                 <form nz-form [formGroup]="editAssociatedProductForm">
                                 
-                                    <nz-table #dataTable [nzData]="AdditionalProductList"
+                                    <nz-table #dataProductTable [nzData]="AdditionalProductList"
                                         class="rounded-lg no-header-scroll"
-                                        [nzScroll]="{ x: '700px',
+                                        [nzScroll]="{ x: '600px',
                                             y: '200px'
                                         }"
                                         nzBordered="true"
@@ -236,47 +236,46 @@
                                         [nzLoading]="isAdditionalPloading" >
                                         <thead class="text-xs ">
                                             <tr>
-                                            <th [nzWidth]="'70px'">List Order</th>
+                                            <th [nzWidth]="'50px'">List Order</th>
                                             <th [nzWidth]="'250px'">Product Name</th>                                  
-                                            <th [nzWidth]="'70px'">Action</th>
+                                            <th [nzWidth]="'50px'">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody class="text-color-secondary-font text-xs">
-                                            @for (data of dataTable.data; track data) {
+                                            @for (data of dataProductTable.data; track data) {
                                             <tr>
                                                 <!-- List Order -->
                                                 <td>
-                                                @if(editingId === data.product) {
+                                                @if(editingId === data.additionalProduct) {
                                                     <input nz-input formControlName="listOrder" value="listOrder" type="number" />
                                                     <input nz-input formControlName="product" value="product" type="number" class="hidden" />
-                                                    <input nz-input formControlName="additionalCategory" value="additionalCategory" type="text" class="hidden" />
                                                 } @else {
-                                                    {{ data.listOrder }}                                          
+                                                    {{ data.listOrder }}                                         
                                                 }
                                                 </td>
                                                 <!-- Product Name -->
                                                 <td>                                      
-                                                    {{ data.productName }}
+                                                    {{ data.additionalProductName }}
                                                 </td>
                                                 <!-- Actions -->
                                                 <td>
                                                     <span class="flex gap-3">
-                                                        @if (editingId === data.product) {
-                                                            <a (click)="saveAssociatedProEdit(data)"> Save</a>
+                                                        @if (editingId === data.additionalProduct) {
+                                                            <a (click)="updateAssociatedProduct(data)"> Save</a>
                                                             <a (click)="cancelEdit()">Cancel</a>
-                                                        } @else if (savedId === data.product) {
+                                                        } @else if (savedId === data.additionalProduct) {
                                                             <a (click)="startEdit(data)">
-                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
                                                             <a (click)="deleteAssociatedProduct(data)">
-                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                                <nz-icon nzType="delete" class="text-danger w-5 h-4"  nzTheme="outline" />
                                                             </a>
                                                         } @else {
                                                             <a (click)="startEdit(data)">
-                                                                <img src="../imgs/Edit-Icon.svg" alt="Edit Icon">
+                                                                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
                                                             <a (click)="deleteAssociatedProduct(data)">
-                                                                <img src="../imgs/Delete-Icon.svg" alt="Delete Icon">
+                                                                <nz-icon nzType="delete" class="text-danger w-5 h-4"  nzTheme="outline" />
                                                             </a>
                                                         }
                                                     </span>
@@ -439,12 +438,6 @@ nzWidth="500px"
                     <input nz-input formControlName="product" class="w-full" />                                            
                 </nz-form-control>
             </nz-form-item>                
-            <div class="flex justify-center">
-                <!-- <nz-form-label [nzNoColon]="true">Web Active</nz-form-label>
-                <nz-switch                          
-                    formControlName="webActive"
-                ></nz-switch>                      -->
-            </div>
             <div class="flex justify-end gap-3 mt-5">
                 <button nz-button nzType="default"
                 (click)="handleCancel()">
@@ -492,11 +485,11 @@ nzWidth="500px"
                 <span class="flex gap-3">
                     @if(data.akiProductIsActive==true)
                     {
-                        <img src="../imgs/Check boxTrue.svg" alt="true checkIcon">
+                        <nz-icon nzType="check-circle" class="w-5 h-4 text-primary-theme" nzTheme="outline" />
                     }
                     @if(data.akiProductIsActive==false)
                     {
-                          <img src="../imgs/CheckboxFalse.svg" alt="false deleteIcon">  
+                        <nz-icon nzType="stop" nzTheme="outline" class="w-5 h-4 text-danger" />
                     }                  
                 </span>
                 </td>

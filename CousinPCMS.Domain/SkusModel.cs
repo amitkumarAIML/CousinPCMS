@@ -26,13 +26,13 @@ namespace CousinPCMS.Domain
         public string ItemManufactureRef { get; set; }
 
         [JsonProperty("itemObsolte")]
-        public string ItemObsolte { get; set; }
+        public bool ItemObsolte { get; set; }
 
         [JsonProperty("itemIsUnavailable")]
-        public string ItemIsUnavailable { get; set; }
+        public bool ItemIsUnavailable { get; set; }
 
         [JsonProperty("isrelatedSKU")]
-        public string IsrelatedSKU { get; set; }
+        public bool IsrelatedSKU { get; set; }
     }
 
     public class DeleteSkusRequestModel
@@ -64,7 +64,7 @@ namespace CousinPCMS.Domain
         public string akiCountryofOrigin { get; set; }
         public bool akiPrintLayoutTemp { get; set; }
         public string akiAlternativeTitle { get; set; }
-        public string akiCompetiors { get; set; }
+        public string akiCompetitors { get; set; }
         public bool akiPricebreaks { get; set; }
         public int akiItemShippingWeight { get; set; }
         public string akiItemSiteID { get; set; }
@@ -103,5 +103,55 @@ namespace CousinPCMS.Domain
 
         [JsonProperty("layoutDescription")]
         public string LayoutDescription { get; set; }
+    }
+
+    public class SkusLinkedURlModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        [JsonProperty("skuitemID")]
+        public string skuItemID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class SkusAdditionalImageModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        [JsonProperty("skuitemID")]
+        public string skuItemID { get; set; }
+        public string imageURL { get; set; }
+        public string imageName { get; set; }
+    }
+
+    public class AddSkuAdditionalImageRequestModel
+    {
+        public string skuItemID { get; set; }
+        public string imageURL { get; set; }
+        public string imagename { get; set; }
+    }
+
+    public class AddSkuAdditionalLinkUrlRequestModel
+    {
+        public string skuItemID { get; set; }
+        public string linkURL { get; set; }
+        public string linkText { get; set; }
+        public string toolTip { get; set; }
+        public string linkType { get; set; }
+    }
+
+    public class DeleteSkuURLRequestModel
+    {
+        public string skuItemID { get; set; }
+        public string linkURL { get; set; }
+    }
+
+    public class DeleteSkuImageRequestModel
+    {
+        public string skuItemID { get; set; }
+        public string imageURL { get; set; }
     }
 }

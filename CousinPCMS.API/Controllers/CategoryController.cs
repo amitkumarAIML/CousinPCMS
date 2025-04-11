@@ -40,6 +40,7 @@ namespace CousinPCMS.API.Controllers
             Oauth = Helper.GetOauthToken(Oauth);
             _categoryService = new CategoryService(Oauth);
         }
+
         /// <summary>
         /// Gets all categories.
         /// </summary>       
@@ -64,6 +65,35 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(GetAllCategory)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets all categories by Id.
+        /// </summary>       
+        /// <param name="categoryId">Pass category id</param>
+        /// <returns>returns category object if details are available. Else empty object.</returns>
+        [HttpGet("GetCategoryById")]
+        [ProducesResponseType(typeof(APIResult<List<CategoryModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetCategoryById(string categoryId)
+        {
+            log.Info($"Request of {nameof(GetCategoryById)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.GetCategoryById(categoryId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetCategoryById)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetCategoryById)} is failed.");
             }
             return Ok(responseValue);
         }
@@ -270,7 +300,7 @@ namespace CousinPCMS.API.Controllers
 
             APIResult<string> responseValue;
 
-            var objRequest = new UpdateListOrderModel
+            var objRequest = new AddAdditionalProductforCategoryRequestModel
             {
                 prodCategory = objModel.additionalCategory,
                 product = objModel.Product,
@@ -317,8 +347,8 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var objRequest = new CategoryListOrderModel();
-            objRequest.additionalCategory = objModel.additionalCategory;
+            var objRequest = new AddAdditionalProductforCategoryRequestModel();
+            objRequest.prodCategory = objModel.additionalCategory;
             objRequest.product = objModel.Product;
             objRequest.listorder = objModel.Listorder;
 
@@ -517,6 +547,38 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(AddCategoryLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// deletes the associated product
+        /// </summary>
+        /// <param name="objModel">The object with delete details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("DeleteAssociatedProduct")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> DeleteAssociatedProduct(DeleteAssociatedProductCatRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(DeleteAssociatedProduct)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.DeleteAssociatedProduct(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(DeleteAssociatedProduct)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(DeleteAssociatedProduct)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
             return Ok(responseValue);

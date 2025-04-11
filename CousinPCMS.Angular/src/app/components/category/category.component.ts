@@ -1,26 +1,27 @@
-import {Component} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NzButtonModule} from 'ng-zorro-antd/button'; // ✅ Import ng-zorro modules
-import {NzInputModule} from 'ng-zorro-antd/input';
-import {NzFormModule} from 'ng-zorro-antd/form';
-import {NzSelectModule} from 'ng-zorro-antd/select';
-import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
-import {NzCardModule} from 'ng-zorro-antd/card';
-import {NzDividerModule} from 'ng-zorro-antd/divider';
-import {Subscription} from 'rxjs';
-import {Router, RouterLink} from '@angular/router';
-import {NzTableModule} from 'ng-zorro-antd/table';
-import {NzIconModule} from 'ng-zorro-antd/icon';
-import {CategoryService} from './category.service';
-import {CommonModule} from '@angular/common';
-import {NzModalModule} from 'ng-zorro-antd/modal';
-import {NzSwitchModule} from 'ng-zorro-antd/switch';
-import {DataService} from '../../shared/services/data.service';
-import {NzSpinModule} from 'ng-zorro-antd/spin';
-import {addAssociatedProductModel, AdditionalCategoryModel, UpdateCategoryModel, categorylayout} from '../../shared/models/additionalCategoryModel';
-import {CommodityCode} from '../../shared/models/commodityCodeModel';
-import {Country} from '../../shared/models/countryOriginModel';
-import {NzUploadChangeParam, NzUploadModule} from 'ng-zorro-antd/upload';
+import { Component } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NzButtonModule } from 'ng-zorro-antd/button'; // ✅ Import ng-zorro modules
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { Subscription } from 'rxjs';
+import { HomeService } from '../home/home.service';
+import { Router, RouterLink } from '@angular/router';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { CategoryService } from './category.service';
+import { CommonModule } from '@angular/common';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { DataService } from '../../shared/services/data.service';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { AdditionalCategoryModel, AssociatedProductRequestModel, UpdateCategoryModel, categorylayout } from '../../shared/models/additionalCategoryModel';
+import { CommodityCode } from '../../shared/models/commodityCodeModel';
+import { Country } from '../../shared/models/countryOriginModel';
+import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';;
 
 @Component({
   selector: 'cousins-category',
@@ -69,7 +70,7 @@ export class CategoryComponent {
   btnLoading: boolean = false;
   loadingProduct: boolean = false;
   deleteLoading: boolean = false;
-  productId: number = 0;
+  productId:number| null=null;
   savedId: number | null = null;
   isAssociatePloading: boolean = false;
   selectedFiles!: File;
@@ -135,7 +136,12 @@ export class CategoryComponent {
   ngOnInit(): void {
     const categoryId = sessionStorage.getItem('categoryId') || '';
     this.categoryId = categoryId;
-    this.getCategoryById();
+      if (categoryId) {
+        this.getCategoryById();
+  
+      } else {
+        this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
+      }
     this.getAdditionalCategory();
     this.getCountryOrigin();
     this.getCommodityCodes();
@@ -230,8 +236,8 @@ export class CategoryComponent {
       reader.readAsDataURL(file);
 
       if (event.file.status === 'uploading') {
-        this.dataService.ShowNotification('success', '', `${event.file.name} file uploaded successfully`);
-      }
+        this.dataService.ShowNotification('success','','file uploaded successfully');
+      }      
     }
   }
 
@@ -291,8 +297,9 @@ export class CategoryComponent {
             const maxListOrder = this.AdditionalCategoryList.length > 0 ? Math.max(...this.AdditionalCategoryList.map((category: any) => Number(category.listOrder) || 0)) : 0;
 
             // Set the incremented value in form
-            this.addAssociatedProductForm.patchValue({listorder: maxListOrder + 1});
+            this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });           
             this.getAllProducts();
+             
           } else {
             this.dataService.ShowNotification('error', '', 'Data are not found');
           }
@@ -353,69 +360,66 @@ export class CategoryComponent {
       this.isVisibleAddProductModal = true;
       return;
     }
-    const associatedProduct: addAssociatedProductModel = {
-      product: this.productId,
-      additionalCategory: this.categoryId,
+    const associatedProduct: AssociatedProductRequestModel = {  
+      product:this.productId ,  
+      additionalCategory: this.categoryId,  
       listorder: listOrder,
       isAdditionalProduct: true,
     };
-    // Ensure AdditionalCategoryList is available before checking for duplicates
-    if (!this.AdditionalCategoryList || this.AdditionalCategoryList.length === 0) {
-      this.dataService.ShowNotification('error', '', 'Categories list is empty. Please try again.');
-      return;
-    }
-    // Check if listorder already exists in AdditionalCategoryList
-    const isListOrderExist = this.AdditionalCategoryList.some((category: any) => {
-      return Number(category.listOrder) === listOrder; // Ensure number comparison
-    });
+    const isListOrderExist =
+      this.AdditionalCategoryList &&
+      this.AdditionalCategoryList.length > 0 &&
+      this.AdditionalCategoryList.some((category: any) => {
+        return Number(category.listOrder) === listOrder;
+      });
 
     if (isListOrderExist) {
       this.dataService.ShowNotification('error', '', 'List order already exists, please choose another number');
       this.isVisibleAddProductModal = true;
-      return; // Stop execution if listorder already exists
-    } else {
-      if (this.addAssociatedProductForm.valid) {
-        this.categoryService.addAssociatedProduct(associatedProduct).subscribe({
-          next: (response: any) => {
-            if (response.isSuccess) {
-              this.dataService.ShowNotification('success', '', 'Associated product added successfully');
-              this.getAdditionalCategory();
-            } else {
-              this.dataService.ShowNotification('error', '', 'Associated product not added ');
-            }
-          },
-          error: (error) => {
-            this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
-          },
-        });
-      } else {
-        Object.values(this.addAssociatedProductForm.controls).forEach((control) => {
-          if (control.invalid) {
-            control.markAsDirty();
-            control.updateValueAndValidity({onlySelf: true});
+      return;
+    }
+    if(this.addAssociatedProductForm.valid){
+      this.categoryService.addAssociatedProduct(associatedProduct).subscribe({
+        next: (response:any) => {
+          if (response.isSuccess) {
+            this.dataService.ShowNotification('success', '', 'Associated product added successfully');
+            this.getAdditionalCategory(); 
+            this.addAssociatedProductForm.get('product')?.reset();
+            this.productId=null;                      
+          } else {
+             this.dataService.ShowNotification('error', '', 'Associated product not added ');                
           }
-        });
-      }
+        }, error: (error) => {          
+          this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+        }
+      });
+    }else {
+      Object.values(this.addAssociatedProductForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
     }
   }
 
-  deleteAssociatedProduct(data: any) {
-    const deleteAssocatedProduct: any = {
+deleteAssociatedProduct(data:any){  
+  const deleteAssocatedProduct:any={
       product: data.product,
-      prodCategory: data.additionalCategory,
-    };
-    this.categoryService.deleteAssocatedProduct(deleteAssocatedProduct).subscribe({
-      next: (response) => {
-        if (response.isSuccess) {
-          this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');
-        } else {
-          this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
-        }
-      },
-      error: (error) => {
+      prodCategory:data.additionalCategory,
+  }
+  this.categoryService.deleteAssocatedProduct(deleteAssocatedProduct).subscribe({
+    next: (response:any) => {
+      if (response.isSuccess) {
+        this.dataService.ShowNotification('success', '', 'Associaated product successfully deleted');
+        this.getAdditionalCategory();          
+      }else{
+        this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
+      }
+      } , error: (error) => {
         this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
       },
-    });
+    })
   }
 
   startEdit(row: any) {
@@ -429,21 +433,17 @@ export class CategoryComponent {
     });
   }
 
-  saveAssociatedProEdit(row: any) {
-    const listOrder = Number(this.editAssociatedProductForm.get('listOrder')?.value);
+  updateCategoryAssociatedProduct(row: any) {
+    const listOrder = Number(this.editAssociatedProductForm.get('listOrder')?.value);  
     this.editingId = null;
-    this.savedId = row.product;
-    const associatedProduct: addAssociatedProductModel = {
-      product: row.product,
+    this.savedId = row.product; 
+    const associatedProduct: AssociatedProductRequestModel = {  
+      product: row.product,  
       additionalCategory: row.additionalCategory,
       listorder: listOrder,
       isAdditionalProduct: row.isAdditionalProduct,
     };
-    // Ensure AdditionalCategoryList is available before checking for duplicates
-    if (!this.AdditionalCategoryList || this.AdditionalCategoryList.length === 0) {
-      this.dataService.ShowNotification('error', '', 'Categories list is empty. Please try again.');
-      return;
-    }
+     
     // Check if listorder already exists in AdditionalCategoryList
     const isListOrderExist = this.AdditionalCategoryList.some((category: any) => {
       return Number(category.listOrder) === listOrder; // Ensure number comparison
@@ -489,7 +489,8 @@ export class CategoryComponent {
 
   handleCancel(): void {
     this.isVisibleAddProductModal = false;
-    this.addAssociatedProductForm.get('product')?.value;
+    this.addAssociatedProductForm.get('product')?.reset();
+    this.productId=null;
   }
 
   goToLinkMaintenance(): void {

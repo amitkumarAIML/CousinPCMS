@@ -40,7 +40,7 @@ export class SkusComponent {
   constructor(private readonly router: Router, private homeService: HomeService, private dataService: DataService, private skuService: SkusService) {}
 
   ngOnInit(): void {
-    this.getSkuByItemNumber();
+    this.getSkuByItemNumber();  
   }
 
   cancle() {
@@ -49,25 +49,29 @@ export class SkusComponent {
 
   getSkuByItemNumber() {
     const itemNumber = sessionStorage.getItem('itemNumber') || '';
-    this.loading = true;
-    this.skuService.getSkuItemById(itemNumber).subscribe({
-      next: (response: ApiResponse<SKuList[]>) => {
-        if (response.isSuccess) {
-          this.skuData = response.value[0];
-        } else {
-          this.dataService.ShowNotification('error', '', 'Failed To Load Data');
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        if (err?.error) {
-          this.dataService.ShowNotification('error', '', err.error.title);
-        } else {
-          this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
-      },
-    });
+    if (itemNumber) {
+      this.loading = true;
+      this.skuService.getSkuItemById(itemNumber).subscribe({
+        next: (response: ApiResponse<SKuList[]>) => {
+          if (response.isSuccess) {
+            this.skuData = response.value[0];
+          } else {
+            this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          if (err?.error) {
+            this.dataService.ShowNotification('error', '', err.error.title);
+          } else {
+            this.dataService.ShowNotification('error', '', 'Something went wrong');
+          }
+        },
+      });
+    } else {
+      this.dataService.ShowNotification('error', '', 'Please select sku name from home page');
+    }
   }
 
   delete() {

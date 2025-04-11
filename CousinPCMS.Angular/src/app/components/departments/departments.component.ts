@@ -43,6 +43,7 @@ export class DepartmentsComponent  implements OnInit {
   ngOnInit(): void {
     this.getDepartmentData();
   }
+  
 
   cancle() {
     this.router.navigate(['/home']);
@@ -51,24 +52,28 @@ export class DepartmentsComponent  implements OnInit {
   getDepartmentData() {
     this.loading = true;
     const deptId = sessionStorage.getItem('departmentId') || '';
-    this.departmentService.getDepartmentById(deptId).subscribe({
-          next:(response: DepartmentResponse)=> {
-            if (response.isSuccess) {
-              this.departmentData = response.value[0];
-            } else {
-              this.dataService.ShowNotification('error', '', 'Failed To Load Data');
-            }
-            this.loading = false;
-          },
-          error: (err) => {
-            this.loading = false;
-            if (err?.error) {
-              this.dataService.ShowNotification('error', '', err.error.title);
-            } else {
-              this.dataService.ShowNotification('error', '', 'Something went wrong');
-            }
-          },
-    })
+    if (deptId) {
+      this.departmentService.getDepartmentById(deptId).subscribe({
+            next:(response: DepartmentResponse)=> {
+              if (response.isSuccess) {
+                this.departmentData = response.value[0];
+              } else {
+                this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+              }
+              this.loading = false;
+            },
+            error: (err) => {
+              this.loading = false;
+              if (err?.error) {
+                this.dataService.ShowNotification('error', '', err.error.title);
+              } else {
+                this.dataService.ShowNotification('error', '', 'Something went wrong');
+              }
+            },
+      })
+    } else {
+      this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
+    }
   }
  
   saveDetails () {

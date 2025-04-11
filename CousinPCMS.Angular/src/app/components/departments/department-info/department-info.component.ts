@@ -122,7 +122,7 @@ export class DepartmentInfoComponent {
       reader.readAsDataURL(file);
 
       if (event.file.status === 'uploading') {
-        this.dataService.ShowNotification('success','',`${event.file.name} file uploaded successfully`);
+        this.dataService.ShowNotification('success','','file uploaded successfully');
       }
       
     }
