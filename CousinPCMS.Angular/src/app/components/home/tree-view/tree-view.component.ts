@@ -114,19 +114,25 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
             const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
             if (departmentId) {
               const findParent = this.nodes.find(child => child.key ===  departmentId);
-              this.loadCategoriesForDepartments(findParent).then(data => {
-
-                if (data && data.length > 0) {
-                  findParent.children = data;
-                  findParent.isExpanded = true; 
-                  this.nodes = [...this.nodes]; 
-                  this.selectedValue = [categoryId]; 
-                  this.categorySelected.emit(categoryId);
-                } else {
-                  console.warn('No child data found for this node.');
-                }
-              })
-              this.defaultExpandedKeys = [departmentId]
+              if (categoryId) {
+                this.loadCategoriesForDepartments(findParent).then(data => {
+                  if (data && data.length > 0) {
+                    findParent.children = data;
+                    findParent.isExpanded = true; 
+                    this.nodes = [...this.nodes]; 
+                    this.selectedValue = [categoryId]; 
+                    const path = this.getNodePath(this.nodes, categoryId);
+                    if (path) {
+                      this.defaultExpandedKeys = path;  // Set all parents to expand
+                    }
+                    this.categorySelected.emit(categoryId);
+                  } else {
+                    console.warn('No child data found for this node.');
+                  }
+                })
+              } else {
+                this.selectedValue = [departmentId]; 
+              }
               this.cdRef.detectChanges();
             }
           }
@@ -137,6 +143,20 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
           this.dataService.ShowNotification('error', '', "Something went wrong");
         }
       });
+  }
+
+  getNodePath(nodes: TreeNode[], targetKey: string | number, path: (string | number)[] = []): (string | number)[] | null {
+    for (const node of nodes) {
+      const currentPath = [...path, node.key];
+      if (node.key === targetKey) {
+        return path; // only parents, not the target itself
+      }
+      if (node.children) {
+        const result = this.getNodePath(node.children, targetKey, currentPath);
+        if (result) return result;
+      }
+    }
+    return null;
   }
  
   // Get All Category By department id 
@@ -213,6 +233,8 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       const dep = this.departments.filter(a => a.akiDepartmentID == event.origin.key);
       sessionStorage.setItem('departmentId',  dep[0].akiDepartmentID);
       sessionStorage.removeItem('categoryId');
+      sessionStorage.removeItem('productId');
+      sessionStorage.removeItem('itemNumber');
     } else {
       const cat = this.categories.filter((r) => r.akiCategoryID == event.origin.key);
       if (cat.length > 0) {
@@ -221,6 +243,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         sessionStorage.setItem('categoryId', cat[0].akiCategoryID);
 
         sessionStorage.removeItem('productId');
+        sessionStorage.removeItem('itemNumber');
       }
       this.categorySelected.emit(event.origin.key); // Emit selected category
 
