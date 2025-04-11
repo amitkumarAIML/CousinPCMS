@@ -39,10 +39,12 @@ export class ProductComponent {
 
   ngOnInit(): void {  
     this.getProductById();
+   
   }
 
   getProductById() {
     const productId = sessionStorage.getItem('productId') || '';
+    if (productId) {
     this.productService.getProductById(productId).subscribe({
       next: (response: ProductResponse) => {
         if (response.isSuccess) {
@@ -61,6 +63,9 @@ export class ProductComponent {
         }
       },
     });
+    } else {
+      this.dataService.ShowNotification('error', '', 'Please select product name from home page');
+    }
   }
 
   cancle() {

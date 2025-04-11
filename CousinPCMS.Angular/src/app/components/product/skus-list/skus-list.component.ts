@@ -34,34 +34,33 @@ export class SkusListComponent {
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
   ngOnInit(): void {
-    // this.skusSubscription = this.homeService.selectedSkUList$.subscribe(skus => {
-    //   if (skus) {
-    //       this.skusList = skus;
-    //   }
-    // });
     this.loadSkuForProduct();
   }
 
   loadSkuForProduct() {
     const productId = sessionStorage.getItem('productId') || '';
-      this.homeService.getSkuByProductId(+productId).subscribe({
-        next: (data: SkuListResponse) => {
-          if (data.isSuccess) {
-              if (data && data.value.length > 0) {
-                this.skusList = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
-              } else {
-                this.dataService.ShowNotification('error', '', "No Data");
-              }
-          } else {
-            this.dataService.ShowNotification('error', '', "No Data");
+      if (productId) {
+        this.homeService.getSkuByProductId(+productId).subscribe({
+          next: (data: SkuListResponse) => {
+            if (data.isSuccess) {
+                if (data && data.value.length > 0) {
+                  this.skusList = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
+                } else {
+                  this.dataService.ShowNotification('error', '', "No Data");
+                }
+            } else {
+              this.dataService.ShowNotification('error', '', "No Data");
+            }
+            this.loading = false;
+          },
+          error: () => { 
+            this.loading = false;
+            this.dataService.ShowNotification('error', '', "Something went wrong");
           }
-          this.loading = false;
-        },
-        error: () => { 
-          this.loading = false;
-          this.dataService.ShowNotification('error', '', "Something went wrong");
-        }
-      });
+        });
+      } else {
+        this.dataService.ShowNotification('error', '', 'Please select product name from home page');
+      }
     }
 
   // Handle Row Click to Select/Unselect
