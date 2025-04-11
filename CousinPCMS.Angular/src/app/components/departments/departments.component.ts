@@ -64,11 +64,11 @@ export class DepartmentsComponent  implements OnInit {
             },
             error: (err) => {
               this.loading = false;
-              if (err?.error) {
-                this.dataService.ShowNotification('error', '', err.error.title);
-              } else {
+              // if (err?.error) {
+              //   this.dataService.ShowNotification('error', '', err.error.title);
+              // } else {
                 this.dataService.ShowNotification('error', '', 'Something went wrong');
-              }
+              // }
             },
       })
     } else {
@@ -88,11 +88,12 @@ export class DepartmentsComponent  implements OnInit {
       return; // Stop the save process
     }
 
-    // Get data from both components (if forms are valid)
     const departmentData = this.departmentInfoComp.getFormData();
+    departmentData.akiDepartmentIsActive = true;
 
+    const cleanedForm = this.dataService.cleanEmptyNullToString(departmentData);
     this.btnLoading = true;
-    this.departmentService.updateDepartment(departmentData).subscribe({
+    this.departmentService.updateDepartment(cleanedForm).subscribe({
       next: (response: DepartmentUpdateResponse) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Department Details Updated Successfully');
@@ -102,13 +103,13 @@ export class DepartmentsComponent  implements OnInit {
         }        
         this.btnLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.btnLoading = false;
-        if (err?.error) {
-          this.dataService.ShowNotification('error', '', err.error.title);
-        } else {
+        // if (err?.error) {
+        //   this.dataService.ShowNotification('error', '', err.error.title);
+        // } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
+        // }
       }
     });
   }
@@ -129,11 +130,11 @@ export class DepartmentsComponent  implements OnInit {
       },
       error: (err) => {
         this.deleteLoading = false;
-        if (err?.error) {
-          this.dataService.ShowNotification('error', '', err.error.title);
-        } else {
+        // if (err?.error) {
+        //   this.dataService.ShowNotification('error', '', err.error.title);
+        // } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
+        // }
       }
     });
 

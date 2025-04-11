@@ -187,4 +187,12 @@ export class DataService {
       catchError(error => throwError(() => error))
     );
   }
+
+  cleanEmptyNullToString(obj: any): any {
+    const result: any = {};
+    for (const key in obj) {
+      result[key] = obj[key] === null ? '' : obj[key];
+    }
+    return result;
+  }  
 }

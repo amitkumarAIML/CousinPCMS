@@ -98,7 +98,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
           // this.departments = departments;
           if (departments.isSuccess) {
             if (departments.value && departments.value.length > 0) {
-              this.departments = departments.value.filter((res: Department) => res.akI_DepartmentIsActive);
+              this.departments = departments.value.filter((res: Department) => res.akiDepartmentIsActive);
               const treeData = this.departments.map((dept: any) => ({
                   title: dept.akiDepartmentName.toUpperCase(),
                   key: dept.akiDepartmentID,
@@ -254,9 +254,10 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         sessionStorage.removeItem('productId');
         sessionStorage.removeItem('itemNumber');
       }
-      this.categorySelected.emit(event.origin.key); // Emit selected category
 
     }
+    this.categorySelected.emit(event.origin.key); // Emit selected category
+
   }
 
    // Helper method to get the icon type based on node properties

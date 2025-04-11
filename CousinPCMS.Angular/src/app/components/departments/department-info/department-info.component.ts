@@ -44,17 +44,17 @@ export class DepartmentInfoComponent {
       akiDepartmentName: ['',  [Validators.required]],
       akiDepartmentListOrder: ['',  [Validators.required]],
       akiDepartmentWebActive: [false],
-      akI_DeptPromptUserIfBlank: [false],
+      akiDeptPromptUserifblank: [false],
       akiDepartmentDescText: [''],
       akiDepartmentImageURL: ['',], //[Validators.pattern(/https?:\/\/(www\.)?[\w-]+(\.[\w-]+)+([\/\w-]*)*(\?[\/\w-]*)?$/)]
       akiDepartmentImageHeight: [],
       akiDepartmentImageWidth: [],
       akiDepartmentKeyWords: [''],
       akiDepartmentCommodityCode: [''],
-      akI_Catalogue_Active: [false],
-      akI_Layout_Template: [],
-      akI_Color: ['#F7941D'],
-      akI_Featured_Prod_BG_Color: ['#FFFF80'],
+      akiDepartmentIsActive: [true],
+      akiLayoutTemplate: [''],
+      akiColor: ['#F7941D'],
+      akiFeaturedProdBGColor: ['#FFFF80'],
     });
     
   }
@@ -84,9 +84,14 @@ export class DepartmentInfoComponent {
       },
     })
   }
+
   onColorChange(event: Event, field: string) {
       const value = (event.target as HTMLInputElement).value;
-      this.departmentForm.patchValue({ [field]: value });
+      if (this.isValidHex(value)) {
+        this.departmentForm.patchValue({ [field]: value });
+      } else {
+        this.departmentForm.patchValue({ [field]: '#000000' }); // fallback default
+      }
   }
       
   onHexChange(event: Event, field: string) {
@@ -94,9 +99,19 @@ export class DepartmentInfoComponent {
     if (!value.startsWith('#')) {
         value = '#' + value;
     }
-    this.departmentForm.patchValue({ [field]: value });
+     // Validate and update form
+    if (this.isValidHex(value)) {
+      this.departmentForm.patchValue({ [field]: value });
+    } else {
+      this.departmentForm.patchValue({ [field]: '#000000' }); // fallback default
+    }
+    
   }
   
+  // ✅ Utility for hex validation
+  isValidHex(value: string): boolean {
+    return /^#([0-9A-Fa-f]{6})$/.test(value);
+  }
   getLayoutTemplate() {
     this.departmentService.getLayoutTemplateList().subscribe({
       next: (reponse: layoutDepartment[]) => {
