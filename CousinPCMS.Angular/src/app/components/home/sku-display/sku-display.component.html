@@ -3,25 +3,21 @@
       SKU Name
     </div>
 
-    @if (loading) {
-      <div class="loading-container">
-        <nz-spin nzSize="large"></nz-spin>
-      </div>
-    }
-
-    @if (!loading && skus && skus.length > 0) {
-      <ul class="sku-list divide-y divide-gray-200">
-        @for (sku of skus; track $index) {
-          <li class="sku-item" (click)="onSkuClick(sku)"  
-            [ngClass]="{ 'bg-bg-light': selectedSku === sku?.akiSKUID}">
-            {{sku.skuName}}
-          </li>
-        }
-      </ul>
-    } @else if (!loading) { 
-      <div class="empty-message h-48">
-        {{ displayText }}
-      </div>
-    }
+    <nz-spin [nzSpinning]="loading">
+      @if (skus && skus.length > 0) {
+        <ul class="sku-list divide-y divide-gray-200">
+          @for (sku of skus; track $index) {
+            <li class="sku-item" (click)="onSkuClick(sku)"  
+              [ngClass]="{ 'bg-bg-light': selectedSku === sku?.akiSKUID}">
+              {{sku.skuName}}
+            </li>
+          }
+        </ul>
+      } @else  { 
+        <div class="empty-message h-48">
+          {{ displayText }}
+        </div>
+      }
+    </nz-spin>
     
   </div>

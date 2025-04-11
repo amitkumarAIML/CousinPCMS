@@ -121,7 +121,6 @@ export class ProductComponent {
     };
 
     delete (req as any).category_Name;
-    delete (req as any).akiProductDescription;
 
      this.btnLoading = true;
      this.productService.updateProduct(req).subscribe({

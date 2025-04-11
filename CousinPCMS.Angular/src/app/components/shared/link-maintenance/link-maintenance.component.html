@@ -17,29 +17,27 @@
         </div>
 
         <!-- List -->
-        <ul class="border-light-border border rounded divide-y divide-light-border max-h-[90%]">
-          @if (loadingdata) {
-          <div class="loading-container">
-            <nz-spin nzSize="large"></nz-spin>
-          </div>
-          } @if (!loadingdata && links && links.length > 0) {
-             @for(link of links; track $index) {
-            <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
-                <span class="text-secondary-font truncate">
-                {{ link.linkURL }}
-                </span>
-                <button nz-button nzType="text" nzDanger (click)="deleteLink(link, $index)" class="ml-2">
-                <nz-icon nzType="delete" class="text-danger" nzTheme="outline" />
-                </button>
-            </li>
+        <nz-spin [nzSpinning]="loadingdata">
+          <ul class="border-light-border border rounded divide-y divide-light-border max-h-[90%]">
+            @if (links && links.length > 0) {
+              @for(link of links; track $index) {
+              <li class="flex justify-between items-center px-2 py-1 hover:bg-gray-50">
+                  <span class="text-secondary-font truncate">
+                  {{ link.linkURL }}
+                  </span>
+                  <button nz-button nzType="text" nzDanger (click)="deleteLink(link, $index)" class="ml-2">
+                  <nz-icon nzType="delete" class="text-danger" nzTheme="outline" />
+                  </button>
+              </li>
+              }
+            <li class="h-20"></li>
+            } @else {
+            <div class="flex justify-center items-center h-48">
+              {{ displayText }}
+            </div>
             }
-          <li class="h-20"></li>
-          } @else if (!loadingdata) {
-          <div class="flex justify-center items-center h-48">
-            {{ displayText }}
-          </div>
-          }
-        </ul>
+          </ul>
+        </nz-spin>
       </div>
 
       <!-- Link Creator Section -->

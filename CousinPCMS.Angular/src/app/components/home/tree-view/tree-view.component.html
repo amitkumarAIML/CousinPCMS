@@ -1,66 +1,41 @@
 <!-- Use the Common Loading Component -->
 
+<nz-spin [nzSpinning]="loading">
+  @if (nodes.length > 0) {
+      <nz-tree
+      [nzData]="nodes"
+      nzAsyncData
+      nzDraggable
+      nzShowLine
+      [nzShowIcon]="false"
+      (nzExpandChange)="nzEvent($event)"
+      (nzOnDrop)="nzEvent($event)"
+      (nzClick)="selectCategory($event.node)"
+      [nzTreeTemplate]="nzTreeTemplate"
+      [nzSelectedKeys]="selectedValue"
+      [nzExpandedKeys]="defaultExpandedKeys"
+    >
+      </nz-tree>
+      <ng-template #nzTreeTemplate let-node let-origin="origin">
+        <span class="custom-node">
+          <span class="node-icon">
+            <ng-container>
+              <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
+              @if (node.level === 0) {
+                <nz-icon nzType="partition" nzTheme="outline"></nz-icon>
+              } @else if (node.isLeaf) { 
+                <!-- 🟡 Folder Icon ONLY for Actual Leaf Nodes -->
+                <nz-icon  [nzType]="node.isSelected ? 'folder-open' : 'folder'" nzTheme="outline"></nz-icon>
+              }
+            </ng-container>
+          </span>
+          <span class="node-name">{{ node.title }}</span>
+        </span>
+      </ng-template>
+  } @else {
+    <div class="empty-message h-48">
+      {{ displayText }}
+    </div>
+  }
 
-@if (loading) {
-  <div class="loading-container">
-    <nz-spin nzSize="large"></nz-spin>
-  </div>
-}
-
-@if (!loading) {
-  <nz-tree
-    [nzData]="nodes"
-    nzAsyncData
-    nzDraggable
-    nzShowLine
-    [nzShowIcon]="false"
-    (nzExpandChange)="nzEvent($event)"
-    (nzOnDrop)="nzEvent($event)"
-    (nzClick)="selectCategory($event.node)"
-    [nzTreeTemplate]="nzTreeTemplate"
-    [nzSelectedKeys]="selectedValue"
-    [nzExpandedKeys]="defaultExpandedKeys"
-  >
-  </nz-tree>
- }
-
-<ng-template #nzTreeTemplate let-node let-origin="origin">
-  <span class="custom-node">
-    <span class="node-icon">
-      <ng-container>
-         <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
-         @if (node.level === 0) {
-          <nz-icon nzType="partition" nzTheme="outline"></nz-icon>
-         } @else if (node.isLeaf) { 
-          <!-- 🟡 Folder Icon ONLY for Actual Leaf Nodes -->
-          <nz-icon  [nzType]="node.isSelected ? 'folder-open' : 'folder'" nzTheme="outline"></nz-icon>
-         }
-      </ng-container>
-    </span>
-    <span class="node-name">{{ node.title }}</span>
-  </span>
-</ng-template>
-
-
-<!-- <ng-template #nzTreeTemplate let-node let-origin="origin">
-  <span class="custom-node">
-    <span class="node-icon">
-      @if (node.isLeaf) {
-      <ng-container>
-        <nz-icon [nzType]="node.isSelected ? 'folder-open' : 'folder'" nzTheme="outline"></nz-icon>
-      </ng-container>
-      } @else{
-      <ng-container>
-        @if (node.isDepartment) {
-           <nz-icon nzType="partition" nzTheme="outline"> </nz-icon>
-        }
-        @else {
-        <nz-icon [nzType]="node.expanded ? 'folder-open' : 'folder'" nzTheme="outline"> </nz-icon>
-        }
-      </ng-container>
-      }
-    </span> 
-    <span class="node-name">{{ node.title }}</span>
-  </span>
-</ng-template> -->
-
+</nz-spin>

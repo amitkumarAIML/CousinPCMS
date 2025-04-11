@@ -48,9 +48,9 @@ export class HomeService {
     this.selectedSkU.next(sku);
   }
 
-  getDepartments(): Observable<Department[]> {
+  getDepartments(): Observable<DepartmentResponse> {
     return this.httpService.get<DepartmentResponse>('Department/GetAllDepartment').pipe(
-      map((response: DepartmentResponse) => response.value),
+      map((response: DepartmentResponse) => response),
       catchError(error => throwError(() => error))
     );
   }
@@ -64,11 +64,11 @@ export class HomeService {
     );
   }
 
-  getProductListByCategoryId(categoryID: string): Observable<Product[]> {
+  getProductListByCategoryId(categoryID: string): Observable<ProductResponse> {
     return this.httpService.get<ProductResponse>('Product/GetProductsByCategory', {
       CategoryID: `${categoryID}`,
     }).pipe(
-      map((response: ProductResponse) => response.value),
+      map((response: ProductResponse) => response),
       catchError(error => throwError(() => error))
     );
   }
