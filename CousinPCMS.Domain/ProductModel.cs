@@ -129,6 +129,7 @@ namespace CousinPCMS.Domain
         public string akiProductIndexText4 { get; set; }
         public string akiProductIndexText5 { get; set; }
         public string categoryName { get; set; }
+        public string akiProductDescription { get; set; }
         public string akiProductText { get; set; }
     }
 

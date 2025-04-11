@@ -103,7 +103,7 @@ XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.DocExpansion(DocExpansion.List);//This will not expand all the API's.
+        c.DocExpansion(DocExpansion.None);
 
         c.DefaultModelRendering(ModelRendering.Model);
 

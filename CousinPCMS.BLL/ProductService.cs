@@ -61,11 +61,11 @@ namespace CousinPCMS.BLL
             {
                 var allFilters = new List<Filters>();
 
-                allFilters.Add(new Filters { ParameterName = "akiProductID", ParameterValue = akiProductID, DataType = typeof(string), Compare = ComparisonType.Equals });
+                allFilters.Add(new Filters { ParameterName = "akiProductID", ParameterValue = akiProductID, DataType = typeof(int), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
