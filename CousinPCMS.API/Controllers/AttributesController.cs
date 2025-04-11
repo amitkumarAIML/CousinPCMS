@@ -381,5 +381,33 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets attribute search type dropdown details.
+        /// </summary>       
+        /// <returns>returns dropdown list object if details are available. Else empty object.</returns>
+        [HttpGet("GetAttributeSearchTypes")]
+        [ProducesResponseType(typeof(APIResult<List<DropdownListModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAttributeSearchTypes()
+        {
+            log.Info($"Request of {nameof(GetAttributeSearchTypes)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.GetAttributeSearchTypes();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAttributeSearchTypes)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAttributeSearchTypes)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

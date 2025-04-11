@@ -424,5 +424,42 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
+
+        public APIResult<List<DropdownListModel>> GetAttributeSearchTypes()
+        {
+            APIResult<List<DropdownListModel>> returnValue = new APIResult<List<DropdownListModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributesearchtypes?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<DropdownListModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = true;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
     }
 }
