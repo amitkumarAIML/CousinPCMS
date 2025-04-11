@@ -39,16 +39,17 @@ export class SkusListComponent {
 
   loadSkuForProduct() {
     const productId = sessionStorage.getItem('productId') || '';
-      if (productId) {
         this.homeService.getSkuByProductId(+productId).subscribe({
           next: (data: SkuListResponse) => {
             if (data.isSuccess) {
                 if (data && data.value.length > 0) {
                   this.skusList = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
-                } else {
-                  this.dataService.ShowNotification('error', '', "No Data");
-                }
-            } else {
+                 } 
+                // else {
+                //   this.dataService.ShowNotification('error', '', "No Data");
+                // }
+            } 
+            else {
               this.dataService.ShowNotification('error', '', "No Data");
             }
             this.loading = false;
@@ -58,10 +59,7 @@ export class SkusListComponent {
             this.dataService.ShowNotification('error', '', "Something went wrong");
           }
         });
-      } else {
-        this.dataService.ShowNotification('error', '', 'Please select product name from home page');
-      }
-    }
+    } 
 
   // Handle Row Click to Select/Unselect
   onRowSelect(row: any): void {

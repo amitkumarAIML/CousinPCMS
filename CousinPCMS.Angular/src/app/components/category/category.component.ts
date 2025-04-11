@@ -170,15 +170,15 @@ export class CategoryComponent {
       akiCategoryMinimumDigits: this.categoryForm.get('akiCategoryMinimumDigits')?.value,
       akiCategoryReturnType: this.categoryForm.get('akiCategoryReturnType')?.value,
       akiCategoryShowPriceBreaks: this.categoryForm.get('akiCategoryShowPriceBreaks')?.value,
-      akiCategoryCommodityCode: this.categoryForm.get('akiCategoryCommodityCode')?.value,
+      akiCategoryCommodityCode: this.categoryForm.get('akiCategoryCommodityCode')?.value?? '',
       akiCategoryPromptUserIfPriceGroupIsBlank: this.categoryForm.get('akiCategoryPromptUserIfPriceGroupIsBlank')?.value,
-      akiCategoryCountryOfOrigin: this.categoryForm.get('akiCategoryCountryOfOrigin')?.value,
+      akiCategoryCountryOfOrigin: this.categoryForm.get('akiCategoryCountryOfOrigin')?.value?? '',
       akiCategoryTickBoxNotInUse: this.categoryForm.get('akiCategoryTickBoxNotInUse')?.value,
       akiCategoryUseComplexSearch: this.categoryForm.get('akiCategoryUseComplexSearch')?.value,
       akiCategoryDiscount: this.categoryForm.get('akiCategoryDiscount')?.value,
       akiCategoryLogInAndGreenTickOnly: this.categoryForm.get('akiCategoryLogInAndGreenTickOnly')?.value,
       akiCategoryPrintCatImage: '',
-      akiCategoryPrintCatTemp: false,
+      akiCategoryPrintCatTemp: true,
       akiCategoryAlternativeTitle: this.categoryForm.get('akiCategoryAlternativeTitle')?.value,
       akiCategoryIndex1: this.categoryForm.get('akiCategoryIndex1')?.value,
       akiCategoryIndex2: this.categoryForm.get('akiCategoryIndex2')?.value,
@@ -190,7 +190,7 @@ export class CategoryComponent {
       akidepartmentname: '',
       aki_Show_Category_Text: this.categoryForm.get('akI_Show_Category_Text')?.value,
       aki_Show_Category_Image: this.categoryForm.get('akI_Show_Category_Image')?.value,
-      aki_Layout_Template: this.categoryForm.get('akI_Layout_Template')?.value,
+      aki_Layout_Template: this.categoryForm.get('akI_Layout_Template')?.value ?? '',
       akiCategoryWebActive: this.categoryForm.get('akiCategoryWebActive')?.value,
       akiCategoryDescriptionText: this.categoryForm.get('akiCategoryDescriptionText')?.value,
     };
@@ -200,7 +200,8 @@ export class CategoryComponent {
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Category details updated successfully');
-            this.btnLoading = false;
+            this.btnLoading = false; 
+            this.router.navigate(['/home']);          
           } else {
             this.dataService.ShowNotification('error', '', 'Category details not updated ');
             this.btnLoading = false;

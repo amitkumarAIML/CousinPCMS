@@ -77,7 +77,7 @@ export class ProductDetailsComponent {
   rowProductId: number | null=null;
   productList: any[] = [];
   loadingProduct: boolean = false;
-  akiProductID: number = 0;
+  akiProductID: number | undefined;
 
   @Input() productData!: any;
 
@@ -125,13 +125,14 @@ export class ProductDetailsComponent {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['productData']) {
       if (this.productData) {
-        this.productForm.patchValue(this.productData);
-        this.akiProductID = this.productData.akiProductID;         
+        this.productForm.patchValue(this.productData);     
       } 
     }
   }
 
   ngOnInit() {
+    const akiProductIDStr = sessionStorage.getItem('productId');
+    this.akiProductID = akiProductIDStr ? +akiProductIDStr : undefined;
     this.getLayoutTemplate();
     this.getCommodityCodes();
     this.getCountryOrigin();
@@ -275,7 +276,7 @@ export class ProductDetailsComponent {
     this.isAdditionalPloading = true;
     if (this.akiProductID) {
       const isValidProductId = this.akiProductID;
-      this.productService.getAdditionalProduct(isValidProductId).subscribe({
+      this.productService.getAdditionalProduct(+isValidProductId).subscribe({
         next: (response: any) => {
           if (response != null) {
             this.AdditionalProductList = response;

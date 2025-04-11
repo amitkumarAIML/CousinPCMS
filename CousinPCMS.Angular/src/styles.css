@@ -117,12 +117,12 @@ label {
 .ant-tabs-nav-wrap {
     padding: 0px 16px !important;
 }
-.no-header-scroll .ant-table-header {
+.ant-table-header {
     overflow-y: hidden !important;
     scrollbar-width: none;
   }
   
-  .no-header-scroll .ant-table-header::-webkit-scrollbar {
+ .ant-table-header::-webkit-scrollbar {
     display: none;
   }
   

@@ -47,7 +47,7 @@
                                     <nz-form-item>
                                             <nz-form-label [nzNoColon]="true" nzFor="categoryName" [nzSm]="6" [nzXs]="24">Category Name</nz-form-label>
                                             <nz-form-control [nzSm]="18" [nzXs]="24">
-                                            <div class="input-wrapper">
+                                            <div class="flex items-center justify-between w-full">
                                                 <input nz-input formControlName="akiCategoryName" maxlength="100" />
                                                 <span class="char-count">
                                                     {{ 100 - categoryForm.get('akiCategoryName')?.value?.length || 100 }}

@@ -92,7 +92,7 @@
                         <nz-form-item class="w-full">
                             <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
                             <nz-form-control >
-                                <nz-select  formControlName="akiProductCommodityCode" class="w-full" nzShowSearch >
+                                <nz-select  formControlName="akiProductCommodityCode" class="w-full" nzShowSearch nzAllowClear="true" >
                                     @for (commodity of commodityCode; track $index) {
                                         <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
                                       }
@@ -103,7 +103,7 @@
                         <nz-form-item>
                             <nz-form-label nzFor="countryOfOrigin"  [nzNoColon]="true">Country of Origin</nz-form-label>
                             <nz-form-control>
-                                <nz-select formControlName="akiProductCountryOfOrigin" class="w-full">
+                                <nz-select formControlName="akiProductCountryOfOrigin" class="w-full" nzShowSearch="true" nzAllowClear="true">
                                     @for (country of countries; track $index) {
                                         <nz-option  [nzValue]="country.code" [nzLabel]="country.name"></nz-option>
                                     }
@@ -267,7 +267,7 @@
                         <nz-form-item class="w-full">
                             <nz-form-label nzFor="layoutTemplate" [nzNoColon]="true">Layout Template</nz-form-label>
                             <nz-form-control>
-                                <nz-select formControlName="aki_Layout_Template" class="w-full">
+                                <nz-select formControlName="aki_Layout_Template" class="w-full"nzShowSearch="true" nzAllowClear="true">
                                     @for (option of layoutOptions; track option.templateCode) {
                                         <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                                     }

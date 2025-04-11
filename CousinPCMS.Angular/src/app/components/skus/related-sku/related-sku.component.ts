@@ -28,7 +28,8 @@ export class RelatedSkuComponent {
   relatedSkusList: any[] = [];
   loading: boolean = false;
   @Input() skuData!: any;
-
+  relatedSkusListFilter:any[]=[];
+  
   constructor(private skusService: SkusService, private dataService: DataService) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -43,23 +44,38 @@ export class RelatedSkuComponent {
   ngOnInit() {
     this.loadRelatedSku();
   }
-
-      // Search filter function
   onSearch() {
-    const searchText = this.searchValue.toLowerCase();
-      // this.filteredCategories = this.categoryList.filter(category =>
-      //   category.akiCategoryName.toLowerCase().includes(searchText)
-      // );
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.relatedSkusListFilter = [...this.relatedSkusList];
+      return;
+    }
+  
+    this.relatedSkusListFilter = this.relatedSkusList.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.relatedItemNo).includes(searchText)||
+              normalize(item.relationType).includes(searchText)||
+              normalize(item.relatedSKUName).includes(searchText) ||
+              normalize(item.itemManufactureRef).includes(searchText) ||
+              normalize(item.itemNo).includes(searchText);
+    }); 
   }
-
-    loadRelatedSku() {
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.relatedSkusListFilter = [...this.relatedSkusList];
+   
+  }
+  loadRelatedSku() {
       const itemNumber = sessionStorage.getItem('itemNumber') || '';
       if (!itemNumber)  return;
       this.loading = true;
       this.skusService.getRelatedSkuItem(itemNumber).subscribe({
         next: (data) => {
           if (data.isSuccess) {
-              this.relatedSkusList = data.value;
+              this.relatedSkusList = data.value || [];
+              this.relatedSkusListFilter = [...this.relatedSkusList];
           }
           else {
             this.dataService.ShowNotification('error', '', "Filed to data load");
@@ -71,6 +87,5 @@ export class RelatedSkuComponent {
           this.dataService.ShowNotification('error', '', "Something went wrong");
         }
       });
-    }
-
+  }
 }

@@ -70,7 +70,7 @@ export interface ProductUpdateResponse {
     exceptionInformation: any;
 }
 export interface AssociatedProductRequestModelForProduct{
-    product:number;
+    product?:number;
     addproduct:string;
     listorder:number;
 }

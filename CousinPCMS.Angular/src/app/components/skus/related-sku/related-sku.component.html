@@ -4,15 +4,34 @@
         <nz-form-item>
             <nz-form-label [nzNoColon]="true" >Search</nz-form-label>
             <nz-form-control>
-                <nz-input-group [nzSuffix]="suffixIcon">
-                    <input nz-input [(ngModel)]="searchValue" (ngModelChange)="onSearch()" />
+                <nz-input-group
+                [nzSuffix]="inputClearTpl">
+              <input
+                nz-input
+                type="text"
+                class="rounded"
+                [(ngModel)]="searchValue"
+                (input)="onSearch()"
+                #searchBox
+              />
                 </nz-input-group>
-                <!-- Icon for Search -->
-                <ng-template #suffixIcon>
-                    <i nz-icon nzType="search"></i>
-                </ng-template>
             </nz-form-control>
-        </nz-form-item>
+        </nz-form-item>        
+        <ng-template #inputClearTpl>
+        @if (searchValue) {
+        <span
+            aria-hidden="true"
+            nz-icon
+            nzTheme="fill"
+            class="cursor-pointer"
+            nzType="close-circle"
+            (click)="clearSearchText()"
+        ></span>
+        }@else{
+            <nz-icon nzType="search" />
+        }
+        </ng-template>
+    
 </div>
 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2">
     <div class="grid grid-cols-1 md:grid-cols-1 ">
@@ -34,7 +53,7 @@
   
 </div>
 
-<nz-table #headerTable [nzData]="relatedSkusList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
+<nz-table #headerTable [nzData]="relatedSkusListFilter" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
       [nzScroll]="{ y: '660px' }">
     <thead>
       <tr>
