@@ -39,12 +39,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -76,12 +76,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -113,12 +113,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -228,12 +228,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -314,12 +314,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -364,12 +364,12 @@ namespace CousinPCMS.BLL
                     }
                     else
                     {
-                        returnValue.IsSuccess = false;
+                        returnValue.IsSuccess = true;
                     }
                 }
                 else
                 {
-                    returnValue.IsSuccess = false;
+                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
