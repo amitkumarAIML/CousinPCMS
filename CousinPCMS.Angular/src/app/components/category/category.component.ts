@@ -509,7 +509,7 @@ deleteAssociatedProduct(data:any){
     this.categoryService.getCategoryById(this.categoryId).subscribe({
       next: (response: any) => {
         if (response.isSuccess) {
-          this.categoryDetails = response.value[0];
+          this.categoryDetails =  response.value && response.value[0];
           this.categoryForm.patchValue(this.categoryDetails);
         } else {
           this.dataService.ShowNotification('error', '', 'Failed To Load Data');

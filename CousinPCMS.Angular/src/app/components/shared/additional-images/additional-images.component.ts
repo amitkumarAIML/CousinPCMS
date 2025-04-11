@@ -198,9 +198,9 @@ export class AdditionalImagesComponent {
         next: (response) => {
           if (response.isSuccess) {
             this.fileList.splice(index, 1);
-            this.dataService.ShowNotification('success', '', 'Category Successfully Deleted');
+            this.dataService.ShowNotification('success', '', 'Category image Successfully Deleted');
           } else {
-            this.dataService.ShowNotification('error', '', 'Category Url Failed Deleted');
+            this.dataService.ShowNotification('error', '', 'Category image Failed Deleted');
           }
           this.loadingdata = false;
         },
@@ -218,9 +218,9 @@ export class AdditionalImagesComponent {
         next: (response) => {
           if (response.isSuccess) {
             this.fileList.splice(index, 1);
-            this.dataService.ShowNotification('success', '', 'Category Successfully Deleted');
+            this.dataService.ShowNotification('success', '', 'Sku image Successfully Deleted');
           } else {
-            this.dataService.ShowNotification('error', '', 'Category Url Failed Deleted');
+            this.dataService.ShowNotification('error', '', 'Sku image Failed Deleted');
           }
           this.loadingdata = false;
         },
