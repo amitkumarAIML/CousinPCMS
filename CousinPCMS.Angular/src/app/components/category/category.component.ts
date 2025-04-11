@@ -25,7 +25,7 @@ import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';;
 
 @Component({
   selector: 'cousins-category',
-  imports: [ 
+  imports: [
     ReactiveFormsModule,
     NzButtonModule,
     NzInputModule,
@@ -33,7 +33,7 @@ import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';;
     NzSelectModule,
     NzCheckboxModule,
     NzCardModule,
-    NzDividerModule ,
+    NzDividerModule,
     RouterLink,
     NzTableModule,
     NzIconModule,
@@ -42,65 +42,62 @@ import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';;
     NzModalModule,
     NzSwitchModule,
     NzSpinModule,
-    NzUploadModule
+    NzUploadModule,
   ],
   templateUrl: './category.component.html',
-  styleUrl: './category.component.css'
+  styleUrl: './category.component.css',
 })
 export class CategoryComponent {
   categoryForm: FormGroup;
   private categorySubscription!: Subscription;
   categoryDetails: any;
-  countries : any[]= []
+  countries: any[] = [];
   layoutOptions: any[] = [];
   returnOptions: any[] = [];
 
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
-  AdditionalCategoryList: AdditionalCategoryModel[] = []
-  categoryId:string='';
+  AdditionalCategoryList: AdditionalCategoryModel[] = [];
+  categoryId: string = '';
   editingId: number | null = null;
   editedRow: any = {};
-  editAssociatedProductForm:FormGroup;
-  addAssociatedProductForm:FormGroup;
-  isVisibleAddProductModal:boolean=false;
-  CommodityCode:any[]=[];
-  productNameList:any[]=[];
+  editAssociatedProductForm: FormGroup;
+  addAssociatedProductForm: FormGroup;
+  isVisibleAddProductModal: boolean = false;
+  CommodityCode: any[] = [];
+  productNameList: any[] = [];
   loading: boolean = false;
+  btnLoading: boolean = false;
   loadingProduct: boolean = false;
   deleteLoading: boolean = false;
   productId:number| null=null;
   savedId: number | null = null;
-  isAssociatePloading:boolean=false;
+  isAssociatePloading: boolean = false;
   selectedFiles!: File;
-  constructor(private fb: FormBuilder, private homeService: HomeService,
-    private categoryService:CategoryService,
-    private dataService : DataService,
-    private readonly router: Router
-  ) {
+  constructor(private fb: FormBuilder, private categoryService: CategoryService, private dataService: DataService, private readonly router: Router) {
     this.categoryForm = this.fb.group({
-      akiCategoryID: [{ value: '', disabled: true }],
-      akiCategoryParentID:[{ value: '', disabled: true }],
+      akiCategoryID: [{value: '', disabled: true}],
+      akiCategoryParentID: [{value: '', disabled: true}],
       akiCategoryName: ['', [Validators.required]],
       akiCategoryGuidePrice: [''],
-      akiCategoryGuideWeight:[''],
-      akiCategoryListOrder: [''],      
+      akiCategoryGuideWeight: [''],
+      akiCategoryListOrder: [''],
       akiCategoryPopular: [true],
       akiCategoryImageURL: [''],
       akiCategoryImageHeight: [''],
       akiCategoryImageWidth: [''],
       akiCategoryIncludeInSearchByManufacture: [false],
-      akiCategoryMinimumDigits: [{ value: '', disabled: true }],
-      akiCategoryReturnType: [null],      
-      akiCategoryShowPriceBreaks: [true],      
+      akiCategoryMinimumDigits: [{value: '', disabled: true}],
+      akiCategoryReturnType: [null],
+      akiCategoryShowPriceBreaks: [true],
       akiCategoryCommodityCode: [''],
-      akiCategoryPromptUserIfPriceGroupIsBlank: [true],      
+      akiCategoryPromptUserIfPriceGroupIsBlank: [true],
       akiCategoryCountryOfOrigin: [''],
       akiCategoryTickBoxNotInUse: [true],
-      akiCategoryUseComplexSearch: [true],      
+      akiCategoryUseComplexSearch: [true],
       akiCategoryDiscount: [0],
       akiCategoryLogInAndGreenTickOnly: [false],
-      akiCategoryPrintCatImage: [''],      
+      akiCategoryPrintCatImage: [''],
       akiCategoryPrintCatTemp: [true],
       akiCategoryAlternativeTitle: [''],
       akiCategoryIndex1: [''],
@@ -108,46 +105,43 @@ export class CategoryComponent {
       akiCategoryIndex3: [''],
       akiCategoryIndex4: [''],
       akiCategoryIndex5: [''],
-      akI_Indentation:[0],
-      akiDepartment: [{ value: '', disabled: true }],
-      akIdepartmentname:[''], 
-      akI_Show_Category_Text:[true],
-      akI_Show_Category_Image:[true],
-      akI_Layout_Template:[''],
+      akI_Indentation: [0],
+      akiDepartment: [{value: '', disabled: true}],
+      akIdepartmentname: [''],
+      akI_Show_Category_Text: [true],
+      akI_Show_Category_Image: [true],
+      akI_Layout_Template: [''],
       akiCategoryWebActive: [true],
       akiCategoryDescriptionText: [''],
 
       akiCategoryPrintCatActive: [false],
-      additionalImages: [{ value: '', disabled: true }],     
-      urlLinks: [{ value: '', disabled: true }],     
-      
+      additionalImages: [{value: '', disabled: true}],
+      urlLinks: [{value: '', disabled: true}],
     });
 
     this.editAssociatedProductForm = this.fb.group({
       product: [],
-      additionalCategory:[''],
-      listOrder:[],
-      isAdditionalProduct: true
-    })
+      additionalCategory: [''],
+      listOrder: [],
+      isAdditionalProduct: true,
+    });
     this.addAssociatedProductForm = this.fb.group({
-      product: [{ value: '', disabled: true },Validators.required],
-      additionalCategory:[''],
-      listorder:[,Validators.required],
-      isAdditionalProduct: true
-    })
-   
+      product: [{value: '', disabled: true}, Validators.required],
+      additionalCategory: [''],
+      listorder: [, Validators.required],
+      isAdditionalProduct: true,
+    });
   }
 
   ngOnInit(): void {
-    this.categorySubscription = this.homeService.selectedCategory$.subscribe(category => {
-      if (category) {
-        this.categoryDetails = category[0];
-        this.categoryForm.patchValue(this.categoryDetails);
-        this.categoryId=this.categoryDetails.akiCategoryID;      
-      }else {
+    const categoryId = sessionStorage.getItem('categoryId') || '';
+    this.categoryId = categoryId;
+      if (categoryId) {
+        this.getCategoryById();
+  
+      } else {
         this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
       }
-    });
     this.getAdditionalCategory();
     this.getCountryOrigin();
     this.getCommodityCodes();
@@ -159,26 +153,25 @@ export class CategoryComponent {
       this.categorySubscription.unsubscribe();
     }
   }
-    
-  submitCategoryUpdateForm(): void {
 
-    const updateCategory:UpdateCategoryModel={
+  submitCategoryUpdateForm(): void {
+    const updateCategory: UpdateCategoryModel = {
       akiCategoryID: this.categoryForm.get('akiCategoryID')?.value,
-      akiCategoryParentID:this.categoryForm.get('akiCategoryParentID')?.value,
-      akiCategoryName:this.categoryForm.get('akiCategoryName')?.value,
-      akiCategoryGuidePrice:this.categoryForm.get('akiCategoryGuidePrice')?.value,
-      akiCategoryGuideWeight: this.categoryForm.get('akiCategoryGuideWeight')?.value,     
+      akiCategoryParentID: this.categoryForm.get('akiCategoryParentID')?.value,
+      akiCategoryName: this.categoryForm.get('akiCategoryName')?.value,
+      akiCategoryGuidePrice: this.categoryForm.get('akiCategoryGuidePrice')?.value,
+      akiCategoryGuideWeight: this.categoryForm.get('akiCategoryGuideWeight')?.value,
       akiCategoryListOrder: this.categoryForm.get('akiCategoryListOrder')?.value,
       akiCategoryPopular: this.categoryForm.get('akiCategoryPopular')?.value,
       akiCategoryImageURL: this.categoryForm.get('akiCategoryImageURL')?.value,
-      akiCategoryImageHeight:this.categoryForm.get('akiCategoryImageHeight')?.value,
-      akiCategoryImageWidth:this.categoryForm.get('akiCategoryImageWidth')?.value,
+      akiCategoryImageHeight: this.categoryForm.get('akiCategoryImageHeight')?.value,
+      akiCategoryImageWidth: this.categoryForm.get('akiCategoryImageWidth')?.value,
       akiCategoryIncludeInSearchByManufacture: this.categoryForm.get('akiCategoryIncludeInSearchByManufacture')?.value,
-      akiCategoryMinimumDigits:this.categoryForm.get('akiCategoryMinimumDigits')?.value,
-      akiCategoryReturnType:this.categoryForm.get('akiCategoryReturnType')?.value,
+      akiCategoryMinimumDigits: this.categoryForm.get('akiCategoryMinimumDigits')?.value,
+      akiCategoryReturnType: this.categoryForm.get('akiCategoryReturnType')?.value,
       akiCategoryShowPriceBreaks: this.categoryForm.get('akiCategoryShowPriceBreaks')?.value,
-      akiCategoryCommodityCode:this.categoryForm.get('akiCategoryCommodityCode')?.value,
-      akiCategoryPromptUserIfPriceGroupIsBlank:this.categoryForm.get('akiCategoryPromptUserIfPriceGroupIsBlank')?.value,
+      akiCategoryCommodityCode: this.categoryForm.get('akiCategoryCommodityCode')?.value,
+      akiCategoryPromptUserIfPriceGroupIsBlank: this.categoryForm.get('akiCategoryPromptUserIfPriceGroupIsBlank')?.value,
       akiCategoryCountryOfOrigin: this.categoryForm.get('akiCategoryCountryOfOrigin')?.value,
       akiCategoryTickBoxNotInUse: this.categoryForm.get('akiCategoryTickBoxNotInUse')?.value,
       akiCategoryUseComplexSearch: this.categoryForm.get('akiCategoryUseComplexSearch')?.value,
@@ -187,58 +180,59 @@ export class CategoryComponent {
       akiCategoryPrintCatImage: '',
       akiCategoryPrintCatTemp: false,
       akiCategoryAlternativeTitle: this.categoryForm.get('akiCategoryAlternativeTitle')?.value,
-      akiCategoryIndex1:  this.categoryForm.get('akiCategoryIndex1')?.value,
-      akiCategoryIndex2:  this.categoryForm.get('akiCategoryIndex2')?.value,
-      akiCategoryIndex3:  this.categoryForm.get('akiCategoryIndex3')?.value,
-      akiCategoryIndex4:  this.categoryForm.get('akiCategoryIndex4')?.value,
-      akiCategoryIndex5:  this.categoryForm.get('akiCategoryIndex5')?.value,
+      akiCategoryIndex1: this.categoryForm.get('akiCategoryIndex1')?.value,
+      akiCategoryIndex2: this.categoryForm.get('akiCategoryIndex2')?.value,
+      akiCategoryIndex3: this.categoryForm.get('akiCategoryIndex3')?.value,
+      akiCategoryIndex4: this.categoryForm.get('akiCategoryIndex4')?.value,
+      akiCategoryIndex5: this.categoryForm.get('akiCategoryIndex5')?.value,
       aki_Indentation: 0,
       akiDepartment: this.categoryForm.get('akiDepartment')?.value,
-      akidepartmentname:'' ,
+      akidepartmentname: '',
       aki_Show_Category_Text: this.categoryForm.get('akI_Show_Category_Text')?.value,
       aki_Show_Category_Image: this.categoryForm.get('akI_Show_Category_Image')?.value,
       aki_Layout_Template: this.categoryForm.get('akI_Layout_Template')?.value,
       akiCategoryWebActive: this.categoryForm.get('akiCategoryWebActive')?.value,
-      akiCategoryDescriptionText:this.categoryForm.get('akiCategoryDescriptionText')?.value 
-    }      
-    this.loading = true; 
-    if(this.categoryForm.valid){
+      akiCategoryDescriptionText: this.categoryForm.get('akiCategoryDescriptionText')?.value,
+    };
+    this.btnLoading = true;
+    if (this.categoryForm.valid) {
       this.categoryService.updateCategory(updateCategory).subscribe({
-        next: (response:any) => {
+        next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Category details updated successfully');
-            this.loading = false;      
+            this.btnLoading = false;
           } else {
-             this.dataService.ShowNotification('error', '', 'Category details not updated '); 
-             this.loading = false;      
+            this.dataService.ShowNotification('error', '', 'Category details not updated ');
+            this.btnLoading = false;
           }
-        }, error: (error) => {
-          this.loading = false;
+        },
+        error: (error) => {
+          this.btnLoading = false;
           this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
-        }
+        },
       });
-    }else {
-      Object.values(this.addAssociatedProductForm.controls).forEach(control => {
+    } else {
+      Object.values(this.addAssociatedProductForm.controls).forEach((control) => {
         if (control.invalid) {
           control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
+          control.updateValueAndValidity({onlySelf: true});
         }
       });
     }
   }
 
-   // Handle File Selection
+  // Handle File Selection
   onFileSelected(event: NzUploadChangeParam) {
     const file = event.file?.originFileObj;
-       if (file) {
-        this.selectedFileName = file.name;
-        // Show Preview
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagePreview = reader.result;
+    if (file) {
+      this.selectedFileName = file.name;
+      // Show Preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
       };
-      this.categoryForm.get('akiCategoryImageURL')?.setValue( this.selectedFileName); // Set it immediately
-  
+      this.categoryForm.get('akiCategoryImageURL')?.setValue(this.selectedFileName); // Set it immediately
+
       reader.readAsDataURL(file);
 
       if (event.file.status === 'uploading') {
@@ -246,119 +240,123 @@ export class CategoryComponent {
       }      
     }
   }
-  
-  
-  deleteCategory(){ 
+
+  deleteCategory() {
     this.deleteLoading = true;
     this.categoryService.deleteCategory(this.categoryId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Category Successfully deleted');
           this.router.navigate(['/home']);
-          this.deleteLoading = false;                     
-        }else{
+          sessionStorage.removeItem('categoryId');
+          sessionStorage.removeItem('productId');
+          sessionStorage.removeItem('itemNumber');
+          sessionStorage.removeItem('skuId');
+          this.deleteLoading = false;
+        } else {
           this.dataService.ShowNotification('error', '', 'Category not deleted');
-          this.deleteLoading = false; 
+          this.deleteLoading = false;
         }
-      },error: (error) => {
+      },
+      error: (error) => {
         this.deleteLoading = false;
         this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
-      }
-    }); 
+      },
+    });
   }
 
-  getCountryOrigin(){
+  getCountryOrigin() {
     this.dataService.getCountryOrigin().subscribe({
-      next:(response:Country[])=> {
-        this.countries=response;
-      },error: (error) => {
-        this.dataService.ShowNotification('error', '', 'Something went wrong');          
+      next: (response: Country[]) => {
+        this.countries = response;
       },
-    })
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
   }
 
-  getCommodityCodes(){
+  getCommodityCodes() {
     this.dataService.getCommodityCodes().subscribe({
-      next:(response:CommodityCode[])=> {
-        this.CommodityCode=response;
-      },error: (error) => {
-        this.dataService.ShowNotification('error', '', 'Something went wrong');       
+      next: (response: CommodityCode[]) => {
+        this.CommodityCode = response;
       },
-    })
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
   }
 
-  getAdditionalCategory() { 
-    this.isAssociatePloading=true; 
+  getAdditionalCategory() {
+    this.isAssociatePloading = true;
     if (this.categoryId) {
       this.categoryService.getAdditionalCategory(this.categoryId).subscribe({
-        next: (response:any) => {
+        next: (response: any) => {
           if (response != null) {
-            this.AdditionalCategoryList=response;           
-            const maxListOrder = this.AdditionalCategoryList.length > 0 
-              ? Math.max(...this.AdditionalCategoryList.map((category: any) => Number(category.listOrder) || 0)) 
-              : 0;
-  
+            this.AdditionalCategoryList = response;
+            const maxListOrder = this.AdditionalCategoryList.length > 0 ? Math.max(...this.AdditionalCategoryList.map((category: any) => Number(category.listOrder) || 0)) : 0;
+
             // Set the incremented value in form
             this.addAssociatedProductForm.patchValue({ listorder: maxListOrder + 1 });           
             this.getAllProducts();
              
           } else {
-            this.dataService.ShowNotification('error', '', 'Data are not found');                   
+            this.dataService.ShowNotification('error', '', 'Data are not found');
           }
-          this.isAssociatePloading=false;
-        },error: (error) => {        
+          this.isAssociatePloading = false;
+        },
+        error: (error) => {
           this.dataService.ShowNotification('error', '', error.error || 'Error fetching category list data');
-          this.isAssociatePloading=false;
-        }
-      }); 
+          this.isAssociatePloading = false;
+        },
+      });
     }
   }
 
-  getCategoryLayouts(){
+  getCategoryLayouts() {
     this.categoryService.getCategoryLayouts().subscribe({
-      next:(response:categorylayout[])=> {
-        this.layoutOptions=response;
-      },error: (error) => {
-        this.dataService.ShowNotification('error', '', 'Something went wrong');        
+      next: (response: categorylayout[]) => {
+        this.layoutOptions = response;
       },
-    })
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
   }
 
-  getAllProducts(){
+  getAllProducts() {
     this.loadingProduct = true;
     this.categoryService.getAllProducts().subscribe({
-      next:(response)=> {       
-        this.productNameList=response;       
+      next: (response) => {
+        this.productNameList = response;
         // Filter only if AdditionalCategoryList is available
         if (this.AdditionalCategoryList && this.AdditionalCategoryList.length > 0) {
           const existingIds = this.AdditionalCategoryList.map((category: any) => category.product);
           this.productNameList = this.productNameList.filter((product: any) => !existingIds.includes(product.akiProductID));
         }
-        this.loadingProduct = false;         
-      },error: (error) => {
         this.loadingProduct = false;
-        this.dataService.ShowNotification('error', '', error.error ||'Error fetching product list data');
-      }
-    })
+      },
+      error: (error) => {
+        this.loadingProduct = false;
+        this.dataService.ShowNotification('error', '', error.error || 'Error fetching product list data');
+      },
+    });
   }
-  
+
   selectProduct(data: any) {
-    this.productId=data.akiProductID
+    this.productId = data.akiProductID;
     this.addAssociatedProductForm.patchValue({
       product: data.akiProductName, // Set Product Name
-      webActive: data.akiProductIsActive // Set Web Active if required
-    });    
+      webActive: data.akiProductIsActive, // Set Web Active if required
+    });
   }
- 
+
   addAssociatedProductSubmitForm(): void {
     this.isVisibleAddProductModal = false;
-    const listOrder = Number(this.addAssociatedProductForm.get('listorder')?.value);  
-    if (!this.productId) {  // Checks for null, undefined, 0, empty string, or false
-      this.dataService.ShowNotification(
-        'error',
-        '',
-        'Please select product name from grid'
-      );
+    const listOrder = Number(this.addAssociatedProductForm.get('listorder')?.value);
+    if (!this.productId) {
+      // Checks for null, undefined, 0, empty string, or false
+      this.dataService.ShowNotification('error', '', 'Please select product name from grid');
       this.isVisibleAddProductModal = true;
       return;
     }
@@ -366,7 +364,7 @@ export class CategoryComponent {
       product:this.productId ,  
       additionalCategory: this.categoryId,  
       listorder: listOrder,
-      isAdditionalProduct:true 
+      isAdditionalProduct: true,
     };
     const isListOrderExist =
       this.AdditionalCategoryList &&
@@ -418,11 +416,11 @@ deleteAssociatedProduct(data:any){
       }else{
         this.dataService.ShowNotification('error', '', 'Associaated product not deleted');
       }
-    },error: (error) => {
-      this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
-    }
-  }); 
-}
+      } , error: (error) => {
+        this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+      },
+    })
+  }
 
   startEdit(row: any) {
     this.editingId = row.product;
@@ -431,8 +429,8 @@ deleteAssociatedProduct(data:any){
       listOrder: row.listOrder,
       product: row.product,
       additionalCategory: row.additionalCategory,
-      isAdditionalProduct:row.isAdditionalProduct
-  });
+      isAdditionalProduct: row.isAdditionalProduct,
+    });
   }
 
   updateCategoryAssociatedProduct(row: any) {
@@ -443,45 +441,41 @@ deleteAssociatedProduct(data:any){
       product: row.product,  
       additionalCategory: row.additionalCategory,
       listorder: listOrder,
-      isAdditionalProduct:row.isAdditionalProduct  
+      isAdditionalProduct: row.isAdditionalProduct,
     };
      
     // Check if listorder already exists in AdditionalCategoryList
     const isListOrderExist = this.AdditionalCategoryList.some((category: any) => {
-        return Number(category.listOrder) === listOrder; // Ensure number comparison
+      return Number(category.listOrder) === listOrder; // Ensure number comparison
     });
 
     if (isListOrderExist) {
-      this.dataService.ShowNotification(
-        'error',
-        '',
-        'List order already exists, please choose another number'
-      );
+      this.dataService.ShowNotification('error', '', 'List order already exists, please choose another number');
       return; // Stop execution if listorder already exists
-    }else{      
-      if(this.editAssociatedProductForm.valid){
+    } else {
+      if (this.editAssociatedProductForm.valid) {
         this.categoryService.updateAssociatedProduct(associatedProduct).subscribe({
-          next: (response:any) => {
+          next: (response: any) => {
             if (response.isSuccess) {
               this.dataService.ShowNotification('success', '', 'Associated product updated successfully');
-              this.getAdditionalCategory();  
-                         
+              this.getAdditionalCategory();
             } else {
-              this.dataService.ShowNotification('error', '', 'Associated product not updated ');                            
+              this.dataService.ShowNotification('error', '', 'Associated product not updated ');
             }
-          }, error: (error) => {          
-            this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');            
-            }
+          },
+          error: (error) => {
+            this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+          },
         });
-      }else {
-        Object.values(this.editAssociatedProductForm.controls).forEach(control => {
+      } else {
+        Object.values(this.editAssociatedProductForm.controls).forEach((control) => {
           if (control.invalid) {
             control.markAsDirty();
-            control.updateValueAndValidity({ onlySelf: true });
+            control.updateValueAndValidity({onlySelf: true});
           }
         });
       }
-  }
+    }
   }
 
   cancelEdit() {
@@ -500,15 +494,35 @@ deleteAssociatedProduct(data:any){
   }
 
   goToLinkMaintenance(): void {
-    if (!this.categoryForm.getRawValue().akiCategoryID)  return;
-    sessionStorage.setItem('categoryId',this.categoryForm.getRawValue().akiCategoryID);
+    if (!this.categoryForm.getRawValue().akiCategoryID) return;
     this.router.navigate(['/category/link-maintenance']);
   }
 
   goToAdditionalImage(): void {
     if (!this.categoryForm.getRawValue().akiCategoryID) return;
-    sessionStorage.setItem('categoryId', this.categoryForm.getRawValue().akiCategoryID);
     this.router.navigate(['/category/additional-images']);
   }
 
+  getCategoryById() {
+    this.loading = true;
+    this.categoryService.getCategoryById(this.categoryId).subscribe({
+      next: (response: any) => {
+        if (response.isSuccess) {
+          this.categoryDetails = response.value[0];
+          this.categoryForm.patchValue(this.categoryDetails);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
 }

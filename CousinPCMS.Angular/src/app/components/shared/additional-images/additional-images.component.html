@@ -83,7 +83,7 @@
                 </nz-upload>
 
                 <!-- Upload Button -->
-                <button class="mb-2" nz-button nzType="primary" [nzLoading]="loading" (click)="uploadFile()">Upload</button>
+                <button class="mb-2" nz-button nzType="primary" [nzLoading]="loading" [disabled]="isDuplicateUrl" (click)="uploadFile()">Upload</button>
               </div>
             </div>
           </div>

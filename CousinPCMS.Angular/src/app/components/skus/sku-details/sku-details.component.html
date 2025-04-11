@@ -76,9 +76,9 @@
                         <nz-form-label  [nzNoColon]="true">Item Number</nz-form-label>
                             <nz-form-control >
                                 <div class="input-wrapper">
-                                    <input nz-input formControlName="itemNumber" type="number"/>
+                                    <input nz-input formControlName="akiitemid" type="number"/>
                                     <span class="char-count">
-                                        {{ 31 - skuForm.get('itemNumber')?.value?.length || 31 }}
+                                        {{ 31 - skuForm.get('akiitemid')?.value?.length || 31 }}
                                     </span> 
                                 </div>
                             </nz-form-control>
@@ -162,7 +162,7 @@
                     <!-- No of Additional Images -->
                     <nz-form-item class="w-full">
                         <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="product-link">
-                            <a href="#" class="underline">No of Additional Images</a>
+                            <a (click)="goToAdditionalImage()" class="underline">No of Additional Images</a>
                         </nz-form-label>
                         <nz-form-control>
                             <input nz-input  id="additionalImages" [disabled]="true"/>
@@ -229,7 +229,7 @@
                         <nz-form-item class="w-full">
                             <nz-form-label nzFor="layoutTemplate" [nzNoColon]="true">Layout Template</nz-form-label>
                             <nz-form-control>
-                                <nz-select formControlName="akI_Layout_Template" class="w-full">
+                                <nz-select formControlName="akiLayoutTemplate" class="w-full">
                                     @for (option of layoutOptions; track option.templateCode) {
                                         <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                                     }
@@ -265,7 +265,7 @@
                             <nz-form-item>
                                 <nz-form-label  [nzNoColon]="true">Competitors</nz-form-label>
                                 <nz-form-control>
-                                    <nz-select formControlName="akiCompetitorsTBC" class="w-full">
+                                    <nz-select formControlName="akiCompetitors" class="w-full">
                                         @for (option of competitors; track $index) {
                                             <nz-option  [nzValue]="option.akiCompetitorID" [nzLabel]="option.akiCompetitorName"></nz-option>
                                         }

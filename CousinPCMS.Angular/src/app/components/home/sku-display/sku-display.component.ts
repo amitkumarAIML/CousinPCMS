@@ -17,7 +17,7 @@ export class SkuDisplayComponent {
   skus : SKuList[]= [];
   displayText: string = 'Click on a product to view the SKU';
   loading: boolean = false;
-  selectedSku!: number;
+  selectedSku!: number
 
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
@@ -27,12 +27,15 @@ export class SkuDisplayComponent {
       this.skus = [];
     }
     if (changes['selectedProductId'] && this.selectedProductId) {
+      const productIdStr = sessionStorage.getItem('itemNumber') || '';
+      this.selectedSku =  +productIdStr;
       this.loadSkuForProduct();
     }
   }
 
   loadSkuForProduct() {
     this.loading = true;
+    this.skus = [];
     this.homeService.getSkuByProductId(this.selectedProductId).subscribe({
       next: (data: SkuListResponse) => {
         if (data.isSuccess) {
@@ -40,7 +43,6 @@ export class SkuDisplayComponent {
               this.skus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
               if (this.skus && this.skus.length > 0) {
                 this.displayText = ''; 
-                this.homeService.setSelectedSkUList(this.skus);
               } else {
                 this.displayText = 'No SKU Found';
               }   
@@ -61,13 +63,10 @@ export class SkuDisplayComponent {
     });
   }
 
-  onSkuClick(skuId: number) {
-    if (!skuId) return;
-    this.selectedSku = skuId;
-    const pro = this.skus.filter((res) => res.akiSKUID === skuId);
-    if (pro.length > 0) {
-      this.homeService.setSelectedSkU(pro);
-    }
+  onSkuClick(data: SKuList) {
+    if (!data) return;
+    this.selectedSku = data.akiSKUID;
+    sessionStorage.setItem('itemNumber', data.akiitemid);
   }
 
 }

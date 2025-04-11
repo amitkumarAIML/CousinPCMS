@@ -18,6 +18,8 @@
     (nzOnDrop)="nzEvent($event)"
     (nzClick)="selectCategory($event.node)"
     [nzTreeTemplate]="nzTreeTemplate"
+    [nzSelectedKeys]="selectedValue"
+    [nzExpandedKeys]="defaultExpandedKeys"
   >
   </nz-tree>
  }

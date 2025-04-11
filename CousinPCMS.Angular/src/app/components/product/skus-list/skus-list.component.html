@@ -1,5 +1,5 @@
 <div class="p-4">
-  <nz-table #headerTable [nzData]="skusList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
+  <nz-table #headerTable [nzData]="skusList" nzSize="small" nzBordered [nzShowPagination]="false"  [nzLoading]="loading"       [nzFrontPagination]="false"
   [nzScroll]="{ y: '660px' }"  class="no-header-scroll">
 <thead>
   <tr>
@@ -32,7 +32,7 @@
         }
         <td>{{ data.skuName }}</td>
         <td>{{ data.akiManufacturerRef }}</td>
-        <td>{{ data.itemNumber }}</td>
+        <td>{{ data.akiitemid }}</td>
         <td>{{ data.akiListOrder }}</td>
         <td><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
         <td><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>

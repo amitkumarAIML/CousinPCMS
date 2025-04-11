@@ -103,6 +103,13 @@ export class CategoryService {
       catchError(error => throwError(() => error))
     );
   }
+
+  getCategoryById(categoryId: string): Observable<any> {
+    return this.httpService.get<any>('Category/GetCategoryById',{ categoryId: categoryId }).pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
   
 
   private handleError(error: HttpErrorResponse): Observable<never> {

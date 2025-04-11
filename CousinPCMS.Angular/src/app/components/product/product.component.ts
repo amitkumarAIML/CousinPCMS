@@ -8,14 +8,16 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { Subscription } from 'rxjs';
 import { SkusListComponent } from './skus-list/skus-list.component';
 import { ProductsService } from './products.service';
-import { ProductRequest, ProductUpdateResponse } from '../../shared/models/productModel';
+import { ProductRequest, ProductResponse, ProductUpdateResponse } from '../../shared/models/productModel';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'cousins-product',
   imports: [ NzTabsModule,  // ✅ Import Tabs
              NzButtonModule,
              ProductDetailsComponent,
-             SkusListComponent
+             SkusListComponent,
+             NzSpinModule
             ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css'
@@ -24,22 +26,46 @@ export class ProductComponent {
 
   activeTab: number = 0; // Default tab
   deleteLoading: boolean = false;
-  loading: boolean = false;
+  loading: boolean = true;
+  btnLoading: boolean = false;
   productData!: any;
   
  private productSubscription!: Subscription;
  @ViewChild(ProductDetailsComponent) productDetailsComp!: ProductDetailsComponent;
 
-  constructor(private homeService: HomeService,private dataService : DataService, 
+  constructor(private dataService : DataService, 
     private readonly router: Router, private productService : ProductsService) {
   }
 
-  ngOnInit(): void {
-    this.productSubscription = this.homeService.selectedProduct$.subscribe(product => {
-      if (product) {
-          this.productData = product[0];
-      }
-    });   
+  ngOnInit(): void {  
+    this.getProductById();
+   
+  }
+
+  getProductById() {
+    const productId = sessionStorage.getItem('productId') || '';
+    if (productId) {
+    this.productService.getProductById(productId).subscribe({
+      next: (response: ProductResponse) => {
+        if (response.isSuccess) {
+          this.productData = response.value[0];
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+    } else {
+      this.dataService.ShowNotification('error', '', 'Please select product name from home page');
+    }
   }
 
   cancle() {
@@ -53,6 +79,9 @@ export class ProductComponent {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Product Successfully Deleted');
+          sessionStorage.removeItem('productId');
+          sessionStorage.removeItem('itemNumber');
+          sessionStorage.removeItem('skuId');
           this.router.navigate(['/home']);
         } else {
           this.dataService.ShowNotification('error', '', 'Product Details Failed Deleted');
@@ -94,7 +123,7 @@ export class ProductComponent {
     delete (req as any).category_Name;
     delete (req as any).akiProductDescription;
 
-     this.loading = true;
+     this.btnLoading = true;
      this.productService.updateProduct(req).subscribe({
        next: (response: ProductUpdateResponse) => {
         if (response.isSuccess) {
@@ -103,10 +132,10 @@ export class ProductComponent {
         } else {
           this.dataService.ShowNotification('error', '', "Product Details Failed Updated");
         }
-         this.loading = false;
+         this.btnLoading = false;
        },
        error: (err) => {
-          this.loading = false;
+          this.btnLoading = false;
           if (err?.error) {
             this.dataService.ShowNotification('error', '', err.error.title);
           } else {

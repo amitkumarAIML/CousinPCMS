@@ -1,250 +1,253 @@
-<div class="bg-white rounded-lg shadow-md m-5">
-    <div class="flex justify-between items-center p-4 pb-1">
-        <span>Category Form</span>
-        <div class="flex gap-x-3">
-            <button nz-button nzType="default" [routerLink]="'/home'" class=""> Cancel </button>
-            <button nz-button nzType="default" [nzLoading]="deleteLoading"  (click)="deleteCategory()" class=""> Delete </button>
-            <button nz-button nzType="primary" [nzLoading]="loading" (click)="submitCategoryUpdateForm()" class="text-white ">Save </button>
+ <div class="bg-white rounded-lg shadow-md m-5">
+    <nz-spin [nzSpinning]="loading">
+
+        <div class="flex justify-between items-center p-4 pb-1">
+            <span>Category Form</span>
+            <div class="flex gap-x-3">
+                <button nz-button nzType="default" [routerLink]="'/home'" class=""> Cancel </button>
+                <button nz-button nzType="default" [nzLoading]="deleteLoading"  (click)="deleteCategory()" class=""> Delete </button>
+                <button nz-button nzType="primary" [nzLoading]="btnLoading" (click)="submitCategoryUpdateForm()" class="text-white ">Save </button>
+            </div>
         </div>
-    </div>
-    <hr class="mt-2 mb-2 border-light-border">
-    <div class="p-4">
-        <form nz-form [formGroup]="categoryForm">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
-                <!-- Left Section -->
-                <div class="lg:col-span-5 md:col-span-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <hr class="mt-2 mb-2 border-light-border">
 
-                            <!-- Category ID -->
-                            <nz-form-item>
-                                <nz-form-label  [nzNoColon]="true">Category Id</nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="akiCategoryID" id="categoryId" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <!-- Parent ID -->
-                            <nz-form-item>
-                                <nz-form-label  [nzNoColon]="true">Parent Id</nz-form-label>
-                                <nz-form-control >
-                                    <input nz-input formControlName="akiCategoryParentID" id="parentId" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <!-- Department ID -->
-                            <nz-form-item>
-                                <nz-form-label [nzNoColon]="true">Department Id</nz-form-label>
-                                <nz-form-control >
-                                    <input nz-input formControlName="akiDepartment" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                       
-                        <div class="grid grid-cols-1">
-                            <nz-form-item>
-                                    <nz-form-label [nzNoColon]="true" nzFor="categoryName" [nzSm]="6" [nzXs]="24">Category Name</nz-form-label>
-                                    <nz-form-control [nzSm]="18" [nzXs]="24">
-                                    <div class="input-wrapper">
-                                        <input nz-input formControlName="akiCategoryName" maxlength="100" />
-                                        <span class="char-count">
-                                            {{ 100 - categoryForm.get('akiCategoryName')?.value?.length || 100 }}
-                                        </span>
-                                    </div>
-                                    </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                       
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="akiCategoryGuidePrice"  [nzNoColon]="true">Guide Price</nz-form-label>
-                                <nz-form-control >
-                                    <input nz-input formControlName="akiCategoryGuidePrice" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="guideWeight"  [nzNoColon]="true">Guide Weight</nz-form-label>
-                                <nz-form-control >
-                                    <input nz-input formControlName="akiCategoryGuideWeight"/>
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
-                                <nz-form-control >
-                                    <nz-select formControlName="akiCategoryCommodityCode" class="w-full"
-                                    nzShowSearch="true"
-                                    nzAllowClear="true">
-                                        @for (commodity of CommodityCode; track $index) {
-                                            <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
-                                        }
-                                    </nz-select>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
+        <div class="p-4">
+                <form nz-form [formGroup]="categoryForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
+                        <!-- Left Section -->
+                        <div class="lg:col-span-5 md:col-span-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <nz-form-item>
-                                <nz-form-label  [nzNoColon]="true">List Order</nz-form-label>
-                                <nz-form-control >
-                                    <input nz-input formControlName="akiCategoryListOrder" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <nz-form-item>
-                                <nz-form-label nzFor="countryOfOrigin"  [nzNoColon]="true">Country of Origin</nz-form-label>
-                                <nz-form-control>
-                                <nz-select formControlName="akiCategoryCountryOfOrigin"
-                                    nzShowSearch="true"
-                                    nzAllowClear="true"
-                                    class="w-full">
-                                    @for (country of countries; track $index) {
-                                        <nz-option  [nzValue]="country.code" [nzLabel]="country.name"></nz-option>
-                                    }
-                                </nz-select>
-                                </nz-form-control>
-                            </nz-form-item>
-
-                            <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
-                                <label formControlName="akiCategoryPromptUserIfPriceGroupIsBlank" nz-checkbox nzValue="false">
-                                    Prompt User If Price Group is Blank
-                                </label >
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 ">
-                            <div class="nz-checkbox-wrapper mt-2 mb-2">
-                                <label formControlName="akiCategoryWebActive" nz-checkbox nzValue="false"> Web Active </label >
-                                <label formControlName="akiCategoryPopular" nz-checkbox nzValue="false"> Popular </label >
-                                <label formControlName="akiCategoryTickBoxNotInUse" nz-checkbox nzValue="false"> Tick Box Not In Use </label >
-                                <label formControlName="akiCategoryUseComplexSearch" nz-checkbox nzValue="false"> Use Complex Search </label >
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1">
-                            <nz-form-item >
-                                <div class="flex flex-wrap justify-between items-center w-full">
-                                    <nz-form-label [nzNoColon]="true">Category Text</nz-form-label>
-                                    <!-- <button nz-button nzType="default" class="">
-                                        Spelling
-                                    </button> -->
-                                </div>
-                                <nz-form-control  >
-                                    <textarea nz-input formControlName="akiCategoryDescriptionText" maxlength="2000" class=""></textarea>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-                        <div class="grid grid-cols-1">          
-                            <nz-form-item >
-                                <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
-                                <nz-form-control [nzErrorTip]="'Please enter a valid URL'">                                                                           
-                                    <!-- Flex container for input, char count, and button -->
-                                    <div class="flex items-center space-x-2 relative">
-                                      <!-- Text Input -->
-                                      <input
-                                        nz-input
-                                        formControlName="akiCategoryImageURL"
-                                        class="flex-grow"
-                                        nzType="text"
-                                      />
-                                    <!-- Upload Button -->
-                                    <nz-upload                                        
-                                        [nzHeaders]="{ authorization: 'authorization-text' }"
-                                        (nzChange)="onFileSelected($event)"
-                                        [nzShowUploadList]="false"
-                                        nzAccept=".png,.jpeg,.jpg"
-                                    >
-                                        <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
-                                             Upload
-                                        </button>
-                                    </nz-upload>
-                                      <!-- Char Count -->
-                                      <span class="text-gray-400 text-sm whitespace-nowrap">
-                                        {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
-                                      </span>                                    
-                                   
-                                    </div>
-                                  </nz-form-control>
-                                 
-                            </nz-form-item>
-                        </div>                        
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                            <!-- No of Additional Images -->
-                            <nz-form-item class="w-full">
-                                <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="">
-                                    <a (click)="goToAdditionalImage()" class="underline">No of Additional Images</a>
-                                </nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="additionalImages" id="additionalImages"/>
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <!-- Category Discount -->
-                            <nz-form-item class="w-full">
-                                <nz-form-label  nzFor="categoryDiscount" [nzNoColon]="true">Category Discount</nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="akiCategoryDiscount" id="categoryDiscount" />
-                                </nz-form-control>
-                            </nz-form-item>
-
-                            <label class="mt-auto">(If empty, or 0, the Department default will be used).</label>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                            <!-- No of URL Links -->
-                             <nz-form-item class="w-full">
-                                <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
-                                    <a (click)="goToLinkMaintenance()" class="underline">No of URL Links</a>
-                                </nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="urlLinks" id="urlLinks" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <!-- Image Height -->
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="imageHeight" [nzNoColon]="true">Image Height</nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="akiCategoryImageHeight" id="imageHeight" />
-                                </nz-form-control>
-                            </nz-form-item>
-                       
-                            <!-- Image Width -->
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="imageWidth" [nzNoColon]="true">Image Width</nz-form-label>
-                                <nz-form-control>
-                                    <input nz-input formControlName="akiCategoryImageWidth" id="imageWidth" />
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-
-                        <!-- Website Specific Section -->
-                        <div class="mt-2">
-                            <label >Website specific</label>
-                            <div class="border border-gray-300 rounded-lg p-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                    <!-- Checkbox Section -->
-                                     <div class="nz-checkbox-wrapper nz-checkbox-wrapper-website">
-                                        <label class="nz-checkbox-wrapper-label"  formControlName="akiCategoryIncludeInSearchByManufacture" nz-checkbox nzValue="false">
-                                            <span class="pl-2"> Include Search by Manufacturer</span>
-                                        </label >
-                                        <label  class="nz-checkbox-wrapper-label" formControlName="akiCategoryLogInAndGreenTickOnly" nz-checkbox nzValue="false">
-                                            <span class="pl-2"> Log in and green tick only </span>
-                                        </label >
-                                    </div>
-                                    
-                                      
-                                    <!-- Minimum Digits Input -->
-                                    <nz-form-item class="w-full">
-                                        <nz-form-label nzFor="minDigits" [nzNoColon]="true">Minimum Digits</nz-form-label>
+                                    <!-- Category ID -->
+                                    <nz-form-item>
+                                        <nz-form-label  [nzNoColon]="true">Category Id</nz-form-label>
                                         <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryMinimumDigits" id="minDigits" />
+                                            <input nz-input formControlName="akiCategoryID" id="categoryId" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <!-- Parent ID -->
+                                    <nz-form-item>
+                                        <nz-form-label  [nzNoColon]="true">Parent Id</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="akiCategoryParentID" id="parentId" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <!-- Department ID -->
+                                    <nz-form-item>
+                                        <nz-form-label [nzNoColon]="true">Department Id</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="akiDepartment" />
                                         </nz-form-control>
                                     </nz-form-item>
                                 </div>
-                            </div>
-                        </div>
+                            
+                                <div class="grid grid-cols-1">
+                                    <nz-form-item>
+                                            <nz-form-label [nzNoColon]="true" nzFor="categoryName" [nzSm]="6" [nzXs]="24">Category Name</nz-form-label>
+                                            <nz-form-control [nzSm]="18" [nzXs]="24">
+                                            <div class="input-wrapper">
+                                                <input nz-input formControlName="akiCategoryName" maxlength="100" />
+                                                <span class="char-count">
+                                                    {{ 100 - categoryForm.get('akiCategoryName')?.value?.length || 100 }}
+                                                </span>
+                                            </div>
+                                            </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                            
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="akiCategoryGuidePrice"  [nzNoColon]="true">Guide Price</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="akiCategoryGuidePrice" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="guideWeight"  [nzNoColon]="true">Guide Weight</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="akiCategoryGuideWeight"/>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
+                                        <nz-form-control >
+                                            <nz-select formControlName="akiCategoryCommodityCode" class="w-full"
+                                            nzShowSearch="true"
+                                            nzAllowClear="true">
+                                                @for (commodity of CommodityCode; track $index) {
+                                                    <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
+                                                }
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <nz-form-item>
+                                        <nz-form-label  [nzNoColon]="true">List Order</nz-form-label>
+                                        <nz-form-control >
+                                            <input nz-input formControlName="akiCategoryListOrder" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <nz-form-item>
+                                        <nz-form-label nzFor="countryOfOrigin"  [nzNoColon]="true">Country of Origin</nz-form-label>
+                                        <nz-form-control>
+                                        <nz-select formControlName="akiCategoryCountryOfOrigin"
+                                            nzShowSearch="true"
+                                            nzAllowClear="true"
+                                            class="w-full">
+                                            @for (country of countries; track $index) {
+                                                <nz-option  [nzValue]="country.code" [nzLabel]="country.name"></nz-option>
+                                            }
+                                        </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+
+                                    <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
+                                        <label formControlName="akiCategoryPromptUserIfPriceGroupIsBlank" nz-checkbox nzValue="false">
+                                            Prompt User If Price Group is Blank
+                                        </label >
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 ">
+                                    <div class="nz-checkbox-wrapper mt-2 mb-2">
+                                        <label formControlName="akiCategoryWebActive" nz-checkbox nzValue="false"> Web Active </label >
+                                        <label formControlName="akiCategoryPopular" nz-checkbox nzValue="false"> Popular </label >
+                                        <label formControlName="akiCategoryTickBoxNotInUse" nz-checkbox nzValue="false"> Tick Box Not In Use </label >
+                                        <label formControlName="akiCategoryUseComplexSearch" nz-checkbox nzValue="false"> Use Complex Search </label >
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1">
+                                    <nz-form-item >
+                                        <div class="flex flex-wrap justify-between items-center w-full">
+                                            <nz-form-label [nzNoColon]="true">Category Text</nz-form-label>
+                                            <!-- <button nz-button nzType="default" class="">
+                                                Spelling
+                                            </button> -->
+                                        </div>
+                                        <nz-form-control  >
+                                            <textarea nz-input formControlName="akiCategoryDescriptionText" maxlength="2000" class=""></textarea>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+                                <div class="grid grid-cols-1">          
+                                    <nz-form-item >
+                                        <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
+                                        <nz-form-control [nzErrorTip]="'Please enter a valid URL'">                                                                           
+                                            <!-- Flex container for input, char count, and button -->
+                                            <div class="flex items-center space-x-2 relative">
+                                            <!-- Text Input -->
+                                            <input
+                                                nz-input
+                                                formControlName="akiCategoryImageURL"
+                                                class="flex-grow"
+                                                nzType="text"
+                                            />
+                                            <!-- Upload Button -->
+                                            <nz-upload                                        
+                                                [nzHeaders]="{ authorization: 'authorization-text' }"
+                                                (nzChange)="onFileSelected($event)"
+                                                [nzShowUploadList]="false"
+                                                nzAccept=".png,.jpeg,.jpg"
+                                            >
+                                                <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
+                                                    Upload
+                                                </button>
+                                            </nz-upload>
+                                            <!-- Char Count -->
+                                            <span class="text-gray-400 text-sm whitespace-nowrap">
+                                                {{ 255 - categoryForm.get('akiCategoryImageURL')?.value?.length || 255 }}
+                                            </span>                                    
+                                        
+                                            </div>
+                                        </nz-form-control>
+                                        
+                                    </nz-form-item>
+                                </div>                        
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                                    <!-- No of Additional Images -->
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label  nzFor="additionalImages" [nzNoColon]="true" class="">
+                                            <a (click)="goToAdditionalImage()" class="underline">No of Additional Images</a>
+                                        </nz-form-label>
+                                        <nz-form-control>
+                                            <input nz-input formControlName="additionalImages" id="additionalImages"/>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <!-- Category Discount -->
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label  nzFor="categoryDiscount" [nzNoColon]="true">Category Discount</nz-form-label>
+                                        <nz-form-control>
+                                            <input nz-input formControlName="akiCategoryDiscount" id="categoryDiscount" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+
+                                    <label class="mt-auto">(If empty, or 0, the Department default will be used).</label>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                                    <!-- No of URL Links -->
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
+                                            <a (click)="goToLinkMaintenance()" class="underline">No of URL Links</a>
+                                        </nz-form-label>
+                                        <nz-form-control>
+                                            <input nz-input formControlName="urlLinks" id="urlLinks" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <!-- Image Height -->
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="imageHeight" [nzNoColon]="true">Image Height</nz-form-label>
+                                        <nz-form-control>
+                                            <input nz-input formControlName="akiCategoryImageHeight" id="imageHeight" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                            
+                                    <!-- Image Width -->
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="imageWidth" [nzNoColon]="true">Image Width</nz-form-label>
+                                        <nz-form-control>
+                                            <input nz-input formControlName="akiCategoryImageWidth" id="imageWidth" />
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+
+                                <!-- Website Specific Section -->
+                                <div class="mt-2">
+                                    <label >Website specific</label>
+                                    <div class="border border-gray-300 rounded-lg p-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                            <!-- Checkbox Section -->
+                                            <div class="nz-checkbox-wrapper nz-checkbox-wrapper-website">
+                                                <label class="nz-checkbox-wrapper-label"  formControlName="akiCategoryIncludeInSearchByManufacture" nz-checkbox nzValue="false">
+                                                    <span class="pl-2"> Include Search by Manufacturer</span>
+                                                </label >
+                                                <label  class="nz-checkbox-wrapper-label" formControlName="akiCategoryLogInAndGreenTickOnly" nz-checkbox nzValue="false">
+                                                    <span class="pl-2"> Log in and green tick only </span>
+                                                </label >
+                                            </div>
+                                            
+                                            
+                                            <!-- Minimum Digits Input -->
+                                            <nz-form-item class="w-full">
+                                                <nz-form-label nzFor="minDigits" [nzNoColon]="true">Minimum Digits</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryMinimumDigits" id="minDigits" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                        </div>
+                                    </div>
+                                </div>
 
                         <!-- Return Type Section -->
                          <div class="grid grid-cols-1 md:grid-cols-2">
@@ -337,102 +340,103 @@
                                         </tbody>
                                     </nz-table>
 
-                                </form>
+                                        </form>
 
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                
+                        <!-- Right Section -->
+                        <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
+                                <!-- Category Settings Section -->
+                                <div class="grid grid-cols-1 gap-4 mt-2">
+                                    <!-- Checkboxes -->
+                                    <div class="flex flex-col items-start space-y-2 nz-checkbox-wrapper nz-checkbox-wrapper-website">
+                                        <label class=""  formControlName="akiCategoryPrintCatActive" nz-checkbox nzValue="false">Cat Active </label >
+                                        <label class="ml-0" formControlName="akI_Show_Category_Text" nz-checkbox nzValue="false"> <span>Show Category Text </span></label >
+                                        <label class="ml-0" formControlName="akI_Show_Category_Image" nz-checkbox nzValue="false">Show Category Image </label >
+                                    </div>
+                                </div>
+
+                                <!-- Layout Template Dropdown -->
+                                <div class="">
+                                    <nz-form-item class="w-full">
+                                        <nz-form-label nzFor="akI_Layout_Template" [nzNoColon]="true">Layout Template</nz-form-label>
+                                        <nz-form-control>
+                                            <nz-select formControlName="akI_Layout_Template"
+                                            nzShowSearch="true"
+                                            nzAllowClear="true" class="w-full">
+                                                @for (option of layoutOptions; track $index) {
+                                                    <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
+                                                }
+                                            </nz-select>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+
+                                <!-- Alternative Title -->
+                                <div class="">
+                                    <nz-form-item>
+                                        <nz-form-label nzFor="akiCategoryAlternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
+                                        <nz-form-control>
+                                            <textarea nz-input rows="3" formControlName="akiCategoryAlternativeTitle" id="akiCategoryAlternativeTitle" class="w-full p-2"></textarea>
+                                        </nz-form-control>
+                                    </nz-form-item>
+                                </div>
+
+                                <!-- Show Price Breaks Checkbox -->
+                                <div class="mt-1">
+                                    <div class="flex items-center space-x-2 nz-checkbox-wrapper">
+                                        <label formControlName="akiCategoryShowPriceBreaks" nz-checkbox nzValue="false">Show Price Breaks </label >
+                                    </div>
+                                </div>
+
+                                <!-- Index Entry Text Section -->
+                                <div class="mt-1">
+                                    <label >Index Entry Text</label>
+                                    <div class="border border-gray-300 rounded-lg p-2">
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <nz-form-item>
+                                                <nz-form-label [nzNoColon]="true">Index Entry 1</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryIndex1" class="w-full" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label [nzNoColon]="true">Index Entry 2</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryIndex2" class="w-full" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label [nzNoColon]="true">Index Entry 3</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryIndex3" class="w-full" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label [nzNoColon]="true">Index Entry 4</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryIndex4" class="w-full" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                            <nz-form-item>
+                                                <nz-form-label [nzNoColon]="true">Index Entry 5</nz-form-label>
+                                                <nz-form-control>
+                                                    <input nz-input formControlName="akiCategoryIndex5" class="w-full" />
+                                                </nz-form-control>
+                                            </nz-form-item>
+                                        
+                                        </div>
+                                    </div>
+                                </div>
                         </div>
                     </div>
-           
-                <!-- Right Section -->
-                <div class="lg:col-span-5 md:col-span-6 lg:pl-20" >
-                        <!-- Category Settings Section -->
-                        <div class="grid grid-cols-1 gap-4 mt-2">
-                            <!-- Checkboxes -->
-                            <div class="flex flex-col items-start space-y-2 nz-checkbox-wrapper nz-checkbox-wrapper-website">
-                                <label class=""  formControlName="akiCategoryPrintCatActive" nz-checkbox nzValue="false">Cat Active </label >
-                                <label class="ml-0" formControlName="akI_Show_Category_Text" nz-checkbox nzValue="false"> <span>Show Category Text </span></label >
-                                <label class="ml-0" formControlName="akI_Show_Category_Image" nz-checkbox nzValue="false">Show Category Image </label >
-                            </div>
-                        </div>
-
-                        <!-- Layout Template Dropdown -->
-                        <div class="">
-                            <nz-form-item class="w-full">
-                                <nz-form-label nzFor="akI_Layout_Template" [nzNoColon]="true">Layout Template</nz-form-label>
-                                <nz-form-control>
-                                    <nz-select formControlName="akI_Layout_Template"
-                                    nzShowSearch="true"
-                                    nzAllowClear="true" class="w-full">
-                                        @for (option of layoutOptions; track $index) {
-                                            <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
-                                        }
-                                    </nz-select>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-
-                        <!-- Alternative Title -->
-                        <div class="">
-                            <nz-form-item>
-                                <nz-form-label nzFor="akiCategoryAlternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
-                                <nz-form-control>
-                                    <textarea nz-input rows="3" formControlName="akiCategoryAlternativeTitle" id="akiCategoryAlternativeTitle" class="w-full p-2"></textarea>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </div>
-
-                        <!-- Show Price Breaks Checkbox -->
-                        <div class="mt-1">
-                            <div class="flex items-center space-x-2 nz-checkbox-wrapper">
-                                <label formControlName="akiCategoryShowPriceBreaks" nz-checkbox nzValue="false">Show Price Breaks </label >
-                            </div>
-                        </div>
-
-                        <!-- Index Entry Text Section -->
-                        <div class="mt-1">
-                            <label >Index Entry Text</label>
-                            <div class="border border-gray-300 rounded-lg p-2">
-                                <div class="grid grid-cols-1 gap-3">
-                                    <nz-form-item>
-                                        <nz-form-label [nzNoColon]="true">Index Entry 1</nz-form-label>
-                                        <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryIndex1" class="w-full" />
-                                        </nz-form-control>
-                                    </nz-form-item>
-                                    <nz-form-item>
-                                        <nz-form-label [nzNoColon]="true">Index Entry 2</nz-form-label>
-                                        <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryIndex2" class="w-full" />
-                                        </nz-form-control>
-                                    </nz-form-item>
-                                    <nz-form-item>
-                                        <nz-form-label [nzNoColon]="true">Index Entry 3</nz-form-label>
-                                        <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryIndex3" class="w-full" />
-                                        </nz-form-control>
-                                    </nz-form-item>
-                                    <nz-form-item>
-                                        <nz-form-label [nzNoColon]="true">Index Entry 4</nz-form-label>
-                                        <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryIndex4" class="w-full" />
-                                        </nz-form-control>
-                                    </nz-form-item>
-                                    <nz-form-item>
-                                        <nz-form-label [nzNoColon]="true">Index Entry 5</nz-form-label>
-                                        <nz-form-control>
-                                            <input nz-input formControlName="akiCategoryIndex5" class="w-full" />
-                                        </nz-form-control>
-                                    </nz-form-item>
-                                   
-                                </div>
-                            </div>
-                        </div>
-                </div>
-            </div>
-             
-    </form>
-    </div>
+                    
+            </form>
+        </div>
+    </nz-spin>
 </div>  
 
 

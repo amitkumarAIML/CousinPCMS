@@ -127,9 +127,7 @@ export class ProductDetailsComponent {
       if (this.productData) {
         this.productForm.patchValue(this.productData);
         this.akiProductID = this.productData.akiProductID;         
-      } else {
-        this.dataService.ShowNotification('error', '', 'Please select product name from home page');
-      }
+      } 
     }
   }
 
@@ -225,13 +223,11 @@ export class ProductDetailsComponent {
 
   goToLinkMaintenance(): void {
     if (!this.productForm.getRawValue().akiProductID) return;
-    sessionStorage.setItem('productId', this.productForm.getRawValue().akiProductID);
     this.router.navigate(['/products/link-maintenance']);
   }
 
   goToAdditionalImage(): void {
     if (!this.productForm.getRawValue().akiProductID) return;
-    sessionStorage.setItem('productId', this.productForm.getRawValue().akiProductID);
     this.router.navigate(['/products/additional-images']);
   }
 

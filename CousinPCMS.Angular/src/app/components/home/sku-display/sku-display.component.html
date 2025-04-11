@@ -11,8 +11,8 @@
 
     @if (!loading && skus && skus.length > 0) {
       <ul class="sku-list divide-y divide-gray-200">
-        @for (sku of skus; track sku.itemNumber) {
-          <li class="sku-item" (click)="onSkuClick(sku.akiSKUID)"  
+        @for (sku of skus; track $index) {
+          <li class="sku-item" (click)="onSkuClick(sku)"  
             [ngClass]="{ 'bg-bg-light': selectedSku === sku?.akiSKUID}">
             {{sku.skuName}}
           </li>

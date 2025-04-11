@@ -15,7 +15,7 @@ export class ProductDisplayComponent {
 
   @Input() selectedCategory: string = '';
   @Output() productSelected = new EventEmitter<number>();
-  selectedProduct!: number; 
+  selectedProduct?: number; 
   products: Product[] = [];
   displayText: string = 'Click a category to view the product';
   loading: boolean = false;
@@ -24,13 +24,18 @@ export class ProductDisplayComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedCategory']) {
-      this.selectedProduct = 0;
-       this.loadProductsForCategory();
+        // this.selectedProduct = 0;
+        const productIdStr = sessionStorage.getItem('productId');
+        const productId: number | undefined = productIdStr ? +productIdStr : undefined;
+        this.selectedProduct =  productId;
+        this.loadProductsForCategory();
+
     }
   }
 
   loadProductsForCategory() {
     if (this.selectedCategory) {
+      this.products = [];
       this.loading = true;
       this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
         next: (data: Product[]) => { 
@@ -38,6 +43,7 @@ export class ProductDisplayComponent {
             this.products = data.filter((res: Product) => res?.akiProductIsActive);
             if (this.products && this.products.length > 0) {
               this.displayText = ''; 
+              this.productSelected.emit(this.selectedProduct);
             } else {
               this.displayText = 'No Product Found';
             } 
@@ -59,13 +65,11 @@ export class ProductDisplayComponent {
     }
   }
 
-  onProductClick(productId: number) {
-    if (!productId) return; // Prevents undefined errors
-    this.selectedProduct = productId;
-    const pro = this.products.filter((res) => res.akiProductID === productId);
-    if (pro.length > 0) {
-      this.homeService.setSelectedProduct(pro);
-    }
-    this.productSelected.emit(productId);
+  onProductClick(data: Product) {
+    if (!data) return; // Prevents undefined errors
+    this.selectedProduct = data.akiProductID;
+    sessionStorage.setItem('productId', data.akiProductID.toString());
+    sessionStorage.removeItem('itemNumber');
+    this.productSelected.emit(data.akiProductID);
   }
 }

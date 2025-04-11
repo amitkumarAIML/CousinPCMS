@@ -1,16 +1,15 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { DepartmentInfoComponent } from './department-info/department-info.component';
-import { HomeService } from '../home/home.service';
-import { DepartmentResponse, DepartmentUpdateResponse } from '../../shared/models/departmentModel';
+import { Department, DepartmentResponse, DepartmentUpdateResponse } from '../../shared/models/departmentModel';
 import { Subscription } from 'rxjs';
 import { DepartmentService } from './department.service';
 import { DataService } from '../../shared/services/data.service';
 import { Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'cousins-departments',
@@ -18,39 +17,63 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
     NzTabsModule,  // ✅ Import Tabs
     NzButtonModule,
     DepartmentInfoComponent,
+    NzSpinModule
   ],
   templateUrl: './departments.component.html',
   styleUrl: './departments.component.css'
 })
-export class DepartmentsComponent  {
+export class DepartmentsComponent  implements OnInit {
   activeTab: number = 0; // Default tab
-  departmentData!: DepartmentResponse;
+  departmentData!: Department;
 
   departmentForm!: FormGroup;
   catalogForm!: FormGroup;
   loading: boolean = false;
+  btnLoading: boolean = false;
   deleteLoading: boolean = false;
 
   private departmentSubscription!: Subscription;
 
   @ViewChild(DepartmentInfoComponent) departmentInfoComp!: DepartmentInfoComponent;
 
-  constructor(private homeService: HomeService, private departmentService: DepartmentService, 
+  constructor(private departmentService: DepartmentService, 
       private dataService : DataService, private readonly router: Router) {
   }
 
   ngOnInit(): void {
-    this.departmentSubscription = this.homeService.selectedDepartment$.subscribe(department => {
-      if (department) {
-        this.departmentData = department[0];
-      }else {
-        this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
-      }
-    });
+    this.getDepartmentData();
   }
+  
 
   cancle() {
     this.router.navigate(['/home']);
+  }
+
+  getDepartmentData() {
+    this.loading = true;
+    const deptId = sessionStorage.getItem('departmentId') || '';
+    if (deptId) {
+      this.departmentService.getDepartmentById(deptId).subscribe({
+            next:(response: DepartmentResponse)=> {
+              if (response.isSuccess) {
+                this.departmentData = response.value[0];
+              } else {
+                this.dataService.ShowNotification('error', '', 'Failed To Load Data');
+              }
+              this.loading = false;
+            },
+            error: (err) => {
+              this.loading = false;
+              if (err?.error) {
+                this.dataService.ShowNotification('error', '', err.error.title);
+              } else {
+                this.dataService.ShowNotification('error', '', 'Something went wrong');
+              }
+            },
+      })
+    } else {
+      this.dataService.ShowNotification('error', '', 'Please select department tree from home page');
+    }
   }
  
   saveDetails () {
@@ -58,6 +81,7 @@ export class DepartmentsComponent  {
     this.departmentInfoComp.departmentForm.markAllAsTouched();
 
     // Check if both forms are valid
+
     if (!this.departmentInfoComp.departmentForm.valid) {
       // If any form is invalid, display error message
       this.dataService.ShowNotification('error', '', 'Please fill all required fields.');
@@ -67,7 +91,7 @@ export class DepartmentsComponent  {
     // Get data from both components (if forms are valid)
     const departmentData = this.departmentInfoComp.getFormData();
 
-    this.loading = true;
+    this.btnLoading = true;
     this.departmentService.updateDepartment(departmentData).subscribe({
       next: (response: DepartmentUpdateResponse) => {
         if (response.isSuccess) {
@@ -76,10 +100,10 @@ export class DepartmentsComponent  {
         } else {
           this.dataService.ShowNotification('error', '', 'Department Details Failed Updated');
         }        
-        this.loading = false;
+        this.btnLoading = false;
       },
       error: (err) => {
-        this.loading = false;
+        this.btnLoading = false;
         if (err?.error) {
           this.dataService.ShowNotification('error', '', err.error.title);
         } else {
@@ -96,6 +120,7 @@ export class DepartmentsComponent  {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Department Successfully deleted');
+          sessionStorage.clear();
           this.router.navigate(['/home']);
         } else {
           this.dataService.ShowNotification('error', '', 'Department Details Failed Deleted');

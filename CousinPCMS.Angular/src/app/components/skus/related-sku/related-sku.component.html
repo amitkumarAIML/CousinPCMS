@@ -50,16 +50,13 @@
     <tbody>
       @for (data of headerTable.data; track $index) {
         <tr >
-            <td>{{ data.skuName }}</td>
-            <td>{{ data.akiManufacturerRef }}</td>
-            <td>{{ data.itemNumber }}</td>
-            <td>{{ data.akiListOrder }}</td>
-            <td><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
-            <td><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>
-            <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
-            <td>{{ data.akiTemplateID }}</td>
-            <td>{{ data.akiAltSKUName }}</td>
-            <td>{{ data.akiCommodityCode }}</td>
+            <td>{{ data.relatedItemNo }}</td>
+            <td>{{ data.relationType }}</td>
+            <td>{{ data.relatedSKUName }}</td>
+            <td>{{ data.itemManufactureRef }}</td>
+            <td>{{ data.itemNo }}</td>
+            <td><label nz-checkbox [(ngModel)]="data.itemObsolte"  [disabled]="true"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.itemIsUnavailable" [disabled]="true"></label></td>
         </tr>
       }
     </tbody>
