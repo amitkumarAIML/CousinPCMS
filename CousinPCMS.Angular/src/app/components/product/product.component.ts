@@ -109,7 +109,8 @@ export class ProductComponent {
      }
  
      // Get data from both components (if forms are valid)
-     const productData = this.productDetailsComp.getFormData();
+    //  const productData = this.productDetailsComp.getFormData();
+    const productData = this.dataService.cleanEmptyNullToString(this.productDetailsComp.getFormData());
 
      if (productData.aki_Layout_Template) {
         productData.akiProductPrintLayoutTemp = true;
@@ -121,7 +122,6 @@ export class ProductComponent {
     };
 
     delete (req as any).category_Name;
-
      this.btnLoading = true;
      this.productService.updateProduct(req).subscribe({
        next: (response: ProductUpdateResponse) => {

@@ -109,7 +109,7 @@ export class SkusComponent {
     }
 
     // Get data from both components (if forms are valid)
-    const skuData: SkuRequestModel = this.skusDetailsComp.getFormData();
+    const skuData: SkuRequestModel = this.dataService.cleanEmptyNullToString(this.skusDetailsComp.getFormData());
 
     if (skuData.akiLayoutTemplate) {
       skuData.akiPrintLayoutTemp = true;

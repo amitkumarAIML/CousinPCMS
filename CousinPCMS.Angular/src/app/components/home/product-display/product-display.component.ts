@@ -25,11 +25,15 @@ export class ProductDisplayComponent {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedCategory']) {
         // this.selectedProduct = 0;
-        const productIdStr = sessionStorage.getItem('productId');
-        const productId: number | undefined = productIdStr ? +productIdStr : undefined;
-        this.selectedProduct =  productId;
-        this.loadProductsForCategory();
-
+        if (sessionStorage.getItem('categoryId')) {
+          const productIdStr = sessionStorage.getItem('productId');
+          const productId: number | undefined = productIdStr ? +productIdStr : undefined;
+          this.selectedProduct =  productId;
+          this.loadProductsForCategory();
+        } else {
+          this.products = [];
+          this.displayText = 'Click a category to view the product';
+        }
     }
   }
 

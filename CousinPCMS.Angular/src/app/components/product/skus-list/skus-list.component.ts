@@ -42,7 +42,7 @@ export class SkusListComponent {
         this.homeService.getSkuByProductId(+productId).subscribe({
           next: (data: SkuListResponse) => {
             if (data.isSuccess) {
-                if (data && data.value.length > 0) {
+                if (data.value && data.value.length > 0) {
                   this.skusList = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
                  } 
                 // else {

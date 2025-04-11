@@ -142,12 +142,14 @@ export class LinkMaintenanceComponent {
       this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
       return; // Stop the save process
     }
-    const requestData: LinkRequestModel = {
-      ...this.linkForm.value,
-    };
+  
     if (this.currentUrl.includes('/products')) {
       this.loading = true;
-      this.productService.saveProductLinkUrl({ ... requestData, productID: this.productId}).subscribe({
+      const requestData: LinkRequestModel = {
+        ...this.linkForm.value,
+        productID: this.productId
+      };
+      this.productService.saveProductLinkUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
@@ -169,7 +171,11 @@ export class LinkMaintenanceComponent {
       });
     } else if (this.currentUrl.includes('/category')) {
       this.loading = true;
-      this.categoryService.saveCategoryLinkUrl({ ... requestData, categoryID: this.categoryId}).subscribe({
+      const requestData: LinkRequestModel = {
+        ...this.linkForm.value,
+        categoryID: this.categoryId
+      };
+      this.categoryService.saveCategoryLinkUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');
@@ -191,7 +197,11 @@ export class LinkMaintenanceComponent {
       });
     } else if (this.currentUrl.includes('/skus')) {
       this.loading = true;
-      this.skusService.saveSkuLinkUrl({ ... requestData, skuItemID: this.skuId}).subscribe({
+      const requestData: LinkRequestModel = {
+        ...this.linkForm.value,
+        skuItemID: this.skuId
+      };
+      this.skusService.saveSkuLinkUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'LinkUrl Added Successfully');

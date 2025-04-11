@@ -241,13 +241,15 @@ export class AdditionalImagesComponent {
       this.dataService.ShowNotification('error', '', 'Please select file.');
       return; // Stop the save process
     }
-    const requestData: AdditionalImagesModel = {
-      imageURL: this.imageUrl,
-      imagename: this.imageUrl.replace(/\.png$/i, ''),
-    };
+   
     if (this.currentUrl.includes('/products')) {
       this.loading = true;
-      this.productService.saveProductImagesUrl({...requestData, productID: this.productId}).subscribe({
+      const requestData: AdditionalImagesModel = {
+        imageURL: this.imageUrl,
+        imagename: this.imageUrl.replace(/\.png$/i, ''),
+        productID: this.productId
+      };
+      this.productService.saveProductImagesUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Image Added Successfully');
@@ -269,7 +271,12 @@ export class AdditionalImagesComponent {
       });
     } else if (this.currentUrl.includes('/category')) {
       this.loading = true;
-      this.categoryService.saveCategoryImagesUrl({...requestData, categoryID: this.categoryId,}).subscribe({
+      const requestData: AdditionalImagesModel = {
+        imageURL: this.imageUrl,
+        imagename: this.imageUrl.replace(/\.png$/i, ''),
+        categoryID: this.categoryId,
+      };
+      this.categoryService.saveCategoryImagesUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Image Added Successfully');
@@ -290,8 +297,13 @@ export class AdditionalImagesComponent {
         },
       });
     } else if (this.currentUrl.includes('/skus')) {
+      const requestData: AdditionalImagesModel = {
+        imageURL: this.imageUrl,
+        imagename: this.imageUrl.replace(/\.png$/i, ''),
+        skuItemID: this.skuId
+      };
       this.loading = true;
-      this.skusService.saveSkuImagesUrl({...requestData, skuItemID: this.skuId,}).subscribe({
+      this.skusService.saveSkuImagesUrl(requestData).subscribe({
         next: (response: any) => {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Image Added Successfully');

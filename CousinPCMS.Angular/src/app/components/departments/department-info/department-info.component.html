@@ -30,7 +30,7 @@
                 <label  formControlName="akiDepartmentWebActive" nz-checkbox nzValue="false"> 
                     Web Active
                 </label >
-                <label  formControlName="akI_DeptPromptUserIfBlank" nz-checkbox nzValue="false">
+                <label  formControlName="akiDeptPromptUserifblank" nz-checkbox nzValue="false">
                   Prompt User If Price Group Is Blank
                 </label >
               </div>
@@ -94,7 +94,7 @@
               <nz-form-item>
                 <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
                   <nz-form-control >
-                      <nz-select formControlName="akiDepartmentCommodityCode" class="w-full" nzShowSearch >
+                      <nz-select formControlName="akiDepartmentCommodityCode" nzAllowClear class="w-full" nzShowSearch >
                         @for (commodity of commodityCode; track $index) {
                             <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
                           }
@@ -109,13 +109,13 @@
                 <!-- Catalogue Active Checkbox -->
                 <div class="col-span-2 flex items-center space-x-2">
                   <nz-form-label [nzNoColon]="true">Catalogue Active</nz-form-label>
-                  <label nz-checkbox formControlName="akI_Catalogue_Active" ></label>
+                  <label nz-checkbox readOnly formControlName="akiDepartmentIsActive" ></label>
                 </div>
 
                 <!-- Layout Template Dropdown -->
                 <nz-form-item class="col-span-2">
                 <nz-form-label [nzNoColon]="true">Layout Template</nz-form-label>
-                <nz-select formControlName="akI_Layout_Template" class="w-full bg-gray-100" >
+                <nz-select formControlName="akiLayoutTemplate" nzAllowClear nzShowSearch class="w-full bg-gray-100" >
                   @for (option of layoutOptions; track option.templateCode) {
                       <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
                   }
@@ -125,23 +125,23 @@
                 <!-- Colour Selection -->
                 <nz-form-item class="flex-grow">
                   <nz-form-label [nzNoColon]="true">Colour</nz-form-label>
-                  <input type="color" nz-input formControlName="akI_Color"  (input)="onColorChange($event, 'akI_Color')"/>
+                  <input type="color" nz-input formControlName="akiColor"  (input)="onColorChange($event, 'akiColor')"/>
                 </nz-form-item>
 
                 <nz-form-item class="flex-grow">
                   <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
-                  <input type="text" nz-input formControlName="akI_Color"  (input)="onHexChange($event, 'akI_Color')" maxlength="7"/>
+                  <input type="text" nz-input formControlName="akiColor"  (input)="onHexChange($event, 'akiColor')" maxlength="7"/>
                 </nz-form-item>
 
                 <!-- Featured Product Background Colour -->
                 <nz-form-item class="flex-grow">
                   <nz-form-label [nzNoColon]="true">Featured Product Background Colour</nz-form-label>
-                  <input type="color" nz-input formControlName="akI_Featured_Prod_BG_Color" (input)="onColorChange($event, 'akI_Featured_Prod_BG_Color')" />
+                  <input type="color" nz-input formControlName="akiFeaturedProdBGColor" (input)="onColorChange($event, 'akiFeaturedProdBGColor')" />
                 </nz-form-item>
 
                 <nz-form-item class="flex-grow">
                   <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
-                  <input type="text" nz-input formControlName="akI_Featured_Prod_BG_Color" (input)="onHexChange($event, 'akI_Featured_Prod_BG_Color')" maxlength="7"/>
+                  <input type="text" nz-input formControlName="akiFeaturedProdBGColor" (input)="onHexChange($event, 'akiFeaturedProdBGColor')" maxlength="7"/>
                 </nz-form-item>
               </div>
           </div>
