@@ -5,73 +5,42 @@ namespace CousinPCMS.Domain
     public class DepartmentModel
     {
         [JsonProperty("@odata.etag")]
-        public string ODataEtag { get; set; }
-
-        [JsonProperty("akiDepartmentID")]
-        public int AkiDepartmentID { get; set; }
-
-        [JsonProperty("akiDepartmentName")]
-        public string AkiDepartmentName { get; set; }
-
-        [JsonProperty("akiDepartmentListOrder")]
-        public int AkiDepartmentListOrder { get; set; }
-
-        [JsonProperty("akiDepartmentWebActive")]
-        public bool AkiDepartmentWebActive { get; set; }
-
-        [JsonProperty("akiDepartmentDescText")]
-        public string AkiDepartmentDescText { get; set; }
-
-        [JsonProperty("akiDepartmentImageURL")]
-        public string AkiDepartmentImageURL { get; set; }
-
-        [JsonProperty("akiDepartmentImageHeight")]
-        public int AkiDepartmentImageHeight { get; set; }
-
-        [JsonProperty("akiDepartmentImageWidth")]
-        public int AkiDepartmentImageWidth { get; set; }
-
-        [JsonProperty("akiDepartmentKeyWords")]
-        public string AkiDepartmentKeyWords { get; set; }
-
-        [JsonProperty("akiDepartmentCommodityCode")]
-        public string AkiDepartmentCommodityCode { get; set; }
-
-        [JsonProperty("AKI_DeptPromptUserifblank")]
-        public bool AKI_DeptPromptUserIfBlank { get; set; }
-
-        [JsonProperty("AKI_Dept_Parent")]
-        public int AKI_Dept_Parent { get; set; }
-
-        [JsonProperty("AKI_DepartmentIsActive")]
-        public bool AKI_DepartmentIsActive { get; set; }
-
-        [JsonProperty("AKI_Layout_Template")]
-        public string AKI_Layout_Template { get; set; }
-
-        [JsonProperty("AKI_Color")]
-        public string AKI_Color { get; set; }
-
-        [JsonProperty("AKI_Featured_Prod_BG_Color")]
-        public string AKI_Featured_Prod_BG_Color { get; set; }
+        public string odataetag { get; set; }
+        public int akiDepartmentID { get; set; }
+        public string akiDepartmentName { get; set; }
+        public int akiDepartmentListOrder { get; set; }
+        public bool akiDepartmentWebActive { get; set; }
+        public bool akiDeptPromptUserifblank { get; set; }
+        public string akiDepartmentDescText { get; set; }
+        public string akiDepartmentImageURL { get; set; }
+        public int akiDepartmentImageHeight { get; set; }
+        public int akiDepartmentImageWidth { get; set; }
+        public string akiDepartmentKeyWords { get; set; }
+        public string akiDepartmentCommodityCode { get; set; }
+        public int akiDeptParent { get; set; }
+        public bool akiDepartmentIsActive { get; set; }
+        public string akiLayoutTemplate { get; set; }
+        public string akiColor { get; set; }
+        public string akiFeaturedProdBGColor { get; set; }
     }
 
     public class AddDepartmentRequestModel
     {
-        public int AkiDepartmentID { get; set; }
-        public string AkiDepartmentName { get; set; }
-        public int AkiDepartmentListOrder { get; set; }
-        public bool AkiDepartmentWebActive { get; set; }
-        public string AkiDepartmentDescText { get; set; }
-        public string AkiDepartmentImageURL { get; set; }
-        public int AkiDepartmentImageHeight { get; set; }
-        public int AkiDepartmentImageWidth { get; set; }
-        public string AkiDepartmentKeyWords { get; set; }
-        public string AkiDepartmentCommodityCode { get; set; }
-        public bool AKI_DeptPromptUserIfBlank { get; set; }
-        public string AKI_Layout_Template { get; set; }
-        public string AKI_Color { get; set; }
-        public string AKI_Featured_Prod_BG_Color { get; set; }
+        public int akiDepartmentID { get; set; }
+        public string akiDepartmentName { get; set; }
+        public int akiDepartmentListOrder { get; set; }
+        public bool akiDepartmentWebActive { get; set; }
+        public bool akiDeptPromptUserifblank { get; set; }
+        public string akiDepartmentDescText { get; set; }
+        public string akiDepartmentImageURL { get; set; }
+        public int akiDepartmentImageHeight { get; set; }
+        public int akiDepartmentImageWidth { get; set; }
+        public string akiDepartmentKeyWords { get; set; }
+        public string akiDepartmentCommodityCode { get; set; }
+        public int akiDeptParent { get; set; }
+        public string akiLayoutTemplate { get; set; }
+        public string akiColor { get; set; }
+        public string akiFeaturedProdBGColor { get; set; }
     }
 
     public class DeleteDepartmentRequestModel

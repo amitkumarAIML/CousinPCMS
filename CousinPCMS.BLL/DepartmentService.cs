@@ -132,9 +132,9 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<DepartmentModel> UpdateDepartment(AddDepartmentRequestModel objModel)
+        public APIResult<string> UpdateDepartment(AddDepartmentRequestModel objModel)
         {
-            APIResult<DepartmentModel> returnValue = new APIResult<DepartmentModel>
+            APIResult<string> returnValue = new APIResult<string>
             {
                 IsError = false,
                 IsSuccess = true,
@@ -143,32 +143,17 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var urlToQuery = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}departments({objModel.AkiDepartmentID})?company={HardcodedValues.CompanyName}";
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateDepartment?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
-                RestClient client = new RestClient();
-                RestRequest request = new RestRequest(urlToQuery);
-
-                request.Method = Method.Patch;
-                request.AddHeader("Authorization", "Bearer " + Oauth.Token);
-                request.AddHeader("If-Match", "*");
-                request.AddHeader("Content-Type", "application/json");
-
-                if (!string.IsNullOrEmpty(postData))
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    request.AddBody(postData, ContentType.Json);
-                }
-
-                var response = client.Execute(request);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var departmentResponse = JsonConvert.DeserializeObject<DepartmentModel>(response.Content);
                     returnValue.IsSuccess = true;
-                    returnValue.Value = departmentResponse;
+                    returnValue.Value = "Success";
                 }
                 else
                 {
                     returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
                     var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
                     returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
                 }
