@@ -1,4 +1,4 @@
-<div class="p-4">
+<div class="px-4 pt-1">
     <form nz-form [formGroup]="productForm">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
             <!-- Left Section -->
@@ -126,7 +126,7 @@
                                       [nzShowUploadList]="false"
                                       nzAccept=".png,.jpeg,.jpg"
                                   >
-                                      <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
+                                      <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">                                            
                                            Upload
                                       </button>
                                   </nz-upload>
@@ -203,7 +203,7 @@
                                             <th [nzWidth]="'50px'">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="text-color-secondary-font text-xs">
+                                        <tbody class="text-color-secondary-font">
                                             @for (data of dataProductTable.data; track data) {
                                             <tr>
                                                 <!-- List Order -->
@@ -281,7 +281,7 @@
                         <nz-form-item class="w-full">
                             <nz-form-label nzFor="alternativeTitle" [nzNoColon]="true">Alternative Title</nz-form-label>
                             <nz-form-control>
-                                <textarea nz-input rows="4" formControlName="akiProductAlternativeTitle" id="alternativeTitle" class="w-full p-2"></textarea>
+                                <textarea nz-input rows="3" formControlName="akiProductAlternativeTitle" id="alternativeTitle" class="w-full"></textarea>
                             </nz-form-control>
                         </nz-form-item>
                     </div>
@@ -294,10 +294,10 @@
                     </div>
     
                     <!-- Index Entry Text Section -->
-                    <div class="mt-2">
+                    <div class="mt-1">
                         <label >Index Entry Text</label>
-                        <div class="border border-gray-300 rounded-lg p-4">
-                            <div class="grid grid-cols-1 gap-3">
+                        <div class="border border-gray-300 rounded-lg p-2 px-3">
+                            <div class="grid grid-cols-1 gap-1">
                                 <nz-form-item>
                                     <nz-form-label [nzNoColon]="true">Index Entry 1</nz-form-label>
                                     <nz-form-control>
@@ -432,7 +432,7 @@ nzWidth="500px"
             <th>Product Active</th>
           </tr>
         </thead>
-        <tbody class="text-color-secondary-font text-xs">
+        <tbody class="text-color-secondary-font">
           @for (data of associateDataTable.data; track data) {
             <tr><!-- List Order -->
                 <td>                  

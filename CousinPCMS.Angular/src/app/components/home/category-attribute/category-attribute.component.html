@@ -1,0 +1,76 @@
+<div class="p-1">
+    <form nz-form [formGroup]="categoryAttriForm">
+        <!-- Category Info -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-1">
+            <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Category Name</nz-form-label>
+                <nz-form-control>
+                    <input nz-input formControlName="akiCategoryName" id="akiCategoryName" />
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Category Id</nz-form-label>
+                <nz-form-control>
+                    <input nz-input formControlName="akiCategoryID" id="categoryId" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </form>
+    <!-- Attribute Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 my-2">
+        <!-- Left Table -->
+        <form nz-form [formGroup]="addAttributeSetsForm">
+            <div class="overflow-auto">
+                <nz-table #basicTable [nzData]="attributes" nzBordered="true" nzShowPagination="false" nzSize="small"
+                    [nzLoading]="isAttributeloading" [nzScroll]="{x:'600px',y: '200px'}">
+                    <thead>
+                        <tr>
+                            <th [nzWidth]="'200px'">Attribute Name</th>
+                            <th>Required</th>
+                            <th>Not Important</th>
+                            <th>List Position</th>
+                            <th [nzWidth]="'50px'">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (data of basicTable.data; track data) {
+                        <tr>
+                            <td>{{ data.attributeName }}</td>
+                            <td><label nz-checkbox formControlName="attributeRequired"
+                                    nzValue="data.attributeRequired"></label></td>
+                            <td><label nz-checkbox formControlName="notImportant" nzValue="data.notImportant"></label>
+                            </td>
+                            <td> <input nz-input type="number" class="w-" formControlName="listPosition"
+                                    [value]="data.listPosition"></td>
+                            <td>
+                                <a (click)="deleteAttribute(data)">
+                                    <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline"></nz-icon>
+                                </a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </nz-table>
+            </div>
+        </form>
+        <!-- Right Scroll List -->
+
+        <nz-spin [nzSpinning]="isAttributeloading">
+            <div class="h-64 overflow-y-scroll bg-white "
+                *ngIf="attributeList?.length">
+                <nz-list nzBordered nzSize="small">
+                    <nz-list-header class="text-sm font-medium text-center">Header</nz-list-header>
+                    @for (item of attributeList; track item) {
+                    <nz-list-item class="cursor-pointer text-secondary-font flex">
+                        <span>{{ item.attributeName}}</span> <a (click)="addAttributeData(item)">Add</a></nz-list-item>
+                    }
+                </nz-list>
+            </div>
+        </nz-spin>
+    </div>
+
+    <div class="flex justify-end gap-3 pb-1">
+        <button nz-button nzType="default" (click)="btnCancel()">Cancel</button>
+        <button nz-button nzType="primary" (click)="saveAttribute()" class="text-white">Save</button>
+    </div>
+</div>

@@ -17,7 +17,7 @@
     >
       </nz-tree>
       <ng-template #nzTreeTemplate let-node let-origin="origin">
-        <span class="custom-node">
+        <span class="custom-node" (contextmenu)="onRightClick($event, node)" >
           <span class="node-icon">
             <ng-container>
               <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
@@ -39,3 +39,19 @@
   }
 
 </nz-spin>
+
+<!-- Category-attributes -->
+<div>
+  <nz-modal [(nzVisible)]="categoryAttriisVisible"
+  nzTitle="Attribute set form"
+  [nzFooter]="null"
+  nzClosable="true"
+  class="content-center"
+  nzWidth="1000px"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+      <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
+    </ng-container>
+  </nz-modal>
+</div>

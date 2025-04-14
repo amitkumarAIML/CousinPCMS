@@ -1,7 +1,7 @@
     <form nz-form [formGroup]="departmentForm" class="rounded-lg">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
           <div class="lg:col-span-5 md:col-span-6">
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-1">
               <nz-form-item>
                 <nz-form-label nzRequired [nzNoColon]="true">Department ID</nz-form-label>
                 <input nz-input formControlName="akiDepartmentID" class="w-full" [disabled]="true" />
@@ -38,7 +38,7 @@
               <nz-form-item class="col-span-2">
                 <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
                 <div class="input-wrapper">
-                  <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-24"  maxlength="2000"></textarea>
+                  <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-20"  maxlength="2000"></textarea>
                   <span class="char-count">
                     {{ 2000 - departmentForm.get('akiDepartmentDescText')?.value?.length || 2000 }}
                   </span>
@@ -56,7 +56,7 @@
                       [nzShowUploadList]="false"
                       nzAccept=".png,.jpeg,.jpg"
                   >
-                      <button nz-button [nzType]="'primary'" class="m-0 px-4 h-8 text-white">                                            
+                      <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">                                            
                            Upload
                       </button>
                   </nz-upload>
@@ -105,7 +105,7 @@
 
           </div>
           <div class="lg:col-span-5 md:col-span-6">
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-1">
                 <!-- Catalogue Active Checkbox -->
                 <div class="col-span-2 flex items-center space-x-2">
                   <nz-form-label [nzNoColon]="true">Catalogue Active</nz-form-label>
