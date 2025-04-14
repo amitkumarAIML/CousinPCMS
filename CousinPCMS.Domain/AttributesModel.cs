@@ -30,6 +30,7 @@ namespace CousinPCMS.Domain
         public string odataetag { get; set; }
         public string attributeSetName { get; set; }
         public string attributeName { get; set; }
+        public string categoryID { get; set; }
         public bool attributeRequired { get; set; }
         public bool notImportant { get; set; }
         public int listPosition { get; set; }
@@ -54,8 +55,9 @@ namespace CousinPCMS.Domain
     {
         public string attributeSetName { get; set; }
         public string attributeName { get; set; }
-        public string attributeRequired { get; set; }
-        public string notImportant { get; set; }
+        public string categoryID { get; set; }
+        public bool attributeRequired { get; set; }
+        public bool notImportant { get; set; }
         public int listPosition { get; set; }
     }
     public class DeleteAttributeRequestModel
