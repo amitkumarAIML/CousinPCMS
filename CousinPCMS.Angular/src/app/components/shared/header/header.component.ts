@@ -35,6 +35,10 @@ export class HeaderComponent {
       label: 'SKUs',
       path: '/skus',
     },
+    {
+      label: 'Attributes',
+      path: '/attributes',
+    },
   ];
 
   isActive(navItem: NavItem | {label: string; path: string}): boolean {

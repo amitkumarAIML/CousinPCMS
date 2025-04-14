@@ -1,0 +1,178 @@
+<div class="bg-white rounded-lg shadow-md m-5">
+  <nz-spin [nzSpinning]="loading">
+    <div class="flex justify-between items-center p-4 pb-1">
+      <span>Attribute Form</span>
+      <div class="flex gap-x-3">
+        <button nz-button nzType="default" [routerLink]="'/home'" class="">Cancel</button>
+        <button nz-button nzType="primary" [nzLoading]="btnLoading" class="text-white" (click)="addAttributes()">Save</button>
+      </div>
+    </div>
+    <hr class="mt-2 mb-2 border-light-border" />
+
+    <div class="p-4">
+      <form nz-form [formGroup]="attributesForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
+          <!-- Left Section -->
+          <div class="lg:col-span-5 md:col-span-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Attribute Name Id</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="akiCategoryID" id="categoryId" />
+                </nz-form-control>
+              </nz-form-item> -->
+
+              <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Search Type</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="searchType" class="w-full" nzShowSearch="true" nzAllowClear="true">
+                    @for (value of searchType; track $index) {
+                    <nz-option [nzValue]="value.description" [nzLabel]="value.description"></nz-option>
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <div class="nz-checkbox-wrapper nz-checkbox-wrapper-price">
+                <label formControlName="showAsCategory" nz-checkbox nzValue="false"> Show as category </label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1">
+              <nz-form-item>
+                <nz-form-label nzRequired [nzNoColon]="true" nzFor="attributeName">Attribute Name</nz-form-label>
+                <nz-form-control nzErrorTip="Attribute Name is required">
+                  <div class="flex items-center justify-between w-full">
+                    <input nz-input formControlName="attributeName" maxlength="100" />
+                    <span class="char-count">
+                      {{ 50 - attributesForm.get('attributeName')?.value?.length || 50 }}
+                    </span>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="grid grid-cols-1">
+              <nz-form-item>
+                <div class="flex flex-wrap justify-between items-center w-full">
+                  <nz-form-label [nzNoColon]="true">Attribute Description</nz-form-label>
+                </div>
+                <nz-form-control>
+                  <div class="flex items-center justify-between w-full">
+                    <input nz-input formControlName="attributeDescription" maxlength="100" />
+                    <span class="char-count">
+                      {{ 100 - attributesForm.get('attributeDescription')?.value?.length || 100 }}
+                    </span>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="lg:col-span-5 md:col-span-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <nz-form-item>
+                <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+                <nz-form-control>
+                  <nz-input-group [nzSuffix]="inputClearTpl">
+                    <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+                  </nz-input-group>
+                </nz-form-control>
+              </nz-form-item>
+              <ng-template #inputClearTpl>
+                @if (searchValue) {
+                <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+                }@else{
+                <nz-icon nzType="search" />
+                }
+              </ng-template>
+              <div class="flex  justify-end mt-5">
+                <button nz-button nzType="primary" class="text-white" (click)="showAddAttributesModal()">New Value</button>
+              </div>
+          </div>
+             
+          <div class="grid grid-cols-1 md:grid-cols-2 mt-2">
+              <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '450px'}">
+                <thead>
+                  <tr>
+                    <th [nzWidth]="'50px'"></th>
+                    <th>Attribute Name</th>
+                    <th>Attribute Value</th>
+                    <th>Popular Rank</th>
+                    <th>Last Selected</th>
+                    <th [nzWidth]="'60px'">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (data of headerTable.data; track $index) {
+                  <tr>
+                    <td></td>
+                    <td>{{ data.attributeName }}</td>
+                    <td>{{ data.attributeValue }}</td>
+                    <!-- <td>{{ data.relationType }}</td> -->
+                    <!-- <td>{{ data.relatedSKUName }}</td> -->
+                    <td>---</td>
+                    <td>---</td>
+                    <td>
+                      <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttributeValues(data)" />
+                    </td>
+                  </tr>
+
+                  }
+                </tbody>
+              </nz-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-spin>
+</div>
+
+<nz-modal [(nzVisible)]="addNewAttributeValueModal" (nzOnCancel)="handleCancel()" [nzFooter]="null" nzClosable="true" [nzTitle]="modalTitle">
+  <ng-template #modalTitle>Attribute value Form</ng-template>
+
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="attributesValuesForm">
+      <div class="grid grid-cols-1 px-3 py-1 gap-3">
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Attribute Name</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="attributeName" class="w-full" [disabled]="true" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Attribute Value Group Id</nz-form-label>
+          <nz-form-control>
+            <input nz-input class="w-full" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Attribute Value</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="attributeValue" class="w-full" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">New Alternate Value</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="newAlternateValue" class="w-full" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Alternate Value</nz-form-label>
+          <nz-form-control>
+            <textarea nz-input rows="3" formControlName="alternateValues" class="w-full p-2"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="flex justify-end gap-3 mt-5">
+          <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+          <button nz-button class="text-white" nzType="primary" [nzLoading]="btnLoading" (click)="addAttributesValues()">Save</button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>

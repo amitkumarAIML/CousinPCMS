@@ -1,0 +1,214 @@
+import {Component} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzFormModule} from 'ng-zorro-antd/form';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzModalModule} from 'ng-zorro-antd/modal';
+import {NzSpinModule} from 'ng-zorro-antd/spin';
+import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzTableModule} from 'ng-zorro-antd/table';
+import {DataService} from '../../../shared/services/data.service';
+import {AttributesService} from '../attributes.service';
+import {ApiResponse} from '../../../shared/models/generalModel';
+import {ItemModel} from '../../../shared/models/itemModel';
+import {AttributeRequestModel, AttributeValueModel, AttributeValuesRequestModel} from '../../../shared/models/attributesModel';
+import {NzIconModule} from 'ng-zorro-antd/icon';
+
+@Component({
+  selector: 'cousins-attributes-details',
+  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, RouterLink, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
+  templateUrl: './attributes-details.component.html',
+  styleUrl: './attributes-details.component.css',
+})
+export class AttributesDetailsComponent {
+
+  searchValue: string = '';
+  attributesValues: AttributeValueModel[] = [];
+  searchType: any[] = [];
+  loading: boolean = false;
+  btnLoading: boolean = false;
+  loadingProduct: boolean = false;
+  deleteLoading: boolean = false;
+  attributesForm: FormGroup;
+  attributesValuesForm: FormGroup;
+  addNewAttributeValueModal: boolean = false;
+
+  filteredData: AttributeValueModel[] = [];
+
+
+  constructor(private fb: FormBuilder, private dataService: DataService, private readonly router: Router, private attributeService: AttributesService) {
+    this.attributesForm = this.fb.group({
+      attributeName: ['', [Validators.required]],
+      attributeDescription: [''],
+      searchType: ['', [Validators.required]],
+      showAsCategory: [true],
+    });
+    this.attributesValuesForm = this.fb.group({
+      attributeValue: ['', Validators.required],
+      attributeName: [{value: '', disabled: true}, Validators.required],
+      // attributeGroupId   : [''],
+      alternateValues: [''],
+      newAlternateValue: [''],
+    });
+  }
+
+  ngOnInit() {
+    this.getAllSearchType();
+    this.getAllAtrributevalues();
+  }
+
+  showAddAttributesModal(): void {
+    this.attributesValuesForm.reset();
+    this.attributesValuesForm.get('attributeName')?.patchValue(this.attributesForm.value.attributeName);
+    if (!this.attributesValuesForm.get('attributeName')?.value) {
+      this.dataService.ShowNotification('error', '', 'Please Add Attributes Name First.');
+      return;
+    }
+    this.addNewAttributeValueModal = true;
+  }
+
+  handleCancel(): void {
+    this.addNewAttributeValueModal = false;
+    this.attributesValuesForm.reset();
+  }
+
+  getAllSearchType() {
+    this.attributeService.getAttributeSearchTypes().subscribe({
+      next: (response: ApiResponse<ItemModel[]>) => {
+        if (response.isSuccess) {
+          this.searchType = response.value;
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
+  }
+
+  getAllAtrributevalues() {
+    this.attributeService.getAttributeValues().subscribe({
+      next: (response: ApiResponse<AttributeValueModel[]>) => {
+        if (response.isSuccess) {
+          this.attributesValues = response.value;
+          this.filteredData = [...this.attributesValues];
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
+  }
+
+  addAttributes() {
+    this.attributesForm.markAllAsTouched();
+
+    if (!this.attributesForm.valid) {
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return;
+    }
+
+    const data: AttributeRequestModel = this.dataService.cleanEmptyNullToString(this.attributesForm.getRawValue());
+
+    this.btnLoading = true;
+    this.attributeService.addAttributes(data).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Attribute Details Added Successfully');
+          this.router.navigate(['/attributes']);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Attribute Details Failed To Add');
+        }
+        this.btnLoading = false;
+      },
+      error: (err) => {
+        this.btnLoading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
+
+  addAttributesValues() {
+    this.attributesValuesForm.markAllAsTouched();
+
+    if (!this.attributesValuesForm.valid) {
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return;
+    }
+    const data: AttributeValuesRequestModel = this.dataService.cleanEmptyNullToString(this.attributesValuesForm.getRawValue());
+
+    this.btnLoading = true;
+    this.attributeService.addAttributesValues(data).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Attribute Values Added Successfully');
+          this.getAllAtrributevalues();
+          this.addNewAttributeValueModal = false;
+        } else {
+          this.dataService.ShowNotification('error', '', 'Attribute Values Failed To Add');
+        }
+        this.btnLoading = false;
+      },
+      error: (err) => {
+        this.btnLoading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
+
+  deleteAttributeValues(data: AttributeValueModel) {
+    this.attributeService.deleteAttributesValues(data.attributeName, data.attributeValue).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Attributes Value Successfully Deleted');
+        } else {
+          this.dataService.ShowNotification('error', '', 'Attributes Value Failed To Deleted');
+        }
+      },
+      error: (err) => {
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
+
+  onSearch() {
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.filteredData = [...this.filteredData];
+      return;
+    }
+  
+    this.filteredData = this.attributesValues.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.attributeName).includes(searchText)||
+              normalize(item.attributeValue).includes(searchText)
+              // ||
+              // normalize(item.relatedSKUName).includes(searchText) ||
+              // normalize(item.itemManufactureRef).includes(searchText) ||
+    }); 
+  }
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.filteredData = [...this.attributesValues];
+   
+  }
+}
