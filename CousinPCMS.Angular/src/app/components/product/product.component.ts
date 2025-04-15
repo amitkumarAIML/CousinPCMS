@@ -48,7 +48,7 @@ export class ProductComponent {
     this.productService.getProductById(productId).subscribe({
       next: (response: ProductResponse) => {
         if (response.isSuccess) {
-          this.productData = response.value[0];
+          this.productData = response.value && response.value[0];
         } else {
           this.dataService.ShowNotification('error', '', 'Failed To Load Data');
         }

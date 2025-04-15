@@ -18,7 +18,7 @@ namespace CousinPCMS.API.Controllers
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Field to access account service of BAL.
+        /// Field to access account service of BLL.
         /// </summary>
         private readonly ProductService _productService;
 
@@ -32,8 +32,9 @@ namespace CousinPCMS.API.Controllers
         );
 
         /// <summary>
-        /// ProductController Constructor.
+        /// Initializes a new instance of the <see cref="ProductController"/> class with the specified configuration settings.
         /// </summary>
+        /// <param name="configuration">The application configuration instance used for accessing configuration values.</param>
         public ProductController(IConfiguration configuration)
         {
             Oauth = new OauthToken { Token = "", TokenExpiry = DateTime.MinValue };
@@ -42,9 +43,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets product details for respective category.
-        /// </summary>       
-        /// <returns>returns product object if details are available. Else empty object.</returns>
+        /// Retrieves a list of product details for the specified category.
+        /// </summary>
+        /// <param name="CategoryID">The unique identifier of the category to filter products by.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{ProductModel}}"/> containing a list of products for the given category if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetProductsByCategory")]
         [ProducesResponseType(typeof(APIResult<List<ProductModel>>), 200)]
         [ProducesResponseType(500)]
@@ -70,14 +74,18 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets all product details.
-        /// </summary>       
-        /// <returns>returns product object if details are available. Else empty object.</returns>
+        /// Retrieves a paginated list of product details.
+        /// </summary>
+        /// <param name="pageSize">The number of products to retrieve per page.</param>
+        /// <param name="pageNumber">The page number to retrieve.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{ProductResponseModel}"/> containing a list of products if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetAllProducts")]
-        [ProducesResponseType(typeof(APIResult<List<ProductModel>>), 200)]
+        [ProducesResponseType(typeof(APIResult<ProductResponseModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts(int pageSize, int pageNumber)
         {
             log.Info($"Request of {nameof(GetAllProducts)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
@@ -85,7 +93,7 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _productService.GetAllProducts();
+            var responseValue = _productService.GetAllProducts(pageSize, pageNumber);
             if (!responseValue.IsError)
             {
                 log.Info($"Response of {nameof(GetAllProducts)} is success.");
@@ -98,10 +106,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets product details by product id.
-        /// </summary>       
-        /// <param name="akiProductID">pass product id</param>
-        /// <returns>returns product object if details are available. Else empty object.</returns>
+        /// Retrieves product details for the specified product ID.
+        /// </summary>
+        /// <param name="akiProductID">The unique identifier of the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{ProductModel}}"/> containing the product details if found; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetProductById")]
         [ProducesResponseType(typeof(APIResult<List<ProductModel>>), 200)]
         [ProducesResponseType(500)]
@@ -127,9 +137,11 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets all Product layouts.
-        /// </summary>       
-        /// <returns>returns product layout object if details are available. Else empty object.</returns>
+        /// Retrieves all available product layout details.
+        /// </summary>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{ProductLayoutModel}}"/> containing a list of product layouts if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetProductLayouts")]
         [ProducesResponseType(typeof(APIResult<List<ProductLayoutModel>>), 200)]
         [ProducesResponseType(500)]
@@ -155,10 +167,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Deletes the existing Product.
+        /// Deletes the product associated with the specified product ID.
         /// </summary>
-        /// <param name="productId">product Id is passed.</param>
-        /// <returns>Returns success or error message.</returns>
+        /// <param name="productId">The unique identifier of the product to be deleted.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpGet("DeleteProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -189,10 +203,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Updates an existing product.
+        /// Updates the details of an existing product.
         /// </summary>
-        /// <param name="objModel">The product object with updated details.</param>
-        /// <returns>Returns object of product update detail or null.</returns>
+        /// <param name="objModel">An <see cref="UpdateProductModel"/> containing the updated product information.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{ProductModel}"/> with the updated product details if successful; otherwise, returns null or an error message.
+        /// </returns>
         [HttpPatch("UpdateProduct")]
         [ProducesResponseType(typeof(APIResult<ProductModel>), 200)]
         [ProducesResponseType(500)]
@@ -221,10 +237,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets linked urls for resp Product.
-        /// <paramref name="productId"/> 
-        /// </summary>       
-        /// <returns>returns Product linked url object if details are available. Else empty object.</returns>
+        /// Retrieves the linked URLs for the specified product.
+        /// </summary>
+        /// <param name="productId">The unique identifier of the product for which linked URLs are to be fetched.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{ProductLinkedUrlModel}}"/> containing the linked URLs for the product if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetProductUrls")]
         [ProducesResponseType(typeof(APIResult<List<ProductLinkedURlModel>>), 200)]
         [ProducesResponseType(500)]
@@ -250,10 +268,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets Product additional images details.
-        /// <paramref name="ProductId"/> 
-        /// </summary>       
-        /// <returns>returns Product images object if details are available. Else empty object.</returns>
+        /// Retrieves the additional image details for the specified product.
+        /// </summary>
+        /// <param name="ProductId">The unique identifier of the product for which additional images are to be fetched.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{ProductAdditionalImageModel}}"/> containing the additional images for the product if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetProductAdditionalImages")]
         [ProducesResponseType(typeof(APIResult<List<ProductAdditionalImageModel>>), 200)]
         [ProducesResponseType(500)]
@@ -279,10 +299,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// deletes the linked url for that Product
+        /// Deletes the linked URL for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with delete details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details required to delete the linked URL for the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("DeleteProductLinkUrl")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -311,10 +333,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// deletes the additional images for that Product
+        /// Deletes the additional images for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with delete details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details required to delete the additional images for the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("DeleteProductAdditionalImage")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -343,10 +367,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// add additional images for the Product
+        /// Adds additional images for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with add image details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details of the images to be added to the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("AddProductAdditionalImage")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -375,10 +401,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// add linked urls for the Product
+        /// Adds linked URLs for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with add url details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details of the URLs to be added to the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("AddProductLinkUrls")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -407,10 +435,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets associated product details by product id.
-        /// <paramref name="productId"/> 
-        /// </summary>       
-        /// <returns>returns product object if details are available. Else empty object.</returns>
+        /// Retrieves the associated product details for the specified product ID.
+        /// </summary>
+        /// <param name="productId">The unique identifier of the product for which associated details are to be fetched.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{List{AdditionalCategoryModel}}"/> containing the associated product details if available; otherwise, returns an empty list.
+        /// </returns>
         [HttpGet("GetAdditionalProduct")]
         [ProducesResponseType(typeof(APIResult<List<AdditionalCategoryModel>>), 200)]
         [ProducesResponseType(500)]
@@ -436,10 +466,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Updates an associated product detail for product.
+        /// Updates the associated product details for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with updated details.</param>
-        /// <returns>Returns object of associated product update detail or null.</returns>
+        /// <param name="objModel">An object containing the updated details of the associated product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{CategoryModel}"/> with the updated associated product details, or null if no update occurs.
+        /// </returns>
         [HttpPatch("UpdateAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
         [ProducesResponseType(500)]
@@ -472,10 +504,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// add an associate product detail for product.
+        /// Adds an associated product detail for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with add details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details to be added for the associated product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("AddAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
@@ -504,10 +538,12 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// deletes the associated product
+        /// Deletes the associated product for the specified product.
         /// </summary>
-        /// <param name="objModel">The object with delete details.</param>
-        /// <returns>Returns success or not.</returns>
+        /// <param name="objModel">An object containing the details required to delete the associated product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
         [HttpPost("DeleteAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]

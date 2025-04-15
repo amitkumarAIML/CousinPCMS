@@ -40,12 +40,7 @@ export class CategoryService {
     );
   }
 
-  getAllProducts(): Observable<Product[]> {
-    return this.httpService.get<ProductResponse>('Product/GetAllProducts').pipe(
-      map((response:ProductResponse)=> response.value),
-      catchError(this.handleError)
-    );
-  }
+ 
 
    // Call the PATCH API to update category
    updateCategory(categoryData:UpdateCategoryModel) {

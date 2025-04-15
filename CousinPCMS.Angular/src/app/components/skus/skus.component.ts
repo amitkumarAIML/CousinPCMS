@@ -114,7 +114,6 @@ export class SkusComponent {
     if (skuData.akiLayoutTemplate) {
       skuData.akiPrintLayoutTemp = true;
     }
-    skuData.akiCompetitors = skuData?.akiCompetitors && skuData?.akiCompetitors.toString();
     this.btnSaveLoading = true;
     this.skuService.updateSkus(skuData).subscribe({
       next: (response) => {

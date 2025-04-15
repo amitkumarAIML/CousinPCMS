@@ -6,6 +6,8 @@ import { ProductComponent } from './components/product/product.component';
 import { SkusComponent } from './components/skus/skus.component';
 import { LinkMaintenanceComponent } from './components/shared/link-maintenance/link-maintenance.component';
 import { AdditionalImagesComponent } from './components/shared/additional-images/additional-images.component';
+import { AttributesComponent } from './components/attributes/attributes.component';
+import { AttributesDetailsComponent } from './components/attributes/attributes-details/attributes-details.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +34,14 @@ export const routes: Routes = [
   { 
     path: 'skus',
     component: SkusComponent,
+  },
+  { 
+    path: 'attributes',
+    component: AttributesComponent,
+  },
+  { 
+    path: 'attributes/add',
+    component: AttributesDetailsComponent,
   },
   { 
     path: 'products/link-maintenance',

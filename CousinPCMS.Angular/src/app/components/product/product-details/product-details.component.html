@@ -336,71 +336,66 @@
         </div> 
     </form>
 </div>
+
 <nz-modal [(nzVisible)]="isCategoryModalVisible" nzTitle="Select Category" (nzOnCancel)="closeCategoryModal()" (nzOnOk)="selectCategory()">
-    <ng-container *nzModalContent>
+  <ng-container *nzModalContent>
+    <div class="grid grid-cols-1 mb-2">
+      <nz-form-item>
+        <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+        <nz-form-control>
+          <nz-input-group [nzSuffix]="suffixIcon">
+            <input nz-input [(ngModel)]="searchValue" (ngModelChange)="onSearch()" />
+          </nz-input-group>
+          <!-- Icon for Search -->
+          <ng-template #suffixIcon>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
 
-        <div class="grid grid-cols-1 mb-2">
-            <nz-form-item>
-                <nz-form-label [nzNoColon]="true" >Search</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group [nzSuffix]="suffixIcon">
-                        <input nz-input [(ngModel)]="searchValue" (ngModelChange)="onSearch()" />
-                    </nz-input-group>
-                    <!-- Icon for Search -->
-                    <ng-template #suffixIcon>
-                        <i nz-icon nzType="search"></i>
-                    </ng-template>
-                </nz-form-control>
-              </nz-form-item>
-        </div>
-
-        <nz-table #basicTable [nzBordered]="true" [nzData]="filteredCategories" [nzLoading]="loading"  nzSize="small" [nzShowPagination]="true">
-            <thead>
-              <tr> 
-                <th nzWidth="50"></th> <!-- Checkbox Column -->
-                <th nzWidth="50">ID</th>
-                <th nzWidth="200">Category Name</th>
-              </tr>
-            </thead>
-            <tbody>    
-              @for ( category of basicTable.data; track $index) {
-                  <tr>
-                      <td>
-                          <label nz-checkbox [(ngModel)]="category.selected" (ngModelChange)="onCategorySelect(category)"></label>
-                      </td>
-                      <td>{{ category.akiCategoryID }}</td>
-                      <td>{{ category.akiCategoryName }}</td>
-                  </tr>
-              }
-            </tbody>
-        </nz-table>
-
-      </ng-container>
+    <nz-table #basicTable [nzBordered]="true" [nzData]="filteredCategories" [nzLoading]="loading" nzSize="small" [nzShowPagination]="true">
+      <thead>
+        <tr>
+          <th nzWidth="50"></th>
+          <!-- Checkbox Column -->
+          <th nzWidth="50">ID</th>
+          <th nzWidth="200">Category Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for ( category of basicTable.data; track $index) {
+        <tr>
+          <td>
+            <label nz-checkbox [(ngModel)]="category.selected" (ngModelChange)="onCategorySelect(category)"></label>
+          </td>
+          <td>{{ category.akiCategoryID }}</td>
+          <td>{{ category.akiCategoryName }}</td>
+        </tr>
+        }
+      </tbody>
+    </nz-table>
+  </ng-container>
 </nz-modal>
+
 <!-- Add product modal -->
-<nz-modal [(nzVisible)]="isVisibleAddProductModal"
-[nzTitle]="addProductTitletemplate"
-(nzOnCancel)="handleCancel()"
-[nzFooter]="null"
-nzClosable="false"
-nzWidth="500px"
->
-<ng-container *nzModalContent>
+<nz-modal [(nzVisible)]="isVisibleAddProductModal" [nzTitle]="addProductTitletemplate" (nzOnCancel)="handleCancel()" [nzFooter]="null" nzWidth="500px">
+  <ng-container *nzModalContent>
     <form nz-form [formGroup]="addAssociatedProductForm">
-        <div class="grid grid-cols-1 px-3 py-1 gap-3">                
-            <nz-form-item>
-                <nz-form-label [nzNoColon]="true">List Order</nz-form-label>
-                <nz-form-control nzErrorTip="list order is required" >
-                    <input nz-input formControlName="listorder" class="w-full" type="number" />
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-                <nz-form-label [nzNoColon]="true">Product Name</nz-form-label>
-                <nz-form-control nzErrorTip="Product name is required">
-                    <input nz-input formControlName="product" class="w-full" />                                            
-                </nz-form-control>
-            </nz-form-item>                
-            <div class="flex justify-end gap-3 mt-5">
+      <div class="grid grid-cols-1 px-3 py-1 gap-3">
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">List Order</nz-form-label>
+          <nz-form-control nzErrorTip="list order is required">
+            <input nz-input formControlName="listorder" class="w-full" type="number" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Product Name</nz-form-label>
+          <nz-form-control nzErrorTip="Product name is required">
+            <input nz-input formControlName="product" class="w-full" />
+          </nz-form-control>
+        </nz-form-item>
+        <!-- <div class="flex justify-end gap-3 mt-5">
                 <button nz-button nzType="default"
                 (click)="handleCancel()">
                   Cancel
@@ -413,22 +408,54 @@ nzWidth="500px"
                 >
                 Save
                 </button>
-            </div>
-        </div>            
+            </div> -->
+      </div>
     </form>
+
+    <div class="flex justify-between items-center gap-3 px-3 mt-4">
+      <div>
+        <nz-form-item>
+          <!-- <nz-form-label [nzNoColon]="true">Search</nz-form-label> -->
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="inputClearTpl">
+              <input nz-input type="text" class="rounded" [(ngModel)]="searchValueProduct" placeholder="Search By Product Name"
+              (keydown.enter)="getAllProducts()" #searchBox />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #inputClearTpl>
+          @if (searchValueProduct) {
+          <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle"   (click)="clearSearchText()"></span>
+          }@else{
+          <nz-icon nzType="search" />
+          }
+        </ng-template>
+      </div>
+      <div class="flex gap-3 ">
+        <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+        <button (click)="addAssociatedProductSubmitForm()" nz-button class="text-white" nzType="primary">Save</button>
+      </div>
+    </div>
+
     <div class="p-4">
-        <nz-table                      
-        #associateDataTable nzSize="small"
+      <nz-table
+        #associateDataTable                                     
+        nzSize="small"
         nzBordered="true"
         [nzData]="productList"
         class="rounded-lg"
         [nzShowPagination]="true"
-        [nzLoading]="loadingProduct"      
-        >
+        [nzLoading]="loadingProduct"
+        [nzFrontPagination]="false"
+        [nzTotal]="total"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex"
+        (nzQueryParams)="onQueryParamsChange($event)"
+      >
         <thead class="text-xs">
           <tr>
             <th>Product Id</th>
-            <th [nzWidth]="'250px'">Product Name</th>                                  
+            <th [nzWidth]="'250px'">Product Name</th>
             <th>Product Active</th>
           </tr>
         </thead>
@@ -459,11 +486,10 @@ nzWidth="500px"
 
           }
         </tbody>
-        </nz-table>        
+      </nz-table>
     </div>
-   
-</ng-container>
+  </ng-container>
 </nz-modal>
 <ng-template #addProductTitletemplate>
-<span class="text-gray-600">Add Product</span>
+  <span class="text-gray-600">Add Product</span>
 </ng-template>

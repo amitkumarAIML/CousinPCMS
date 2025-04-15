@@ -2,6 +2,21 @@
 
 namespace CousinPCMS.Domain
 {
+    public class ProductCountModel
+    {
+        [JsonProperty("@odata.count")]
+        public int Count { get; set; }
+
+        [JsonProperty("value")]
+        public List<object> Value { get; set; } // Placeholder list, since it's empty
+    }
+
+    public class ProductResponseModel
+    {
+        public int TotalRecords { get; set; }
+        public List<ProductModel> Products { get; set; }
+    }
+
     public class ProductModel
     {
         [JsonProperty("@odata.etag")]
@@ -21,7 +36,7 @@ namespace CousinPCMS.Domain
         public int akiProductImageWidth { get; set; }
         public bool akiProductIsActive { get; set; }
         public string akiProductAlternativeTitle { get; set; }
-        public string aKI_Layout_Template { get; set; }
+        public string aki_Layout_Template { get; set; }
         public bool akiProductShowPriceBreaks { get; set; }
         public bool akiProductPrintLayoutTemp { get; set; }
         public string akiProductIndexText1 { get; set; }

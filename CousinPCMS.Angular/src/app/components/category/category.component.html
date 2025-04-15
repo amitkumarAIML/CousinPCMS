@@ -285,6 +285,7 @@
                                         }"
                                         nzBordered="true"
                                         [nzFrontPagination]="false"
+                            
                                         nzSize="small"
                                         [nzLoading]="isAssociatePloading" >
                                         <thead class="text-xs ">
@@ -442,10 +443,9 @@
 
 <!-- Add product modal -->
 <nz-modal [(nzVisible)]="isVisibleAddProductModal"
-[nzTitle]="addProductTitletemplate"
+[nzTitle]="addProductTitletemplate" 
 (nzOnCancel)="handleCancel()"
 [nzFooter]="null"
-nzClosable="false"
 nzWidth="500px"
 >
 <ng-container *nzModalContent>
@@ -463,23 +463,57 @@ nzWidth="500px"
                     <input nz-input formControlName="product" class="w-full" />                                            
                 </nz-form-control>
             </nz-form-item>                
-            
-            <div class="flex justify-end gap-3 mt-5">
-                <button nz-button nzType="default"
-                (click)="handleCancel()">
-                  Cancel
-                </button>
-                <button
-                  (click)="addAssociatedProductSubmitForm()"                  
-                  nz-button
-                  class="text-white"
-                  nzType="primary"                                          
-                >
-                Save
-                </button>
-            </div>
         </div>            
     </form>
+   
+    <div class="flex justify-between items-center gap-3 px-3 mt-4">
+        <div class="">
+            <nz-form-item>
+                <nz-form-control>
+                    <nz-input-group
+                    [nzSuffix]="inputClearTpl">
+                  <input
+                    nz-input
+                    type="text"
+                    class="rounded"
+                    [(ngModel)]="searchValue"
+                    placeholder="Search By Product Name"
+                    (keydown.enter)="getAllProducts()"
+                    #searchBox
+                  />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>        
+            <ng-template #inputClearTpl>
+            @if (searchValue) {
+            <span
+                aria-hidden="true"
+                nz-icon
+                nzTheme="fill"
+                class="cursor-pointer"
+                nzType="close-circle"
+                (click)="clearSearchText()"
+            ></span>
+            }@else{
+                <nz-icon nzType="search" />
+            }
+            </ng-template>
+        </div>  
+        <div class="flex gap-3">
+            <button nz-button nzType="default"
+            (click)="handleCancel()">
+              Cancel
+            </button>
+            <button
+              (click)="addAssociatedProductSubmitForm()"                  
+              nz-button
+              class="text-white"
+              nzType="primary"                                          
+            >
+            Save
+            </button>
+        </div>
+    </div>
     <div class="p-4">
         <nz-table                      
         #associateDataTable nzSize="small"
@@ -487,7 +521,12 @@ nzWidth="500px"
         [nzData]="productNameList"
         class="rounded-lg"
         [nzShowPagination]="true"
+        [nzFrontPagination]="false"
         [nzLoading]="loadingProduct"      
+        [nzTotal]="total"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex"
+        (nzQueryParams)="onQueryParamsChange($event)"
         >
         <thead class="text-xs">
           <tr>
