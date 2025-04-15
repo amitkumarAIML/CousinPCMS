@@ -12,10 +12,11 @@ import { DataService } from '../../../shared/services/data.service';
 import { DepartmentService } from '../../departments/department.service';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'cousins-tree-view',
-  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent],
+  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent,NzToolTipModule],
   templateUrl: './tree-view.component.html',
   styleUrl: './tree-view.component.css',
 })

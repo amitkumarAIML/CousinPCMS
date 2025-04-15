@@ -17,7 +17,7 @@
     >
       </nz-tree>
       <ng-template #nzTreeTemplate let-node let-origin="origin">
-        <span class="custom-node" (contextmenu)="onRightClick($event, node)" >
+        <span class="custom-node" (contextmenu)="onRightClick($event, node)" nzTooltipTitle="Please right click to set attribute name" nz-tooltip>
           <span class="node-icon">
             <ng-container>
               <!-- 🟢 MAIN PARENT CATEGORY (Partition Icon) -->
@@ -47,7 +47,7 @@
   [nzFooter]="null"
   nzClosable="true"
   class="content-center"
-  nzWidth="1000px"
+  nzWidth="1100px"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="handleOk()">
     <ng-container *nzModalContent>

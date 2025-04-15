@@ -8,10 +8,20 @@ export interface AttributeModel {
   }
   export interface AddAttributeModel {
     attributeSetName: string;
+    categoryID:string;
     attributeName: string;
     attributeRequired: boolean;
     notImportant: boolean;
     listPosition: number;
+  }
+  export interface AttributeSetModel {
+    odataetag: string;
+    attributeSetName: string;
+    attributeName: string;
+    attributeRequired: boolean;
+    notImportant: boolean;
+    listPosition: number;
+    attributesetIsActive: boolean;
   }
   
   

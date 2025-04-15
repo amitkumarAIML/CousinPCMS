@@ -53,7 +53,22 @@ export class HomeService {
       catchError(error => throwError(() => error))
     );
   }
-
+  getAllAttributeSets(): Observable<AttributeModel> {
+    return this.httpService.get<AttributeModel>('Attributes/GetAllAttributeSets').pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+  deleteAttributeSets(attributeName: string, attributeSetName: string): Observable<AttributeModel> {
+    return this.httpService.get<any>('Attributes/DeleteAttributeSets', {
+      attributeName: `${attributeName}`, attributeSetName: `${attributeSetName}`,
+    }).pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+    
+  }
+  
   addAttributeSets(attributesData:AddAttributeModel) {
     return this.httpService.post(`Attributes/AddAttributeSets`, attributesData);
   }
