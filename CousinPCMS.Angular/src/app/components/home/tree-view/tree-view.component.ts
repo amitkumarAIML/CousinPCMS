@@ -1,23 +1,26 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, Renderer2, ViewEncapsulation} from '@angular/core';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {FlatNode, TreeNode} from '../../../shared/models/treeModel';
-import {NzIconModule} from 'ng-zorro-antd/icon';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, Renderer2, ViewEncapsulation } from '@angular/core';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { FlatNode, TreeNode } from '../../../shared/models/treeModel';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { SelectionModel } from '@angular/cdk/collections';
 import { treeData } from './tree-sample';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { HomeService } from '../home.service';
-import {NzSpinModule} from 'ng-zorro-antd/spin';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { Department, DepartmentResponse } from '../../../shared/models/departmentModel';
 import { DataService } from '../../../shared/services/data.service';
 import { DepartmentService } from '../../departments/department.service';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 @Component({
   selector: 'cousins-tree-view',
-  imports: [NzTreeModule, NzIconModule, NzSpinModule],
+  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent,NzToolTipModule],
   templateUrl: './tree-view.component.html',
   styleUrl: './tree-view.component.css',
 })
-export class TreeViewComponent implements OnInit,AfterViewInit {
+export class TreeViewComponent implements OnInit, AfterViewInit {
 
   // Maintain original nodes for nz-tree
   nodes: any[] = [];
@@ -27,6 +30,9 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   selectedValue: any[] = [];
   defaultExpandedKeys: any[] = [];
   displayText: string = 'No Data Found';
+  categoryAttriisVisible: boolean = false;
+
+  categoryData: any = {};
 
   @Output() categorySelected = new EventEmitter<string>();
 
@@ -36,7 +42,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   ngOnInit(): void {
     this.loadDepartments();
   }
-  
+
   getSampleData(): TreeNode[] {
     return treeData;
   }
@@ -52,7 +58,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
     // load child async
     if (event.eventName === 'expand') {
       const node = event.node;
-      
+
       if (node?.getChildren().length === 0 && node?.isExpanded) {
         this.loadCategoriesForDepartments(node).then(data => {
           if (data && data.length > 0) {
@@ -65,9 +71,9 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         });
       }
     }
-    
 
-    if (event.eventName === 'drop') { 
+
+    if (event.eventName === 'drop') {
 
       // Extract properties safely
       const dragNode = event.dragNode;
@@ -75,83 +81,83 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
       const pos = event.pos ?? 0; // Default to 0 (inside) if undefined
 
       if (!dragNode || !targetNode) {
-          console.warn('Drag or drop node missing!');
-          return;
+        console.warn('Drag or drop node missing!');
+        return;
       }
 
 
       // Prevent self-drop
       if (dragNode.key === targetNode.key) {
-          console.warn('Cannot drop a node onto itself');
-          return;
+        console.warn('Cannot drop a node onto itself');
+        return;
       }
-      
+
     }
 
   }
 
   // Get All Department 
   loadDepartments(): void {
-      this.loading = true;
-      this.homeService.getDepartments().subscribe({
-        next: (departments: DepartmentResponse) => {
-          // this.departments = departments;
-          if (departments.isSuccess) {
-            if (departments.value && departments.value.length > 0) {
-              this.departments = departments.value.filter((res: Department) => res.akiDepartmentIsActive);
-              const treeData = this.departments.map((dept: any) => ({
-                  title: dept.akiDepartmentName.toUpperCase(),
-                  key: dept.akiDepartmentID,
-                  parentId: null,
-                  level: 0, // Add level tracking
-                  isDepartment: true, // First parent gets 'partition' icon
-                  isLeaf: false,
-                  children: [],
-  
-              }));
-              this.nodes = treeData;
-  
-              const departmentIdStr = sessionStorage.getItem('departmentId');
-              const departmentId: number | undefined = departmentIdStr ? +departmentIdStr : undefined;
-              const categoryIdStr = sessionStorage.getItem('categoryId');
-              const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
-              if (departmentId) {
-                const findParent = this.nodes.find(child => child.key ===  departmentId);
-                if (categoryId) {
-                  this.loadCategoriesForDepartments(findParent).then(data => {
-                    if (data && data.length > 0) {
-                      findParent.children = data;
-                      findParent.isExpanded = true; 
-                      this.nodes = [...this.nodes]; 
-                      this.selectedValue = [categoryId]; 
-                      const path = this.getNodePath(this.nodes, categoryId);
-                      if (path) {
-                        this.defaultExpandedKeys = path;  // Set all parents to expand
-                      }
-                      this.categorySelected.emit(categoryId);
-                    } else {
-                      console.warn('No child data found for this node.');
+    this.loading = true;
+    this.homeService.getDepartments().subscribe({
+      next: (departments: DepartmentResponse) => {
+        // this.departments = departments;
+        if (departments.isSuccess) {
+          if (departments.value && departments.value.length > 0) {
+            this.departments = departments.value.filter((res: Department) => res.akiDepartmentIsActive);
+            const treeData = this.departments.map((dept: any) => ({
+              title: dept.akiDepartmentName.toUpperCase(),
+              key: dept.akiDepartmentID,
+              parentId: null,
+              level: 0, // Add level tracking
+              isDepartment: true, // First parent gets 'partition' icon
+              isLeaf: false,
+              children: [],
+
+            }));
+            this.nodes = treeData;
+
+            const departmentIdStr = sessionStorage.getItem('departmentId');
+            const departmentId: number | undefined = departmentIdStr ? +departmentIdStr : undefined;
+            const categoryIdStr = sessionStorage.getItem('categoryId');
+            const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
+            if (departmentId) {
+              const findParent = this.nodes.find(child => child.key === departmentId);
+              if (categoryId) {
+                this.loadCategoriesForDepartments(findParent).then(data => {
+                  if (data && data.length > 0) {
+                    findParent.children = data;
+                    findParent.isExpanded = true;
+                    this.nodes = [...this.nodes];
+                    this.selectedValue = [categoryId];
+                    const path = this.getNodePath(this.nodes, categoryId);
+                    if (path) {
+                      this.defaultExpandedKeys = path;  // Set all parents to expand
                     }
-                  })
-                } else {
-                  this.selectedValue = [departmentId]; 
-                }
-                this.cdRef.detectChanges();
+                    this.categorySelected.emit(categoryId);
+                  } else {
+                    console.warn('No child data found for this node.');
+                  }
+                })
+              } else {
+                this.selectedValue = [departmentId];
               }
-            } else {
-              this.displayText = 'No Data Found';
+              this.cdRef.detectChanges();
             }
           } else {
-            this.displayText = 'Failed to load Department';
+            this.displayText = 'No Data Found';
           }
-       
-          this.loading = false;
-        },
-        error: (error) => {
-          this.loading = false;
-          this.dataService.ShowNotification('error', '', "Something went wrong");
+        } else {
+          this.displayText = 'Failed to load Department';
         }
-      });
+
+        this.loading = false;
+      },
+      error: (error) => {
+        this.loading = false;
+        this.dataService.ShowNotification('error', '', "Something went wrong");
+      }
+    });
   }
 
   getNodePath(nodes: TreeNode[], targetKey: string | number, path: (string | number)[] = []): (string | number)[] | null {
@@ -167,7 +173,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
     }
     return null;
   }
- 
+
   // Get All Category By department id 
   async loadCategoriesForDepartments(node: TreeNode): Promise<TreeNode[]> {
     return new Promise((resolve) => {
@@ -195,7 +201,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   buildCategoryTree(categories: any[]): TreeNode[] {
     const categoryMap = new Map<string, TreeNode>();
     const tree: TreeNode[] = [];
-  
+
     // 🔹 Normalize IDs to strings & Add all categories to map first
     categories.forEach((category, index) => {
       const categoryID = String(category.akiCategoryID); // Convert to string
@@ -209,18 +215,18 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         isLast: false, // Default value
       });
     });
-  
+
     // 🔹 Attach child nodes to their parent
     categories.forEach(category => {
       const categoryID = String(category.akiCategoryID); // Normalize to string
       const parentID = String(category.akiCategoryParentID); // Normalize to string
       const node = categoryMap.get(categoryID);
       if (!node) return;
-  
+
       if (category.akiCategoryParentID && category.akiCategoryParentID > 0) {
         // Find the parent node
         const parentNode = categoryMap.get(parentID);
-        
+
         if (parentNode) {
           parentNode.children = parentNode.children || []; // Ensure array exists
           parentNode.children.push(node);
@@ -231,7 +237,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         tree.push(node);
       }
     });
-   // Mark the last nodes recursively
+    // Mark the last nodes recursively
     this.markLastNodes(tree);
 
     return tree;
@@ -240,7 +246,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   selectCategory(event: any) {
     if (event.level === 0) {
       const dep = this.departments.filter(a => a.akiDepartmentID == event.origin.key);
-      sessionStorage.setItem('departmentId',  dep[0].akiDepartmentID);
+      sessionStorage.setItem('departmentId', dep[0].akiDepartmentID);
       sessionStorage.removeItem('categoryId');
       sessionStorage.removeItem('productId');
       sessionStorage.removeItem('itemNumber');
@@ -260,7 +266,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
 
   }
 
-   // Helper method to get the icon type based on node properties
+  // Helper method to get the icon type based on node properties
   getIconType(node: TreeNode): string {
     if (node.isDepartment) {
       return 'partition';
@@ -277,7 +283,7 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
     // This is a placeholder
     return false;
   }
-  
+
   isExpanded(node: TreeNode): boolean {
     return !!node.expanded;
   }
@@ -286,17 +292,17 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   // Remove node from its previous parent
   removeNodeFromParent(nodeKey: string, nodes: TreeNode[]): boolean {
     for (const node of nodes) {
-        if (node.children) {
-            const index = node.children.findIndex(child => child.key === nodeKey);
-            if (index !== -1) {
-                node.children.splice(index, 1);
-                return true;
-            }
-            // Recursively check in child nodes
-            if (this.removeNodeFromParent(nodeKey, node.children)) {
-                return true;
-            }
+      if (node.children) {
+        const index = node.children.findIndex(child => child.key === nodeKey);
+        if (index !== -1) {
+          node.children.splice(index, 1);
+          return true;
         }
+        // Recursively check in child nodes
+        if (this.removeNodeFromParent(nodeKey, node.children)) {
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -304,13 +310,13 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
   // Find parent node of a given key
   findParentNode(nodeKey: string, nodes: TreeNode[]): TreeNode | null {
     for (const node of nodes) {
-        if (node.children) {
-            if (node.children.some(child => child.key === nodeKey)) {
-                return node;
-            }
-            const found = this.findParentNode(nodeKey, node.children);
-            if (found) return found;
+      if (node.children) {
+        if (node.children.some(child => child.key === nodeKey)) {
+          return node;
         }
+        const found = this.findParentNode(nodeKey, node.children);
+        if (found) return found;
+      }
     }
     return null;
   }
@@ -324,9 +330,22 @@ export class TreeViewComponent implements OnInit,AfterViewInit {
         // Recursively mark last nodes for the children
         this.markLastNodes(node.children || []);
       } else {
-        node.isLast = index1 === arr1.length - 1 ;
+        node.isLast = index1 === arr1.length - 1;
       }
     });
     return nodes;
+  }
+
+  onRightClick(event: MouseEvent, node: any): void {
+    if (node.level === 0) return;
+    this.categoryAttriisVisible = true;
+    this.categoryData = node;
+
+  }
+  handleOk(): void {
+    this.categoryAttriisVisible = false;
+  }
+  handleCancel(): void {
+    this.categoryAttriisVisible = false;
   }
 }

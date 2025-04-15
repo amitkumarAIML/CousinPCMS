@@ -1,0 +1,126 @@
+<div class="p-1">
+  <form nz-form [formGroup]="addAttributeSetsForm">
+    <!-- Category Info -->
+    <div class="grid grid-cols-12 gap-4 py-2">
+      <!-- Attribute Set Name (takes more width) -->
+      <nz-form-item class="col-span-12 sm:col-span-5">
+        <nz-form-label [nzNoColon]="true">Attribute Set Name</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="attributeSetName" id="attributeSetName" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Category Id (smaller column) -->
+      <nz-form-item class="col-span-12 sm:col-span-3">
+        <nz-form-label [nzNoColon]="true">Category Id</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="categoryID" id="categoryId" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <!-- model for categoryAttriIsVisible  -->
+    <nz-modal [(nzVisible)]="categoryAttriIsVisible" nzTitle="Attribute Details" [nzFooter]="null" nzClosable="true"
+      class="content-center" nzWidth="500px" (nzOnCancel)="btnCancel2()">
+      <ng-container *nzModalContent>
+
+        <div class="grid grid-cols-1 px-3 py-1 gap-2">
+          <nz-form-item>
+            <nz-form-label [nzNoColon]="true">Attribute Set Name</nz-form-label>
+            <nz-form-control nzErrorTip="Attribute set name is required">
+              <input nz-input formControlName="attributeSetName" class="w-full" type="text" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzNoColon]="true">Attribute Name</nz-form-label>
+            <nz-form-control nzErrorTip="Attribute name is required">
+              <input nz-input formControlName="attributeName" class="w-full" type="text" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="flex gap-2">
+            <nz-form-label [nzNoColon]="true">Attribute Required</nz-form-label>
+            <label nz-checkbox formControlName="attributeRequired" nzValue="data.attributeRequired"></label>
+            <nz-form-label [nzNoColon]="true">Not Important</nz-form-label>
+            <label nz-checkbox formControlName="notImportant" nzValue="data.notImportant"></label>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzNoColon]="true">list Position</nz-form-label>
+            <nz-form-control nzErrorTip="">
+              <input nz-input type="number" class="w-full" formControlName="listPosition">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div class="px-3 mt-2 flex justify-end">
+          <button nz-button nzType="primary" (click)="saveAttributeSets()" class="text-white">Save</button>
+        </div>
+      </ng-container>
+    </nz-modal>
+  </form>
+  <!-- Attribute Grid -->
+  <div class="grid grid-cols-6 gap-4 py-2">
+    <div class="col-span-6 sm:col-span-4">
+      <!-- Left Table -->
+      <nz-table #attributelistTable [nzData]="lstAllAttributeSets" nzBordered="true" nzShowPagination="false"
+        nzSize="small" [nzLoading]="isAttributeSetloading" [nzScroll]="{x:'600px',y: '200px'}">
+        <thead>
+          <tr>
+            <th [nzWidth]="'200px'">Attribute Name</th>
+            <th>Required</th>
+            <th>Not Important</th>
+            <th>List Position</th>
+            <th [nzWidth]="'50px'">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of attributelistTable.data; track $index) {
+          <tr>
+            <td>{{ data.attributeName }}</td>
+            <td><label nz-checkbox [(ngModel)]="data.attributeRequired" [disabled]="true"></label></td>
+            <td><label nz-checkbox [(ngModel)]="data.notImportant" [disabled]="true"></label></td>
+            <td>{{ data.listPosition }}</td>
+            <td>
+              <a (click)="deleteAttributeSets(data)">
+                <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline"></nz-icon>
+              </a>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+      
+      <!-- Right Scroll List -->
+    </div>
+    <div class="col-span-6 sm:col-span-2">
+      <nz-spin [nzSpinning]="isAttributeloading">
+        <ng-container *ngIf="(attributeList?.length ?? 0) > 0; else emptyList">
+          <div class="h-44 overflow-y-scroll bg-white">
+            <nz-list nzBordered nzSize="small">
+              <nz-list-header class="text-sm font-medium text-center">Attribute Details</nz-list-header>
+              @for (item of attributeList; track item) {
+              <nz-list-item class="cursor-pointer text-secondary-font flex">
+                <span>{{ item.attributeName }}</span>
+                <a (click)="addAttributeData(item)">Add</a>
+              </nz-list-item>
+              }
+            </nz-list>
+          </div>
+        </ng-container>
+
+        <ng-template #emptyList>
+          <div class="h-44 border border-light-border rounded-lg bg-white text-gray-500  flex flex-col">
+            <div class="text-sm font-medium text-center py-2 border-b border-light-border">Attribute Details</div>
+            <div class="flex-grow flex items-center justify-center">
+              <span class="text-sm">No attributes found</span>
+            </div>
+          </div>
+        </ng-template>
+      </nz-spin>
+    </div>
+
+  </div>
+
+  <!-- <div class="flex justify-end gap-3 pb-1">
+        <button nz-button nzType="default" (click)="btnCancel()">Cancel</button>
+    </div>
+     -->
+</div>

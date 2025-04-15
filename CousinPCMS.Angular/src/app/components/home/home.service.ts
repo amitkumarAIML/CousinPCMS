@@ -4,6 +4,7 @@ import { HttpService } from '../../shared/services/http.service';
 import { DepartmentResponse } from '../../shared/models/departmentModel';
 import { ProductResponse } from '../../shared/models/productModel';
 import { SkuListResponse } from '../../shared/models/skusModel';
+import { AddAttributeModel, AttributeModel } from '../../shared/models/attributeModel';
 
 @Injectable({
   providedIn: 'root',
@@ -45,4 +46,31 @@ export class HomeService {
       catchError(error => throwError(() => error))
     );
   }
+
+  getAllAttributes(): Observable<AttributeModel> {
+    return this.httpService.get<AttributeModel>('Attributes/GetAllAttributes').pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+  getAllAttributeSets(): Observable<AttributeModel> {
+    return this.httpService.get<AttributeModel>('Attributes/GetAllAttributeSets').pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+  }
+  deleteAttributeSets(attributeName: string, attributeSetName: string): Observable<AttributeModel> {
+    return this.httpService.get<any>('Attributes/DeleteAttributeSets', {
+      attributeName: `${attributeName}`, attributeSetName: `${attributeSetName}`,
+    }).pipe(
+      map((response: any) => response),
+      catchError(error => throwError(() => error))
+    );
+    
+  }
+  
+  addAttributeSets(attributesData:AddAttributeModel) {
+    return this.httpService.post(`Attributes/AddAttributeSets`, attributesData);
+  }
+
 }
