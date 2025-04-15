@@ -13,32 +13,58 @@ namespace CousinPCMS.BLL
             Oauth = oauthToken;
         }
 
-        public APIResult<List<ProductModel>> GetAllProducts()
+        public APIResult<ProductResponseModel> GetAllProducts(int pageSize, int pageNumber)
         {
-            APIResult<List<ProductModel>> returnValue = new APIResult<List<ProductModel>>
+            var returnValue = new APIResult<ProductResponseModel>
             {
                 IsError = false,
                 IsSuccess = true,
+                Value = new ProductResponseModel
+                {
+                    TotalRecords = 0,
+                    Products = new List<ProductModel>()
+                }
             };
+
             try
             {
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+                int skip = (pageNumber - 1) * pageSize;
+
+                // 1. Get the total count
+                string countUrl = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products" +
+                                  $"?company={HardcodedValues.CompanyName}&$count=true&$top=0";
+
+                var responseCnt = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    countUrl,
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                if (!string.IsNullOrEmpty(responseCnt))
+                {
+                    var countWrapper = JsonConvert.DeserializeObject<ProductCountModel>(responseCnt);
+                    returnValue.Value.TotalRecords = countWrapper?.Count ?? 0;
+                }
+
+                // 2. Get paginated products
+                string paginatedUrl = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products" +
+                                      $"?company={HardcodedValues.CompanyName}&$top={pageSize}&$skip={skip}";
+
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    paginatedUrl,
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ProductModel>>>(response);
-                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    var productData = JsonConvert.DeserializeObject<ODataResponse<List<ProductModel>>>(response);
+                    if (productData?.Value != null && productData.Value.Any())
                     {
-                        returnValue.Value = responseOfOrderLine.Value;
+                        returnValue.Value.Products = productData.Value;
                     }
-                    else
-                    {
-                        returnValue.IsSuccess = true;
-                    }
-                }
-                else
-                {
-                    returnValue.IsSuccess = true;
                 }
             }
             catch (Exception exception)
@@ -47,6 +73,7 @@ namespace CousinPCMS.BLL
                 returnValue.IsError = true;
                 returnValue.ExceptionInformation = exception;
             }
+
             return returnValue;
         }
 

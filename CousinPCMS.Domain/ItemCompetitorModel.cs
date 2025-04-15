@@ -11,7 +11,7 @@ namespace CousinPCMS.Domain
         public string AkiItemId { get; set; }
 
         [JsonPropertyName("akiCompetitorID")]
-        public int AkiCompetitorID { get; set; }
+        public string AkiCompetitorID { get; set; }
 
         [JsonPropertyName("akiCompetitorName")]
         public string AkiCompetitorName { get; set; }
