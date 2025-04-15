@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center p-4 pb-1">
       <span>Attribute Form</span>
       <div class="flex gap-x-3">
-        <button nz-button nzType="default" [routerLink]="'/home'" class="">Cancel</button>
+        <button nz-button nzType="default" [routerLink]="'/attributes'" class="">Cancel</button>
         <button nz-button nzType="primary" [nzLoading]="btnLoading" class="text-white" (click)="addAttributes()">Save</button>
       </div>
     </div>
@@ -130,7 +130,7 @@
   </nz-spin>
 </div>
 
-<nz-modal [(nzVisible)]="addNewAttributeValueModal" (nzOnCancel)="handleCancel()" [nzFooter]="null" nzClosable="true" [nzTitle]="modalTitle">
+<nz-modal [(nzVisible)]="addNewAttributeValueModal" (nzOnCancel)="handleCancel()" [nzFooter]="null"  [nzTitle]="modalTitle">
   <ng-template #modalTitle>Attribute value Form</ng-template>
 
   <ng-container *nzModalContent>

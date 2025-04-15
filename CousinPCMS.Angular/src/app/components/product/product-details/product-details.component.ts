@@ -6,7 +6,7 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
 import {NzCardModule} from 'ng-zorro-antd/card';
 import {NzDividerModule} from 'ng-zorro-antd/divider';
-import {NzTableModule} from 'ng-zorro-antd/table';
+import {NzTableModule, NzTableQueryParams} from 'ng-zorro-antd/table';
 import {ProductComponent} from '../product.component';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {ProductsService} from '../products.service';
@@ -78,6 +78,11 @@ export class ProductDetailsComponent {
   productList: any[] = [];
   loadingProduct: boolean = false;
   akiProductID: number | undefined;
+
+  searchValueProduct: string = '';
+  total = 1;
+  pageSize = 10;
+  pageIndex = 1;
 
   @Input() productData!: any;
 
@@ -254,13 +259,15 @@ export class ProductDetailsComponent {
 
   getAllProducts() {
     this.loadingProduct = true;
-    this.categoryService.getAllProducts().subscribe({
+    this.productService.getAllProducts(this.pageIndex, this.pageSize, this.searchValueProduct).subscribe({
       next: (response) => {
-        this.productList = response;
+        this.productList = response.value.products;
+        this.total =  response.value.totalRecords;
         // Filter only if AdditionalProductList is available
         if (this.AdditionalProductList && this.AdditionalProductList.length > 0) {
           const existingIds = this.AdditionalProductList.map((category: any) => category.additionalProduct);
           this.productList = this.productList.filter((product: any) => !existingIds.includes(product.akiProductID));
+          this.total =  (response.value.totalRecords - existingIds.length);
         }
         this.loadingProduct = false;
       },
@@ -284,7 +291,7 @@ export class ProductDetailsComponent {
 
             // Set the incremented value in form
             this.addAssociatedProductForm.patchValue({listorder: maxListOrder + 1});
-            this.getAllProducts();
+            // this.getAllProducts();
           } else {
             this.dataService.ShowNotification('error', '', 'Data are not found');
           }
@@ -444,4 +451,18 @@ export class ProductDetailsComponent {
       },
     });
   }
+
+  clearSearchText(): void {
+    this.searchValueProduct = '';
+    this.pageSize = 10;
+    this.pageIndex = 1;
+    this.getAllProducts();
+  }
+
+  onQueryParamsChange(params: NzTableQueryParams): void {
+      const { pageSize, pageIndex, sort, filter } = params;
+      this.pageIndex = pageIndex;
+      this.pageSize = pageSize;
+      this.getAllProducts();
+    }
 }

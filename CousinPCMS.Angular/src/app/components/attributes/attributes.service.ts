@@ -1,15 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {HttpService} from '../../shared/services/http.service';
 import {catchError, map, Observable, throwError} from 'rxjs';
-import {layoutSkus, layoutSkusResponse} from '../../shared/models/layoutTemplateModel';
-import {ProductRequest} from '../../shared/models/productModel';
-import {ItemModel, ItemModelResponse} from '../../shared/models/itemModel';
-import {CompetitorItem, CompetitorItemResponse} from '../../shared/models/competitorModel';
+import {ItemModel} from '../../shared/models/itemModel';
 import {ApiResponse} from '../../shared/models/generalModel';
-import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../../shared/models/linkMaintenanaceModel';
-import {AdditionalImageDeleteRequestModel, AdditionalImagesModel} from '../../shared/models/additionalImagesModel';
-import { SKuList, SkuListResponse, SkuRequestModel } from '../../shared/models/skusModel';
 import { AttributeModel, AttributeRequestModel, AttributeValueModel, AttributeValuesRequestModel } from '../../shared/models/attributesModel';
 
 @Injectable({
@@ -33,7 +26,7 @@ export class AttributesService {
   }
 
   deleteAttributesValues(attributeName: string, attributeValue: string): Observable<any> {
-    return this.httpService.get<any>(`Skus/DeleteItem`, {attributeName: attributeName, attributeValue: attributeValue}).pipe(
+    return this.httpService.get<any>(`Attributes/DeleteAttributeValue`, {attributeName: attributeName, attributeValue: attributeValue}).pipe(
       map((response) => response),
       catchError((error) => throwError(() => error))
     );

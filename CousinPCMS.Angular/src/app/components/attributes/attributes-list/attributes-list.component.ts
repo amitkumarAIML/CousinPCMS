@@ -31,6 +31,9 @@ export class AttributesListComponent {
       next: (response: ApiResponse<AttributeModel[]>) => {
         if (response.isSuccess) {
           this.attributeList = response.value; 
+          this.attributeList.forEach((data: any, index: number) => {
+              data['id'] = ++index;
+          });
         } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
         }
@@ -46,6 +49,7 @@ export class AttributesListComponent {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Attributes Successfully Deleted');
+          this.attributeList = this.attributeList.filter(d => d.id !== data.id);
         } else {
           this.dataService.ShowNotification('error', '', 'Attributes Failed To Deleted');
         }

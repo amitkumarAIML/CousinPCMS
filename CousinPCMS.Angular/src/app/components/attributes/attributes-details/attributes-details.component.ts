@@ -94,6 +94,9 @@ export class AttributesDetailsComponent {
       next: (response: ApiResponse<AttributeValueModel[]>) => {
         if (response.isSuccess) {
           this.attributesValues = response.value;
+          this.attributesValues.forEach((data: any, index: number) => {
+            data['id'] = ++index;
+        });
           this.filteredData = [...this.attributesValues];
         } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
@@ -122,7 +125,12 @@ export class AttributesDetailsComponent {
           this.dataService.ShowNotification('success', '', 'Attribute Details Added Successfully');
           this.router.navigate(['/attributes']);
         } else {
-          this.dataService.ShowNotification('error', '', 'Attribute Details Failed To Add');
+          const firstSentence = response.value.split('.')[0];
+          let msg = firstSentence.replace(/^Attribute:\s*/i, '').trim();
+          if (!msg || !msg.includes('Attribute:')) {
+            msg = 'Something went wrong.';
+          }
+          this.dataService.ShowNotification('error', '', msg);
         }
         this.btnLoading = false;
       },
@@ -174,6 +182,7 @@ export class AttributesDetailsComponent {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Attributes Value Successfully Deleted');
+          this.filteredData = this.filteredData.filter(d => d.id !== data.id);
         } else {
           this.dataService.ShowNotification('error', '', 'Attributes Value Failed To Deleted');
         }

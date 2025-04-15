@@ -5,6 +5,7 @@ export interface AttributeModel {
     searchType: string;
     showAsCategory: boolean;
     attributesIsActive: boolean;
+    id?: number;
   
 }
 
@@ -21,6 +22,7 @@ export interface AttributeValueModel {
     attributeValue: string;
     newAlternateValue: string;
     alternateValues: string;
+    id?: number
     // attributevalueIsActive: boolean;
 }
 
