@@ -37,6 +37,7 @@ export class CategoryAttributeComponent implements OnInit {
   addAttributeSetsForm: FormGroup;
   attributeList: AttributeModel[] = [];
   isAttributeloading: boolean = false;
+  isAttributeSetloading:boolean = false
   isloading: boolean = false;
   categoryDetails: any;
   categoryAttriIsVisible: boolean = false;
@@ -91,20 +92,18 @@ export class CategoryAttributeComponent implements OnInit {
     })
   }
   getAllAttributeSets() {
-    this.isAttributeloading = true;
+    this.isAttributeSetloading = true;
     this.homeService.getAllAttributeSets().subscribe({
       next: (response: any) => {
         if (response.isSuccess) {
           this.lstAllAttributeSets = response.value;
-          this.isAttributeloading = false;
+          this.isAttributeSetloading = false;
           this.getAllAttributes();
-          console.log('this.attributeSetvlaue', this.lstAllAttributeSets);
-
         } else {
           this.dataService.ShowNotification('error', '', 'Failed To Load Data')
-          this.isAttributeloading = false;
+          this.isAttributeSetloading = false;
         }
-        this.isAttributeloading = false;
+        this.isAttributeSetloading = false;
       }
     })
   }
