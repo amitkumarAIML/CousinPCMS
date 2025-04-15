@@ -111,10 +111,7 @@ export class CategoryAttributeComponent implements OnInit {
 
   addAttributeData(data: any) {
     this.categoryAttriIsVisible = true;
-    // const alreadyExists = this.lstAllAttributeSets.some(attr => attr.attributeName === data.attributeName);
-    // if (!alreadyExists) {
-    //     return
-    // }
+
     const existingName = this.addAttributeSetsForm.get('attributeSetName')?.value || '';
     this.addAttributeSetsForm.patchValue({
       attributeSetName: existingName,
