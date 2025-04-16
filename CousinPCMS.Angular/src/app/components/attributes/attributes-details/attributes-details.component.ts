@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
@@ -15,10 +15,11 @@ import {ApiResponse} from '../../../shared/models/generalModel';
 import {ItemModel} from '../../../shared/models/itemModel';
 import {AttributeRequestModel, AttributeValueModel, AttributeValuesRequestModel} from '../../../shared/models/attributesModel';
 import {NzIconModule} from 'ng-zorro-antd/icon';
+import { AttributeModel } from '../../../shared/models/attributeModel';
 
 @Component({
   selector: 'cousins-attributes-details',
-  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, RouterLink, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
+  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
   templateUrl: './attributes-details.component.html',
   styleUrl: './attributes-details.component.css',
 })
@@ -36,7 +37,9 @@ export class AttributesDetailsComponent {
   addNewAttributeValueModal: boolean = false;
 
   filteredData: AttributeValueModel[] = [];
-
+  isEdit: boolean = false;
+  attributeName: string = '';
+  newValueBtnDisable: boolean = true;
 
   constructor(private fb: FormBuilder, private dataService: DataService, private readonly router: Router, private attributeService: AttributesService) {
     this.attributesForm = this.fb.group({
@@ -56,12 +59,25 @@ export class AttributesDetailsComponent {
 
   ngOnInit() {
     this.getAllSearchType();
-    this.getAllAtrributevalues();
+    // this.getAllAtrributevalues();
+    this.attributeName = sessionStorage.getItem('attributeName') || '';
+    if (this.attributeName != '') {
+      this.isEdit = true;
+      this.newValueBtnDisable = false;
+      this.getAttributeByAttributeName();
+      this.getAttributeValuesByAttributesName();
+      this.attributesForm.get('attributeName')?.disable();
+    }
   }
 
+  cancel() {
+    this.isEdit = false;
+    sessionStorage.removeItem('attributeName');
+    this.router.navigate(['/attributes']);
+  }
   showAddAttributesModal(): void {
     this.attributesValuesForm.reset();
-    this.attributesValuesForm.get('attributeName')?.patchValue(this.attributesForm.value.attributeName);
+    this.attributesValuesForm.get('attributeName')?.patchValue(this.attributesForm.getRawValue().attributeName);
     if (!this.attributesValuesForm.get('attributeName')?.value) {
       this.dataService.ShowNotification('error', '', 'Please Add Attributes Name First.');
       return;
@@ -123,11 +139,51 @@ export class AttributesDetailsComponent {
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Attribute Details Added Successfully');
-          this.router.navigate(['/attributes']);
+          // this.isEdit = false;
+          this.newValueBtnDisable = false;
+          this.attributesForm.get('attributeName')?.disable();
+          sessionStorage.setItem('attributeName', this.attributesForm.getRawValue().attributeName);
+          this.attributeName = this.attributesForm.getRawValue().attributeName;
         } else {
           const firstSentence = response.value.split('.')[0];
           let msg = firstSentence.replace(/^Attribute:\s*/i, '').trim();
           if (!msg || !msg.includes('Attribute:')) {
+            msg = 'Something went wrong.';
+          }
+          this.dataService.ShowNotification('error', '', msg);
+        }
+        this.btnLoading = false;
+      },
+      error: (err) => {
+        this.btnLoading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
+  }
+
+  updateAttributes() {
+    this.attributesForm.markAllAsTouched();
+
+    if (!this.attributesForm.valid) {
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return;
+    }
+
+    const data: AttributeRequestModel = this.dataService.cleanEmptyNullToString(this.attributesForm.getRawValue());
+
+    this.btnLoading = true;
+    this.attributeService.updateAttributes(data).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Attribute Details Updated Successfully');
+        } else {
+          const firstSentence = response.value.split('.')[0];
+          let msg = firstSentence.replace(/^Attribute:\s*/i, '').trim();
+          if (!msg) {
             msg = 'Something went wrong.';
           }
           this.dataService.ShowNotification('error', '', msg);
@@ -158,8 +214,8 @@ export class AttributesDetailsComponent {
     this.attributeService.addAttributesValues(data).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          this.dataService.ShowNotification('success', '', 'Attribute Values Added Successfully');
-          this.getAllAtrributevalues();
+          this.dataService.ShowNotification('success', '', 'Attribute were added successfully! You are now ready to add new Attributes Values.');
+          this.getAttributeValuesByAttributesName();
           this.addNewAttributeValueModal = false;
         } else {
           this.dataService.ShowNotification('error', '', 'Attribute Values Failed To Add');
@@ -215,9 +271,49 @@ export class AttributesDetailsComponent {
               // normalize(item.itemManufactureRef).includes(searchText) ||
     }); 
   }
+  
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.attributesValues];
    
   }
+
+  getAttributeByAttributeName() {
+    this.attributeService.getAttributeByAttributesName(this.attributeName).subscribe({
+      next: (response: ApiResponse<AttributeModel[]>) => {
+        if (response.isSuccess) {
+          this.attributesForm.patchValue(response.value[0])
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
+  }
+
+  getAttributeValuesByAttributesName() {
+    this.attributeService.getAttributeValuesByAttributesName(this.attributeName).subscribe({
+      next: (response: ApiResponse<AttributeValueModel[]>) => {
+        if (response.isSuccess) {
+          this.attributesValues = response.value;
+          if ( this.attributesValues != null) {
+            this.attributesValues.forEach((data: any, index: number) => {
+              data['id'] = ++index;
+            });
+            this.filteredData = [...this.attributesValues];
+          }
+        
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+      error: (err) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
+    });
+  }
+
+  
 }

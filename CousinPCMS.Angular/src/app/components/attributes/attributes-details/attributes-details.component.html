@@ -3,8 +3,7 @@
     <div class="flex justify-between items-center p-4 pb-1">
       <span>Attribute Form</span>
       <div class="flex gap-x-3">
-        <button nz-button nzType="default" [routerLink]="'/attributes'" class="">Cancel</button>
-        <button nz-button nzType="primary" [nzLoading]="btnLoading" class="text-white" (click)="addAttributes()">Save</button>
+        <button nz-button nzType="default" class="" (click)="cancel()">Cancel</button>
       </div>
     </div>
     <hr class="mt-2 mb-2 border-light-border" />
@@ -36,7 +35,7 @@
                 <nz-form-label nzRequired [nzNoColon]="true" nzFor="attributeName">Attribute Name</nz-form-label>
                 <nz-form-control nzErrorTip="Attribute Name is required">
                   <div class="flex items-center justify-between w-full">
-                    <input nz-input formControlName="attributeName" maxlength="100" />
+                    <input nz-input formControlName="attributeName" maxlength="100" [disabled]="isEdit ? false : true"/>
                     <span class="char-count">
                       {{ 50 - attributesForm.get('attributeName')?.value?.length || 50 }}
                     </span>
@@ -64,56 +63,58 @@
         </div>
       </form>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div class="lg:col-span-5 md:col-span-6">
+        <div class="lg:col-span-5 md:col-span-12">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <nz-form-item>
-                <nz-form-label [nzNoColon]="true">Search</nz-form-label>
-                <nz-form-control>
-                  <nz-input-group [nzSuffix]="inputClearTpl">
-                    <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
-              <ng-template #inputClearTpl>
-                @if (searchValue) {
-                <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
-                }@else{
-                <nz-icon nzType="search" />
-                }
-              </ng-template>
-              <div class="flex  justify-end mt-5">
-                <button nz-button nzType="primary" class="text-white" (click)="showAddAttributesModal()">New Value</button>
-              </div>
-          </div>
-             
-          <div class="grid grid-cols-1 md:grid-cols-2 mt-2">
-              <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '450px'}">
-                <thead>
-                  <tr>
-                    <th [nzWidth]="'50px'"></th>
-                    <th>Attribute Name</th>
-                    <th>Attribute Value</th>
-                    <th>Popular Rank</th>
-                    <th>Last Selected</th>
-                    <th [nzWidth]="'60px'">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (data of headerTable.data; track $index) {
-                  <tr>
-                    <td></td>
-                    <td>{{ data.attributeName }}</td>
-                    <td>{{ data.attributeValue }}</td>
-                    <td>---</td>
-                    <td>---</td>
-                    <td>
-                      <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttributeValues(data)" />
-                    </td>
-                  </tr>
+            <nz-form-item>
+              <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+              <nz-form-control>
+                <nz-input-group [nzSuffix]="inputClearTpl">
+                  <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+            <ng-template #inputClearTpl>
+              @if (searchValue) {
+              <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+              }@else{
+              <nz-icon nzType="search" />
+              }
+            </ng-template>
+            <div class="flex justify-end mt-5 gap-2">
+              <button nz-button nzType="primary" [nzLoading]="btnLoading" [disabled]="isEdit ? newValueBtnDisable : !newValueBtnDisable" (click)="isEdit ? updateAttributes() : addAttributes()">{{ isEdit ? 'Update' : 'Save' }}</button>
 
-                  }
-                </tbody>
-              </nz-table>
+              <button nz-button nzType="primary" class="" [disabled]="newValueBtnDisable" (click)="showAddAttributesModal()">New Value</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 mt-2">
+            <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '450px'}">
+              <thead>
+                <tr>
+                  <th [nzWidth]="'50px'"></th>
+                  <th>Attribute Name</th>
+                  <th>Attribute Value</th>
+                  <th>Popular Rank</th>
+                  <th>Last Selected</th>
+                  <th [nzWidth]="'60px'">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (data of headerTable.data; track $index) {
+                <tr>
+                  <td></td>
+                  <td>{{ data.attributeName }}</td>
+                  <td>{{ data.attributeValue }}</td>
+                  <td>---</td>
+                  <td>---</td>
+                  <td>
+                    <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttributeValues(data)" />
+                  </td>
+                </tr>
+
+                }
+              </tbody>
+            </nz-table>
           </div>
         </div>
       </div>
@@ -121,7 +122,7 @@
   </nz-spin>
 </div>
 
-<nz-modal [(nzVisible)]="addNewAttributeValueModal" (nzOnCancel)="handleCancel()" [nzFooter]="null"  [nzTitle]="modalTitle">
+<nz-modal [(nzVisible)]="addNewAttributeValueModal" (nzOnCancel)="handleCancel()" [nzFooter]="null" [nzTitle]="modalTitle" [nzMaskClosable]="false">
   <ng-template #modalTitle>Attribute value Form</ng-template>
 
   <ng-container *nzModalContent>

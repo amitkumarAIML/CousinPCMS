@@ -4,7 +4,8 @@ import { HttpService } from '../../shared/services/http.service';
 import { DepartmentResponse } from '../../shared/models/departmentModel';
 import { ProductResponse } from '../../shared/models/productModel';
 import { SkuListResponse } from '../../shared/models/skusModel';
-import { AddAttributeModel, AttributeModel } from '../../shared/models/attributeModel';
+import { AddAttributeSetRequestModel, AttributeModel, AttributeModelResponse, AttributeSetModel, AttributeSetModelResponse } from '../../shared/models/attributeModel';
+import { ApiResponse } from '../../shared/models/generalModel';
 
 @Injectable({
   providedIn: 'root',
@@ -47,15 +48,17 @@ export class HomeService {
     );
   }
 
-  getAllAttributes(): Observable<AttributeModel> {
-    return this.httpService.get<AttributeModel>('Attributes/GetAllAttributes').pipe(
+  getAllAttributes(): Observable<AttributeModel[]> {
+    return this.httpService.get<AttributeModelResponse>('Attributes/GetAllAttributes').pipe(
       map((response: any) => response),
       catchError(error => throwError(() => error))
     );
   }
-  getAllAttributeSets(): Observable<AttributeModel> {
-    return this.httpService.get<AttributeModel>('Attributes/GetAllAttributeSets').pipe(
-      map((response: any) => response),
+  getDistinctAttributeSetsByCategoryId(CategoryId:string): Observable<ApiResponse<AttributeSetModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeSetModel[]>>('Attributes/GetDistinctAttributeSetsByCategoryId',{
+      CategoryId: `${CategoryId}`,
+    }).pipe(
+      map((response:ApiResponse<AttributeSetModel[]>)=>response),
       catchError(error => throwError(() => error))
     );
   }
@@ -69,8 +72,17 @@ export class HomeService {
     
   }
   
-  addAttributeSets(attributesData:AddAttributeModel) {
+  addAttributeSets(attributesData:AddAttributeSetRequestModel) {
     return this.httpService.post(`Attributes/AddAttributeSets`, attributesData);
   }
 
+  getAttributeSetsByAttributeSetName(attributeSetName:string): Observable<ApiResponse<AttributeSetModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeSetModel[]>>('Attributes/GetAttributeSetsByAttributeSetName',{
+      attributeSetName: `${attributeSetName}`,
+    }).pipe(
+      map((response:ApiResponse<AttributeSetModel[]>)=>response),
+      catchError(error => throwError(() => error))
+    );
+  }
+ 
 }

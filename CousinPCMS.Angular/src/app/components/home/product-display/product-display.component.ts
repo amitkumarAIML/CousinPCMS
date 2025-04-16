@@ -4,10 +4,14 @@ import { CommonModule } from '@angular/common';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { Product, ProductResponse } from '../../../shared/models/productModel';
 import { DataService } from '../../../shared/services/data.service';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'cousins-product-display',
-  imports: [CommonModule, NzSpinModule],
+  imports: [CommonModule, NzSpinModule, NzToolTipModule, NzModalModule, CategoryAttributeComponent],
   templateUrl: './product-display.component.html',
   styleUrl: './product-display.component.css'
 })
@@ -15,61 +19,30 @@ export class ProductDisplayComponent {
 
   @Input() selectedCategory: string = '';
   @Output() productSelected = new EventEmitter<number>();
-  selectedProduct?: number; 
+  selectedProduct?: number;
   products: Product[] = [];
   displayText: string = 'Click a category to view the product';
   loading: boolean = false;
+  categoryAttriIsVisible: boolean = false;
+  categoryData: any = {};
+  lstAllAttributeSets: any[] = [];
 
-  constructor(private homeService: HomeService, private dataService: DataService) {}
+  allProductAtrributes: any[] = [];
+
+  constructor(private homeService: HomeService, private dataService: DataService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedCategory']) {
-        // this.selectedProduct = 0;
-        if (sessionStorage.getItem('categoryId')) {
-          const productIdStr = sessionStorage.getItem('productId');
-          const productId: number | undefined = productIdStr ? +productIdStr : undefined;
-          this.selectedProduct =  productId;
-          this.loadProductsForCategory();
-        } else {
-          this.products = [];
-          this.displayText = 'Click a category to view the product';
-        }
-    }
-  }
-
-  loadProductsForCategory() {
-    if (this.selectedCategory) {
-      this.products = [];
-      this.loading = true;
-      this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
-        next: (data: ProductResponse) => { 
-          if (data.isSuccess) {
-            if (data.value && data.value.length > 0) {
-              this.products = data.value.filter((res: Product) => res?.akiProductIsActive);
-              if (this.products && this.products.length > 0) {
-                this.displayText = ''; 
-                this.productSelected.emit(this.selectedProduct);
-              } else {
-                this.displayText = 'No Product Found';
-              } 
-            } else {
-              this.displayText = 'No Product Found';
-            }
-          } else {
-            this.displayText = 'Failed to load products'
-          }
-          this.loading = false;
-        }, 
-        error: () => { 
-          this.displayText = 'Failed to load products';
-          this.loading = false; 
-          this.dataService.ShowNotification('error', '', "Something went wrong");
-        }
-      });
-    } else {
-      this.products = [];
-      this.loading = false; 
-      this.displayText = 'Click on a category to view the product';
+      // this.selectedProduct = 0;
+      if (sessionStorage.getItem('categoryId')) {
+        const productIdStr = sessionStorage.getItem('productId');
+        const productId: number | undefined = productIdStr ? +productIdStr : undefined;
+        this.selectedProduct = productId;
+        this.getDataInParallel()
+      } else {
+        this.products = [];
+        this.displayText = 'Click a category to view the product';
+      }
     }
   }
 
@@ -80,4 +53,58 @@ export class ProductDisplayComponent {
     sessionStorage.removeItem('itemNumber');
     this.productSelected.emit(data.akiProductID);
   }
+
+  onProductRightClick(product: any): void {
+    this.selectedProduct = product?.akiProductID;
+    this.categoryData = product;
+    this.categoryAttriIsVisible = true; // Opens the modal
+  }
+
+  handleOk(): void {
+    this.categoryAttriIsVisible = false;
+  }
+  handleCancel(): void {
+    this.categoryAttriIsVisible = false;
+  }
+
+  getDataInParallel(): void {
+    this.loading = true;
+
+    forkJoin({
+      productList: this.homeService.getProductListByCategoryId(this.selectedCategory),
+      attributeList: this.homeService.getDistinctAttributeSetsByCategoryId(this.selectedCategory)
+    }).subscribe({
+      next: ({ productList, attributeList }) => {
+        if (productList.isSuccess) {
+          if (productList.value && productList.value.length > 0) {
+            this.products = productList.value.filter((res: Product) => res?.akiProductIsActive);
+            if (this.products && this.products.length > 0) {
+              this.displayText = '';
+              this.productSelected.emit(this.selectedProduct);
+            } else {
+              this.displayText = 'No Product Found';
+            }
+          } else {
+            this.displayText = 'No Product Found';
+          }
+        }
+        if (attributeList.isSuccess) {
+          this.lstAllAttributeSets = attributeList.value;
+          this.allProductAtrributes = [
+            ...(Array.isArray(this.products) ? this.products : []),
+            ...(Array.isArray(this.lstAllAttributeSets) ? this.lstAllAttributeSets : [])
+          ];
+
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed to load attribute sets')
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error in API calls', error);
+        this.loading = false;
+      }
+    });
+  }
+
 }

@@ -259,6 +259,7 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
 
         sessionStorage.removeItem('productId');
         sessionStorage.removeItem('itemNumber');
+        this.categoryData = dep[0].akiCategoryID;
       }
 
     }

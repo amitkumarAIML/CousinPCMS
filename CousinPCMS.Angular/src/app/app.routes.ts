@@ -44,6 +44,10 @@ export const routes: Routes = [
     component: AttributesDetailsComponent,
   },
   { 
+    path: 'attributes/edit',
+    component: AttributesDetailsComponent,
+  },
+  { 
     path: 'products/link-maintenance',
     component: LinkMaintenanceComponent,
   },
