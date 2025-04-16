@@ -1,15 +1,15 @@
 
-<div class="grid grid-cols-1 md:grid-cols-2">
+<div class="grid grid-cols-1">
     <nz-table #headerTable [nzData]="attributeList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
     [nzScroll]="{ y: '660px' }">
   <thead>
     <tr>
       <th nzWidth="60px"></th>
-      <th>AttributeName</th>
+      <th  nzWidth="300px">AttributeName</th>
       <th>Attribute Description</th>
-      <th>Search Type</th>
-      <th>Show As Category</th>
-      <th>Action</th>
+      <th nzWidth="200px">Search Type</th>
+      <th nzWidth="200px">Show As Category</th>
+      <th nzWidth="100px">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -23,6 +23,9 @@
               <label nz-checkbox [(ngModel)]="data.showAsCategory" [disabled]="true"></label>
           </td>
           <td>
+              <a (click)="editAttribute(data)">
+                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4"  />
+              </a>
               <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttribute(data)"/>
           </td>
       </tr>

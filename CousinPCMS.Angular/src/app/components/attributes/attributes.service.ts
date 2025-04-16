@@ -18,6 +18,13 @@ export class AttributesService {
     )
   }
 
+  updateAttributes(attributesData: AttributeRequestModel): Observable<ApiResponse<any>> {
+    return this.httpService.post<ApiResponse<any>>(`Attributes/UpdateAttributes`, attributesData).pipe(
+      map((response: ApiResponse<any>) => response),
+      catchError((error) => throwError(() => error))
+    )
+  }
+
   addAttributesValues(attributesData: AttributeValuesRequestModel): Observable<ApiResponse<any>> {
     return this.httpService.post<ApiResponse<any>>(`Attributes/AddAttributesValues`, attributesData).pipe(
       map((response: ApiResponse<any>) => response),
@@ -56,6 +63,20 @@ export class AttributesService {
 
   getAttributeValues(): Observable<ApiResponse<AttributeValueModel[]>> {
     return this.httpService.get<ApiResponse<AttributeValueModel[]>>('Attributes/GetAllAttributeValues').pipe(
+      map((response: ApiResponse<AttributeValueModel[]>) => response),
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getAttributeByAttributesName(attributeName: string): Observable<ApiResponse<AttributeModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeModel[]>>('Attributes/GetAllAttributesByAttributeName', {attributeName: attributeName}).pipe(
+      map((response: ApiResponse<AttributeModel[]>) => response),
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getAttributeValuesByAttributesName(attributeName: string): Observable<ApiResponse<AttributeValueModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeValueModel[]>>('Attributes/GetAllAttributeValuesByAttribute', {attributeName: attributeName}).pipe(
       map((response: ApiResponse<AttributeValueModel[]>) => response),
       catchError((error) => throwError(() => error))
     );

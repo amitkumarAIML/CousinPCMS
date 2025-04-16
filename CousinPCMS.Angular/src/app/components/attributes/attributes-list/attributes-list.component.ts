@@ -24,6 +24,7 @@ export class AttributesListComponent {
 
   ngOnInit() {
     this.getAllAtrributes();
+    sessionStorage.removeItem('attributeName');
   }
 
   getAllAtrributes() {
@@ -62,5 +63,11 @@ export class AttributesListComponent {
         }
       }
     });
+  }
+
+  editAttribute(data:AttributeModel) {
+    sessionStorage.setItem('attributeName', data.attributeName)
+    this.router.navigate(['/attributes/edit']);
+    
   }
 }
