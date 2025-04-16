@@ -60,6 +60,16 @@ namespace CousinPCMS.Domain
         public bool notImportant { get; set; }
         public int listPosition { get; set; }
     }
+
+    public class UpdateAttributeSetRequestModel
+    {
+        public string attributeSetName { get; set; }
+        public string attributeName { get; set; }
+        public bool attributeRequired { get; set; }
+        public bool notImportant { get; set; }
+        public int listPosition { get; set; }
+    }
+
     public class DeleteAttributeRequestModel
     {
         public string attributeName { get; set; }
