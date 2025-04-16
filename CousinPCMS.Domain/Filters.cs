@@ -14,6 +14,7 @@ public enum ComparisonType
     NotEquals,
     GreaterThan,
     LessThan,
+    Contains,
 }
 
 public enum PaymentFilterEnum

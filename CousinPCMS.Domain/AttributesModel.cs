@@ -30,7 +30,7 @@ namespace CousinPCMS.Domain
         public string odataetag { get; set; }
         public string attributeSetName { get; set; }
         public string attributeName { get; set; }
-        public string categoryID { get; set; }
+        public string akiCategoryID { get; set; }
         public bool attributeRequired { get; set; }
         public bool notImportant { get; set; }
         public int listPosition { get; set; }

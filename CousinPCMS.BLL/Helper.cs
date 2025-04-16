@@ -1,6 +1,6 @@
-﻿using Microsoft.Identity.Client;
+﻿using CousinPCMS.Domain;
+using Microsoft.Identity.Client;
 using System.Text;
-using CousinPCMS.Domain;
 
 namespace CousinPCMS.BLL;
 
@@ -70,52 +70,43 @@ public static class Helper
     public static string GenerateFilterExpressionForAnd(List<Filters> filters)
     {
         StringBuilder stringBuilder = new StringBuilder();
-        if (filters != null && filters.Any() && filters.Count > 0)
+
+        if (filters != null && filters.Any())
         {
             stringBuilder.Append("&$filter=");
-            if (typeof(String) == filters[0].DataType)
+
+            for (int i = 0; i < filters.Count; i++)
             {
-                stringBuilder.Append(filters[0].ParameterName);
-                stringBuilder.Append(" eq '");
-                stringBuilder.Append(filters[0].ParameterValue);
-                stringBuilder.Append("'");
-            }
-            else if (typeof(int) == filters[0].DataType)
-            {
-                stringBuilder.Append(filters[0].ParameterName);
-                stringBuilder.Append(" eq ");
-                stringBuilder.Append(filters[0].ParameterValue);
-            }
-            var counter = 0;
-            foreach (Filters filter in filters)
-            {
-                if (counter == 0)
-                {
-                    counter++;
-                    continue;
-                }
-                else
-                {
+                var filter = filters[i];
+
+                if (i > 0)
                     stringBuilder.Append(" and ");
-                    if (typeof(String) == filter.DataType)
+
+                if (filter.DataType == typeof(string))
+                {
+                    if (filter.Compare == ComparisonType.Equals)
                     {
-                        stringBuilder.Append(filter.ParameterName);
-                        if (filter.Compare == ComparisonType.Equals)
-                        {
-                            stringBuilder.Append(" eq '");
-                        }
-                        stringBuilder.Append(filter.ParameterValue);
-                        stringBuilder.Append("'");
+                        stringBuilder.Append($"{filter.ParameterName} eq '{filter.ParameterValue}'");
                     }
-                    else if (typeof(int) == filter.DataType)
+                    else if (filter.Compare == ComparisonType.Contains)
                     {
-                        stringBuilder.Append(filter.ParameterName);
-                        stringBuilder.Append(" eq ");
-                        stringBuilder.Append(filter.ParameterValue);
+                        stringBuilder.Append($"contains({filter.ParameterName},'{filter.ParameterValue}')");
+                    }
+                    else
+                    {
+                        // Fallback to equals if unknown compare type
+                        stringBuilder.Append($"{filter.ParameterName} eq '{filter.ParameterValue}'");
                     }
                 }
+                else if (filter.DataType == typeof(int))
+                {
+                    stringBuilder.Append($"{filter.ParameterName} eq {filter.ParameterValue}");
+                }
+                // Add other types like DateTime, bool etc. here if needed
             }
         }
+
         return stringBuilder.ToString();
     }
+
 }

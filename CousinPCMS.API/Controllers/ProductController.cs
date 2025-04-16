@@ -85,7 +85,7 @@ namespace CousinPCMS.API.Controllers
         [ProducesResponseType(typeof(APIResult<ProductResponseModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetAllProducts(int pageSize, int pageNumber)
+        public async Task<IActionResult> GetAllProducts(int pageSize, int pageNumber, string productName = "")
         {
             log.Info($"Request of {nameof(GetAllProducts)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
@@ -93,7 +93,17 @@ namespace CousinPCMS.API.Controllers
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _productService.GetAllProducts(pageSize, pageNumber);
+            APIResult<ProductResponseModel> responseValue;
+
+            if (productName != "")
+            {
+                responseValue = _productService.SearchProducts(pageSize, pageNumber, productName);
+            }
+            else
+            {
+                responseValue = _productService.GetAllProducts(pageSize, pageNumber);
+            }
+
             if (!responseValue.IsError)
             {
                 log.Info($"Response of {nameof(GetAllProducts)} is success.");
@@ -101,6 +111,40 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(GetAllProducts)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Searches and retrieves a paginated list of product details based on the provided product name.
+        /// </summary>
+        /// <param name="pageSize">The number of products to return per page.</param>
+        /// <param name="pageNumber">The page number to retrieve.</param>
+        /// <param name="productName">The name (or part of the name) of the product to search for.</param>
+        /// <returns>
+        /// An <see cref="APIResult{ProductResponseModel}"/> containing the total record count and a list of matching products, 
+        /// or an empty list if no matches are found.
+        /// </returns>
+        [HttpGet("SearchProducts")]
+        [ProducesResponseType(typeof(APIResult<ProductResponseModel>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> SearchProducts(int pageSize, int pageNumber, string productName)
+        {
+            log.Info($"Request of {nameof(SearchProducts)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.SearchProducts(pageSize, pageNumber, productName);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(SearchProducts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(SearchProducts)} is failed.");
             }
             return Ok(responseValue);
         }

@@ -70,6 +70,35 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Gets all Attributes.
+        /// </summary>  
+        /// <param name="attributeName">pass selected attributename</param>
+        /// <returns>returns attribute object if details are available. Else empty object.</returns>
+        [HttpGet("GetAllAttributesByAttributeName")]
+        [ProducesResponseType(typeof(APIResult<List<AttributesModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllAttributesByAttributeName(string attributeName)
+        {
+            log.Info($"Request of {nameof(GetAllAttributesByAttributeName)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.GetAllAttributesByAttributeName(attributeName);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAllAttributesByAttributeName)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAllAttributesByAttributeName)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Gets all Attribute values.
         /// </summary>       
         /// <returns>returns attributevalue object if details are available. Else empty object.</returns>
@@ -150,6 +179,36 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(GetAllAttributeSets)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+
+        /// <summary>
+        /// Gets all Attribute sets details by categoryId.
+        /// </summary>       
+        /// <param name="CategoryId">pass selected category Id</param>
+        /// <returns>returns attribute set object if details are available. Else empty object.</returns>
+        [HttpGet("GetAttributeSetsByCategoryId")]
+        [ProducesResponseType(typeof(APIResult<List<AttributeSetModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAttributeSetsByCategoryId(string CategoryId)
+        {
+            log.Info($"Request of {nameof(GetAttributeSetsByCategoryId)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.GetAttributeSetsByCategoryId(CategoryId);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAttributeSetsByCategoryId)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAttributeSetsByCategoryId)} is failed.");
             }
             return Ok(responseValue);
         }

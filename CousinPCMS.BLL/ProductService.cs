@@ -77,6 +77,77 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<ProductResponseModel> SearchProducts(int pageSize, int pageNumber, string productName)
+        {
+            var returnValue = new APIResult<ProductResponseModel>
+            {
+                IsError = false,
+                IsSuccess = true,
+                Value = new ProductResponseModel
+                {
+                    TotalRecords = 0,
+                    Products = new List<ProductModel>()
+                }
+            };
+
+            try
+            {
+                int skip = (pageNumber - 1) * pageSize;
+
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "akiProductName", ParameterValue = productName, DataType = typeof(string), Compare = ComparisonType.Contains });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                // 1. Get the total count
+                string countUrl = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products" +
+                                  $"?company={HardcodedValues.CompanyName}{filter}&$count=true&$top=0";
+
+                var responseCnt = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    countUrl,
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                if (!string.IsNullOrEmpty(responseCnt))
+                {
+                    var countWrapper = JsonConvert.DeserializeObject<ProductCountModel>(responseCnt);
+                    returnValue.Value.TotalRecords = countWrapper?.Count ?? 0;
+                }
+
+                // 2. Get paginated products
+
+                string paginatedUrl = $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}products" +
+                                      $"?company={HardcodedValues.CompanyName}{filter}&$top={pageSize}&$skip={skip}";
+
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    paginatedUrl,
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var productData = JsonConvert.DeserializeObject<ODataResponse<List<ProductModel>>>(response);
+                    if (productData?.Value != null && productData.Value.Any())
+                    {
+                        returnValue.Value.Products = productData.Value;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
         public APIResult<List<ProductModel>> GetProductById(string akiProductID)
         {
             APIResult<List<ProductModel>> returnValue = new APIResult<List<ProductModel>>

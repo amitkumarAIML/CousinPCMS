@@ -50,6 +50,49 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<List<AttributesModel>> GetAllAttributesByAttributeName(string attributeName)
+        {
+            APIResult<List<AttributesModel>> returnValue = new APIResult<List<AttributesModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "attributeName", ParameterValue = attributeName, DataType = typeof(string), Compare = ComparisonType.Equals });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributes?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AttributesModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = true;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
         public APIResult<List<AttributeValuesModel>> GetAllAttributeValues()
         {
             APIResult<List<AttributeValuesModel>> returnValue = new APIResult<List<AttributeValuesModel>>
@@ -179,6 +222,49 @@ namespace CousinPCMS.BLL
                 var allFilters = new List<Filters>();
 
                 allFilters.Add(new Filters { ParameterName = "attributeName", ParameterValue = attributeName, DataType = typeof(string), Compare = ComparisonType.Equals });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributesets?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AttributeSetModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = true;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
+        public APIResult<List<AttributeSetModel>> GetAttributeSetsByCategoryId(string CategoryId)
+        {
+            APIResult<List<AttributeSetModel>> returnValue = new APIResult<List<AttributeSetModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "akiCategoryID", ParameterValue = CategoryId, DataType = typeof(string), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
@@ -364,7 +450,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddAttributeset?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteAttributesValue?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -400,7 +486,7 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddAttributeset?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteAttributeset?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
