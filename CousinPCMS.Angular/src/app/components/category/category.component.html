@@ -292,7 +292,7 @@
                                             <tr>
                                             <th [nzWidth]="'50px'">List Order</th>
                                             <th [nzWidth]="'250px'">Product Name</th>                                  
-                                            <th [nzWidth]="'50px'">Action</th>
+                                            <th [nzWidth]="'35px'">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody class="text-color-secondary-font">
@@ -314,7 +314,7 @@
                                                 </td>
                                                 <!-- Actions -->
                                                 <td>
-                                                    <span class="flex gap-3">
+                                                    <span class="flex gap-1">
                                                         @if (editingId === data.product) {
                                                             <a (click)="updateCategoryAssociatedProduct(data)"> Save</a>
                                                             <a (click)="cancelEdit()">Cancel</a>
