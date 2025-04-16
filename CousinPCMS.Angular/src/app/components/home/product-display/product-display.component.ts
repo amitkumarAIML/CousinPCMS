@@ -101,7 +101,6 @@ export class ProductDisplayComponent {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error in API calls', error);
         this.loading = false;
       }
     });
