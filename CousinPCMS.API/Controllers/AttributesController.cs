@@ -270,6 +270,37 @@ namespace CousinPCMS.API.Controllers
             {
                 log.Error($"Response of {nameof(AddAttributes)} failed. Exception: {responseValue.ExceptionInformation}");
             }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// update an attribute detail.
+        /// </summary>
+        /// <param name="objModel">The object with updated details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateAttributes")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateAttributes(AddAttributeRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateAttributes)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.UpdateAttributes(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateAttributes)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateAttributes)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
 
             return Ok(responseValue);
         }
@@ -333,6 +364,38 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(AddAttributes)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// update an attribute set detail.
+        /// </summary>
+        /// <param name="objModel"> <see cref="UpdateAttributeSetRequestModel"/>The object with updated details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateAttributeSets")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateAttributeSets(UpdateAttributeSetRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddAttributes)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.UpdateAttributeSets(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateAttributeSets)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateAttributeSets)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
             return Ok(responseValue);
