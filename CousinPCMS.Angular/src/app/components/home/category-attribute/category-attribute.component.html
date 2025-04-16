@@ -87,15 +87,17 @@
           }
         </tbody>
       </nz-table>
-      
+
       <!-- Right Scroll List -->
     </div>
     <div class="col-span-6 sm:col-span-2">
       <nz-spin [nzSpinning]="isAttributeloading">
         <ng-container *ngIf="(attributeList?.length ?? 0) > 0; else emptyList">
-          <div class="h-44 overflow-y-scroll bg-white">
-            <nz-list nzBordered nzSize="small">
-              <nz-list-header class="text-sm font-medium text-center">Attribute Details</nz-list-header>
+          <div class="h-44 overflow-y-scroll border border-light-border bg-white">
+            <nz-list nzSize="small">
+              <nz-list-header
+                class="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-light-border">Attribute
+                Details</nz-list-header>
               @for (item of attributeList; track item) {
               <nz-list-item class="cursor-pointer text-secondary-font flex">
                 <span>{{ item.attributeName }}</span>
@@ -108,7 +110,8 @@
 
         <ng-template #emptyList>
           <div class="h-44 border border-light-border rounded-lg bg-white text-gray-500  flex flex-col">
-            <div class="text-sm font-medium text-center py-2 border-b border-light-border">Attribute Details</div>
+            <div class="text-sm font-medium text-center py-2 border-b border-light-border text-primary-font">Attribute
+              Details</div>
             <div class="flex-grow flex items-center justify-center">
               <span class="text-sm">No attributes found</span>
             </div>

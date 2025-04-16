@@ -6,7 +6,7 @@ export interface AttributeModel {
     showAsCategory: boolean;
     attributesIsActive: boolean;
   }
-  export interface AddAttributeModel {
+  export interface AddAttributeSetRequestModel {
     attributeSetName: string;
     categoryID:string;
     attributeName: string;
@@ -24,4 +24,15 @@ export interface AttributeModel {
     attributesetIsActive: boolean;
   }
   
-  
+  export interface AttributeModelResponse {
+    value: AttributeModel[];
+    isSuccess: boolean;
+    isError: boolean;
+    exceptionInformation: any;
+  }
+  export interface AttributeSetModelResponse {
+    value: AttributeSetModel[];
+    isSuccess: boolean;
+    isError: boolean;
+    exceptionInformation: any;
+  }

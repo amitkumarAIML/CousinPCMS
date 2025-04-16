@@ -1,26 +1,53 @@
 <div class="product-container">
     <div class="product-header">
-      Product Name
+        Product Name
     </div>
-    
+
     <nz-spin [nzSpinning]="loading">
 
-    <!-- Product List -->
-    @if (products && products.length > 0) {
+        <!-- Product List -->
+        @if (products && products.length > 0) {
         <ul class="product-list divide-y divide-gray-200">
-          @for (product of products; track $index) {
+            @for (product of products; track $index) {
             @if (product) {
-                <li class="product-item" (click)="onProductClick(product)"  
-                    [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
-                    {{ product.akiProductName}}
-                </li>
+            <li class="product-item" (click)="onProductClick(product)"
+                [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
+                {{ product.akiProductName}}
+            </li>
             }
-        }
+            }
         </ul>
-    } @else {
+        } @else {
         <div class="empty-message h-48">
             {{ displayText }}
         </div>
-    }
+        }
+        <!-- @if (lstAllAttributeSets && lstAllAttributeSets.length > 0) {
+            <ul class="product-list divide-y divide-gray-200">
+                @for (attribute of lstAllAttributeSets; track $index) {
+                @if (attribute) {
+                <li class="product-item" (contextmenu)="onProductRightClick(attribute, $event)"
+                   >
+                    {{ attribute.attributeName}}
+                </li>
+                }
+                }
+            </ul>
+            } @else {
+            <div class="empty-message h-48">
+                {{ displayText }}
+            </div>
+            } -->
     </nz-spin>
+</div>
+
+<!-- (contextmenu)="onProductRightClick(product, $event)" -->
+<!-- Category-attributes -->
+<div>
+    <nz-modal [(nzVisible)]="categoryAttriIsVisible" nzTitle="Attribute set form" [nzFooter]="null" nzClosable="true"
+        class="content-center" nzWidth="1100px" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+        <ng-container *nzModalContent>
+            <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
+        </ng-container>
+    </nz-modal>
 </div>
