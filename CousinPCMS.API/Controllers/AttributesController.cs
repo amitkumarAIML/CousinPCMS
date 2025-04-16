@@ -189,26 +189,55 @@ namespace CousinPCMS.API.Controllers
         /// </summary>       
         /// <param name="CategoryId">pass selected category Id</param>
         /// <returns>returns attribute set object if details are available. Else empty object.</returns>
-        [HttpGet("GetAttributeSetsByCategoryId")]
+        [HttpGet("GetDistinctAttributeSetsByCategoryId")]
         [ProducesResponseType(typeof(APIResult<List<AttributeSetModel>>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetAttributeSetsByCategoryId(string CategoryId)
+        public async Task<IActionResult> GetDistinctAttributeSetsByCategoryId(string CategoryId)
         {
-            log.Info($"Request of {nameof(GetAttributeSetsByCategoryId)} method called.");
+            log.Info($"Request of {nameof(GetDistinctAttributeSetsByCategoryId)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _attributeService.GetAttributeSetsByCategoryId(CategoryId);
+            var responseValue = _attributeService.GetDistinctAttributeSetsByCategoryId(CategoryId);
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(GetAttributeSetsByCategoryId)} is success.");
+                log.Info($"Response of {nameof(GetDistinctAttributeSetsByCategoryId)} is success.");
             }
             else
             {
-                log.Error($"Response of {nameof(GetAttributeSetsByCategoryId)} is failed.");
+                log.Error($"Response of {nameof(GetDistinctAttributeSetsByCategoryId)} is failed.");
+            }
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Gets Attribute set of sets details by atrributesetname.
+        /// </summary>       
+        /// <param name="attributeSetName">pass selected attribute set name Id</param>
+        /// <returns>returns attribute set object if details are available. Else empty object.</returns>
+        [HttpGet("GetAttributeSetsByAttributeSetName")]
+        [ProducesResponseType(typeof(APIResult<List<AttributeSetModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAttributeSetsByAttributeSetName(string attributeSetName)
+        {
+            log.Info($"Request of {nameof(GetAttributeSetsByAttributeSetName)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.GetAttributeSetsByAttributeSetName(attributeSetName);
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetAttributeSetsByAttributeSetName)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetAttributeSetsByAttributeSetName)} is failed.");
             }
             return Ok(responseValue);
         }

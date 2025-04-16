@@ -253,7 +253,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<List<AttributeSetModel>> GetAttributeSetsByCategoryId(string CategoryId)
+        public APIResult<List<AttributeSetModel>> GetDistinctAttributeSetsByCategoryId(string CategoryId)
         {
             APIResult<List<AttributeSetModel>> returnValue = new APIResult<List<AttributeSetModel>>
             {
@@ -265,6 +265,52 @@ namespace CousinPCMS.BLL
                 var allFilters = new List<Filters>();
 
                 allFilters.Add(new Filters { ParameterName = "akiCategoryID", ParameterValue = CategoryId, DataType = typeof(string), Compare = ComparisonType.Equals });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributesets?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AttributeSetModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value
+                                           .GroupBy(x => x.attributeSetName)
+                                           .Select(g => g.First())
+                                           .ToList();
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = true;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
+        public APIResult<List<AttributeSetModel>> GetAttributeSetsByAttributeSetName(string attributeSetName)
+        {
+            APIResult<List<AttributeSetModel>> returnValue = new APIResult<List<AttributeSetModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "attributeSetName", ParameterValue = attributeSetName, DataType = typeof(string), Compare = ComparisonType.Contains });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
@@ -295,6 +341,7 @@ namespace CousinPCMS.BLL
             }
             return returnValue;
         }
+
         public APIResult<string> AddAttributes(AddAttributeRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
