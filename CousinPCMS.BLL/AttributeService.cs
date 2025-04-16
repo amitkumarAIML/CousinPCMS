@@ -310,7 +310,7 @@ namespace CousinPCMS.BLL
             {
                 var allFilters = new List<Filters>();
 
-                allFilters.Add(new Filters { ParameterName = "attributeSetName", ParameterValue = attributeSetName, DataType = typeof(string), Compare = ComparisonType.Contains });
+                allFilters.Add(new Filters { ParameterName = "attributeSetName", ParameterValue = attributeSetName, DataType = typeof(string), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
