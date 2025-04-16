@@ -6,14 +6,22 @@
     <nz-spin [nzSpinning]="loading">
 
         <!-- Product List -->
-        @if (products && products.length > 0) {
+        @if (allProductAtrributes && allProductAtrributes.length > 0) {
         <ul class="product-list divide-y divide-gray-200">
-            @for (product of products; track $index) {
+            @for (product of allProductAtrributes; track $index) {
             @if (product) {
+            @if (product && product.akiProductID) {
             <li class="product-item" (click)="onProductClick(product)"
                 [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
                 {{ product.akiProductName}}
             </li>
+            }
+            @if (product && product.attributeSetName) {
+            <li class="product-item" (click)="onProductRightClick(product)"
+                [ngClass]="{'bg-bg-light': selectedProduct == product?.akiCategoryID}">
+                {{ product.attributeSetName}}
+            </li>
+            }
             }
             }
         </ul>
@@ -22,26 +30,9 @@
             {{ displayText }}
         </div>
         }
-        <!-- @if (lstAllAttributeSets && lstAllAttributeSets.length > 0) {
-            <ul class="product-list divide-y divide-gray-200">
-                @for (attribute of lstAllAttributeSets; track $index) {
-                @if (attribute) {
-                <li class="product-item" (contextmenu)="onProductRightClick(attribute, $event)"
-                   >
-                    {{ attribute.attributeName}}
-                </li>
-                }
-                }
-            </ul>
-            } @else {
-            <div class="empty-message h-48">
-                {{ displayText }}
-            </div>
-            } -->
     </nz-spin>
 </div>
 
-<!-- (contextmenu)="onProductRightClick(product, $event)" -->
 <!-- Category-attributes -->
 <div>
     <nz-modal [(nzVisible)]="categoryAttriIsVisible" nzTitle="Attribute set form" [nzFooter]="null" nzClosable="true"

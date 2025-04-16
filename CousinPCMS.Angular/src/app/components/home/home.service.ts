@@ -5,6 +5,7 @@ import { DepartmentResponse } from '../../shared/models/departmentModel';
 import { ProductResponse } from '../../shared/models/productModel';
 import { SkuListResponse } from '../../shared/models/skusModel';
 import { AddAttributeSetRequestModel, AttributeModel, AttributeModelResponse, AttributeSetModel, AttributeSetModelResponse } from '../../shared/models/attributeModel';
+import { ApiResponse } from '../../shared/models/generalModel';
 
 @Injectable({
   providedIn: 'root',
@@ -53,11 +54,11 @@ export class HomeService {
       catchError(error => throwError(() => error))
     );
   }
-  getAttributeSetsByCategoryId(CategoryId:string): Observable<AttributeSetModel[]> {
-    return this.httpService.get<AttributeSetModelResponse>('Attributes/GetAttributeSetsByCategoryId',{
+  getDistinctAttributeSetsByCategoryId(CategoryId:string): Observable<ApiResponse<AttributeSetModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeSetModel[]>>('Attributes/GetDistinctAttributeSetsByCategoryId',{
       CategoryId: `${CategoryId}`,
     }).pipe(
-      map((response:any)=>response),
+      map((response:ApiResponse<AttributeSetModel[]>)=>response),
       catchError(error => throwError(() => error))
     );
   }
@@ -75,13 +76,13 @@ export class HomeService {
     return this.httpService.post(`Attributes/AddAttributeSets`, attributesData);
   }
 
-  getAllAttributeSetsByAttribute(attributeName:string): Observable<any[]> {
-    return this.httpService.get<any>('Attributes/GetAllAttributeSetsByAttribute',{
-      attributeName: `${attributeName}`,
+  getAttributeSetsByAttributeSetName(attributeSetName:string): Observable<ApiResponse<AttributeSetModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeSetModel[]>>('Attributes/GetAttributeSetsByAttributeSetName',{
+      attributeSetName: `${attributeSetName}`,
     }).pipe(
-      map((response:any)=>response),
+      map((response:ApiResponse<AttributeSetModel[]>)=>response),
       catchError(error => throwError(() => error))
     );
   }
-
+ 
 }

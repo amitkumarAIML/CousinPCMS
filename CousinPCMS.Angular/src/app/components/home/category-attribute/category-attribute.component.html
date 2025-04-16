@@ -33,7 +33,7 @@
           <nz-form-item>
             <nz-form-label [nzNoColon]="true">Attribute Name</nz-form-label>
             <nz-form-control nzErrorTip="Attribute name is required">
-              <input nz-input formControlName="attributeName" class="w-full" type="text" />
+              <input nz-input formControlName="attributeName" [readOnly]="true" class="w-full" type="text" />
             </nz-form-control>
           </nz-form-item>
           <nz-form-item class="flex gap-2">
@@ -61,7 +61,7 @@
     <div class="col-span-6 sm:col-span-4">
       <!-- Left Table -->
       <nz-table #attributelistTable [nzData]="lstAllAttributeSets" nzBordered="true" nzShowPagination="false"
-        nzSize="small" [nzLoading]="isAttributeSetloading" [nzScroll]="{x:'600px',y: '200px'}">
+        nzSize="small" [nzLoading]="isAttributeSetloading" [nzScroll]="{x:'600px',y: '300px'}">
         <thead>
           <tr>
             <th [nzWidth]="'200px'">Attribute Name</th>
@@ -93,12 +93,12 @@
     <div class="col-span-6 sm:col-span-2">
       <nz-spin [nzSpinning]="isAttributeloading">
         <ng-container *ngIf="(attributeList?.length ?? 0) > 0; else emptyList">
-          <div class="h-44 overflow-y-scroll border border-light-border bg-white">
+          <div class="h-70 overflow-y-scroll border border-light-border rounded-md bg-white">
             <nz-list nzSize="small">
               <nz-list-header
                 class="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-light-border">Attribute
                 Details</nz-list-header>
-              @for (item of attributeList; track item) {
+              @for (item of attributeList; track $index) {
               <nz-list-item class="cursor-pointer text-secondary-font flex">
                 <span>{{ item.attributeName }}</span>
                 <a (click)="addAttributeData(item)">Add</a>
@@ -109,7 +109,7 @@
         </ng-container>
 
         <ng-template #emptyList>
-          <div class="h-44 border border-light-border rounded-lg bg-white text-gray-500  flex flex-col">
+          <div class="h-70 border border-light-border rounded-md bg-white text-gray-500  flex flex-col">
             <div class="text-sm font-medium text-center py-2 border-b border-light-border text-primary-font">Attribute
               Details</div>
             <div class="flex-grow flex items-center justify-center">
@@ -121,9 +121,4 @@
     </div>
 
   </div>
-
-  <!-- <div class="flex justify-end gap-3 pb-1">
-        <button nz-button nzType="default" (click)="btnCancel()">Cancel</button>
-    </div>
-     -->
 </div>

@@ -32,8 +32,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
   styleUrl: './category-attribute.component.css'
 })
 export class CategoryAttributeComponent implements OnInit {
-
-  // categoryAttriForm:FormGroup;
   addAttributeSetsForm: FormGroup;
   attributeList: AttributeModel[] = [];
   isAttributeloading: boolean = false;
@@ -41,7 +39,7 @@ export class CategoryAttributeComponent implements OnInit {
   isloading: boolean = false;
   categoryDetails: any;
   categoryAttriIsVisible: boolean = false;
-
+  currentAttributeSetName: string = '';
   @Input() categoryData: any = {};
 
   lstAllAttributeSets: AttributeSetModel[] = [];
@@ -61,14 +59,29 @@ export class CategoryAttributeComponent implements OnInit {
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['categoryData'] && this.categoryData) {
-      this.addAttributeSetsForm.get('attributeSetName')?.setValue(`Attribute Set For - ${this.categoryData.origin.title}`);
-      this.addAttributeSetsForm.get('categoryID')?.setValue(this.categoryData.origin.key);
-      this.getAllAttributeSets();
+      console.log('categoryData ', this.categoryData, changes)
+      if (this.categoryData && this.categoryData.origin) {
+        const attributeSetName = `Attribute Set For - ${this.categoryData.origin.title}`;
+        this.currentAttributeSetName = attributeSetName;
+
+        this.addAttributeSetsForm.get('attributeSetName')?.setValue(`Attribute Set For - ${this.categoryData.origin.title}`);
+        this.addAttributeSetsForm.get('categoryID')?.setValue(this.categoryData.origin.key);
+        this.getAttributeSetsByAttributeSetName(attributeSetName);
+
+      } else {
+        const setName = this.categoryData.attributeSetName;
+        this.currentAttributeSetName = setName;
+
+        this.addAttributeSetsForm.get('attributeSetName')?.disable();
+        this.addAttributeSetsForm.get('attributeSetName')?.setValue(`${this.categoryData.attributeSetName}`);
+        this.addAttributeSetsForm.get('categoryID')?.setValue(this.categoryData.akiCategoryID);
+        this.getAttributeSetsByAttributeSetName(setName);
+      }
+
     }
   }
 
   ngOnInit(): void {
-    this.getAllAttributeSets();
 
   }
 
@@ -89,28 +102,6 @@ export class CategoryAttributeComponent implements OnInit {
           this.isAttributeloading = false;
         }
         this.isAttributeloading = false;
-      }
-    })
-  }
-  getAllAttributeSets() {
-    this.isAttributeSetloading = true;
-    const categoryId = this.addAttributeSetsForm.get('categoryID')?.value;
-    if (!categoryId) return;
-
-    this.homeService.getAttributeSetsByCategoryId(categoryId).subscribe({
-      next: (response: any) => {
-        if (response.isSuccess) {
-          this.lstAllAttributeSets = response.value;
-          this.isAttributeSetloading = false;
-          this.getAllAttributes();
-        } else {
-          this.dataService.ShowNotification('error', '', 'Failed to load attribute sets')
-          this.isAttributeSetloading = false;
-        }
-        this.isAttributeSetloading = false;
-      }, error: () => {
-        this.isAttributeSetloading = false;
-        this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
       }
     })
   }
@@ -144,7 +135,7 @@ export class CategoryAttributeComponent implements OnInit {
       next: (response: any) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'AttributeSets deleted successsully');
-          this.getAllAttributeSets();
+          this.getAttributeSetsByAttributeSetName(this.currentAttributeSetName);
         } else {
           this.dataService.ShowNotification('error', '', 'AttributeSets not deleted successsully');
         }
@@ -164,7 +155,7 @@ export class CategoryAttributeComponent implements OnInit {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Attribute added successfully');
             this.categoryAttriIsVisible = false
-            this.getAllAttributeSets();
+            this.getAttributeSetsByAttributeSetName(this.currentAttributeSetName);
           } else {
             this.dataService.ShowNotification('error', '', 'Attribute not added successfully');
           }
@@ -188,5 +179,25 @@ export class CategoryAttributeComponent implements OnInit {
   }
   btnCancel2(): void {
     this.categoryAttriIsVisible = false;
+  }
+  getAttributeSetsByAttributeSetName(attributeSetName: string) {
+    const encodedAttributeSetName = encodeURIComponent(attributeSetName);
+    this.isAttributeSetloading = true;
+    this.homeService.getAttributeSetsByAttributeSetName(encodedAttributeSetName).subscribe({
+      next: (response: any) => {
+        if (response.isSuccess) {
+          this.lstAllAttributeSets = response.value;
+          console.log('lstAllAttributeSets', this.lstAllAttributeSets);
+          this.isAttributeSetloading = false;
+          this.getAllAttributes();
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
+          this.isAttributeSetloading = false;
+        }
+      }, error: () => {
+        this.isAttributeSetloading = false;
+        this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
+      }
+    })
   }
 }

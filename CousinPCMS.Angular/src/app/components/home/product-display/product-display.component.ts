@@ -7,6 +7,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'cousins-product-display',
@@ -24,7 +25,7 @@ export class ProductDisplayComponent {
   loading: boolean = false;
   categoryAttriIsVisible: boolean = false;
   categoryData: any = {};
-  lstAllAttributeSets:any[]=[];
+  lstAllAttributeSets: any[] = [];
 
   allProductAtrributes: any[] = [];
 
@@ -37,48 +38,11 @@ export class ProductDisplayComponent {
         const productIdStr = sessionStorage.getItem('productId');
         const productId: number | undefined = productIdStr ? +productIdStr : undefined;
         this.selectedProduct = productId;
-        this.loadProductsForCategory();
-        this.getAllAttributeSetsByAttribute();
+        this.getDataInParallel()
       } else {
         this.products = [];
         this.displayText = 'Click a category to view the product';
       }
-    }
-  }
-
-  loadProductsForCategory() {
-    if (this.selectedCategory) {
-      this.products = [];
-      this.loading = true;
-      this.homeService.getProductListByCategoryId(this.selectedCategory).subscribe({
-        next: (data: ProductResponse) => {
-          if (data.isSuccess) {
-            if (data.value && data.value.length > 0) {
-              this.products = data.value.filter((res: Product) => res?.akiProductIsActive);
-              if (this.products && this.products.length > 0) {
-                this.displayText = '';
-                this.productSelected.emit(this.selectedProduct);
-              } else {
-                this.displayText = 'No Product Found';
-              }
-            } else {
-              this.displayText = 'No Product Found';
-            }
-          } else {
-            this.displayText = 'Failed to load products'
-          }
-          this.loading = false;
-        },
-        error: () => {
-          this.displayText = 'Failed to load products';
-          this.loading = false;
-          this.dataService.ShowNotification('error', '', "Something went wrong");
-        }
-      });
-    } else {
-      this.products = [];
-      this.loading = false;
-      this.displayText = 'Click on a category to view the product';
     }
   }
 
@@ -90,33 +54,57 @@ export class ProductDisplayComponent {
     this.productSelected.emit(data.akiProductID);
   }
 
-  onProductRightClick(product: any, event: MouseEvent): void {
-    event.preventDefault(); // Prevents the default right-click menu
+  onProductRightClick(product: any): void {
     this.selectedProduct = product?.akiProductID;
+    this.categoryData = product;
     this.categoryAttriIsVisible = true; // Opens the modal
   }
 
-  getAllAttributeSetsByAttribute(){
-    this.homeService.getAttributeSetsByCategoryId(this.selectedCategory).subscribe({
-      next: (response: any) => {
-        if (response.isSuccess) {
-          this.lstAllAttributeSets = response.value;
-          // this.allProductAtrributes= [...this.products,  ...this.lstAllAttributeSets];
-          console.log('allProductAtrributes', this.allProductAtrributes)
-        } else {
-          this.dataService.ShowNotification('error', '', 'Failed to load attribute sets')        }
-  
-      }, error: () => {
-        
-        this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
-      }
-    })
-  }
   handleOk(): void {
     this.categoryAttriIsVisible = false;
   }
   handleCancel(): void {
     this.categoryAttriIsVisible = false;
+  }
+
+  getDataInParallel(): void {
+    this.loading = true;
+
+    forkJoin({
+      productList: this.homeService.getProductListByCategoryId(this.selectedCategory),
+      attributeList: this.homeService.getDistinctAttributeSetsByCategoryId(this.selectedCategory)
+    }).subscribe({
+      next: ({ productList, attributeList }) => {
+        if (productList.isSuccess) {
+          if (productList.value && productList.value.length > 0) {
+            this.products = productList.value.filter((res: Product) => res?.akiProductIsActive);
+            if (this.products && this.products.length > 0) {
+              this.displayText = '';
+              this.productSelected.emit(this.selectedProduct);
+            } else {
+              this.displayText = 'No Product Found';
+            }
+          } else {
+            this.displayText = 'No Product Found';
+          }
+        }
+        if (attributeList.isSuccess) {
+          this.lstAllAttributeSets = attributeList.value;
+          this.allProductAtrributes = [
+            ...(Array.isArray(this.products) ? this.products : []),
+            ...(Array.isArray(this.lstAllAttributeSets) ? this.lstAllAttributeSets : [])
+          ];
+
+        } else {
+          this.dataService.ShowNotification('error', '', 'Failed to load attribute sets')
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error in API calls', error);
+        this.loading = false;
+      }
+    });
   }
 
 }
