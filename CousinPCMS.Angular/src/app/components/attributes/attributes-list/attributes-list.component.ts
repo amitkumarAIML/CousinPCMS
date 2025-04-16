@@ -9,16 +9,20 @@ import {DataService} from '../../../shared/services/data.service';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ApiResponse } from '../../../shared/models/generalModel';
 import { AttributeModel } from '../../../shared/models/attributesModel';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 @Component({
   selector: 'cousins-attributes-list',
-  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule],
+  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule, NzInputModule, NzFormModule],
   templateUrl: './attributes-list.component.html',
   styleUrl: './attributes-list.component.css',
 })
 export class AttributesListComponent {
 
   attributeList: AttributeModel[] = [];
+  filteredData: AttributeModel[] = [];
+  searchValue: string = '';
 
   constructor(private attributeService: AttributesService, private dataService: DataService, private router: Router) {}
 
@@ -68,6 +72,31 @@ export class AttributesListComponent {
   editAttribute(data:AttributeModel) {
     sessionStorage.setItem('attributeName', data.attributeName)
     this.router.navigate(['/attributes/edit']);
-    
+  }
+
+  onSearch() {
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.filteredData = [...this.filteredData];
+      return;
+    }
+  
+    this.filteredData = this.attributeList.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.attributeName).includes(searchText)||
+              normalize(item.attributeDescription).includes(searchText) || 
+              normalize(item.searchType).includes(searchText)
+              // ||
+              // normalize(item.relatedSKUName).includes(searchText) ||
+              // normalize(item.itemManufactureRef).includes(searchText) ||
+    }); 
+  }
+  
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.filteredData = [...this.attributeList];
+   
   }
 }

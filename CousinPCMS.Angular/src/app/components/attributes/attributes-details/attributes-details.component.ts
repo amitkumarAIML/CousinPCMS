@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
@@ -19,7 +19,7 @@ import { AttributeModel } from '../../../shared/models/attributeModel';
 
 @Component({
   selector: 'cousins-attributes-details',
-  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, RouterLink, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
+  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
   templateUrl: './attributes-details.component.html',
   styleUrl: './attributes-details.component.css',
 })
@@ -271,6 +271,7 @@ export class AttributesDetailsComponent {
               // normalize(item.itemManufactureRef).includes(searchText) ||
     }); 
   }
+  
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.attributesValues];
@@ -297,10 +298,13 @@ export class AttributesDetailsComponent {
       next: (response: ApiResponse<AttributeValueModel[]>) => {
         if (response.isSuccess) {
           this.attributesValues = response.value;
-          this.attributesValues.forEach((data: any, index: number) => {
-            data['id'] = ++index;
-        });
-          this.filteredData = [...this.attributesValues];
+          if ( this.attributesValues != null) {
+            this.attributesValues.forEach((data: any, index: number) => {
+              data['id'] = ++index;
+            });
+            this.filteredData = [...this.attributesValues];
+          }
+        
         } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
         }

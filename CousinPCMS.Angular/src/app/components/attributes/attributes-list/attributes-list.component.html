@@ -1,37 +1,53 @@
-
 <div class="grid grid-cols-1">
-    <nz-table #headerTable [nzData]="attributeList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
-    [nzScroll]="{ y: '660px' }">
-  <thead>
-    <tr>
-      <th nzWidth="60px"></th>
-      <th  nzWidth="300px">AttributeName</th>
-      <th>Attribute Description</th>
-      <th nzWidth="200px">Search Type</th>
-      <th nzWidth="200px">Show As Category</th>
-      <th nzWidth="100px">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (data of headerTable.data; track $index) {
-      <tr >
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+      <nz-form-control>
+        <nz-input-group [nzSuffix]="inputClearTpl">
+          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-template #inputClearTpl>
+      @if (searchValue) {
+      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      }@else{
+      <nz-icon nzType="search" />
+      }
+    </ng-template>
+  </div>
+
+  <div class="mt-2">
+    <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '660px'}">
+      <thead>
+        <tr>
+          <th nzWidth="60px"></th>
+          <th nzWidth="300px">AttributeName</th>
+          <th>Attribute Description</th>
+          <th nzWidth="200px">Search Type</th>
+          <th nzWidth="200px">Show As Category</th>
+          <th nzWidth="100px">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (data of headerTable.data; track $index) {
+        <tr>
           <td></td>
           <td>{{ data.attributeName }}</td>
           <td>{{ data.attributeDescription }}</td>
           <td>{{ data.searchType }}</td>
           <td>
-              <label nz-checkbox [(ngModel)]="data.showAsCategory" [disabled]="true"></label>
+            <label nz-checkbox [(ngModel)]="data.showAsCategory" [disabled]="true"></label>
           </td>
           <td>
-              <a (click)="editAttribute(data)">
-                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4"  />
-              </a>
-              <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttribute(data)"/>
+            <a (click)="editAttribute(data)">
+              <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
+            </a>
+            <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttribute(data)" />
           </td>
-      </tr>
-    }
-  </tbody>
-</nz-table>
+        </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
 </div>
-
-
