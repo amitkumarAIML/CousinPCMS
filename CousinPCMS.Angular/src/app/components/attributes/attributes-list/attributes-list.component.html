@@ -43,8 +43,16 @@
             <a (click)="editAttribute(data)">
               <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
             </a>
-            <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttribute(data)" />
+            <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer"
+            nz-popconfirm
+            [nzPopconfirmTitle]="'Are you sure you want to delete this attribute name?'"
+            (nzOnConfirm)="deleteAttribute(data)"
+            (nzOnCancel)="cancel()"
+            [nzIcon]="iconTpl"/>
           </td>
+            <ng-template #iconTpl>
+              <nz-icon nzType="question-circle-o" class="text-danger me-2"  />
+          </ng-template>
         </tr>
         }
       </tbody>
