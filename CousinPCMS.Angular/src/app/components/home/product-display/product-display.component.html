@@ -1,44 +1,58 @@
 <div class="product-container">
-    <div class="product-header">
-        Product Name
+  <div class="product-header flex justify-between items-center">
+    Product Name
+    <nz-form-item>
+      <nz-form-control>
+        <nz-input-group [nzSuffix]="inputClearTpl">
+          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox placeholder="Search" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-template #inputClearTpl>
+      @if (searchValue) {
+      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      }@else{
+      <nz-icon nzType="search" />
+      }
+    </ng-template>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <!-- Product List -->
+    @if (filteredData && filteredData.length > 0) {
+    <ul class="product-list divide-y divide-gray-200">
+      @for (product of filteredData; track $index) { @if (product) { @if (product && product.akiProductID) {
+      <li class="product-item" (click)="onProductClick(product)" [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
+        {{ product.akiProductName }}
+      </li>
+      } @if (product && product.attributeSetName) {
+      <li class="product-item" (click)="onProductRightClick(product)" [ngClass]="{'bg-bg-light': selectedProduct == product?.akiCategoryID}">
+        {{ product.attributeSetName }}
+      </li>
+      } } }
+    </ul>
+    } @else {
+    <div class="empty-message h-48">
+      {{ displayText }}
     </div>
-
-    <nz-spin [nzSpinning]="loading">
-
-        <!-- Product List -->
-        @if (allProductAtrributes && allProductAtrributes.length > 0) {
-        <ul class="product-list divide-y divide-gray-200">
-            @for (product of allProductAtrributes; track $index) {
-            @if (product) {
-            @if (product && product.akiProductID) {
-            <li class="product-item" (click)="onProductClick(product)"
-                [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
-                {{ product.akiProductName}}
-            </li>
-            }
-            @if (product && product.attributeSetName) {
-            <li class="product-item" (click)="onProductRightClick(product)"
-                [ngClass]="{'bg-bg-light': selectedProduct == product?.akiCategoryID}">
-                {{ product.attributeSetName}}
-            </li>
-            }
-            }
-            }
-        </ul>
-        } @else {
-        <div class="empty-message h-48">
-            {{ displayText }}
-        </div>
-        }
-    </nz-spin>
+    }
+  </nz-spin>
 </div>
 
 <!-- Category-attributes -->
 <div>
-    <nz-modal [(nzVisible)]="categoryAttriIsVisible" nzTitle="Attribute set form" [nzFooter]="null" nzClosable="true"
-        class="content-center" nzWidth="1100px" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
-        <ng-container *nzModalContent>
-            <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
-        </ng-container>
-    </nz-modal>
+  <nz-modal
+    [(nzVisible)]="categoryAttriIsVisible"
+    nzTitle="Attribute set form"
+    [nzFooter]="null"
+    nzClosable="true"
+    class="content-center"
+    nzWidth="1100px"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()"
+  >
+    <ng-container *nzModalContent>
+      <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
+    </ng-container>
+  </nz-modal>
 </div>

@@ -4,10 +4,14 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { DataService } from '../../../shared/services/data.service';
 import { SKuList, SkuListResponse } from '../../../shared/models/skusModel';
 import { CommonModule } from '@angular/common';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { FormsModule } from '@angular/forms';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 @Component({
   selector: 'cousins-sku-display',
-  imports: [NzSpinModule, CommonModule],
+  imports: [NzSpinModule, CommonModule, NzFormModule, NzIconModule, FormsModule, NzInputModule],
   templateUrl: './sku-display.component.html',
   styleUrl: './sku-display.component.css'
 })
@@ -18,6 +22,8 @@ export class SkuDisplayComponent {
   displayText: string = 'Click on a product to view the SKU';
   loading: boolean = false;
   selectedSku!: number
+  searchValue: string = '';
+  filteredData: SKuList[] = [];
 
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
@@ -41,7 +47,8 @@ export class SkuDisplayComponent {
         if (data.isSuccess) {
             if (data.value && data.value.length > 0) {
               this.skus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
-              if (this.skus && this.skus.length > 0) {
+              this.filteredData = [...this.skus];
+              if (this.filteredData && this.filteredData.length > 0) {
                 this.displayText = ''; 
               } else {
                 this.displayText = 'No SKU Found';
@@ -67,6 +74,29 @@ export class SkuDisplayComponent {
     if (!data) return;
     this.selectedSku = data.akiSKUID;
     sessionStorage.setItem('itemNumber', data.akiitemid);
+  }
+
+  onSearch() {
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.filteredData = [...this.skus];
+      return;
+    }
+  
+    this.filteredData = this.skus.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.skuName).includes(searchText)
+    }); 
+    if (this.filteredData.length === 0) {
+      this.displayText = 'No SKU Found';
+    }
+  }
+  
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.filteredData = [...this.skus];
   }
 
 }
