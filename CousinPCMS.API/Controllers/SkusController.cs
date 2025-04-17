@@ -99,6 +99,77 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+
+        /// <summary>
+        /// Retrieves linked attribute details for the specified SKU item.
+        /// </summary>
+        /// <param name="akiItemNo">The SKU item number.</param>
+        /// <returns>Returns a list of linked attribute details if available; otherwise, an empty list.</returns>
+        [HttpGet("GetSkuLinkedAttributes")]
+        [ProducesResponseType(typeof(APIResult<List<SkusRelationTypeModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSkuLinkedAttributes(string akiItemNo)
+        {
+            log.Info($"Request to {nameof(GetSkuLinkedAttributes)} received for ItemNo: {akiItemNo}");
+
+            // Refresh token if expired
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            // Call service
+            var responseValue = _skusService.GetSkuLinkedAttributes(akiItemNo);
+
+            // Log based on result
+            if (responseValue.IsError)
+            {
+                log.Error($"Failed to retrieve data in {nameof(GetSkuLinkedAttributes)} for ItemNo: {akiItemNo}");
+            }
+            else
+            {
+                log.Info($"Successfully retrieved data in {nameof(GetSkuLinkedAttributes)} for ItemNo: {akiItemNo}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Retrieves SKU attribute details based on the specified category ID.
+        /// </summary>
+        /// <param name="categoryId">The category ID for which attributes are to be fetched.</param>
+        /// <returns>Returns a list of SKU attributes if available; otherwise, an empty list.</returns>
+        [HttpGet("GetSkuAttributesBycategoryId")]
+        [ProducesResponseType(typeof(APIResult<List<SkusRelationTypeModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetSkuAttributesBycategoryId(string categoryId)
+        {
+            log.Info($"Request to {nameof(GetSkuAttributesBycategoryId)} received for CategoryId: {categoryId}");
+
+            // Refresh token if expired
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            // Call service
+            var responseValue = _skusService.GetSkuAttributesBycategoryId(categoryId);
+
+            // Log based on result
+            if (responseValue.IsError)
+            {
+                log.Error($"Failed to retrieve data in {nameof(GetSkuAttributesBycategoryId)} for CategoryId: {categoryId}");
+            }
+            else
+            {
+                log.Info($"Successfully retrieved data in {nameof(GetSkuAttributesBycategoryId)} for CategoryId: {categoryId}");
+            }
+
+            return Ok(responseValue);
+        }
+
         /// <summary>
         /// Gets all Skus layouts.
         /// </summary>       

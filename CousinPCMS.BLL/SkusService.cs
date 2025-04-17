@@ -56,6 +56,126 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<List<SkuAttributesModel>> GetSkuLinkedAttributes(string akiItemNo)
+        {
+            APIResult<List<SkuAttributesModel>> returnValue = new APIResult<List<SkuAttributesModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var allFilters = new List<Filters>();
+
+                allFilters.Add(new Filters { ParameterName = "akiItemNo", ParameterValue = akiItemNo, DataType = typeof(string), Compare = ComparisonType.Equals });
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}skulinkedattributes?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<SkuAttributesModel>>>(response);
+                    if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = true;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
+        public APIResult<List<AttributesModel>> GetSkuAttributesBycategoryId(string categoryId)
+        {
+            APIResult<List<AttributesModel>> returnValue = new APIResult<List<AttributesModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+                Value = new List<AttributesModel>()
+            };
+
+            try
+            {
+                var allFilters = new List<Filters>
+                {
+                    new Filters
+                    {
+                        ParameterName = "akiCategoryID",
+                        ParameterValue = categoryId,
+                        DataType = typeof(string),
+                        Compare = ComparisonType.Equals
+                    }
+                };
+
+                var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
+
+                var attributeSetResponse = ServiceClient.PerformAPICallWithToken(
+                    Method.Get,
+                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributesets?company={HardcodedValues.CompanyName}{filter}",
+                    ParameterType.GetOrPost,
+                    Oauth.Token
+                ).Content;
+
+                if (!string.IsNullOrEmpty(attributeSetResponse))
+                {
+                    var responseOfattributeSet = JsonConvert.DeserializeObject<ODataResponse<List<AttributeSetModel>>>(attributeSetResponse);
+                    if (responseOfattributeSet?.Value?.Any() == true)
+                    {
+                        foreach (var attributeSet in responseOfattributeSet.Value)
+                        {
+                            var attributeFilter = Helper.GenerateFilterExpressionForAnd(new List<Filters>
+                            {
+                                new Filters
+                                {
+                                    ParameterName = "attributeName",
+                                    ParameterValue = attributeSet.attributeName,
+                                    DataType = typeof(string),
+                                    Compare = ComparisonType.Equals
+                                }
+                            });
+
+                            var response = ServiceClient.PerformAPICallWithToken(
+                                Method.Get,
+                                $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributes?company={HardcodedValues.CompanyName}{attributeFilter}",
+                                ParameterType.GetOrPost,
+                                Oauth.Token
+                            ).Content;
+
+                            if (!string.IsNullOrEmpty(response))
+                            {
+                                var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AttributesModel>>>(response);
+                                if (responseOfOrderLine?.Value?.Any() == true)
+                                {
+                                    returnValue.Value.AddRange(responseOfOrderLine.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
         public APIResult<List<SkusRelationTypeModel>> GetSkusRelationType()
         {
             APIResult<List<SkusRelationTypeModel>> returnValue = new APIResult<List<SkusRelationTypeModel>>

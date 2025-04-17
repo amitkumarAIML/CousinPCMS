@@ -151,4 +151,14 @@ namespace CousinPCMS.Domain
         public string skuItemID { get; set; }
         public string imageURL { get; set; }
     }
+
+    public class SkuAttributesModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public string akiItemNo { get; set; }
+        public string akiAttributeName { get; set; }
+        public string akiAttributeValue { get; set; }
+        public bool akiLink { get; set; }
+    }
 }
