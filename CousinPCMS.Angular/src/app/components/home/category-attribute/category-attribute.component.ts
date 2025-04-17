@@ -59,7 +59,7 @@ export class CategoryAttributeComponent implements OnInit {
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['categoryData'] && this.categoryData) {
-      console.log('categoryData ', this.categoryData, changes)
+  
       if (this.categoryData && this.categoryData.origin) {
         const attributeSetName = `Attribute Set For - ${this.categoryData.origin.title}`;
         this.currentAttributeSetName = attributeSetName;
@@ -187,7 +187,6 @@ export class CategoryAttributeComponent implements OnInit {
       next: (response: any) => {
         if (response.isSuccess) {
           this.lstAllAttributeSets = response.value;
-          console.log('lstAllAttributeSets', this.lstAllAttributeSets);
           this.isAttributeSetloading = false;
           this.getAllAttributes();
         } else {
