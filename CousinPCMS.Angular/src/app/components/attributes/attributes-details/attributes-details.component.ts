@@ -257,7 +257,7 @@ export class AttributesDetailsComponent {
     const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
   
     if (!searchText) {
-      this.filteredData = [...this.filteredData];
+      this.filteredData = [...this.attributesValues];
       return;
     }
   
@@ -266,9 +266,6 @@ export class AttributesDetailsComponent {
       
       return  normalize(item.attributeName).includes(searchText)||
               normalize(item.attributeValue).includes(searchText)
-              // ||
-              // normalize(item.relatedSKUName).includes(searchText) ||
-              // normalize(item.itemManufactureRef).includes(searchText) ||
     }); 
   }
   

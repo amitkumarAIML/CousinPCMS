@@ -1,23 +1,35 @@
 <div class="sku-container">
-    <div class="sku-header">
-      SKU Name
-    </div>
-
-    <nz-spin [nzSpinning]="loading">
-      @if (skus && skus.length > 0) {
-        <ul class="sku-list divide-y divide-gray-200">
-          @for (sku of skus; track $index) {
-            <li class="sku-item" (click)="onSkuClick(sku)"  
-              [ngClass]="{ 'bg-bg-light': selectedSku === sku?.akiSKUID}">
-              {{sku.skuName}}
-            </li>
-          }
-        </ul>
-      } @else  { 
-        <div class="empty-message h-48">
-          {{ displayText }}
-        </div>
+  <div class="sku-header flex justify-between items-center">
+    SKU Name
+    <nz-form-item>
+      <nz-form-control>
+        <nz-input-group [nzSuffix]="inputClearTpl">
+          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox placeholder="Search" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-template #inputClearTpl>
+      @if (searchValue) {
+      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      }@else{
+      <nz-icon nzType="search" />
       }
-    </nz-spin>
-    
+    </ng-template>
   </div>
+
+  <nz-spin [nzSpinning]="loading">
+    @if (filteredData && filteredData.length > 0) {
+    <ul class="sku-list divide-y divide-gray-200">
+      @for (sku of filteredData; track $index) {
+      <li class="sku-item" (click)="onSkuClick(sku)" [ngClass]="{'bg-bg-light': selectedSku === sku?.akiSKUID}">
+        {{ sku.skuName }}
+      </li>
+      }
+    </ul>
+    } @else {
+    <div class="empty-message h-48">
+      {{ displayText }}
+    </div>
+    }
+  </nz-spin>
+</div>

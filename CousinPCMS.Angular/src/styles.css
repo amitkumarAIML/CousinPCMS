@@ -135,3 +135,9 @@ label {
   background: white;
   padding-left: 5px;
 }
+
+
+.ant-tree-switcher:last-child {
+  /* Your custom styles here */
+  background-color: red !important;
+}

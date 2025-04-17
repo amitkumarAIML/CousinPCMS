@@ -53,8 +53,8 @@ nz-tree {
   content: "";
   position: absolute;
   left: 11px; 
-  top: 0px; 
-  bottom: 0;
+  top: -11px; 
+  bottom: 11px;
   width: 1px;
   background-color: #d9d9d9;
 }
@@ -82,6 +82,15 @@ nz-tree {
   height: 10px !important;
 }
 
+
+:host ::ng-deep .ant-tree-node-content-wrapper{
+  background: var(--color-white) ;
+  z-index: 3;
+}
+:host ::ng-deep .ant-tree-switcher_close{
+  background: var(--color-white) !important ;
+  z-index: 3 !important;
+}
   /* Empty Message Styling */
   .empty-message {
     display: flex;

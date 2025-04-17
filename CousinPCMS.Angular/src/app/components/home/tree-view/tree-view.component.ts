@@ -13,10 +13,11 @@ import { DepartmentService } from '../../departments/department.service';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'cousins-tree-view',
-  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent,NzToolTipModule],
+  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent,NzToolTipModule,CommonModule],
   templateUrl: './tree-view.component.html',
   styleUrl: './tree-view.component.css',
 })
@@ -238,8 +239,8 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
       }
     });
     // Mark the last nodes recursively
-    this.markLastNodes(tree);
-
+    const nodeVAlue = this.markLastNodes(tree);
+    console.log('nodeVAlue', nodeVAlue)
     return tree;
   }
 
@@ -339,8 +340,25 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
 
   onRightClick(event: MouseEvent, node: any): void {
     if (node.level === 0) return;
-    this.categoryAttriisVisible = true;
-    this.categoryData = node;
+    this.loading = true;
+    this.homeService.getDistinctAttributeSetsByCategoryId(node.key).subscribe({
+      next: (response : any) => { 
+
+        if (response.value === null)  {
+          this.categoryAttriisVisible = true;
+          this.categoryData = node;
+        } else {
+          this.dataService.ShowNotification('warning','', `Attribute Set For ${node.origin.title} is all ready added`);
+        }
+        this.loading = false;
+      },
+      error: (error)  => {
+        console.error('Error in API calls', error);
+        this.loading = false;
+      }
+    })
+   
+ 
 
   }
   handleOk(): void {

@@ -8,10 +8,14 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { forkJoin } from 'rxjs';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { FormsModule } from '@angular/forms';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 @Component({
   selector: 'cousins-product-display',
-  imports: [CommonModule, NzSpinModule, NzToolTipModule, NzModalModule, CategoryAttributeComponent],
+  imports: [CommonModule, NzSpinModule, NzToolTipModule, NzModalModule, CategoryAttributeComponent,NzFormModule, NzIconModule, FormsModule, NzInputModule],
   templateUrl: './product-display.component.html',
   styleUrl: './product-display.component.css'
 })
@@ -28,6 +32,8 @@ export class ProductDisplayComponent {
   lstAllAttributeSets: any[] = [];
 
   allProductAtrributes: any[] = [];
+  searchValue: string = '';
+  filteredData: any[] = [];
 
   constructor(private homeService: HomeService, private dataService: DataService) { }
 
@@ -97,7 +103,7 @@ export class ProductDisplayComponent {
             ...(Array.isArray(this.products) ? this.products : []),
             ...(Array.isArray(this.lstAllAttributeSets) ? this.lstAllAttributeSets : [])
           ];
-
+          this.filteredData = [...this.allProductAtrributes];
         } else {
           this.dataService.ShowNotification('error', '', 'Failed to load attribute sets')
         }
@@ -108,6 +114,30 @@ export class ProductDisplayComponent {
         this.loading = false;
       }
     });
+  }
+
+  onSearch() {
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.filteredData = [...this.allProductAtrributes];
+      return;
+    }
+  
+    this.filteredData = this.allProductAtrributes.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.akiProductName).includes(searchText) || 
+              normalize(item.attributeSetName).includes(searchText)
+    }); 
+    if (this.filteredData.length === 0) {
+      this.displayText = 'No Data';
+    }
+  }
+  
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.filteredData = [...this.allProductAtrributes];
   }
 
 }
