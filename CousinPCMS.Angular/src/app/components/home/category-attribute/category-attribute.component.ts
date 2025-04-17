@@ -17,6 +17,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+
 @Component({
   selector: 'cousins-category-attribute',
   imports: [NzButtonModule, NzInputModule, NzFormModule, ReactiveFormsModule, FormsModule, CommonModule,
@@ -26,7 +28,8 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzIconModule,
     NzListModule,
     NzModalModule,
-    NzSelectModule
+    NzSelectModule,
+    NzPopconfirmModule
   ],
   templateUrl: './category-attribute.component.html',
   styleUrl: './category-attribute.component.css'
@@ -201,5 +204,8 @@ export class CategoryAttributeComponent implements OnInit {
         this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
       }
     })
+  }
+  cancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
   }
 }

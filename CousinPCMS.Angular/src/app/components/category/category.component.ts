@@ -23,6 +23,7 @@ import {CommodityCode} from '../../shared/models/commodityCodeModel';
 import {Country} from '../../shared/models/countryOriginModel';
 import {NzUploadChangeParam, NzUploadModule} from 'ng-zorro-antd/upload';
 import { ProductsService } from '../product/products.service';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-category',
@@ -44,6 +45,7 @@ import { ProductsService } from '../product/products.service';
     NzSwitchModule,
     NzSpinModule,
     NzUploadModule,
+    NzPopconfirmModule
   ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css',
@@ -548,5 +550,8 @@ export class CategoryComponent {
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
     this.getAllProducts();
+  }
+  cancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
   }
 }

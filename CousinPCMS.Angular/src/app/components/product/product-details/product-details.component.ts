@@ -25,6 +25,7 @@ import {NzSpinModule} from 'ng-zorro-antd/spin';
 import {CategoryService} from '../../category/category.service';
 import {Router} from '@angular/router';
 import { AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-product-details',
@@ -45,6 +46,7 @@ import { AdditionalProductModel, AssociatedProductRequestModelForProduct, Delete
     NzUploadModule,
     NzButtonModule,
     NzSpinModule,
+    NzPopconfirmModule
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
@@ -465,4 +467,7 @@ export class ProductDetailsComponent {
       this.pageSize = pageSize;
       this.getAllProducts();
     }
+  cancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
+  }
 }
