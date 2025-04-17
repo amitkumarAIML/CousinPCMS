@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
     <nz-form-item>
       <nz-form-label [nzNoColon]="true">Search</nz-form-label>
       <nz-form-control>
@@ -17,7 +17,7 @@
     </ng-template>
   </div>
 
-  <div class="mt-2">
+  <div class="">
     <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '660px'}">
       <thead>
         <tr>

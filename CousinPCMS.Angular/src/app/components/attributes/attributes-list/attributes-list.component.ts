@@ -39,6 +39,7 @@ export class AttributesListComponent {
           this.attributeList.forEach((data: any, index: number) => {
               data['id'] = ++index;
           });
+          this.filteredData = [...this.attributeList];
         } else {
           this.dataService.ShowNotification('error', '', 'Something went wrong');
         }
@@ -78,7 +79,7 @@ export class AttributesListComponent {
     const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
   
     if (!searchText) {
-      this.filteredData = [...this.filteredData];
+      this.filteredData = [...this.attributeList];
       return;
     }
   
@@ -88,15 +89,11 @@ export class AttributesListComponent {
       return  normalize(item.attributeName).includes(searchText)||
               normalize(item.attributeDescription).includes(searchText) || 
               normalize(item.searchType).includes(searchText)
-              // ||
-              // normalize(item.relatedSKUName).includes(searchText) ||
-              // normalize(item.itemManufactureRef).includes(searchText) ||
     }); 
   }
   
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.attributeList];
-   
   }
 }
