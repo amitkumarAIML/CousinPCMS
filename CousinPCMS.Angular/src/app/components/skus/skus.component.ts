@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {Component, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzTabsModule} from 'ng-zorro-antd/tabs';
@@ -35,6 +35,7 @@ export class SkusComponent {
 
   skuData!: SKuList;
   private skuSubscription!: Subscription;
+   @Output() eventComplete = new EventEmitter<string>();
   @ViewChild(SkuDetailsComponent) skusDetailsComp!: SkuDetailsComponent;
 
   constructor(private readonly router: Router, private homeService: HomeService, private dataService: DataService, private skuService: SkusService) {}
@@ -45,6 +46,7 @@ export class SkusComponent {
 
   cancle() {
     this.router.navigate(['/home']);
+    this.eventComplete.emit('cancle');
   }
 
   getSkuByItemNumber() {
@@ -84,6 +86,7 @@ export class SkusComponent {
           sessionStorage.removeItem('itemNumber');
           sessionStorage.removeItem('skuId');
           this.router.navigate(['/home']);
+          this.eventComplete.emit('delete');
         } else {
           this.dataService.ShowNotification('error', '', 'Skus Details Failed Deleted');
         }
@@ -120,6 +123,7 @@ export class SkusComponent {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Sku Details Updated Successfully');
           this.router.navigate(['/home']);
+          this.eventComplete.emit('save');
         } else {
           this.dataService.ShowNotification('error', '', 'Sku Details Failed To Updated');
         }

@@ -25,7 +25,7 @@ export class SkusService {
   }
 
   deleteSkus(itemId: number): Observable<any> {
-    return this.httpService.get<any>(`Skus/DeleteItem`, {itemId: itemId}).pipe(
+    return this.httpService.get<any>(`Skus/DeleteItem`, {itemno: itemId}).pipe(
       map((response) => response),
       catchError((error) => throwError(() => error))
     );

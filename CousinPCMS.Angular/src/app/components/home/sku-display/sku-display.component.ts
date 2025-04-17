@@ -8,10 +8,12 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormsModule } from '@angular/forms';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { SkusComponent } from '../../skus/skus.component';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'cousins-sku-display',
-  imports: [NzSpinModule, CommonModule, NzFormModule, NzIconModule, FormsModule, NzInputModule],
+  imports: [NzSpinModule, CommonModule, NzFormModule, NzIconModule, FormsModule, NzInputModule, SkusComponent, NzModalModule],
   templateUrl: './sku-display.component.html',
   styleUrl: './sku-display.component.css'
 })
@@ -24,6 +26,7 @@ export class SkuDisplayComponent {
   selectedSku!: number
   searchValue: string = '';
   filteredData: SKuList[] = [];
+  productSkusVisible: boolean = false;
 
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
@@ -74,6 +77,7 @@ export class SkuDisplayComponent {
     if (!data) return;
     this.selectedSku = data.akiSKUID;
     sessionStorage.setItem('itemNumber', data.akiitemid);
+    this.productSkusVisible = true;
   }
 
   onSearch() {
@@ -97,6 +101,13 @@ export class SkuDisplayComponent {
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.skus];
+  }
+
+  handleCancel(val: string) {
+    this.productSkusVisible = false;
+    if(val !== 'cancle') {
+      this.loadSkuForProduct();
+    }
   }
 
 }
