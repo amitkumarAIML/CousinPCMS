@@ -238,9 +238,6 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
         tree.push(node);
       }
     });
-    // Mark the last nodes recursively
-    const nodeVAlue = this.markLastNodes(tree);
-    console.log('nodeVAlue', nodeVAlue)
     return tree;
   }
 
@@ -323,21 +320,6 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  markLastNodes(nodes: TreeNode[]): TreeNode[] {
-    nodes.forEach((node, index1, arr1) => {
-      if (node.children && node.children.length) {
-        node.children.forEach((child, index, arr) => {
-          child.isLast = index === arr.length - 1;
-        });
-        // Recursively mark last nodes for the children
-        this.markLastNodes(node.children || []);
-      } else {
-        node.isLast = index1 === arr1.length - 1;
-      }
-    });
-    return nodes;
-  }
-
   onRightClick(event: MouseEvent, node: any): void {
     if (node.level === 0) return;
     this.loading = true;
@@ -348,7 +330,7 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
           this.categoryAttriisVisible = true;
           this.categoryData = node;
         } else {
-          this.dataService.ShowNotification('warning','', `Attribute Set For ${node.origin.title} is all ready added`);
+          this.dataService.ShowNotification('warning','', `Attribute Set For ${node.origin.title} is already added.`);
         }
         this.loading = false;
       },

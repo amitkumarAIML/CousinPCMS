@@ -78,7 +78,7 @@ export class ProductDisplayComponent {
 
   getDataInParallel(): void {
     this.loading = true;
-
+    if (!this.selectedCategory) return;
     forkJoin({
       productList: this.homeService.getProductListByCategoryId(this.selectedCategory),
       attributeList: this.homeService.getDistinctAttributeSetsByCategoryId(this.selectedCategory)
