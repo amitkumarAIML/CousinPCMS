@@ -50,8 +50,8 @@
 
 <!-- Category-Product -->
 <div>
-  <nz-modal [(nzVisible)]="categoryProductVisible" [nzFooter]="null" nzClosable="false" class="no-padding-modal" nzWidth="1000px">
-    <ng-container *nzModalContent>
+  <nz-modal [(nzVisible)]="categoryProductVisible" [nzFooter]="null" nzClosable="false"  [nzClassName]="'no-padding-modal'" nzWidth="1000px">
+    <ng-container *nzModalContent >
       <cousins-product (eventComplete)="handleOk($event)"></cousins-product>
     </ng-container>
   </nz-modal>

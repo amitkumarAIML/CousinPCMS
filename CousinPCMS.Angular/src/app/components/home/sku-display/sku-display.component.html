@@ -36,7 +36,7 @@
 
 <!-- Category-Product -->
 <div>
-  <nz-modal [(nzVisible)]="productSkusVisible" [nzFooter]="null" nzClosable="false" class="no-padding-modal" nzWidth="1000px">
+  <nz-modal [(nzVisible)]="productSkusVisible" [nzFooter]="null" nzClosable="false" [nzClassName]="'no-padding-modal'" nzWidth="1000px">
     <ng-container *nzModalContent>
       <cousins-skus (eventComplete)="handleCancel($event)"></cousins-skus>
     </ng-container>

@@ -141,3 +141,6 @@ label {
   /* Your custom styles here */
   background-color: red !important;
 }
+.no-padding-modal .ant-modal-body {
+  padding: 0px !important;
+}

@@ -46,10 +46,6 @@
     text-align: center;
   }
 
-  ::ng-deep .no-padding-modal .ant-modal-body {
-    padding: 0 !important;
-  }
-  
   /* Responsive Design */
 
     /* For larger screens */
