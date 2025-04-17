@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { catchError, map, Observable, of, Subject, throwError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { DepartmentResponse } from '../../shared/models/departmentModel';
 import { ProductResponse } from '../../shared/models/productModel';
@@ -11,7 +11,9 @@ import { ApiResponse } from '../../shared/models/generalModel';
   providedIn: 'root',
 })
 export class HomeService {
-
+  private reloadAttributesSource = new Subject<void>();
+  reloadAttributes$ = this.reloadAttributesSource.asObservable();
+  
   constructor(private httpService: HttpService) {}
 
   getDepartments(): Observable<DepartmentResponse> {
@@ -84,5 +86,8 @@ export class HomeService {
       catchError(error => throwError(() => error))
     );
   }
- 
+
+  triggerReloadAttributes() {
+    this.reloadAttributesSource.next();
+  }
 }

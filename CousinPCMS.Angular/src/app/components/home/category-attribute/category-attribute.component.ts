@@ -120,9 +120,9 @@ export class CategoryAttributeComponent implements OnInit {
       return;
     }
     this.addAttributeSetsForm.patchValue({
-      attributeSetName: existingName,
+      attributeSetName: existingName.trim(),
       categoryID: this.addAttributeSetsForm.get('categoryID')?.value,
-      attributeName: data.attributeName,
+      attributeName: data.attributeName.trim(),
       attributeRequired: true,
       notImportant: true,
       listPosition: nextListPosition,
@@ -136,6 +136,7 @@ export class CategoryAttributeComponent implements OnInit {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'AttributeSets deleted successsully');
           this.getAttributeSetsByAttributeSetName(this.currentAttributeSetName);
+          this.homeService.triggerReloadAttributes(); 
         } else {
           this.dataService.ShowNotification('error', '', 'AttributeSets not deleted successsully');
         }
@@ -155,7 +156,9 @@ export class CategoryAttributeComponent implements OnInit {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Attribute added successfully');
             this.categoryAttriIsVisible = false
-            this.getAttributeSetsByAttributeSetName(this.currentAttributeSetName);
+            const newAttributeSetName=this.addAttributeSetsForm.get('attributeSetName')?.value
+            this.getAttributeSetsByAttributeSetName(newAttributeSetName);
+            this.homeService.triggerReloadAttributes(); 
           } else {
             this.dataService.ShowNotification('error', '', 'Attribute not added successfully');
           }

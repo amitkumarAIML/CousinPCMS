@@ -43,6 +43,9 @@ export class ProductDisplayComponent {
         this.products = [];
         this.displayText = 'Click a category to view the product';
       }
+      this.homeService.reloadAttributes$.subscribe(() => {
+        this.getDataInParallel();
+      });
     }
   }
 
