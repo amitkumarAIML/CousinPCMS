@@ -16,10 +16,11 @@ import {ItemModel} from '../../../shared/models/itemModel';
 import {AttributeRequestModel, AttributeValueModel, AttributeValuesRequestModel} from '../../../shared/models/attributesModel';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import { AttributeModel } from '../../../shared/models/attributeModel';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-attributes-details',
-  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule],
+  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule,NzPopconfirmModule],
   templateUrl: './attributes-details.component.html',
   styleUrl: './attributes-details.component.css',
 })
@@ -311,6 +312,8 @@ export class AttributesDetailsComponent {
       },
     });
   }
-
+  btnCancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
+  }
   
 }

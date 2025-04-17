@@ -10,6 +10,8 @@ import { SkusListComponent } from './skus-list/skus-list.component';
 import { ProductsService } from './products.service';
 import { ProductRequest, ProductResponse, ProductUpdateResponse } from '../../shared/models/productModel';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'cousins-product',
@@ -17,7 +19,9 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
              NzButtonModule,
              ProductDetailsComponent,
              SkusListComponent,
-             NzSpinModule
+             NzSpinModule,
+             NzPopconfirmModule,
+             NzIconModule
             ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css'
@@ -154,5 +158,7 @@ export class ProductComponent {
       this.productSubscription.unsubscribe();
     }
   }
-
+  btnCancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
+  }
 }

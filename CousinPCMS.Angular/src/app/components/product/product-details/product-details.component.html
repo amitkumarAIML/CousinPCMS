@@ -236,12 +236,18 @@
                                                             <a (click)="startEdit(data)">
                                                                 <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                                                             </a>
-                                                            <a (click)="deleteAssociatedProduct(data)">
+                                                            <a nz-popconfirm
+                                                               [nzPopconfirmTitle]="'Are you sure you want to delete this product?'"
+                                                               (nzOnConfirm)="deleteAssociatedProduct(data)"
+                                                               (nzOnCancel)="cancel()"
+                                                               [nzIcon]="iconTpl">
                                                                 <nz-icon nzType="delete" class="text-danger w-5 h-4"  nzTheme="outline" />
                                                             </a>
                                                         }
                                                     </span>
-                                                
+                                                    <ng-template #iconTpl>
+                                                        <nz-icon nzType="question-circle-o" class="text-danger me-2"  />
+                                                    </ng-template>
                                                 </td>
                                             </tr>
                                             }

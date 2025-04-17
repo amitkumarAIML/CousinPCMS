@@ -13,6 +13,8 @@ import {AttributeSkuComponent} from './attribute-sku/attribute-sku.component';
 import {SKuList, SkuRequestModel} from '../../shared/models/skusModel';
 import { ApiResponse } from '../../shared/models/generalModel';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-skus',
@@ -22,7 +24,9 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     SkuDetailsComponent,
     RelatedSkuComponent,
     AttributeSkuComponent,
-    NzSpinModule
+    NzSpinModule,
+    NzIconModule,
+    NzPopconfirmModule
   ],
   templateUrl: './skus.component.html',
   styleUrl: './skus.component.css',
@@ -144,5 +148,8 @@ export class SkusComponent {
     if (this.skuSubscription) {
       this.skuSubscription.unsubscribe();
     }
+  }
+  btnCancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
   }
 }

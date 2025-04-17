@@ -11,10 +11,11 @@ import { ApiResponse } from '../../../shared/models/generalModel';
 import { AttributeModel } from '../../../shared/models/attributesModel';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-attributes-list',
-  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule, NzInputModule, NzFormModule],
+  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule, NzInputModule, NzFormModule, NzPopconfirmModule],
   templateUrl: './attributes-list.component.html',
   styleUrl: './attributes-list.component.css',
 })
@@ -95,5 +96,8 @@ export class AttributesListComponent {
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.attributeList];
+  }
+  cancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
   }
 }

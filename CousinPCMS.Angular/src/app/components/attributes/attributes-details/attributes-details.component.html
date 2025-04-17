@@ -108,8 +108,16 @@
                   <td>---</td>
                   <td>---</td>
                   <td>
-                    <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer" (click)="deleteAttributeValues(data)" />
+                    <nz-icon nzType="delete" nzTheme="outline" class="w-5 h-4 text-danger cursor-pointer"
+                    nz-popconfirm
+                    [nzPopconfirmTitle]="'Are you sure you want to delete this attribute name?'"
+                    (nzOnConfirm)="deleteAttributeValues(data)"
+                    (nzOnCancel)="cancel()"
+                    [nzIcon]="iconTpl" />
                   </td>
+                  <ng-template #iconTpl>
+                    <nz-icon nzType="question-circle-o" class="text-danger me-2"  />
+                </ng-template>
                 </tr>
 
                 }

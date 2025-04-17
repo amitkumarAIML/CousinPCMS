@@ -10,6 +10,8 @@ import { DataService } from '../../shared/services/data.service';
 import { Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'cousins-departments',
@@ -17,7 +19,9 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzTabsModule,  // ✅ Import Tabs
     NzButtonModule,
     DepartmentInfoComponent,
-    NzSpinModule
+    NzSpinModule,
+    NzPopconfirmModule,
+    NzIconModule
   ],
   templateUrl: './departments.component.html',
   styleUrl: './departments.component.css'
@@ -145,5 +149,7 @@ export class DepartmentsComponent  implements OnInit {
       this.departmentSubscription.unsubscribe();
     }
   }
-    
+  btncancel(): void {
+    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
+  }  
 }
