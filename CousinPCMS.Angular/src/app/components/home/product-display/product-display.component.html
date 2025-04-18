@@ -41,18 +41,18 @@
 
 <!-- Category-attributes -->
 <div>
-  <nz-modal
-    [(nzVisible)]="categoryAttriIsVisible"
-    nzTitle="Attribute set form"
-    [nzFooter]="null"
-    nzClosable="true"
-    class="content-center"
-    nzWidth="1100px"
-    (nzOnCancel)="handleCancel()"
-    (nzOnOk)="handleOk()"
-  >
+  <nz-modal [(nzVisible)]="categoryAttriIsVisible" nzTitle="Attribute set form" [nzFooter]="null" nzClosable="true" class="content-center" nzWidth="1100px" (nzOnCancel)="handleCancel()">
     <ng-container *nzModalContent>
       <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
+    </ng-container>
+  </nz-modal>
+</div>
+
+<!-- Category-Product -->
+<div>
+  <nz-modal [(nzVisible)]="categoryProductVisible" [nzFooter]="null" nzClosable="false"  [nzClassName]="'no-padding-modal'" nzWidth="1000px">
+    <ng-container *nzModalContent >
+      <cousins-product (eventComplete)="handleOk($event)"></cousins-product>
     </ng-container>
   </nz-modal>
 </div>

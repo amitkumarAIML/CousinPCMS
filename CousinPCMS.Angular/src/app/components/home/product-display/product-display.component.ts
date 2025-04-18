@@ -6,16 +6,17 @@ import { Product, ProductResponse } from '../../../shared/models/productModel';
 import { DataService } from '../../../shared/services/data.service';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { forkJoin } from 'rxjs';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormsModule } from '@angular/forms';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { ProductComponent } from "../../product/product.component";
 
 @Component({
   selector: 'cousins-product-display',
-  imports: [CommonModule, NzSpinModule, NzToolTipModule, NzModalModule, CategoryAttributeComponent,NzFormModule, NzIconModule, FormsModule, NzInputModule],
+  imports: [CommonModule, NzSpinModule, NzToolTipModule, NzModalModule, CategoryAttributeComponent, NzFormModule, NzIconModule, FormsModule, NzInputModule, ProductComponent],
   templateUrl: './product-display.component.html',
   styleUrl: './product-display.component.css'
 })
@@ -28,6 +29,7 @@ export class ProductDisplayComponent {
   displayText: string = 'Click a category to view the product';
   loading: boolean = false;
   categoryAttriIsVisible: boolean = false;
+  categoryProductVisible: boolean = false;
   categoryData: any = {};
   lstAllAttributeSets: any[] = [];
 
@@ -61,6 +63,7 @@ export class ProductDisplayComponent {
     sessionStorage.setItem('productId', data.akiProductID.toString());
     sessionStorage.removeItem('itemNumber');
     this.productSelected.emit(data.akiProductID);
+    this.categoryProductVisible = true;
   }
 
   onProductRightClick(product: any): void {
@@ -69,15 +72,22 @@ export class ProductDisplayComponent {
     this.categoryAttriIsVisible = true; // Opens the modal
   }
 
-  handleOk(): void {
+  handleOk(val: string) {
     this.categoryAttriIsVisible = false;
+    this.categoryProductVisible = false;
+    if(val !== 'cancle') {
+      this.getDataInParallel();
+    }
   }
-  handleCancel(): void {
+
+  handleCancel() {
     this.categoryAttriIsVisible = false;
   }
 
   getDataInParallel(): void {
     this.loading = true;
+    this.products = [];
+    this.lstAllAttributeSets = [];
     if (!this.selectedCategory) return;
     forkJoin({
       productList: this.homeService.getProductListByCategoryId(this.selectedCategory),
@@ -139,5 +149,7 @@ export class ProductDisplayComponent {
     this.searchValue = '';
     this.filteredData = [...this.allProductAtrributes];
   }
+
+  
 
 }

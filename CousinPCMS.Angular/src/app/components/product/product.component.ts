@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DataService } from '../../shared/services/data.service';
@@ -35,6 +35,8 @@ export class ProductComponent {
   productData!: any;
   
  private productSubscription!: Subscription;
+ @Output() eventComplete = new EventEmitter<string>();
+
  @ViewChild(ProductDetailsComponent) productDetailsComp!: ProductDetailsComponent;
 
   constructor(private dataService : DataService, 
@@ -74,6 +76,7 @@ export class ProductComponent {
 
   cancle() {
     this.router.navigate(['/home']);
+    this.eventComplete.emit('cancle');
   }
 
   delete() {
@@ -87,6 +90,7 @@ export class ProductComponent {
           sessionStorage.removeItem('itemNumber');
           sessionStorage.removeItem('skuId');
           this.router.navigate(['/home']);
+          this.eventComplete.emit('delete');
         } else {
           this.dataService.ShowNotification('error', '', 'Product Details Failed Deleted');
         }
@@ -132,6 +136,7 @@ export class ProductComponent {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Product Details Updated Successfully');
           this.router.navigate(['/home']);
+          this.eventComplete.emit('save');
         } else {
           this.dataService.ShowNotification('error', '', "Product Details Failed Updated");
         }
