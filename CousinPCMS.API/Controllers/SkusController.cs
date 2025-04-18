@@ -170,6 +170,32 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+        [HttpPost("GetAttributeValuesByListofNames")]
+        [ProducesResponseType(typeof(APIResult<List<AttributesModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAttributeValuesByListofNames([FromBody] AttributeFilterRequest request)
+        {
+            log.Info($"Request to {nameof(GetAttributeValuesByListofNames)} received.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var result = await Task.FromResult(_skusService.GetAttributeValuesByListofNames(request.attributeNames));
+
+            if (result.IsError)
+            {
+                log.Error($"Response from {nameof(GetAttributeValuesByListofNames)} failed.");
+                return StatusCode(500, result);
+            }
+
+            log.Info($"Response from {nameof(GetAttributeValuesByListofNames)} succeeded.");
+            return Ok(result);
+        }
+
+
         /// <summary>
         /// Gets all Skus layouts.
         /// </summary>       
@@ -511,5 +537,38 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+        /// <summary>
+        /// Adds or updates SKU linked attribute details.
+        /// </summary>
+        /// <param name="objModel">The request model containing SKU and attribute information to be added or updated.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{T}"/> with a success or error message depending on the outcome.
+        /// </returns>
+        [HttpPost("AddUpdateSKULinkedAttribute")]
+        [ProducesResponseType(typeof(APIResult<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> AddUpdateSKULinkedAttribute([FromBody] AddUpdateSKULinkedAttributeRequestModel objModel)
+        {
+            log.Info($"Request received for {nameof(AddUpdateSKULinkedAttribute)} method.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.AddUpdateSKULinkedAttribute(objModel);
+
+            if (responseValue.IsError)
+            {
+                log.Error($"Response from {nameof(AddUpdateSKULinkedAttribute)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+            else
+            {
+                log.Info($"Response from {nameof(AddUpdateSKULinkedAttribute)} succeeded.");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }

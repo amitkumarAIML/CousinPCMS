@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
   // baseUrl: 'https://localhost:7298/', //URL OF API
-  baseUrl: 'http://192.168.1.37/CousinAPI/api',
+ // baseUrl: 'http://192.168.1.37/CousinAPI/api',
   redirectUrl: 'http://localhost:4200/',
-  // baseUrl: 'http://localhost:5189/', //URL OF API
+  baseUrl: 'http://localhost:5201/api', //URL OF API
   // redirectUrl: 'http://localhost:4200/',
   imgPath: './assets/img/',
   version: '1.0.0',

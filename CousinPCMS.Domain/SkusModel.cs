@@ -5,6 +5,11 @@ namespace CousinPCMS.Domain
     public class SkusModel
     {
     }
+
+    public class AttributeFilterRequest
+    {
+        public List<string> attributeNames { get; set; }
+    }
     public class RelatedSkusModel
     {
         [JsonProperty("@odata.etag")]
@@ -161,4 +166,13 @@ namespace CousinPCMS.Domain
         public string akiAttributeValue { get; set; }
         public bool akiLink { get; set; }
     }
+
+    public class AddUpdateSKULinkedAttributeRequestModel
+    {
+        public string akiItemNo { get; set; }
+        public string akiAttributeName { get; set; }
+        public string akiAttributeValue { get; set; }
+        public bool akiLink { get; set; }
+    }
+
 }

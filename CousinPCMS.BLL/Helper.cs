@@ -109,4 +109,50 @@ public static class Helper
         return stringBuilder.ToString();
     }
 
+    /// <summary>
+    /// Currently supports generating expression for 'or' query and only 2 types, string and int
+    /// </summary>
+    /// <param name="filters"></param>
+    /// <returns>Expression</returns>
+    public static string GenerateFilterExpressionForOr(List<Filters> filters)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (filters != null && filters.Any())
+        {
+            stringBuilder.Append("&$filter=");
+
+            for (int i = 0; i < filters.Count; i++)
+            {
+                var filter = filters[i];
+
+                if (i > 0)
+                    stringBuilder.Append(" or ");
+
+                if (filter.DataType == typeof(string))
+                {
+                    if (filter.Compare == ComparisonType.Equals)
+                    {
+                        stringBuilder.Append($"{filter.ParameterName} eq '{filter.ParameterValue}'");
+                    }
+                    else if (filter.Compare == ComparisonType.Contains)
+                    {
+                        stringBuilder.Append($"contains({filter.ParameterName},'{filter.ParameterValue}')");
+                    }
+                    else
+                    {
+                        stringBuilder.Append($"{filter.ParameterName} eq '{filter.ParameterValue}'");
+                    }
+                }
+                else if (filter.DataType == typeof(int))
+                {
+                    stringBuilder.Append($"{filter.ParameterName} eq {filter.ParameterValue}");
+                }
+            }
+        }
+
+        return stringBuilder.ToString();
+    }
+
+
 }

@@ -22,6 +22,7 @@ namespace CousinPCMS.Domain
         public string newAlternateValue { get; set; }
         public string alternateValues { get; set; }
         public bool attributevalueIsActive { get; set; }
+        public bool attributeValueLinkedToSKU { get; set; }
     }
 
     public class AttributeSetModel

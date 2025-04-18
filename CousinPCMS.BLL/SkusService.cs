@@ -176,6 +176,55 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+        public APIResult<List<AttributeValuesModel>> GetAttributeValuesByListofNames(List<string> attributeNames)
+        {
+            APIResult<List<AttributeValuesModel>> returnValue = new APIResult<List<AttributeValuesModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+
+            try
+            {
+                var allOrFilters = new List<Filters>();
+
+                foreach (var name in attributeNames)
+                {
+                    allOrFilters.Add(new Filters
+                    {
+                        ParameterName = "attributeName",
+                        ParameterValue = name,
+                        DataType = typeof(string),
+                        Compare = ComparisonType.Equals
+                    });
+                }
+
+                // Assuming you have a method like this for OR conditions
+                var filter = Helper.GenerateFilterExpressionForOr(allOrFilters);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get,
+                    $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}attributevalues?company={HardcodedValues.CompanyName}{filter}",
+                    ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AttributeValuesModel>>>(response);
+                    if (responseOfOrderLine?.Value != null && responseOfOrderLine.Value.Any())
+                    {
+                        returnValue.Value = responseOfOrderLine.Value;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
         public APIResult<List<SkusRelationTypeModel>> GetSkusRelationType()
         {
             APIResult<List<SkusRelationTypeModel>> returnValue = new APIResult<List<SkusRelationTypeModel>>
@@ -644,5 +693,42 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
+
+        public APIResult<string> AddUpdateSKULinkedAttribute(AddUpdateSKULinkedAttributeRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_AddUpdateSKULinkedAttribute?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
     }
 }
