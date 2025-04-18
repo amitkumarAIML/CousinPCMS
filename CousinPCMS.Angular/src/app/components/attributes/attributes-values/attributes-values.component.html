@@ -1,0 +1,40 @@
+<form nz-form [formGroup]="attributesValuesForm">
+  <div class="grid grid-cols-1 px-3 py-1 gap-3">
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Attribute Name</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="attributeName" class="w-full" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Attribute Value Group Id</nz-form-label>
+      <nz-form-control>
+        <input nz-input class="w-full" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Attribute Value</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="attributeValue" class="w-full" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">New Alternate Value</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="newAlternateValue" class="w-full" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Alternate Value</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input rows="3" formControlName="alternateValues" class="w-full p-2"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <div class="flex justify-end gap-3 mt-5">
+      <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+      <button nz-button class="text-white" nzType="primary" [nzLoading]="btnLoading" (click)="addAttributesValues()">Save</button>
+    </div>
+  </div>
+</form>

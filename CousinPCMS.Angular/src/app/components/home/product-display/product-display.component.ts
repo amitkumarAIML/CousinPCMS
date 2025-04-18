@@ -75,7 +75,7 @@ export class ProductDisplayComponent {
   handleOk(val: string) {
     this.categoryAttriIsVisible = false;
     this.categoryProductVisible = false;
-    if(val !== 'cancle') {
+    if(val !== 'cancel') {
       this.getDataInParallel();
     }
   }

@@ -1,149 +1,137 @@
-    <form nz-form [formGroup]="departmentForm" class="rounded-lg">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
-          <div class="lg:col-span-6 md:col-span-6">
-            <div class="grid grid-cols-2 gap-1">
-              <nz-form-item>
-                <nz-form-label nzRequired [nzNoColon]="true">Department ID</nz-form-label>
-                <input nz-input formControlName="akiDepartmentID" class="w-full" [disabled]="true" />
-              </nz-form-item>
+<form nz-form [formGroup]="departmentForm" class="rounded-lg">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+    <div class="lg:col-span-6 md:col-span-6">
+      <div class="grid grid-cols-2 gap-1">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzNoColon]="true">Department ID</nz-form-label>
+          <input nz-input formControlName="akiDepartmentID" class="w-full" [disabled]="true" />
+        </nz-form-item>
 
-              <nz-form-item  class="col-span-2">
-                <nz-form-label nzRequired [nzNoColon]="true">Department Name</nz-form-label>
-                <nz-form-control [nzErrorTip]="'Please enter a department name '">
-                  <div class="input-wrapper">
-                    <input nz-input formControlName="akiDepartmentName" class="w-full pr-10" maxlength="50"/>
-                    <span class="char-count">
-                      {{ 50 - departmentForm.get('akiDepartmentName')?.value?.length || 50 }}
-                    </span>
-                  </div>
-                </nz-form-control>
-              </nz-form-item>
-              
-              <nz-form-item>
-                <nz-form-label nzRequired [nzNoColon]="true">List Order</nz-form-label>
-                <nz-form-control [nzErrorTip]="'Please enter a list order number'">
-                  <input nz-input formControlName="akiDepartmentListOrder" class="w-full" type="number"/>
-                </nz-form-control>
-              </nz-form-item>
-        
-              <div class="col-span-2 nz-checkbox-wrapper">
-                <label  formControlName="akiDepartmentWebActive" nz-checkbox nzValue="false"> 
-                    Web Active
-                </label >
-                <label  formControlName="akiDeptPromptUserifblank" nz-checkbox nzValue="false">
-                  Prompt User If Price Group Is Blank
-                </label >
-              </div>
-        
-              <nz-form-item class="col-span-2">
-                <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
-                <div class="input-wrapper">
-                  <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-20"  maxlength="2000"></textarea>
-                  <span class="char-count">
-                    {{ 2000 - departmentForm.get('akiDepartmentDescText')?.value?.length || 2000 }}
-                  </span>
-                </div>
-              </nz-form-item>
-        
-              <nz-form-item class="col-span-2">
-                  <nz-form-label [nzNoColon]="true" >Image URL</nz-form-label>
-                  <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
-                    <div class="flex items-center space-x-2 relative">
-                      <input nz-input formControlName="akiDepartmentImageURL" class="w-full" maxlength="255"/>
-                      <nz-upload                     
-                      [nzHeaders]="{ authorization: 'authorization-text' }"
-                      (nzChange)="onFileSelected($event)"
-                      [nzShowUploadList]="false"
-                      nzAccept=".png,.jpeg,.jpg"
-                  >
-                      <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">                                            
-                           Upload
-                      </button>
-                  </nz-upload>
-                      <span class="char-count">
-                        {{ 255 - departmentForm.get('akiDepartmentImageURL')?.value?.length || 255 }}
-                      </span> 
-                    </div>
-                  </nz-form-control> 
-              </nz-form-item>
-        
-              <nz-form-item >
-                  <nz-form-label [nzNoColon]="true">Image Height</nz-form-label>
-                  <nz-form-control [nzSm]="18" [nzXs]="24">
-                    <input nz-input formControlName="akiDepartmentImageHeight" type="number"/>
-                  </nz-form-control>
-              </nz-form-item>
-        
-              <nz-form-item >
-                <nz-form-label [nzNoColon]="true">Image Width</nz-form-label>
-                <nz-form-control [nzSm]="18" [nzXs]="24">
-                  <input nz-input formControlName="akiDepartmentImageWidth" type="number"/>
-                </nz-form-control>
-              </nz-form-item>
-        
-              <nz-form-item class="col-span-2">
-                <nz-form-label [nzNoColon]="true">Key Words</nz-form-label>
-                <div class="input-wrapper">
-                  <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" maxlength="500"/>
-                  <span class="char-count">
-                    {{ 500 - departmentForm.get('akiDepartmentKeyWords')?.value?.length || 500 }}
-                  </span>
-                </div>
-              </nz-form-item>
-        
-              <nz-form-item>
-                <nz-form-label nzFor="commodityCode"  [nzNoColon]="true">Commodity Code</nz-form-label>
-                  <nz-form-control >
-                      <nz-select formControlName="akiDepartmentCommodityCode" nzAllowClear class="w-full" nzShowSearch >
-                        @for (commodity of commodityCode; track $index) {
-                            <nz-option  [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
-                          }
-                        </nz-select>
-                  </nz-form-control>
-              </nz-form-item>
+        <nz-form-item class="col-span-2">
+          <nz-form-label nzRequired [nzNoColon]="true">Department Name</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Please enter a department name '">
+            <div class="input-wrapper">
+              <input nz-input formControlName="akiDepartmentName" class="w-full pr-10" [attr.maxlength]="charLimit.akiDepartmentName" />
+              <span class="char-count">
+                {{ charLimit.akiDepartmentName - departmentForm.get('akiDepartmentName')?.value?.length || charLimit.akiDepartmentName }}
+              </span>
             </div>
+          </nz-form-control>
+        </nz-form-item>
 
+        <nz-form-item>
+          <nz-form-label nzRequired [nzNoColon]="true">List Order</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Please enter a list order number'">
+            <input nz-input formControlName="akiDepartmentListOrder" class="w-full" type="number" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="col-span-2 nz-checkbox-wrapper">
+          <label formControlName="akiDepartmentWebActive" nz-checkbox nzValue="false"> Web Active </label>
+          <label formControlName="akiDeptPromptUserifblank" nz-checkbox nzValue="false"> Prompt User If Price Group Is Blank </label>
+        </div>
+
+        <nz-form-item class="col-span-2">
+          <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
+          <div class="input-wrapper">
+            <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-20" [attr.maxlength]="charLimit.akiDepartmentDescText"></textarea>
+            <span class="char-count">
+              {{ charLimit.akiDepartmentDescText - departmentForm.get('akiDepartmentDescText')?.value?.length || charLimit.akiDepartmentDescText }}
+            </span>
           </div>
-          <div class="lg:col-span-5 md:col-span-6 lg:pl-20">
-              <div class="grid grid-cols-2 gap-1">
-                <!-- Catalogue Active Checkbox -->
-                <div class="col-span-2 flex items-center space-x-2">
-                  <nz-form-label [nzNoColon]="true">Catalogue Active</nz-form-label>
-                  <label nz-checkbox readOnly formControlName="akiDepartmentIsActive" ></label>
-                </div>
+        </nz-form-item>
 
-                <!-- Layout Template Dropdown -->
-                <nz-form-item class="col-span-2">
-                <nz-form-label [nzNoColon]="true">Layout Template</nz-form-label>
-                <nz-select formControlName="akiLayoutTemplate" nzAllowClear nzShowSearch class="w-full bg-gray-100" >
-                  @for (option of layoutOptions; track option.templateCode) {
-                      <nz-option  [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
-                  }
-                </nz-select>
-                </nz-form-item>
+        <nz-form-item class="col-span-2">
+          <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
+            <div class="flex items-center space-x-2 relative">
+              <input nz-input formControlName="akiDepartmentImageURL" class="w-full" [attr.maxlength]="charLimit.akiDepartmentImageURL" />
+              <nz-upload [nzHeaders]="{authorization: 'authorization-text'}" (nzChange)="onFileSelected($event)" [nzShowUploadList]="false" nzAccept=".png,.jpeg,.jpg">
+                <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
+              </nz-upload>
+              <span class="char-count">
+                {{ charLimit.akiDepartmentImageURL - departmentForm.get('akiDepartmentImageURL')?.value?.length || charLimit.akiDepartmentImageURL }}
+              </span>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
 
-                <!-- Colour Selection -->
-                <nz-form-item class="flex-grow">
-                  <nz-form-label [nzNoColon]="true">Colour</nz-form-label>
-                  <input type="color" nz-input formControlName="akiColor"  (input)="onColorChange($event, 'akiColor')"/>
-                </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Image Height</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <input nz-input formControlName="akiDepartmentImageHeight" type="number" />
+          </nz-form-control>
+        </nz-form-item>
 
-                <nz-form-item class="flex-grow">
-                  <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
-                  <input type="text" nz-input formControlName="akiColor"  (input)="onHexChange($event, 'akiColor')" maxlength="7"/>
-                </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="true">Image Width</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <input nz-input formControlName="akiDepartmentImageWidth" type="number" />
+          </nz-form-control>
+        </nz-form-item>
 
-                <!-- Featured Product Background Colour -->
-                <nz-form-item class="flex-grow">
-                  <nz-form-label [nzNoColon]="true">Featured Product Background Colour</nz-form-label>
-                  <input type="color" nz-input formControlName="akiFeaturedProdBGColor" (input)="onColorChange($event, 'akiFeaturedProdBGColor')" />
-                </nz-form-item>
-
-                <nz-form-item class="flex-grow">
-                  <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
-                  <input type="text" nz-input formControlName="akiFeaturedProdBGColor" (input)="onHexChange($event, 'akiFeaturedProdBGColor')" maxlength="7"/>
-                </nz-form-item>
-              </div>
+        <nz-form-item class="col-span-2">
+          <nz-form-label [nzNoColon]="true">Key Words</nz-form-label>
+          <div class="input-wrapper">
+            <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" [attr.maxlength]="charLimit.akiDepartmentKeyWords" />
+            <span class="char-count">
+              {{ charLimit.akiDepartmentKeyWords - departmentForm.get('akiDepartmentKeyWords')?.value?.length || charLimit.akiDepartmentKeyWords }}
+            </span>
           </div>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="commodityCode" [nzNoColon]="true">Commodity Code</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="akiDepartmentCommodityCode" nzAllowClear class="w-full" nzShowSearch>
+              @for (commodity of commodityCode; track $index) {
+              <nz-option [nzValue]="commodity.commodityCode" [nzLabel]="commodity.commodityCode"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </div>
-    </form>
+    </div>
+    <div class="lg:col-span-5 md:col-span-6 lg:pl-20">
+      <div class="grid grid-cols-2 gap-1">
+        <!-- Catalogue Active Checkbox -->
+        <div class="col-span-2 flex items-center space-x-2">
+          <nz-form-label [nzNoColon]="true">Catalogue Active</nz-form-label>
+          <label nz-checkbox readOnly formControlName="akiDepartmentIsActive"></label>
+        </div>
+
+        <!-- Layout Template Dropdown -->
+        <nz-form-item class="col-span-2">
+          <nz-form-label [nzNoColon]="true">Layout Template</nz-form-label>
+          <nz-select formControlName="akiLayoutTemplate" nzAllowClear nzShowSearch class="w-full bg-gray-100">
+            @for (option of layoutOptions; track option.templateCode) {
+            <nz-option [nzValue]="option.templateCode" [nzLabel]="option.layoutDescription"></nz-option>
+            }
+          </nz-select>
+        </nz-form-item>
+
+        <!-- Colour Selection -->
+        <nz-form-item class="flex-grow">
+          <nz-form-label [nzNoColon]="true">Colour</nz-form-label>
+          <input type="color" nz-input formControlName="akiColor" (input)="onColorChange($event, 'akiColor')" />
+        </nz-form-item>
+
+        <nz-form-item class="flex-grow">
+          <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
+          <input type="text" nz-input formControlName="akiColor" (input)="onHexChange($event, 'akiColor')" />
+        </nz-form-item>
+
+        <!-- Featured Product Background Colour -->
+        <nz-form-item class="flex-grow">
+          <nz-form-label [nzNoColon]="true">Featured Product Background Colour</nz-form-label>
+          <input type="color" nz-input formControlName="akiFeaturedProdBGColor" (input)="onColorChange($event, 'akiFeaturedProdBGColor')" />
+        </nz-form-item>
+
+        <nz-form-item class="flex-grow">
+          <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
+          <input type="text" nz-input formControlName="akiFeaturedProdBGColor" (input)="onHexChange($event, 'akiFeaturedProdBGColor')" maxlength="7" />
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+</form>

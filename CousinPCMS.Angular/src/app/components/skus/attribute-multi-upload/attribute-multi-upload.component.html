@@ -1,0 +1,70 @@
+<div class="bg-white rounded-lg shadow-md m-5">
+  <nz-spin [nzSpinning]="loading">
+    <div class="flex justify-between items-center p-4 pb-1">
+      <span class="text-sm font-medium">Attribute Multi Upload Form</span>
+      <div class="flex gap-x-3">
+        <button nz-button nzType="default" (click)="cancel()" class="">Cancel</button>
+        <button nz-button nzType="primary" [routerLink]="'/attributes/add'">New Value</button>
+      </div>
+    </div>
+    <hr class="mt-2 mb-1 border-light-border" />
+
+    <div class="p-4">
+      <nz-table #headerTable [nzData]="rowsArray" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '660px'}">
+        <thead>
+          <tr>
+            @for ( header of headers; track $index) {
+            <th>
+              {{ header }}
+            </th>
+            <th>Select</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of headerTable.data; track $index) {
+          <tr>
+            @for (header of headers; track $index) {
+            <td>
+              {{ groupedValues[header][data]?.attributeValue || '' }}
+            </td>
+            @if (groupedValues[header][data]?.attributeValue) {
+            <td>
+              <label nz-checkbox [(ngModel)]="groupedValues[header][data].attributeValueLinkedToSKU" (ngModelChange)="changeLinkedAttributeValues($event, groupedValues[header][data])"></label>
+            </td>
+            } @else {
+            <td></td>
+            } }
+          </tr>
+          }
+        </tbody>
+      </nz-table>
+
+      <!-- <table class="min-w-full border border-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            @for ( header of headers; track $index) {
+            <th class="p-2 border border-gray-300">
+              {{ header }}
+            </th>
+            <th class="p-2 border border-gray-300">Select</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for ( i of rowsArray ;track $index) {
+          <tr>
+            @for (header of headers; track $index) {
+            <td class="p-2 border border-gray-300">
+              {{ groupedValues[header][i]?.attributeValue || '' }}
+            </td>
+            <td class="p-2 border border-gray-300"><label nz-checkbox></label></td>
+            }
+          </tr>
+          }
+          <tr></tr>
+        </tbody>
+      </table> -->
+    </div>
+  </nz-spin>
+</div>

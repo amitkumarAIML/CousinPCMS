@@ -12,6 +12,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { CommodityCode } from '../../../shared/models/commodityCodeModel';
 import { layoutDepartment } from '../../../shared/models/layoutTemplateModel';
 import { DepartmentService } from '../department.service';
+import { DepartmentCharLimit } from '../../../shared/char.constant';
 
 @Component({
   selector: 'cousins-department-info',
@@ -37,6 +38,8 @@ export class DepartmentInfoComponent {
   @Input() deptData!: Department;
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
+
+  charLimit = DepartmentCharLimit;
 
   constructor(private fb: FormBuilder, private dataService: DataService, private departmentService: DepartmentService) {
     this.departmentForm = this.fb.group({

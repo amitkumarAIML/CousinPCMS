@@ -105,7 +105,7 @@ export class SkuDisplayComponent {
 
   handleCancel(val: string) {
     this.productSkusVisible = false;
-    if(val !== 'cancle') {
+    if(val !== 'cancel') {
       this.loadSkuForProduct();
     }
   }

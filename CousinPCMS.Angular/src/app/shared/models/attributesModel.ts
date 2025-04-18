@@ -23,7 +23,8 @@ export interface AttributeValueModel {
     newAlternateValue: string;
     alternateValues: string;
     id?: number
-    // attributevalueIsActive: boolean;
+    attributeValueLinkedToSKU?: boolean
+    attributevalueIsActive?: boolean;
 }
 
 export interface AttributeValuesRequestModel {

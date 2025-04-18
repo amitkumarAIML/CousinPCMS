@@ -49,7 +49,7 @@ export class DepartmentsComponent  implements OnInit {
   }
   
 
-  cancle() {
+  cancel() {
     this.router.navigate(['/home']);
   }
 
