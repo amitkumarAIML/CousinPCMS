@@ -20,6 +20,7 @@ import { ApiResponse } from '../../../shared/models/generalModel';
 import { AttributeModel } from '../../../shared/models/attributeModel';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { AttributesValuesComponent } from '../../attributes/attributes-values/attributes-values.component';
+import { ItemCharLimit } from '../../../shared/char.constant';
 
 @Component({
   selector: 'cousins-sku-details',
@@ -57,13 +58,7 @@ export class SkuDetailsComponent {
   attributeName: string = '';
   isLoadingAttributeNames: boolean = false;
 
-  chartLimit = {
-    akiitemid: 31,
-    akiManufacturerRef: 50,
-    akiSKUDescription: 2000,
-    skuName: 100,
-    akiImageURL: 255
-  }
+  charLimit = ItemCharLimit;
 
   constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
       this.skuForm = this.fb.group({

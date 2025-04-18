@@ -28,9 +28,9 @@
             <nz-form-label nzRequired [nzNoColon]="true" nzFor="productName" [nzSm]="6" [nzXs]="24">Product Name</nz-form-label>
             <nz-form-control>
               <div class="input-wrapper">
-                <input nz-input formControlName="akiProductName" maxlength="100" />
+                <input nz-input formControlName="akiProductName" [attr.maxlength]="charLimit.akiProductName" />
                 <span class="char-count">
-                  {{ chartLimit.akiProductName - productForm.get('akiProductName')?.value?.length || chartLimit.akiProductName }}
+                  {{ charLimit.akiProductName - productForm.get('akiProductName')?.value?.length || charLimit.akiProductName }}
                 </span>
               </div>
             </nz-form-control>
@@ -44,9 +44,9 @@
             </div>
             <nz-form-control>
               <div class="input-wrapper">
-                <textarea nz-input formControlName="akiProductDescription" maxlength="2000" class=""></textarea>
+                <textarea nz-input formControlName="akiProductDescription" [attr.maxlength]="charLimit.akiProductDescription" class=""></textarea>
                 <span class="char-count">
-                  {{ chartLimit.akiProductDescription - productForm.get('akiProductDescription')?.value?.length || chartLimit.akiProductDescription }}
+                  {{ charLimit.akiProductDescription - productForm.get('akiProductDescription')?.value?.length || charLimit.akiProductDescription }}
                 </span>
               </div>
             </nz-form-control>
@@ -115,13 +115,13 @@
             <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
             <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
               <div class="flex items-center space-x-2 relative">
-                <input nz-input formControlName="akiProductImageURL" class="w-full" maxlength="255" />
+                <input nz-input formControlName="akiProductImageURL" class="w-full" [attr.maxlength]="charLimit.akiProductImageURL" />
                 <!-- Upload Button -->
                 <nz-upload nzAction="" [nzHeaders]="{authorization: 'authorization-text'}" (nzChange)="onFileSelected($event)" [nzShowUploadList]="false" nzAccept=".png,.jpeg,.jpg">
                   <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
                 </nz-upload>
                 <span class="char-count">
-                  {{ chartLimit.akiProductImageURL - productForm.get('akiProductImageURL')?.value?.length || 255 }}
+                  {{ charLimit.akiProductImageURL - productForm.get('akiProductImageURL')?.value?.length || charLimit.akiProductImageURL }}
                 </span>
               </div>
             </nz-form-control>

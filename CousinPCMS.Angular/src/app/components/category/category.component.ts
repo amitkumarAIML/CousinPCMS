@@ -24,6 +24,7 @@ import {Country} from '../../shared/models/countryOriginModel';
 import {NzUploadChangeParam, NzUploadModule} from 'ng-zorro-antd/upload';
 import { ProductsService } from '../product/products.service';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { CategoryCharLimit } from '../../shared/char.constant';
 
 @Component({
   selector: 'cousins-category',
@@ -84,12 +85,8 @@ export class CategoryComponent {
   pageSize = 10;
   pageIndex = 1;
 
-  chartLimit = {
-    akiCategoryName: 100,
-    akiCategoryImageURL: 255,
-  }
-
-
+  charLimit = CategoryCharLimit;
+  
   constructor(private fb: FormBuilder, private categoryService: CategoryService, private dataService: DataService, private readonly router: Router, private productService: ProductsService) {
     this.categoryForm = this.fb.group({
       akiCategoryID: [{value: '', disabled: true}],

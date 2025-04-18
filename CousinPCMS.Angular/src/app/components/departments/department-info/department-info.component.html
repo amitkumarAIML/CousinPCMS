@@ -11,9 +11,9 @@
           <nz-form-label nzRequired [nzNoColon]="true">Department Name</nz-form-label>
           <nz-form-control [nzErrorTip]="'Please enter a department name '">
             <div class="input-wrapper">
-              <input nz-input formControlName="akiDepartmentName" class="w-full pr-10" maxlength="50" />
+              <input nz-input formControlName="akiDepartmentName" class="w-full pr-10" [attr.maxlength]="charLimit.akiDepartmentName" />
               <span class="char-count">
-                {{ chartLimit.akiDepartmentName - departmentForm.get('akiDepartmentName')?.value?.length || chartLimit.akiDepartmentName }}
+                {{ charLimit.akiDepartmentName - departmentForm.get('akiDepartmentName')?.value?.length || charLimit.akiDepartmentName }}
               </span>
             </div>
           </nz-form-control>
@@ -34,9 +34,9 @@
         <nz-form-item class="col-span-2">
           <nz-form-label [nzNoColon]="true">Department Text</nz-form-label>
           <div class="input-wrapper">
-            <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-20" maxlength="2000"></textarea>
+            <textarea nz-input formControlName="akiDepartmentDescText" class="w-full h-20" [attr.maxlength]="charLimit.akiDepartmentDescText"></textarea>
             <span class="char-count">
-              {{ chartLimit.akiDepartmentDescText - departmentForm.get('akiDepartmentDescText')?.value?.length || chartLimit.akiDepartmentDescText }}
+              {{ charLimit.akiDepartmentDescText - departmentForm.get('akiDepartmentDescText')?.value?.length || charLimit.akiDepartmentDescText }}
             </span>
           </div>
         </nz-form-item>
@@ -45,12 +45,12 @@
           <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
           <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
             <div class="flex items-center space-x-2 relative">
-              <input nz-input formControlName="akiDepartmentImageURL" class="w-full" maxlength="255" />
+              <input nz-input formControlName="akiDepartmentImageURL" class="w-full" [attr.maxlength]="charLimit.akiDepartmentImageURL" />
               <nz-upload [nzHeaders]="{authorization: 'authorization-text'}" (nzChange)="onFileSelected($event)" [nzShowUploadList]="false" nzAccept=".png,.jpeg,.jpg">
                 <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
               </nz-upload>
               <span class="char-count">
-                {{ chartLimit.akiDepartmentImageURL - departmentForm.get('akiDepartmentImageURL')?.value?.length || chartLimit.akiDepartmentImageURL }}
+                {{ charLimit.akiDepartmentImageURL - departmentForm.get('akiDepartmentImageURL')?.value?.length || charLimit.akiDepartmentImageURL }}
               </span>
             </div>
           </nz-form-control>
@@ -73,9 +73,9 @@
         <nz-form-item class="col-span-2">
           <nz-form-label [nzNoColon]="true">Key Words</nz-form-label>
           <div class="input-wrapper">
-            <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" maxlength="500" />
+            <input nz-input formControlName="akiDepartmentKeyWords" class="w-full" [attr.maxlength]="charLimit.akiDepartmentKeyWords" />
             <span class="char-count">
-              {{ chartLimit.akiDepartmentKeyWords - departmentForm.get('akiDepartmentKeyWords')?.value?.length || chartLimit.akiDepartmentKeyWords }}
+              {{ charLimit.akiDepartmentKeyWords - departmentForm.get('akiDepartmentKeyWords')?.value?.length || charLimit.akiDepartmentKeyWords }}
             </span>
           </div>
         </nz-form-item>
@@ -118,7 +118,7 @@
 
         <nz-form-item class="flex-grow">
           <nz-form-label [nzNoColon]="true">OR Enter hex colour value</nz-form-label>
-          <input type="text" nz-input formControlName="akiColor" (input)="onHexChange($event, 'akiColor')" maxlength="7" />
+          <input type="text" nz-input formControlName="akiColor" (input)="onHexChange($event, 'akiColor')" />
         </nz-form-item>
 
         <!-- Featured Product Background Colour -->

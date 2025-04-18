@@ -26,6 +26,7 @@ import {CategoryService} from '../../category/category.service';
 import {Router} from '@angular/router';
 import { AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { ProductCharLimit } from '../../../shared/char.constant';
 
 @Component({
   selector: 'cousins-product-details',
@@ -87,11 +88,7 @@ export class ProductDetailsComponent {
   pageIndex = 1;
 
   @Input() productData!: any;
-  chartLimit = {
-    akiProductName: 100,
-    akiProductDescription: 2000,
-    akiProductImageURL: 255
-  }
+  charLimit = ProductCharLimit;
 
   constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService, private router: Router) {
     this.productForm = this.fb.group({

@@ -31,9 +31,9 @@
             <nz-form-label nzRequired [nzNoColon]="true" nzFor="skuName" [nzSm]="6" [nzXs]="24">Sku Name</nz-form-label>
             <nz-form-control>
               <div class="input-wrapper">
-                <input nz-input formControlName="skuName" maxlength="100" />
+                <input nz-input formControlName="skuName" [attr.maxlength]="charLimit.skuName" />
                 <span class="char-count">
-                  {{ chartLimit.skuName - skuForm.get('skuName')?.value?.length || chartLimit.skuName }}
+                  {{ charLimit.skuName - skuForm.get('skuName')?.value?.length || charLimit.skuName }}
                 </span>
               </div>
             </nz-form-control>
@@ -50,9 +50,9 @@
             </div>
             <nz-form-control>
               <div class="input-wrapper">
-                <textarea nz-input formControlName="akiSKUDescription" maxlength="2000" class=""></textarea>
+                <textarea nz-input formControlName="akiSKUDescription" [attr.maxlength]="charLimit.akiSKUDescription" class=""></textarea>
                 <span class="char-count">
-                  {{ chartLimit.akiSKUDescription - skuForm.get('akiSKUDescription')?.value?.length || chartLimit.akiSKUDescription }}
+                  {{ charLimit.akiSKUDescription - skuForm.get('akiSKUDescription')?.value?.length || charLimit.akiSKUDescription }}
                 </span>
               </div>
             </nz-form-control>
@@ -64,9 +64,9 @@
             <nz-form-label [nzNoColon]="true">Manufacturer Ref</nz-form-label>
             <nz-form-control>
               <div class="input-wrapper">
-                <input nz-input formControlName="akiManufacturerRef" />
+                <input nz-input formControlName="akiManufacturerRef" [attr.maxlength]="charLimit.akiManufacturerRef" />
                 <span class="char-count">
-                  {{ chartLimit.akiManufacturerRef - skuForm.get('akiManufacturerRef')?.value?.length || chartLimit.akiManufacturerRef }}
+                  {{ charLimit.akiManufacturerRef - skuForm.get('akiManufacturerRef')?.value?.length || charLimit.akiManufacturerRef }}
                 </span>
               </div>
             </nz-form-control>
@@ -78,7 +78,7 @@
               <div class="input-wrapper">
                 <input nz-input formControlName="akiitemid" type="number" />
                 <span class="char-count">
-                  {{ chartLimit.akiitemid - skuForm.get('akiitemid')?.value?.length || chartLimit.akiitemid }}
+                  {{ charLimit.akiitemid - skuForm.get('akiitemid')?.value?.length || charLimit.akiitemid }}
                 </span>
               </div>
             </nz-form-control>
@@ -134,12 +134,12 @@
             <nz-form-label [nzNoColon]="true">Image URL</nz-form-label>
             <nz-form-control [nzErrorTip]="'Please enter a valid URL'">
               <div class="flex items-center space-x-2 relative">
-                <input nz-input formControlName="akiImageURL" class="w-full" maxlength="255" />
+                <input nz-input formControlName="akiImageURL" class="w-full" [attr.maxlength]="charLimit.akiImageURL" />
                 <nz-upload nzAction="" [nzHeaders]="{authorization: 'authorization-text'}" (nzChange)="onFileSelected($event)" [nzShowUploadList]="false" nzAccept=".png,.jpeg,.jpg">
                   <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
                 </nz-upload>
                 <span class="char-count">
-                  {{ chartLimit.akiImageURL - skuForm.get('akiImageURL')?.value?.length || chartLimit.akiImageURL }}
+                  {{ charLimit.akiImageURL - skuForm.get('akiImageURL')?.value?.length || charLimit.akiImageURL }}
                 </span>
               </div>
             </nz-form-control>

@@ -61,9 +61,9 @@
                 <nz-form-label [nzNoColon]="true" nzFor="categoryName" [nzSm]="6" [nzXs]="24">Category Name</nz-form-label>
                 <nz-form-control [nzSm]="18" [nzXs]="24">
                   <div class="flex items-center justify-between w-full">
-                    <input nz-input formControlName="akiCategoryName" maxlength="100" />
+                    <input nz-input formControlName="akiCategoryName" [attr.maxlength]="charLimit.akiCategoryName" />
                     <span class="char-count">
-                      {{ chartLimit.akiCategoryName - categoryForm.get('akiCategoryName')?.value?.length || chartLimit.akiCategoryName }}
+                      {{ charLimit.akiCategoryName - categoryForm.get('akiCategoryName')?.value?.length || charLimit.akiCategoryName }}
                     </span>
                   </div>
                 </nz-form-control>
@@ -134,9 +134,6 @@
               <nz-form-item>
                 <div class="flex flex-wrap justify-between items-center w-full">
                   <nz-form-label [nzNoColon]="true">Category Text</nz-form-label>
-                  <!-- <button nz-button nzType="default" class="">
-                                                Spelling
-                                            </button> -->
                 </div>
                 <nz-form-control>
                   <textarea nz-input formControlName="akiCategoryDescriptionText" maxlength="2000" class=""></textarea>
@@ -150,14 +147,14 @@
                   <!-- Flex container for input, char count, and button -->
                   <div class="flex items-center space-x-2 relative">
                     <!-- Text Input -->
-                    <input nz-input formControlName="akiCategoryImageURL" class="flex-grow" nzType="text" />
+                    <input nz-input formControlName="akiCategoryImageURL" class="flex-grow" nzType="text" [attr.maxlength]="charLimit.akiCategoryImageURL" />
                     <!-- Upload Button -->
                     <nz-upload [nzHeaders]="{authorization: 'authorization-text'}" (nzChange)="onFileSelected($event)" [nzShowUploadList]="false" nzAccept=".png,.jpeg,.jpg">
                       <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
                     </nz-upload>
                     <!-- Char Count -->
                     <span class="text-gray-400 text-sm whitespace-nowrap">
-                      {{ chartLimit.akiCategoryImageURL - categoryForm.get('akiCategoryImageURL')?.value?.length || chartLimit.akiCategoryImageURL }}
+                      {{ charLimit.akiCategoryImageURL - categoryForm.get('akiCategoryImageURL')?.value?.length || charLimit.akiCategoryImageURL }}
                     </span>
                   </div>
                 </nz-form-control>

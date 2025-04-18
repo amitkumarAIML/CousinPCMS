@@ -12,6 +12,7 @@ import { DataService } from '../../../shared/services/data.service';
 import { CommodityCode } from '../../../shared/models/commodityCodeModel';
 import { layoutDepartment } from '../../../shared/models/layoutTemplateModel';
 import { DepartmentService } from '../department.service';
+import { DepartmentCharLimit } from '../../../shared/char.constant';
 
 @Component({
   selector: 'cousins-department-info',
@@ -38,12 +39,7 @@ export class DepartmentInfoComponent {
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
 
-  chartLimit = {
-    akiDepartmentName: 100,
-    akiDepartmentDescText: 2000,
-    akiDepartmentImageURL: 255,
-    akiDepartmentKeyWords: 500
-  }
+  charLimit = DepartmentCharLimit;
 
   constructor(private fb: FormBuilder, private dataService: DataService, private departmentService: DepartmentService) {
     this.departmentForm = this.fb.group({
