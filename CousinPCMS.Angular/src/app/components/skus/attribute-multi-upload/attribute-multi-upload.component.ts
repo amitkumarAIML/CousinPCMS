@@ -77,7 +77,7 @@ export class AttributeMultiUploadComponent {
     return Math.max(...this.headers.map((h) => this.groupedValues[h]?.length || 0));
   }
 
-  cancle() {
+  cancel() {
     sessionStorage.removeItem('attributeNames');
     this.route.navigate(['/skus']);
   }

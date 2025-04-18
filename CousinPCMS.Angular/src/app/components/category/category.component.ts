@@ -84,6 +84,12 @@ export class CategoryComponent {
   pageSize = 10;
   pageIndex = 1;
 
+  chartLimit = {
+    akiCategoryName: 100,
+    akiCategoryImageURL: 255,
+  }
+
+
   constructor(private fb: FormBuilder, private categoryService: CategoryService, private dataService: DataService, private readonly router: Router, private productService: ProductsService) {
     this.categoryForm = this.fb.group({
       akiCategoryID: [{value: '', disabled: true}],

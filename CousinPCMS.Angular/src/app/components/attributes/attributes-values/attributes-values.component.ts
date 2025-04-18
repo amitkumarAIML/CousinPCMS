@@ -71,7 +71,7 @@ export class AttributesValuesComponent {
   }
 
   handleCancel() {
-    this.attributeValueSave.emit('cancle');
+    this.attributeValueSave.emit('cancel');
     this.attributesValuesForm.reset();
   }
 }

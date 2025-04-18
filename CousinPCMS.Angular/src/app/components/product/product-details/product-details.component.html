@@ -30,7 +30,7 @@
               <div class="input-wrapper">
                 <input nz-input formControlName="akiProductName" maxlength="100" />
                 <span class="char-count">
-                  {{ 100 - productForm.get('akiProductName')?.value?.length || 100 }}
+                  {{ chartLimit.akiProductName - productForm.get('akiProductName')?.value?.length || chartLimit.akiProductName }}
                 </span>
               </div>
             </nz-form-control>
@@ -46,7 +46,7 @@
               <div class="input-wrapper">
                 <textarea nz-input formControlName="akiProductDescription" maxlength="2000" class=""></textarea>
                 <span class="char-count">
-                  {{ 2000 - productForm.get('akiProductDescription')?.value?.length || 2000 }}
+                  {{ chartLimit.akiProductDescription - productForm.get('akiProductDescription')?.value?.length || chartLimit.akiProductDescription }}
                 </span>
               </div>
             </nz-form-control>
@@ -121,7 +121,7 @@
                   <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
                 </nz-upload>
                 <span class="char-count">
-                  {{ 255 - productForm.get('akiProductImageURL')?.value?.length || 255 }}
+                  {{ chartLimit.akiProductImageURL - productForm.get('akiProductImageURL')?.value?.length || 255 }}
                 </span>
               </div>
             </nz-form-control>

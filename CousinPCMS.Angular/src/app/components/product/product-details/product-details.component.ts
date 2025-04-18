@@ -87,6 +87,11 @@ export class ProductDetailsComponent {
   pageIndex = 1;
 
   @Input() productData!: any;
+  chartLimit = {
+    akiProductName: 100,
+    akiProductDescription: 2000,
+    akiProductImageURL: 255
+  }
 
   constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService, private router: Router) {
     this.productForm = this.fb.group({

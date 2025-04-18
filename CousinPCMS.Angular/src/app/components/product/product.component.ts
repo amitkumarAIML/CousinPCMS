@@ -74,9 +74,9 @@ export class ProductComponent {
     }
   }
 
-  cancle() {
+  cancel() {
     this.router.navigate(['/home']);
-    this.eventComplete.emit('cancle');
+    this.eventComplete.emit('cancel');
   }
 
   delete() {

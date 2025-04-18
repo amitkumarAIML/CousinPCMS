@@ -38,6 +38,13 @@ export class DepartmentInfoComponent {
   selectedFileName: string = '';
   imagePreview: string | ArrayBuffer | null = null;
 
+  chartLimit = {
+    akiDepartmentName: 100,
+    akiDepartmentDescText: 2000,
+    akiDepartmentImageURL: 255,
+    akiDepartmentKeyWords: 500
+  }
+
   constructor(private fb: FormBuilder, private dataService: DataService, private departmentService: DepartmentService) {
     this.departmentForm = this.fb.group({
       akiDepartmentID: [{ value: '' , disabled: true }, [Validators.required]],

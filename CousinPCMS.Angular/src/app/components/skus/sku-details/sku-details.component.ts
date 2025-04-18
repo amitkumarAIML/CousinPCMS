@@ -57,6 +57,14 @@ export class SkuDetailsComponent {
   attributeName: string = '';
   isLoadingAttributeNames: boolean = false;
 
+  chartLimit = {
+    akiitemid: 31,
+    akiManufacturerRef: 50,
+    akiSKUDescription: 2000,
+    skuName: 100,
+    akiImageURL: 255
+  }
+
   constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
       this.skuForm = this.fb.group({
           akiProductID: [{ value: '' , disabled: true}],

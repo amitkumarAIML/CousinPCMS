@@ -48,9 +48,9 @@ export class SkusComponent {
     this.getSkuByItemNumber();  
   }
 
-  cancle() {
+  cancel() {
     this.router.navigate(['/home']);
-    this.eventComplete.emit('cancle');
+    this.eventComplete.emit('cancel');
   }
 
   getSkuByItemNumber() {

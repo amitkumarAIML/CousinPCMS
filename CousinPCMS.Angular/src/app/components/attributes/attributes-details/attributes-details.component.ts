@@ -82,7 +82,7 @@ export class AttributesDetailsComponent {
 
   attributeValueSave(event: any) {
      this.addNewAttributeValueModal = false;
-     if (event === 'cancle')  return;
+     if (event === 'cancel')  return;
      this.getAttributeValuesByAttributesName();
   }
   handleCancel(): void {

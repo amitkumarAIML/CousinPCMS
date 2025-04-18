@@ -33,7 +33,7 @@
               <div class="input-wrapper">
                 <input nz-input formControlName="skuName" maxlength="100" />
                 <span class="char-count">
-                  {{ 100 - skuForm.get('skuName')?.value?.length || 100 }}
+                  {{ chartLimit.skuName - skuForm.get('skuName')?.value?.length || chartLimit.skuName }}
                 </span>
               </div>
             </nz-form-control>
@@ -52,7 +52,7 @@
               <div class="input-wrapper">
                 <textarea nz-input formControlName="akiSKUDescription" maxlength="2000" class=""></textarea>
                 <span class="char-count">
-                  {{ 2000 - skuForm.get('akiSKUDescription')?.value?.length || 2000 }}
+                  {{ chartLimit.akiSKUDescription - skuForm.get('akiSKUDescription')?.value?.length || chartLimit.akiSKUDescription }}
                 </span>
               </div>
             </nz-form-control>
@@ -66,7 +66,7 @@
               <div class="input-wrapper">
                 <input nz-input formControlName="akiManufacturerRef" />
                 <span class="char-count">
-                  {{ 50 - skuForm.get('akiManufacturerRef')?.value?.length || 50 }}
+                  {{ chartLimit.akiManufacturerRef - skuForm.get('akiManufacturerRef')?.value?.length || chartLimit.akiManufacturerRef }}
                 </span>
               </div>
             </nz-form-control>
@@ -78,7 +78,7 @@
               <div class="input-wrapper">
                 <input nz-input formControlName="akiitemid" type="number" />
                 <span class="char-count">
-                  {{ 31 - skuForm.get('akiitemid')?.value?.length || 31 }}
+                  {{ chartLimit.akiitemid - skuForm.get('akiitemid')?.value?.length || chartLimit.akiitemid }}
                 </span>
               </div>
             </nz-form-control>
@@ -139,7 +139,7 @@
                   <button nz-button [nzType]="'primary'" class="m-0 px-4 text-white">Upload</button>
                 </nz-upload>
                 <span class="char-count">
-                  {{ 255 - skuForm.get('akiImageURL')?.value?.length || 255 }}
+                  {{ chartLimit.akiImageURL - skuForm.get('akiImageURL')?.value?.length || chartLimit.akiImageURL }}
                 </span>
               </div>
             </nz-form-control>
