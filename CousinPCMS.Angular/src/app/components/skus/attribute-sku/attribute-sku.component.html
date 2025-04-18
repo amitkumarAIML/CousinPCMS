@@ -1,27 +1,40 @@
 <div class="px-4">
-  <nz-table #headerTable [nzData]="linkedAttributeList" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false"
-      [nzScroll]="{ y: '660px' }">
+  <div class="grid grid-cols-1 md:grid-cols-5 mb-2">
+    <nz-form-item>
+      <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+      <nz-form-control>
+        <nz-input-group [nzSuffix]="inputClearTpl">
+          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-template #inputClearTpl>
+      @if (searchValue) {
+      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      }@else{
+      <nz-icon nzType="search" />
+      }
+    </ng-template>
+  </div>
+
+  <nz-table #headerTable [nzData]="linkedAttributeListFilter" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '660px'}">
     <thead>
       <tr>
-        <th nzWidth="200px"></th>
-        <th>AttributeName</th>
-        <th>AttributeValue</th>
-        <th>Link</th>
-        <th>Stage 2 User</th>
-        <th>Stagw 3 User</th>
+        <th nzWidth="80px"></th>
+        <th>Attribute Name</th>
+        <th>Attribute Value</th>
+        <th nzWidth="100px">Link</th>
       </tr>
     </thead>
     <tbody>
       @for (data of headerTable.data; track $index) {
-        <tr >
-            <th nzWidth="200px"></th>
-            <td>{{ data.skuName }}</td>
-            <td>{{ data.akiManufacturerRef }}</td>
-            <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
-            <td>{{ data.akiTemplateID }}</td>
-            <td>{{ data.akiAltSKUName }}</td>
-        </tr>
+      <tr>
+        <td></td>
+        <td>{{ data.akiAttributeName }}</td>
+        <td>{{ data.akiAttributeValue }}</td>
+        <td><label nz-checkbox [(ngModel)]="data.akiLink" [disabled]="true"></label></td>
+      </tr>
       }
     </tbody>
-</nz-table>
+  </nz-table>
 </div>

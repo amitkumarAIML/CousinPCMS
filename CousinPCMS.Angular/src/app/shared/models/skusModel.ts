@@ -203,3 +203,12 @@ export interface SkuListResponse {
   exceptionInformation: any;
 }
 
+export interface LikedSkuModel {
+  akiAttributeName: string;
+  akiAttributeValue: string;
+  akiItemNo: string;
+  akiLink: boolean;
+  odataetag?: string;
+}
+
+

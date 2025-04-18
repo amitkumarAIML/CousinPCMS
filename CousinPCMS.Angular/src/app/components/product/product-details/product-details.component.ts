@@ -145,6 +145,7 @@ export class ProductDetailsComponent {
     this.getCountryOrigin();
     this.getAllCategory();
     this.getAdditionalProduct();
+    this.productForm.get('akiProductName')?.disable();
   }
 
   getFormData() {

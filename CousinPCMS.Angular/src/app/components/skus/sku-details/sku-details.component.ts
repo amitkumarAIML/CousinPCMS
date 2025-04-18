@@ -16,6 +16,10 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ItemModel, ItemModelResponse } from '../../../shared/models/itemModel';
 import { Router } from '@angular/router';
 import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
+import { ApiResponse } from '../../../shared/models/generalModel';
+import { AttributeModel } from '../../../shared/models/attributeModel';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { AttributesValuesComponent } from '../../attributes/attributes-values/attributes-values.component';
 
 @Component({
   selector: 'cousins-sku-details',
@@ -27,7 +31,9 @@ import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
              NzCheckboxModule,
              NzButtonModule,
              NzIconModule,
-             NzUploadModule
+             NzUploadModule,
+             NzModalModule,
+             AttributesValuesComponent
   ],
   templateUrl: './sku-details.component.html',
   styleUrl: './sku-details.component.css'
@@ -44,8 +50,13 @@ export class SkuDetailsComponent {
    pricingFormulas: ItemModel[] = [];
    selectedFileName: string = '';
    imagePreview: string | ArrayBuffer | null = null;
+   savedAttributes: any[] = [];
 
   @Input() skuData!: any;
+  addNewAttributeValueModal: boolean = false;
+  attributeName: string = '';
+  isLoadingAttributeNames: boolean = false;
+
   constructor(private fb: FormBuilder, private skusService: SkusService, private dataService: DataService,private router: Router) {
       this.skuForm = this.fb.group({
           akiProductID: [{ value: '' , disabled: true}],
@@ -71,6 +82,7 @@ export class SkuDetailsComponent {
           akiPriceBreak: [''],
           akiPriceGroup: [''],
           akiPricingFormula: [''],
+
       });
   }
 
@@ -88,6 +100,7 @@ export class SkuDetailsComponent {
     if (changes['skuData']) {
       if (this.skuData) {
           this.skuForm.patchValue(this.skuData);
+          this.getSkuAttributesBycategoryId();
       }
     }
   }
@@ -212,6 +225,42 @@ export class SkuDetailsComponent {
   goToAdditionalImage(): void {
     if (!this.skuForm.getRawValue().akiSKUID) return;
     this.router.navigate(['/skus/additional-images']);
+  }
+
+  getSkuAttributesBycategoryId() {
+    this.isLoadingAttributeNames = true;
+    this.skusService.getSkuAttributesBycategoryId(this.getFormData().akiCategoryID).subscribe({
+      next: (reponse: ApiResponse<AttributeModel[]>) => {
+        if (reponse.isSuccess) {
+          if (reponse && reponse.value.length > 0) {
+            this.savedAttributes = reponse.value;
+          }
+        } else {
+          this.dataService.ShowNotification('error', '',  reponse.exceptionInformation);
+        }
+        this.isLoadingAttributeNames = false;
+      },
+      error: (error) => {
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+        this.isLoadingAttributeNames = false;
+      }
+    });
+  }
+
+  showAddAttributesModal(attr: any) {
+    this.attributeName = attr.attributeName
+    this.addNewAttributeValueModal = true;
+  }
+
+  handleCancel() {
+    this.addNewAttributeValueModal = false;
+  }
+  
+  goToUploadForm() {
+    const attributeNames: any = this.savedAttributes.map(item => item.attributeName);
+    console.log('att ',attributeNames)
+    sessionStorage.setItem('attributeNames', JSON.stringify(attributeNames));
+    this.router.navigate(['/skus/attribute-multi-upload']);
   }
   
 

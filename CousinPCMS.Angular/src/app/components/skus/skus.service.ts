@@ -9,7 +9,9 @@ import {CompetitorItem, CompetitorItemResponse} from '../../shared/models/compet
 import {ApiResponse} from '../../shared/models/generalModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../../shared/models/linkMaintenanaceModel';
 import {AdditionalImageDeleteRequestModel, AdditionalImagesModel} from '../../shared/models/additionalImagesModel';
-import { SKuList, SkuListResponse, SkuRequestModel } from '../../shared/models/skusModel';
+import { LikedSkuModel, SKuList, SkuListResponse, SkuRequestModel } from '../../shared/models/skusModel';
+import { AttributeModel } from '../../shared/models/attributeModel';
+import { AttributeValueModel } from '../../shared/models/attributesModel';
 
 @Injectable({
   providedIn: 'root',
@@ -121,4 +123,34 @@ export class SkusService {
       catchError((error) => throwError(() => error))
     );
   }
+
+  getSkuAttributesBycategoryId(categoryId: any): Observable<ApiResponse<AttributeModel[]>> {
+    return this.httpService.get<ApiResponse<AttributeModel[]>>('Skus/GetSkuAttributesBycategoryId', {categoryId: categoryId}).pipe(
+      map((response: ApiResponse<AttributeModel[]>) => response),
+      catchError((error) => throwError(() => error))
+    );
+  }
+
+  getSkuLinkedAttributes(skuItemNo: any): Observable<ApiResponse<LikedSkuModel[]>> {
+    return this.httpService.get<ApiResponse<LikedSkuModel[]>>('Skus/GetSkuLinkedAttributes', {akiItemNo: skuItemNo}).pipe(
+      map((response: ApiResponse<LikedSkuModel[]>) => response),
+      catchError((error) => throwError(() => error))
+    );
+  }
+  
+  getAttributeValuesByListofNames(skusData: any): Observable<ApiResponse<AttributeValueModel[]>> {
+    return this.httpService.post<ApiResponse<AttributeValueModel[]>>(`Skus/GetAttributeValuesByListofNames`, skusData).pipe(
+      map((response: ApiResponse<AttributeValueModel[]>) => response),
+      catchError((error) => throwError(() => error))
+    )
+  }
+
+  addUpdateSKULinkedAttribute(skusData: LikedSkuModel): Observable<ApiResponse<LikedSkuModel>> {
+    return this.httpService.post<ApiResponse<LikedSkuModel>>(`Skus/AddUpdateSKULinkedAttribute`, skusData).pipe(
+      map((response: ApiResponse<LikedSkuModel>) => response),
+      catchError((error) => throwError(() => error))
+    )
+  }
+
+  
 }

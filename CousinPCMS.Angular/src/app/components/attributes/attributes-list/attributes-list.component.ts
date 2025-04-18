@@ -57,6 +57,7 @@ export class AttributesListComponent {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Attributes Successfully Deleted');
           this.attributeList = this.attributeList.filter(d => d.id !== data.id);
+          this.filteredData = [...this.attributeList];
         } else {
           this.dataService.ShowNotification('error', '', 'Attributes Failed To Deleted');
         }

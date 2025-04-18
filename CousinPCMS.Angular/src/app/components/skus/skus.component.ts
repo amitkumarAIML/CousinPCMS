@@ -60,6 +60,7 @@ export class SkusComponent {
       this.skuService.getSkuItemById(itemNumber).subscribe({
         next: (response: ApiResponse<SKuList[]>) => {
           if (response.isSuccess) {
+            if (response.value &&  response.value.length > 0)
             this.skuData = response.value[0];
           } else {
             this.dataService.ShowNotification('error', '', 'Failed To Load Data');
@@ -115,7 +116,6 @@ export class SkusComponent {
       return;
     }
 
-    // Get data from both components (if forms are valid)
     const skuData: SkuRequestModel = this.dataService.cleanEmptyNullToString(this.skusDetailsComp.getFormData());
 
     if (skuData.akiLayoutTemplate) {

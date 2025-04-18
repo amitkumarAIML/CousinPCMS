@@ -121,6 +121,10 @@ label {
   scrollbar-width: none;
 }
 
+.ant-table-expanded-row-fixed {
+  width: 100% !important;
+}
+
 .ant-table-header::-webkit-scrollbar {
   display: none;
 }

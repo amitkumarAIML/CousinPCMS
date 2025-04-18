@@ -17,10 +17,11 @@ import {AttributeRequestModel, AttributeValueModel, AttributeValuesRequestModel}
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import { AttributeModel } from '../../../shared/models/attributeModel';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { AttributesValuesComponent } from '../attributes-values/attributes-values.component';
 
 @Component({
   selector: 'cousins-attributes-details',
-  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule,NzPopconfirmModule],
+  imports: [ReactiveFormsModule, NzFormModule,NzButtonModule, NzInputModule, NzSelectModule, NzCheckboxModule, NzTableModule, FormsModule, NzModalModule, NzSpinModule, NzIconModule,NzPopconfirmModule, AttributesValuesComponent],
   templateUrl: './attributes-details.component.html',
   styleUrl: './attributes-details.component.css',
 })
@@ -34,7 +35,7 @@ export class AttributesDetailsComponent {
   loadingProduct: boolean = false;
   deleteLoading: boolean = false;
   attributesForm: FormGroup;
-  attributesValuesForm: FormGroup;
+  
   addNewAttributeValueModal: boolean = false;
 
   filteredData: AttributeValueModel[] = [];
@@ -48,13 +49,6 @@ export class AttributesDetailsComponent {
       attributeDescription: [''],
       searchType: ['', [Validators.required]],
       showAsCategory: [true],
-    });
-    this.attributesValuesForm = this.fb.group({
-      attributeValue: ['', Validators.required],
-      attributeName: [{value: '', disabled: true}, Validators.required],
-      // attributeGroupId   : [''],
-      alternateValues: [''],
-      newAlternateValue: [''],
     });
   }
 
@@ -77,18 +71,22 @@ export class AttributesDetailsComponent {
     this.router.navigate(['/attributes']);
   }
   showAddAttributesModal(): void {
-    this.attributesValuesForm.reset();
-    this.attributesValuesForm.get('attributeName')?.patchValue(this.attributesForm.getRawValue().attributeName);
-    if (!this.attributesValuesForm.get('attributeName')?.value) {
-      this.dataService.ShowNotification('error', '', 'Please Add Attributes Name First.');
-      return;
-    }
+    // this.attributesValuesForm.reset();
+    // this.attributesValuesForm.get('attributeName')?.patchValue(this.attributesForm.getRawValue().attributeName);
+    // if (!this.attributesValuesForm.get('attributeName')?.value) {
+    //   this.dataService.ShowNotification('error', '', 'Please Add Attributes Name First.');
+    //   return;
+    // }
     this.addNewAttributeValueModal = true;
   }
 
+  attributeValueSave(event: any) {
+     this.addNewAttributeValueModal = false;
+     if (event === 'cancle')  return;
+     this.getAttributeValuesByAttributesName();
+  }
   handleCancel(): void {
     this.addNewAttributeValueModal = false;
-    this.attributesValuesForm.reset();
   }
 
   getAllSearchType() {
@@ -139,7 +137,7 @@ export class AttributesDetailsComponent {
     this.attributeService.addAttributes(data).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          this.dataService.ShowNotification('success', '', 'Attribute Details Added Successfully');
+          this.dataService.ShowNotification('success', '', 'Attribute were added successfully! You are now ready to add new Attributes Values.');
           // this.isEdit = false;
           this.newValueBtnDisable = false;
           this.attributesForm.get('attributeName')?.disable();
@@ -202,44 +200,13 @@ export class AttributesDetailsComponent {
     });
   }
 
-  addAttributesValues() {
-    this.attributesValuesForm.markAllAsTouched();
-
-    if (!this.attributesValuesForm.valid) {
-      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
-      return;
-    }
-    const data: AttributeValuesRequestModel = this.dataService.cleanEmptyNullToString(this.attributesValuesForm.getRawValue());
-
-    this.btnLoading = true;
-    this.attributeService.addAttributesValues(data).subscribe({
-      next: (response) => {
-        if (response.isSuccess) {
-          this.dataService.ShowNotification('success', '', 'Attribute were added successfully! You are now ready to add new Attributes Values.');
-          this.getAttributeValuesByAttributesName();
-          this.addNewAttributeValueModal = false;
-        } else {
-          this.dataService.ShowNotification('error', '', 'Attribute Values Failed To Add');
-        }
-        this.btnLoading = false;
-      },
-      error: (err) => {
-        this.btnLoading = false;
-        if (err?.error) {
-          this.dataService.ShowNotification('error', '', err.error.title);
-        } else {
-          this.dataService.ShowNotification('error', '', 'Something went wrong');
-        }
-      },
-    });
-  }
-
   deleteAttributeValues(data: AttributeValueModel) {
     this.attributeService.deleteAttributesValues(data.attributeName, data.attributeValue).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'Attributes Value Successfully Deleted');
-          this.filteredData = this.filteredData.filter(d => d.id !== data.id);
+          this.attributesValues = this.attributesValues.filter(d => d.id !== data.id);
+          this.filteredData = [...this.attributesValues];
         } else {
           this.dataService.ShowNotification('error', '', 'Attributes Value Failed To Deleted');
         }
