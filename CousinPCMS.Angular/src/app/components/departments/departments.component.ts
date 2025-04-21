@@ -149,7 +149,5 @@ export class DepartmentsComponent  implements OnInit {
       this.departmentSubscription.unsubscribe();
     }
   }
-  btncancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
-  }  
+   
 }

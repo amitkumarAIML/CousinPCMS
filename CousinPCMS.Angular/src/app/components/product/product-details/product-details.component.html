@@ -229,8 +229,7 @@
                           <a
                             nz-popconfirm
                             [nzPopconfirmTitle]="'Are you sure you want to delete this product?'"
-                            (nzOnConfirm)="deleteAssociatedProduct(data)"
-                            (nzOnCancel)="cancel()"
+                            (nzOnConfirm)="deleteAssociatedProduct(data)"                            
                             [nzIcon]="iconTpl"
                           >
                             <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline" />

@@ -149,7 +149,5 @@ export class SkusComponent {
       this.skuSubscription.unsubscribe();
     }
   }
-  btnCancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
-  }
+  
 }

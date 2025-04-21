@@ -98,7 +98,5 @@ export class AttributesListComponent {
     this.searchValue = '';
     this.filteredData = [...this.attributeList];
   }
-  cancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
-  }
+ 
 }

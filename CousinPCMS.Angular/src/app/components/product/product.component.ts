@@ -158,7 +158,5 @@ export class ProductComponent {
       this.productSubscription.unsubscribe();
     }
   }
-  btnCancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
-  }
+
 }

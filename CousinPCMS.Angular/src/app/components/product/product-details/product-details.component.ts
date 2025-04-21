@@ -470,7 +470,5 @@ export class ProductDetailsComponent {
       this.pageSize = pageSize;
       this.getAllProducts();
     }
-  cancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
-  }
+  
 }
