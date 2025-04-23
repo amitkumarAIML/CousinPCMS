@@ -7,6 +7,7 @@ const Home = () => {
   useEffect(() => {
     getDepartments()
       .then((res) => {
+        console.log(res);
         setDepartments(res.value);
       })
       .catch(console.error);

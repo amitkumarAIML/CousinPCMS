@@ -1,6 +1,11 @@
-import axios, {InternalAxiosRequestConfig} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
+
 
 const httpClient = axios.create({
+<<<<<<< Updated upstream
+=======
+  baseURL: import.meta.env.VITE_BASE_URL, 
+>>>>>>> Stashed changes
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,7 +43,7 @@ async function fetchNewToken() {
     guid: import.meta.env.VITE_TOKEN_GUID,
     id: import.meta.env.VITE_TOKEN_ID,
   };
-  const response = await axios.post(import.meta.env.VITE_BASE_URL + 'Token', tokenRequest);
+  const response = await httpClient.post(httpClient.defaults.baseURL + 'Token', tokenRequest);
   sessionStorage.setItem('BCP-Token', response.data);
   return response.data;
 }
@@ -94,5 +99,27 @@ httpClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const http = {
+  get: async <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.get(httpClient.defaults.baseURL+url, config);
+    return response.data;
+  },
+
+  post: async <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.post(httpClient.defaults.baseURL+url, data, config);
+    return response.data;
+  },
+
+  put: async <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.put(httpClient.defaults.baseURL+url, data, config);
+    return response.data;
+  },
+
+  delete: async <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.delete(httpClient.defaults.baseURL+url, config);
+    return response.data;
+  },
+};
 
 export default httpClient;
