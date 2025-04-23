@@ -1,10 +1,10 @@
 import {createBrowserRouter} from 'react-router';
 import App from './App';
-import Home from './components/Home';
 import Department from './pages/Department';
 import Category from './pages/Category';
 import SKUs from './pages/SKUs';
 import Product from './pages/Product';
+import Home from './pages/Home';
 
 const routes = createBrowserRouter([
   {
