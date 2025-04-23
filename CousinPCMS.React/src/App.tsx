@@ -1,17 +1,13 @@
-import { Button, ConfigProvider, Space } from "antd";
-import theme from "./theme";
+import {Button} from 'antd';
+import {Outlet} from 'react-router';
 
 const App = () => {
   return (
     <>
-      <ConfigProvider theme={theme}>
-        <Space>
-          <Button type="primary">Primary</Button>
-          <Button>Default</Button>
-
-          <h1>{import.meta.env.VITE_BASE_URL}</h1>
-        </Space>
-      </ConfigProvider>
+      <h1>Header</h1>
+      <Outlet />
+      <Button type="primary">Primary</Button>
+      <h1>Footer</h1>
     </>
   );
 };
