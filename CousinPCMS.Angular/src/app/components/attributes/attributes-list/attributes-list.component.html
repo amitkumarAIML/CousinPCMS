@@ -1,22 +1,37 @@
-<div class="grid grid-cols-1">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
-    <nz-form-item>
-      <nz-form-label [nzNoColon]="true">Search</nz-form-label>
+<div class="grid grid-cols-1 md:grid-cols-2 items-start md:items-center gap-y-4 p-4 pb-1">
+
+  <!-- Left section: Attribute + Search -->
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="font-medium">Attribute list</span>
+    <nz-form-label [nzNoColon]="true" class="mb-0 ">Search</nz-form-label>
+    <nz-form-item class="mb-0 max-w-xs w-full">
+      
       <nz-form-control>
-        <nz-input-group [nzSuffix]="inputClearTpl">
-          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+        <nz-input-group [nzSuffix]="inputClearTpl" >
+          <input nz-input type="text" class="rounded w-full" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
+
     <ng-template #inputClearTpl>
       @if (searchValue) {
-      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
-      }@else{
-      <nz-icon nzType="search" />
+        <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      } @else {
+        <nz-icon nzType="search" />
       }
     </ng-template>
   </div>
 
+  <!-- Right section: Buttons -->
+  <div class="flex justify-start md:justify-end gap-x-3">
+    <button nz-button nzType="default" [routerLink]="'/home'">Cancel</button>
+    <button nz-button nzType="primary" class="text-white" [routerLink]="'/attributes/add'">Add</button>
+  </div>
+
+</div>
+
+<hr class="mt-2 border-light-border">
+<div class="grid grid-cols-1 p-4">
   <div class="">
     <nz-table #headerTable [nzData]="filteredData" nzSize="small" nzBordered [nzShowPagination]="false" [nzFrontPagination]="false" [nzScroll]="{y: '660px'}">
       <thead>

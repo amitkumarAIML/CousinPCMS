@@ -63,9 +63,8 @@ export class ProductDisplayComponent {
     sessionStorage.setItem('productId', data.akiProductID.toString());
     sessionStorage.removeItem('itemNumber');
     this.productSelected.emit(data.akiProductID);
-    this.categoryProductVisible = true;
+    
   }
-
   onProductRightClick(product: any): void {
     this.selectedProduct = product?.akiProductID;
     this.categoryData = product;
@@ -85,7 +84,7 @@ export class ProductDisplayComponent {
   }
 
   getDataInParallel(): void {
-    this.loading = true;
+    // this.loading = true;
     this.products = [];
     this.lstAllAttributeSets = [];
     if (!this.selectedCategory) return;
@@ -150,6 +149,16 @@ export class ProductDisplayComponent {
     this.filteredData = [...this.allProductAtrributes];
   }
 
-  
+  editProduct(){
+    if (!this.selectedProduct) {
+      this.dataService.ShowNotification('error','','Please select product name.')
+      return;
+    }  
+    this.categoryProductVisible = true;
+  }
+  addProduct(){ 
+    // sessionStorage.removeItem('productId');
+    this.categoryProductVisible = true;
+  }
 
 }

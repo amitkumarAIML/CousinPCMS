@@ -101,6 +101,7 @@ label {
 
 .ant-table-tbody .ant-table-cell {
   color: var(--color-secondary-font) !important;
+  line-height: 0px !important;
 }
 .ant-modal-content {
   border-radius: 5px;

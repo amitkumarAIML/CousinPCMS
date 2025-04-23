@@ -77,9 +77,7 @@ export class SkuDisplayComponent {
     if (!data) return;
     this.selectedSku = data.akiSKUID;
     sessionStorage.setItem('itemNumber', data.akiitemid);
-    this.productSkusVisible = true;
-  }
-
+  } 
   onSearch() {
     const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
   
@@ -109,5 +107,12 @@ export class SkuDisplayComponent {
       this.loadSkuForProduct();
     }
   }
-
+  editSku(){
+    if (!this.selectedSku) {
+      this.productSkusVisible = false;
+      this.dataService.ShowNotification('error', '', 'Please select sku name.');
+      return;
+    } 
+    this.productSkusVisible = true;
+  }
 }

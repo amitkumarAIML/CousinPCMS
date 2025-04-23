@@ -80,7 +80,7 @@
             <td>{{ data.listPosition }}</td>
             <td>
               <a (click)="deleteAttributeSets(data)">
-                <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline"></nz-icon>
+                <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline">Unlink</nz-icon>
               </a>
             </td>
           </tr>
@@ -101,7 +101,7 @@
               @for (item of attributeList; track $index) {
               <nz-list-item class="cursor-pointer text-secondary-font flex">
                 <span>{{ item.attributeName }}</span>
-                <a (click)="addAttributeData(item)">Add</a>
+                <a (click)="addAttributeData(item)">Link-Associate</a>
               </nz-list-item>
               }
             </nz-list>

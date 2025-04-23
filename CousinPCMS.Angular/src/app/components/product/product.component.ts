@@ -50,6 +50,8 @@ export class ProductComponent {
 
   getProductById() {
     const productId = sessionStorage.getItem('productId') || '';
+    console.log('productId',productId);
+    
     if (productId) {
     this.productService.getProductById(productId).subscribe({
       next: (response: ProductResponse) => {

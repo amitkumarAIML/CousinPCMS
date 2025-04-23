@@ -1,6 +1,10 @@
 <div class="product-container">
   <div class="product-header flex justify-between items-center">
-    Product Name
+ <div class="flex gap-2">
+    <span>Product Name</span>   
+    <a (click)="addProduct()">Add</a>
+    <a (click)="editProduct()">Edit</a>
+ </div> 
     <nz-form-item>
       <nz-form-control>
         <nz-input-group [nzSuffix]="inputClearTpl">
@@ -20,14 +24,14 @@
   <nz-spin [nzSpinning]="loading">
     <!-- Product List -->
     @if (filteredData && filteredData.length > 0) {
-    <ul class="product-list divide-y divide-gray-200">
+    <ul class="product-list divide-y divide-gray-200 leading-2">
       @for (product of filteredData; track $index) { @if (product) { @if (product && product.akiProductID) {
       <li class="product-item" (click)="onProductClick(product)" [ngClass]="{'bg-bg-light': selectedProduct == product?.akiProductID}">
         {{ product.akiProductName }}
       </li>
       } @if (product && product.attributeSetName) {
       <li class="product-item" (click)="onProductRightClick(product)" [ngClass]="{'bg-bg-light': selectedProduct == product?.akiCategoryID}">
-        {{ product.attributeSetName }}
+        <span class="text-primary-font"> {{ product.attributeSetName }}</span>
       </li>
       } } }
     </ul>
