@@ -2,10 +2,7 @@ import axios, {AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig} fr
 
 
 const httpClient = axios.create({
-<<<<<<< Updated upstream
-=======
   baseURL: import.meta.env.VITE_BASE_URL, 
->>>>>>> Stashed changes
   headers: {
     'Content-Type': 'application/json',
   },
