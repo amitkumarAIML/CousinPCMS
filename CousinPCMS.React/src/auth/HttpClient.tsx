@@ -1,7 +1,6 @@
 import axios, {InternalAxiosRequestConfig} from 'axios';
 
 const httpClient = axios.create({
-  // baseURL: "http://localhost:5201/api",
   headers: {
     'Content-Type': 'application/json',
   },

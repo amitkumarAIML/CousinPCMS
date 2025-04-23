@@ -1,10 +1,12 @@
 import {Button} from 'antd';
 import {Outlet} from 'react-router';
+import Header from './components/shared/Header';
 
 const App = () => {
   return (
     <>
-      <h1>Header</h1>
+      
+      <Header />
       <Outlet />
       <Button type="primary">Primary</Button>
       <h1>Footer</h1>
