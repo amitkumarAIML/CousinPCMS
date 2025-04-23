@@ -5,7 +5,7 @@ const Header = () => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname.startsWith(path);
   return (
-    <div className="bg-white">
+    <div className="bg-white absolute shadow-cousins-box overflow-hidden w-full">
       <ul className="flex gap-x-5 text-primary-font justify-end items-center py-2 px-6">
         <li className={`cursor-pointer ${isActive('/home') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/home')}>
           Home
