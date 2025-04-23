@@ -34,3 +34,7 @@ export interface AttributeValuesRequestModel {
     alternateValues: string;
     attributevalueIsActive: boolean;
 }
+
+export interface AttributeValueByName { 
+    attributeNames: Array<string>;
+}
