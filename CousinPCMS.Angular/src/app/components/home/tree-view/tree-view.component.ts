@@ -1,28 +1,27 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, Renderer2, ViewEncapsulation } from '@angular/core';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { FlatNode, TreeNode } from '../../../shared/models/treeModel';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { SelectionModel } from '@angular/cdk/collections';
-import { treeData } from './tree-sample';
-import { NzTreeModule } from 'ng-zorro-antd/tree';
-import { HomeService } from '../home.service';
-import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { Department, DepartmentResponse } from '../../../shared/models/departmentModel';
-import { DataService } from '../../../shared/services/data.service';
-import { DepartmentService } from '../../departments/department.service';
-import { NzModalModule } from 'ng-zorro-antd/modal';
-import { CategoryAttributeComponent } from '../category-attribute/category-attribute.component';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { CommonModule } from '@angular/common';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, Renderer2, ViewEncapsulation} from '@angular/core';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {FlatNode, TreeNode} from '../../../shared/models/treeModel';
+import {NzIconModule} from 'ng-zorro-antd/icon';
+import {SelectionModel} from '@angular/cdk/collections';
+import {treeData} from './tree-sample';
+import {NzTreeModule} from 'ng-zorro-antd/tree';
+import {HomeService} from '../home.service';
+import {NzSpinModule} from 'ng-zorro-antd/spin';
+import {Department, DepartmentResponse} from '../../../shared/models/departmentModel';
+import {DataService} from '../../../shared/services/data.service';
+import {DepartmentService} from '../../departments/department.service';
+import {NzModalModule} from 'ng-zorro-antd/modal';
+import {CategoryAttributeComponent} from '../category-attribute/category-attribute.component';
+import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'cousins-tree-view',
-  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent,NzToolTipModule,CommonModule],
+  imports: [NzTreeModule, NzIconModule, NzSpinModule, NzModalModule, CategoryAttributeComponent, NzToolTipModule, CommonModule],
   templateUrl: './tree-view.component.html',
   styleUrl: './tree-view.component.css',
 })
 export class TreeViewComponent implements OnInit, AfterViewInit {
-
   // Maintain original nodes for nz-tree
   nodes: any[] = [];
   departments: any[] = [];
@@ -37,18 +36,11 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
 
   @Output() categorySelected = new EventEmitter<string>();
 
-  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService, private departmentService: DepartmentService) {
-  }
+  constructor(private homeService: HomeService, private cdRef: ChangeDetectorRef, private dataService: DataService, private departmentService: DepartmentService) {}
 
   ngOnInit(): void {
     this.loadDepartments();
   }
-
-  getSampleData(): TreeNode[] {
-    return treeData;
-  }
-
-  hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
   ngAfterViewInit(): void {
     // No need to call expandAll() as we've already set expanded: true in our tree data
@@ -59,45 +51,101 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
     // load child async
     if (event.eventName === 'expand') {
       const node = event.node;
-
-      if (node?.getChildren().length === 0 && node?.isExpanded) {
-        this.loadCategoriesForDepartments(node).then(data => {
-          if (data && data.length > 0) {
-            node.addChildren(data);
-          } else {
-            console.warn('No child data found for this node.');
-          }
-        }).catch(error => {
-          console.error('Error loading child nodes:', error);
-        });
+      console.log('Node expanded:', event, node);
+      if (node.level === 0 && node?.getChildren().length === 0 && node?.isExpanded) {
+        this.loadCategoriesForDepartments(node)
+          .then((data) => {
+            if (data && data.length > 0) {
+              node.addChildren(data);
+              this.cdRef.detectChanges();
+            } else {
+              console.warn('No child data found for this node.');
+            }
+          })
+          .catch((error) => {
+            console.error('Error loading child nodes:', error);
+          });
+      } else {
+        node.isLoading = false;
       }
     }
-
 
     if (event.eventName === 'drop') {
-
-      // Extract properties safely
       const dragNode = event.dragNode;
-      const targetNode = event.node;
-      const pos = event.pos ?? 0; // Default to 0 (inside) if undefined
+      const dropNode = event.node;
+      const dropPosition = event.dropPosition ?? 0;
 
-      if (!dragNode || !targetNode) {
-        console.warn('Drag or drop node missing!');
-        return;
+      if (!dragNode || !dropNode) return;
+
+      // 🔸 Remove node from original parent
+      const dragParent = dragNode.parentNode;
+      if (dragParent) {
+        dragParent.children = dragParent.children?.filter((child: any) => child.key !== dragNode.key);
+      } else {
+        this.nodes = this.nodes.filter((node) => node.key !== dragNode.key);
       }
 
+      if (dropPosition === 0) {
+        // dropNode.children = dropNode.children || [];
+        console.log('Drop Position:', dragNode);
+        if (dropNode.children.length === 0) {
+          dropNode.children.push(dragNode);
+        } else {
+          dropNode.addChildren([dragNode]);
+        }
+      
+          
 
-      // Prevent self-drop
-      if (dragNode.key === targetNode.key) {
-        console.warn('Cannot drop a node onto itself');
-        return;
+        dropNode.isLeaf = false;
+        dropNode.isExpanded = false;
+        if (dropNode.origin) {
+          dropNode.origin.isLeaf = false;
+          dropNode.origin.isExpanded = true;
+      }
+      
+        dragNode.parentId = dropNode.key;
+        const newLevel = dropNode.level + 1;
+        this.updateLevelRecursively(dragNode, newLevel);
+
+        console.log('New Level:',dragNode, dropNode,this.nodes);
+        this.cdRef.markForCheck();
+      } else {
+        // 🔸 Drop *before or after* dropNode (as sibling)
+        this.insertNodeAtSibling(this.nodes, dropNode.key, dragNode, dropPosition);
       }
 
+      this.cdRef.detectChanges();
     }
-
   }
 
-  // Get All Department 
+  updateLevelRecursively(node: TreeNode, level: number): void {
+    node.level = level;
+    
+    if (node.children && node.children.length > 0) {
+      for (const child of node.children) {
+        this.updateLevelRecursively(child, level + 1);
+      }
+    }
+  }
+
+  insertNodeAtSibling(nodes: TreeNode[], referenceKey: string | number, newNode: TreeNode, position: number): boolean {
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (node.key === referenceKey) {
+        const insertIndex = position < 0 ? i : i + 1;
+        nodes.splice(insertIndex, 0, newNode);
+        return true;
+      }
+      if (node.children?.length) {
+        if (this.insertNodeAtSibling(node.children, referenceKey, newNode, position)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // Get All Department
   loadDepartments(): void {
     this.loading = true;
     this.homeService.getDepartments().subscribe({
@@ -106,15 +154,15 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
         if (departments.isSuccess) {
           if (departments.value && departments.value.length > 0) {
             this.departments = departments.value.filter((res: Department) => res.akiDepartmentIsActive);
-            const treeData = this.departments.map((dept: any) => ({
+            const treeData: TreeNode[] = this.departments.map((dept: any) => ({
               title: dept.akiDepartmentName.toUpperCase(),
               key: dept.akiDepartmentID,
-              parentId: null,
+              parentId: dept.akiDepartmentID,
               level: 0, // Add level tracking
               isDepartment: true, // First parent gets 'partition' icon
               isLeaf: false,
               children: [],
-
+              isExpanded: false, // Expand all departments by default
             }));
             this.nodes = treeData;
 
@@ -123,9 +171,9 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
             const categoryIdStr = sessionStorage.getItem('categoryId');
             const categoryId: string | undefined = categoryIdStr ? categoryIdStr : undefined;
             if (departmentId) {
-              const findParent = this.nodes.find(child => child.key === departmentId);
+              const findParent = this.nodes.find((child) => child.key === departmentId);
               if (categoryId) {
-                this.loadCategoriesForDepartments(findParent).then(data => {
+                this.loadCategoriesForDepartments(findParent).then((data) => {
                   if (data && data.length > 0) {
                     findParent.children = data;
                     findParent.isExpanded = true;
@@ -133,13 +181,13 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
                     this.selectedValue = [categoryId];
                     const path = this.getNodePath(this.nodes, categoryId);
                     if (path) {
-                      this.defaultExpandedKeys = path;  // Set all parents to expand
+                      this.defaultExpandedKeys = path; // Set all parents to expand
                     }
                     this.categorySelected.emit(categoryId);
                   } else {
                     console.warn('No child data found for this node.');
                   }
-                })
+                });
               } else {
                 this.selectedValue = [departmentId];
               }
@@ -156,8 +204,8 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this.loading = false;
-        this.dataService.ShowNotification('error', '', "Something went wrong");
-      }
+        this.dataService.ShowNotification('error', '', 'Something went wrong');
+      },
     });
   }
 
@@ -175,31 +223,31 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  // Get All Category By department id 
+  // Get All Category By department id
   async loadCategoriesForDepartments(node: TreeNode): Promise<TreeNode[]> {
     return new Promise((resolve) => {
       // this.loading = true;
       this.homeService.getCategoriesByDepartment(node.key).subscribe({
         next: (categories) => {
-          this.categories = categories.filter((res: any) => res.akiCategoryIsActive);
+          this.categories = categories && categories.filter((res: any) => res.akiCategoryIsActive);
           // this.categories = categories;
           if (this.categories && this.categories.length > 0) {
-            const treeData = this.buildCategoryTree(this.categories);
+            const treeData = this.buildCategoryTree(this.categories, node);
             resolve(treeData);
           } else {
             resolve([]); // No children
           }
         },
         error: (error) => {
-          this.dataService.ShowNotification('error', '', "Something went wrong");
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
           this.loading = false;
           resolve([]); // Handle error gracefully
-        }
+        },
       });
     });
   }
 
-  buildCategoryTree(categories: any[]): TreeNode[] {
+  buildCategoryTree(categories: any[], node: TreeNode): TreeNode[] {
     const categoryMap = new Map<string, TreeNode>();
     const tree: TreeNode[] = [];
 
@@ -210,15 +258,14 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
         parentId: String(category.akiCategoryParentID),
         title: category.akiCategoryName,
         key: categoryID,
-        isLeaf: true, // Assume leaf initially
-        children: [], // Ensure children exist
-        level: index, // Add level tracking
-        isLast: false, // Default value
+        isLeaf: true,
+        children: [],
+        isLast: false,
       });
     });
 
     // 🔹 Attach child nodes to their parent
-    categories.forEach(category => {
+    categories.forEach((category) => {
       const categoryID = String(category.akiCategoryID); // Normalize to string
       const parentID = String(category.akiCategoryParentID); // Normalize to string
       const node = categoryMap.get(categoryID);
@@ -234,7 +281,6 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
           parentNode.isLeaf = false; // Mark parent as non-leaf
         }
       } else {
-        // If no parent, it's a top-level category
         tree.push(node);
       }
     });
@@ -243,7 +289,7 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
 
   selectCategory(event: any) {
     if (event.level === 0) {
-      const dep = this.departments.filter(a => a.akiDepartmentID == event.origin.key);
+      const dep = this.departments.filter((a) => a.akiDepartmentID == event.origin.key);
       sessionStorage.setItem('departmentId', dep[0].akiDepartmentID);
       sessionStorage.removeItem('categoryId');
       sessionStorage.removeItem('productId');
@@ -251,7 +297,7 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
     } else {
       const cat = this.categories.filter((r) => r.akiCategoryID == event.origin.key);
       if (cat.length > 0) {
-        const dep = this.departments.filter(a => a.akiDepartmentID == cat[0].akiDepartment);
+        const dep = this.departments.filter((a) => a.akiDepartmentID == cat[0].akiDepartment);
         sessionStorage.setItem('departmentId', dep[0].akiDepartmentID);
         sessionStorage.setItem('categoryId', cat[0].akiCategoryID);
 
@@ -259,89 +305,28 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
         sessionStorage.removeItem('itemNumber');
         this.categoryData = dep[0].akiCategoryID;
       }
-
     }
     this.categorySelected.emit(event.origin.key); // Emit selected category
-
-  }
-
-  // Helper method to get the icon type based on node properties
-  getIconType(node: TreeNode): string {
-    if (node.isDepartment) {
-      return 'partition';
-    } else if (node.isLeaf || !node.children || node.children.length === 0) {
-      return this.isSelected(node) ? 'folder-open' : 'folder';
-    } else {
-      return this.isExpanded(node) ? 'folder-open' : 'folder';
-    }
-  }
-
-  // Helper methods to match original functionality
-  isSelected(node: TreeNode): boolean {
-    // Implementation will depend on how you manage selection in the new tree
-    // This is a placeholder
-    return false;
-  }
-
-  isExpanded(node: TreeNode): boolean {
-    return !!node.expanded;
-  }
-
-
-  // Remove node from its previous parent
-  removeNodeFromParent(nodeKey: string, nodes: TreeNode[]): boolean {
-    for (const node of nodes) {
-      if (node.children) {
-        const index = node.children.findIndex(child => child.key === nodeKey);
-        if (index !== -1) {
-          node.children.splice(index, 1);
-          return true;
-        }
-        // Recursively check in child nodes
-        if (this.removeNodeFromParent(nodeKey, node.children)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  // Find parent node of a given key
-  findParentNode(nodeKey: string, nodes: TreeNode[]): TreeNode | null {
-    for (const node of nodes) {
-      if (node.children) {
-        if (node.children.some(child => child.key === nodeKey)) {
-          return node;
-        }
-        const found = this.findParentNode(nodeKey, node.children);
-        if (found) return found;
-      }
-    }
-    return null;
   }
 
   onRightClick(event: MouseEvent, node: any): void {
     if (node.level === 0) return;
     this.loading = true;
     this.homeService.getDistinctAttributeSetsByCategoryId(node.key).subscribe({
-      next: (response : any) => { 
-
-        if (response.value === null)  {
+      next: (response: any) => {
+        if (response.value === null) {
           this.categoryAttriisVisible = true;
           this.categoryData = node;
         } else {
-          this.dataService.ShowNotification('warning','', `Attribute Set For ${node.origin.title} is already added.`);
+          this.dataService.ShowNotification('warning', '', `Attribute Set For ${node.origin.title} is already added.`);
         }
         this.loading = false;
       },
-      error: (error)  => {
+      error: (error) => {
         console.error('Error in API calls', error);
         this.loading = false;
-      }
-    })
-   
- 
-
+      },
+    });
   }
   handleOk(): void {
     this.categoryAttriisVisible = false;

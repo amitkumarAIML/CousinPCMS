@@ -2,7 +2,7 @@ export interface TreeNode {
   name?: string;
   title?: string; // Added for nz-tree compatibility
   key: string;   // Added for nz-tree compatibility
-  children?: TreeNode[];
+  children: TreeNode[];
   isDepartment?: boolean;
   isLeaf?: boolean; // Added for nz-tree compatibility
   expanded?: boolean; // Added for nz-tree compatibility
@@ -10,6 +10,7 @@ export interface TreeNode {
   parentNode?: TreeNode | null;
   level?: number;
   isLast?: boolean;
+  origin?: any; // Added for nz-tree compatibility
 }
 
 export interface FlatNode {
