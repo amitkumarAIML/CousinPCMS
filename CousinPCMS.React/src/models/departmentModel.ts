@@ -22,7 +22,7 @@ export interface DepartmentResponse {
     value: Department[];
     isSuccess: boolean;
     isError: boolean;
-    exceptionInformation: any;
+    exceptionInformation: string;
 }
 
 
@@ -30,7 +30,7 @@ export interface DepartmentUpdateResponse {
     value: Department;
     isSuccess: boolean;
     isError: boolean;
-    exceptionInformation: any;
+    exceptionInformation: string;
 }
 
 
