@@ -6,7 +6,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 
 @Component({
   selector: 'cousins-attributes',
-  imports: [ AttributesListComponent, NzSpinModule, RouterLink, NzButtonModule],
+  imports: [ AttributesListComponent, NzSpinModule, NzButtonModule],
   templateUrl: './attributes.component.html',
   styleUrl: './attributes.component.css',
 })

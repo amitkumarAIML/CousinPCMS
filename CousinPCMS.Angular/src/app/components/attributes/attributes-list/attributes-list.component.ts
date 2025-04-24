@@ -4,7 +4,7 @@ import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzTableModule} from 'ng-zorro-antd/table';
 import {AttributesService} from '../attributes.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {DataService} from '../../../shared/services/data.service';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ApiResponse } from '../../../shared/models/generalModel';
@@ -15,7 +15,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'cousins-attributes-list',
-  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule, NzInputModule, NzFormModule, NzPopconfirmModule],
+  imports: [NzTableModule, NzButtonModule, FormsModule, NzIconModule, NzCheckboxModule, NzInputModule, NzFormModule, NzPopconfirmModule,RouterLink, NzButtonModule],
   templateUrl: './attributes-list.component.html',
   styleUrl: './attributes-list.component.css',
 })

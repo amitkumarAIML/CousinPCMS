@@ -1,6 +1,10 @@
 <div class="sku-container">
   <div class="sku-header flex justify-between items-center">
-    SKU Name
+    <div class="flex gap-2">
+      <span> SKU Name</span>   
+      <a (click)="addSKU()">Add</a>
+      <a (click)="editSku()">Edit</a>
+   </div>
     <nz-form-item>
       <nz-form-control>
         <nz-input-group [nzSuffix]="inputClearTpl">
@@ -19,7 +23,7 @@
 
   <nz-spin [nzSpinning]="loading">
     @if (filteredData && filteredData.length > 0) {
-    <ul class="sku-list divide-y divide-gray-200">
+    <ul class="sku-list divide-y divide-gray-200 leading-2">
       @for (sku of filteredData; track $index) {
       <li class="sku-item" (click)="onSkuClick(sku)" [ngClass]="{'bg-bg-light': selectedSku === sku?.akiSKUID}">
         {{ sku.skuName }}
