@@ -126,6 +126,38 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// adds an department.
+        /// </summary>
+        /// <param name="objModel">The department object with newly added details.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpPatch("AddDepartment")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddDepartment(AddDepartmentRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddDepartment)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _deptService.AddDepartment(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddDepartment)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddDepartment)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Updates an existing department.
         /// </summary>
         /// <param name="objModel">The department object with updated details.</param>
@@ -134,7 +166,7 @@ namespace CousinPCMS.API.Controllers
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> UpdateDepartment(AddDepartmentRequestModel objModel)
+        public async Task<IActionResult> UpdateDepartment(UpdateDepartmentRequestModel objModel)
         {
             log.Info($"Request of {nameof(UpdateDepartment)} method called.");
 

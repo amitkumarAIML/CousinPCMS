@@ -281,6 +281,40 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Adds a new product.
+        /// </summary>
+        /// <param name="objModel">An <see cref="AddProductRequestModel"/> containing the updated product information.</param>
+        /// <returns>
+        /// Returns an successs or an error message.
+        /// </returns>
+        [HttpPatch("AddProduct")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddProduct(AddProductRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddProduct)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.AddProduct(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddProduct)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddProduct)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Retrieves the linked URLs for the specified product.
         /// </summary>
         /// <param name="productId">The unique identifier of the product for which linked URLs are to be fetched.</param>

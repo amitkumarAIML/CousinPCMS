@@ -177,4 +177,36 @@ namespace CousinPCMS.Domain
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
     }
+
+    public class AddItemRequestModel
+    {
+        public string akiitemid { get; set; }
+        public string skuName { get; set; }
+        public int akiSKUID { get; set; }
+        public string akiProductID { get; set; }
+        public string akiCategoryID { get; set; }
+        public string akiManufacturerRef { get; set; }
+        public int akiListOrder { get; set; }
+        public bool akiObsolete { get; set; }
+        public bool akiWebActive { get; set; }
+        public string akiImageURL { get; set; }
+        public string akiCommodityCode { get; set; }
+        public int akiGuidePriceTBC { get; set; }
+        public int akiGuideWeightTBC { get; set; }
+        public bool akicurrentlyPartRestricted { get; set; }
+        public string akiCountryofOrigin { get; set; }
+        public bool akiPrintLayoutTemp { get; set; }
+        public string akiAlternativeTitle { get; set; }
+        public string akiCompetitors { get; set; }
+        public bool akiPriceBreaksTBC { get; set; }
+        public int akiItemShippingWeight { get; set; }
+        public int akiItemPriceSiteSellPrice { get; set; }
+        public int akiTemplateID { get; set; }
+        public string akiLayoutTemplate { get; set; }
+        public string akiSKUDescription { get; set; }
+        public string akiPricingFormula { get; set; }
+        public string akiPriceBreak { get; set; }
+        public string akiPriceGroup { get; set; }
+    }
+
 }
