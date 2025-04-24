@@ -50,6 +50,8 @@ export class ProductComponent {
 
   getProductById() {
     const productId = sessionStorage.getItem('productId') || '';
+    console.log('productId',productId);
+    
     if (productId) {
     this.productService.getProductById(productId).subscribe({
       next: (response: ProductResponse) => {
@@ -70,6 +72,7 @@ export class ProductComponent {
       },
     });
     } else {
+      this.loading = false;
       this.dataService.ShowNotification('error', '', 'Please select product name from home page');
     }
   }

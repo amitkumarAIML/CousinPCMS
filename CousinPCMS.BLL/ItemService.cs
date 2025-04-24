@@ -93,6 +93,43 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
+
+        public APIResult<ItemResponseModel> AddItem(AddItemRequestModel objModel)
+        {
+            APIResult<ItemResponseModel> returnValue = new APIResult<ItemResponseModel>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}items?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (!string.IsNullOrEmpty(response.Content))
+                {
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<ItemResponseModel>>(response.Content);
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = responseOfOrderLine.Value;
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
         public APIResult<List<ItemResponseModel>> GetAllItemsByProductId(string akiProductID)
         {
             APIResult<List<ItemResponseModel>> returnValue = new APIResult<List<ItemResponseModel>>

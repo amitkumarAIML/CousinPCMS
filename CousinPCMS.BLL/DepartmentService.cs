@@ -132,7 +132,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateDepartment(AddDepartmentRequestModel objModel)
+        public APIResult<string> UpdateDepartment(UpdateDepartmentRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -180,6 +180,42 @@ namespace CousinPCMS.BLL
                 var postData = JsonConvert.SerializeObject(objModel);
 
                 var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_DeleteDepartment?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.IsSuccess = true;
+                    returnValue.Value = "Success";
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                    // Extract "message" field from JSON response if available
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+
+            return returnValue;
+        }
+
+        public APIResult<string> AddDepartment(AddDepartmentRequestModel objModel)
+        {
+            APIResult<string> returnValue = new APIResult<string>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var postData = JsonConvert.SerializeObject(objModel);
+
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertDepartment?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {

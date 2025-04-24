@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -27,6 +27,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
   styleUrl: './departments.component.css'
 })
 export class DepartmentsComponent  implements OnInit {
+   @Output() eventComplete = new EventEmitter<string>();
   activeTab: number = 0; // Default tab
   departmentData!: Department;
 
@@ -51,6 +52,7 @@ export class DepartmentsComponent  implements OnInit {
 
   cancel() {
     this.router.navigate(['/home']);
+    this.eventComplete.emit('cancel');
   }
 
   getDepartmentData() {

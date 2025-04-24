@@ -121,6 +121,32 @@ namespace CousinPCMS.Domain
         public string imageURL { get; set; }
     }
 
+    public class AddProductRequestModel
+    {
+        public int akiProductID { get; set; }
+        public string akiCategoryID { get; set; }
+        public string akiProductName { get; set; }
+        public string akiProductHeading { get; set; }
+        public int akiProductListOrder { get; set; }
+        public string akiProductCommodityCode { get; set; }
+        public string akiProductCountryOfOrigin { get; set; }
+        public string akiProductImageURL { get; set; }
+        public int akiProductImageHeight { get; set; }
+        public int akiProductImageWidth { get; set; }
+        public string akiProductAlternativeTitle { get; set; }
+        public string aki_Layout_Template { get; set; }
+        public bool akiProductShowPriceBreaks { get; set; }
+        public bool akiProductPrintLayoutTemp { get; set; }
+        public string akiProductIndexText1 { get; set; }
+        public string akiProductIndexText2 { get; set; }
+        public string akiProductIndexText3 { get; set; }
+        public string akiProductIndexText4 { get; set; }
+        public string akiProductIndexText5 { get; set; }
+        public string categoryName { get; set; }
+        public string akiProductDescription { get; set; }
+        public string akiProductText { get; set; }
+    }
+
     public class UpdateProductModel
     {
         public int akiProductID { get; set; }

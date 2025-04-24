@@ -251,9 +251,9 @@ namespace CousinPCMS.API.Controllers
         /// Updates an existing category.
         /// </summary>
         /// <param name="objModel">The category object with updated details.</param>
-        /// <returns>Returns object of category update detail or null.</returns>
+        /// <returns>Returns success or error message.</returns>
         [HttpPatch("UpdateCategory")]
-        [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryModel objModel)
@@ -280,12 +280,44 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Adds an category.
+        /// </summary>
+        /// <param name="objModel">The category object with added details.</param>
+        /// <returns>Returns success or error message.</returns>
+        [HttpPatch("AddCategory")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddCategory(AddCategoryModel objModel)
+        {
+            log.Info($"Request of {nameof(AddCategory)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.AddCategory(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddCategory)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddCategory)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Updates an associated product detail for category.
         /// </summary>
         /// <param name="objModel">The object with updated details.</param>
-        /// <returns>Returns object of associated product update detail or null.</returns>
+        /// <returns>Returns success or error message.</returns>
         [HttpPatch("UpdateAssociatedProduct")]
-        [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> UpdateAssociatedProduct(AssociatedProductRequestModel objModel)

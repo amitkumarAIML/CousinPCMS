@@ -98,6 +98,37 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+        /// <summary>
+        /// Adds an Item.
+        /// </summary>
+        /// <param name="objModel">The item object with added details.</param>
+        /// <returns>Returns item object.</returns>
+        [HttpPatch("AddItem")]
+        [ProducesResponseType(typeof(APIResult<ItemResponseModel>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> AddItem(AddItemRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(AddItem)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _itemService.AddItem(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(AddItem)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(AddItem)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
 
         /// <summary>
         /// Gets all items by Product Id.

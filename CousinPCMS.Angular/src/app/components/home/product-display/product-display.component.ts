@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { HomeService } from '../home.service';
 import { CommonModule } from '@angular/common';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -13,6 +13,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormsModule } from '@angular/forms';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { ProductComponent } from "../../product/product.component";
+import { ProductDetailsComponent } from '../../product/product-details/product-details.component';
 
 @Component({
   selector: 'cousins-product-display',
@@ -21,6 +22,7 @@ import { ProductComponent } from "../../product/product.component";
   styleUrl: './product-display.component.css'
 })
 export class ProductDisplayComponent {
+  @ViewChild(ProductDetailsComponent) productComponent!: ProductDetailsComponent;
 
   @Input() selectedCategory: string = '';
   @Output() productSelected = new EventEmitter<number>();
@@ -63,9 +65,8 @@ export class ProductDisplayComponent {
     sessionStorage.setItem('productId', data.akiProductID.toString());
     sessionStorage.removeItem('itemNumber');
     this.productSelected.emit(data.akiProductID);
-    this.categoryProductVisible = true;
+    
   }
-
   onProductRightClick(product: any): void {
     this.selectedProduct = product?.akiProductID;
     this.categoryData = product;
@@ -85,7 +86,7 @@ export class ProductDisplayComponent {
   }
 
   getDataInParallel(): void {
-    this.loading = true;
+    // this.loading = true;
     this.products = [];
     this.lstAllAttributeSets = [];
     if (!this.selectedCategory) return;
@@ -150,6 +151,20 @@ export class ProductDisplayComponent {
     this.filteredData = [...this.allProductAtrributes];
   }
 
+  editProduct(){
+    if (!this.selectedProduct) {
+      this.dataService.ShowNotification('error','','Please select product name.')
+      return;
+    }  
+    this.categoryProductVisible = true;
+  }
   
+  addProduct(){ 
+    // sessionStorage.removeItem('productId');
+    if (this.productComponent) {
+      this.productComponent.productForm.reset();
+    }
+    this.categoryProductVisible = true;
+  }
 
 }

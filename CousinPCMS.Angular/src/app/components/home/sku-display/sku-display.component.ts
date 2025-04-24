@@ -27,7 +27,7 @@ export class SkuDisplayComponent {
   searchValue: string = '';
   filteredData: SKuList[] = [];
   productSkusVisible: boolean = false;
-
+  
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -77,9 +77,7 @@ export class SkuDisplayComponent {
     if (!data) return;
     this.selectedSku = data.akiSKUID;
     sessionStorage.setItem('itemNumber', data.akiitemid);
-    this.productSkusVisible = true;
-  }
-
+  } 
   onSearch() {
     const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
   
@@ -108,6 +106,18 @@ export class SkuDisplayComponent {
     if(val !== 'cancel') {
       this.loadSkuForProduct();
     }
+  }
+  editSku(){
+    if (!this.selectedSku) {
+      this.productSkusVisible = false;
+      this.dataService.ShowNotification('error', '', 'Please select sku name.');
+      return;
+    } 
+    this.productSkusVisible = true;
+  }
+  addSKU(){ 
+    // sessionStorage.removeItem('productId');
+    this.productSkusVisible = true;
   }
 
 }
