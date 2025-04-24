@@ -63,8 +63,8 @@ namespace CousinPCMS.Domain
         public bool akiWebActive { get; set; }
         public string akiImageURL { get; set; }
         public string akiCommodityCode { get; set; }
-        public int akiGuidePrice { get; set; }
-        public int akiGuideWeight { get; set; }
+        public int akiGuidePriceTBC { get; set; }
+        public int akiGuideWeightTBC { get; set; }
         public bool akicurrentlyPartRestricted { get; set; }
         public string akiCountryofOrigin { get; set; }
         public bool akiPrintLayoutTemp { get; set; }
