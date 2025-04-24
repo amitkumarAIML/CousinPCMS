@@ -5,7 +5,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <div className="overflow-y-auto overflow-x-hidden absolute top-10 h-[calc(100vh-56px)]">
+      <div className="overflow-y-auto overflow-x-hidden w-full absolute top-10 h-[calc(100vh-56px)]">
         <Outlet />
       </div>
     </>
