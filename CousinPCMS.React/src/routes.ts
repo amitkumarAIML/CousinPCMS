@@ -5,6 +5,7 @@ import Category from './pages/Category';
 import SKUs from './pages/SKUs';
 import Product from './pages/Product';
 import Home from './pages/Home';
+import Attributes from './pages/Attributes';
 
 const routes = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const routes = createBrowserRouter([
       {
         path: 'SKUs',
         Component: SKUs,
+      },
+      {
+        path: 'attributes',
+        Component: Attributes,
       },
     ],
   },
