@@ -205,7 +205,28 @@ export class CategoryAttributeComponent implements OnInit {
       }
     })
   }
-  cancel(): void {
-    this.dataService.ShowNotification('info', '', 'Delete action cancelled');
+ 
+  editAtrributeSets(row: any) {
+    this.categoryAttriIsVisible = true;
+    const existingName = this.addAttributeSetsForm.get('attributeSetName')?.value || '';
+    const maxListOrder = this.lstAllAttributeSets && this.lstAllAttributeSets.length > 0
+      ? Math.max(...this.lstAllAttributeSets.map((attribute: any) => Number(attribute.listPosition) || 0))
+      : 0;
+
+    const nextListPosition = maxListOrder + 1;
+
+    if (!row || !row.attributeName) {
+      this.dataService.ShowNotification('error', '', 'Attribute name is missing.');
+      return;
+    }
+    this.addAttributeSetsForm.patchValue({
+      attributeSetName: existingName.trim(),
+      categoryID: this.addAttributeSetsForm.get('categoryID')?.value,
+      attributeName: row.attributeName.trim(),
+      attributeRequired: true,
+      notImportant: true,
+      listPosition: nextListPosition,
+    });
+
   }
 }

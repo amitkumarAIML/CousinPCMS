@@ -27,7 +27,7 @@ export class SkuDisplayComponent {
   searchValue: string = '';
   filteredData: SKuList[] = [];
   productSkusVisible: boolean = false;
-
+  
   constructor(private homeService: HomeService, private dataService: DataService) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -115,4 +115,9 @@ export class SkuDisplayComponent {
     } 
     this.productSkusVisible = true;
   }
+  addSKU(){ 
+    // sessionStorage.removeItem('productId');
+    this.productSkusVisible = true;
+  }
+
 }

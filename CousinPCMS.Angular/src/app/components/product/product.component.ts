@@ -72,6 +72,7 @@ export class ProductComponent {
       },
     });
     } else {
+      this.loading = false;
       this.dataService.ShowNotification('error', '', 'Please select product name from home page');
     }
   }
