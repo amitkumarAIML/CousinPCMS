@@ -51,7 +51,8 @@
         </div>
 
         <div class="px-3 mt-2 flex justify-end">
-          <button nz-button nzType="primary" (click)="saveAttributeSets()" class="text-white">Save</button>
+          <button nz-button nzType="primary"  (click)="saveAttributeSets()" class="text-white">Save</button>
+          <button nz-button nzType="primary"  (click)="updateAttributeSets()" class="text-white">update</button>
         </div>
       </ng-container>
     </nz-modal>
@@ -83,12 +84,7 @@
                 <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
               </a>
               <a (click)="deleteAttributeSets(data)">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 15L15 9" stroke="#FF4E4E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M11 6.00006L11.463 5.46406C12.4008 4.52639 13.6727 3.99966 14.9989 3.99976C16.325 3.99985 17.5968 4.52676 18.5345 5.46456C19.4722 6.40237 19.9989 7.67425 19.9988 9.00042C19.9987 10.3266 19.4718 11.5984 18.534 12.5361L18 13.0001" stroke="#FF4E4E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M13.0001 18L12.6031 18.534C11.6544 19.4722 10.3739 19.9984 9.03964 19.9984C7.70535 19.9984 6.42489 19.4722 5.47614 18.534C5.0085 18.0716 4.63724 17.521 4.38385 16.9141C4.13047 16.3073 4 15.6561 4 14.9985C4 14.3408 4.13047 13.6897 4.38385 13.0829C4.63724 12.476 5.0085 11.9254 5.47614 11.463L6.00014 11" stroke="#FF4E4E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M4 4L20 20" stroke="#FF4E4E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>                  
+                <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline">Unlink</nz-icon>                  
               </a>
             </span>
             </td>
@@ -101,21 +97,32 @@
     </div>
     <div class="col-span-6 sm:col-span-2">
       <nz-spin [nzSpinning]="isAttributeloading">
-        <ng-container *ngIf="(attributeList?.length ?? 0) > 0; else emptyList">
+        <ng-container *ngIf="(filteredData?.length ?? 0) > 0; else emptyList">
           <div class="h-70 overflow-y-scroll border border-light-border rounded-md bg-white">
             <nz-list nzSize="small">
               <nz-list-header
-                class="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-light-border">Attribute
-                Details</nz-list-header>
-              @for (item of attributeList; track $index) {
+                class="text-sm flex justify-between gap-2 px-2 font-medium text-primary-font sticky top-0 bg-white z-10 border-b border-light-border">Attribute
+                Details              
+                <nz-form-item>      
+                  <nz-form-control>
+                    <nz-input-group [nzSuffix]="inputClearTpl" >
+                      <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+                    </nz-input-group>
+                  </nz-form-control>
+                </nz-form-item>
+            
+                <ng-template #inputClearTpl>
+                  @if (searchValue) {
+                    <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+                  } @else {
+                    <nz-icon nzType="search" />
+                  }
+                </ng-template></nz-list-header>
+              @for (item of filteredData; track $index) {
               <nz-list-item class="cursor-pointer text-secondary-font flex">
                 <span>{{ item.attributeName }}</span>
                 <a (click)="addAttributeData(item)">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 15L15 9" stroke="#21B6E1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M11 6.00006L11.463 5.46406C12.4008 4.52639 13.6727 3.99966 14.9989 3.99976C16.325 3.99985 17.5968 4.52676 18.5345 5.46456C19.4722 6.40237 19.9989 7.67425 19.9988 9.00042C19.9987 10.3266 19.4718 11.5984 18.534 12.5361L18 13.0001" stroke="#21B6E1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M13.0001 18L12.6031 18.534C11.6544 19.4722 10.3739 19.9984 9.03964 19.9984C7.70535 19.9984 6.42489 19.4722 5.47614 18.534C5.0085 18.0716 4.63724 17.521 4.38385 16.9141C4.13047 16.3073 4 15.6561 4 14.9985C4 14.3408 4.13047 13.6897 4.38385 13.0829C4.63724 12.476 5.0085 11.9254 5.47614 11.463L6.00014 11" stroke="#21B6E1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                  <a (click)="addAttributeData(item)">Link</a>
                 </a>
               </nz-list-item>
               }
@@ -125,8 +132,24 @@
 
         <ng-template #emptyList>
           <div class="h-70 border border-light-border rounded-md bg-white text-gray-500  flex flex-col">
-            <div class="text-sm font-medium text-center py-2 border-b border-light-border text-primary-font">Attribute
-              Details</div>
+            <div class="text-sm font-medium flex justify-between px-2 py-2 border-b border-light-border text-primary-font">Attribute
+              Details
+              <nz-form-item>      
+                <nz-form-control>
+                  <nz-input-group [nzSuffix]="inputClearTpl" >
+                    <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox />
+                  </nz-input-group>
+                </nz-form-control>
+              </nz-form-item>
+          
+              <ng-template #inputClearTpl>
+                @if (searchValue) {
+                  <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+                } @else {
+                  <nz-icon nzType="search" />
+                }
+              </ng-template>
+            </div>
             <div class="flex-grow flex items-center justify-center">
               <span class="text-sm">No attributes found</span>
             </div>

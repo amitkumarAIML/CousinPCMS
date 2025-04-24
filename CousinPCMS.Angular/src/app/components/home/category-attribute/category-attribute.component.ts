@@ -45,7 +45,9 @@ export class CategoryAttributeComponent implements OnInit {
   currentAttributeSetName: string = '';
   @Input() categoryData: any = {};
 
+  searchValue: string = '';
   lstAllAttributeSets: AttributeSetModel[] = [];
+  isEditable:boolean=false;
 
   constructor(private fb: FormBuilder,
     private homeService: HomeService,
@@ -99,6 +101,9 @@ export class CategoryAttributeComponent implements OnInit {
             const existingIds = this.lstAllAttributeSets.map((attribute: any) => attribute.attributeName);
             this.attributeList = this.attributeList.filter((attributeSets: any) => !existingIds.includes(attributeSets.attributeName));
           }
+          this.filteredData = [...this.attributeList];
+          console.log('dddddddddddd',this.filteredData);
+          
           this.isAttributeloading = false;
         } else {
           this.dataService.ShowNotification('error', '', 'Failed To Load Data')
@@ -207,13 +212,9 @@ export class CategoryAttributeComponent implements OnInit {
   }
  
   editAtrributeSets(row: any) {
+    this.isEditable=true;
     this.categoryAttriIsVisible = true;
     const existingName = this.addAttributeSetsForm.get('attributeSetName')?.value || '';
-    const maxListOrder = this.lstAllAttributeSets && this.lstAllAttributeSets.length > 0
-      ? Math.max(...this.lstAllAttributeSets.map((attribute: any) => Number(attribute.listPosition) || 0))
-      : 0;
-
-    const nextListPosition = maxListOrder + 1;
 
     if (!row || !row.attributeName) {
       this.dataService.ShowNotification('error', '', 'Attribute name is missing.');
@@ -223,10 +224,60 @@ export class CategoryAttributeComponent implements OnInit {
       attributeSetName: existingName.trim(),
       categoryID: this.addAttributeSetsForm.get('categoryID')?.value,
       attributeName: row.attributeName.trim(),
-      attributeRequired: true,
-      notImportant: true,
-      listPosition: nextListPosition,
+      attributeRequired: row.attributeRequired ,
+      notImportant:  row.notImportant,
+      listPosition: row.listPosition,
     });
 
+  }
+  updateAttributeSets(): void {
+    const attributeForm = this.addAttributeSetsForm.getRawValue();
+
+    if (this.addAttributeSetsForm.valid) {
+      this.homeService.updateAttributeSets(attributeForm).subscribe({
+        next: (response: any) => {
+          if (response.isSuccess) {
+            this.dataService.ShowNotification('success', '', 'Attribute added successfully');
+            this.categoryAttriIsVisible = false
+            const newAttributeSetName=this.addAttributeSetsForm.get('attributeSetName')?.value
+            this.getAttributeSetsByAttributeSetName(newAttributeSetName);
+            this.homeService.triggerReloadAttributes(); 
+          } else {
+            this.dataService.ShowNotification('error', '', 'Attribute not added successfully');
+          }
+        }
+      })
+    } else {
+      Object.values(this.addAttributeSetsForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
+  }
+
+  
+  filteredData: AttributeModel[] = [];
+  onSearch() {
+    const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
+  
+    if (!searchText) {
+      this.filteredData = [...this.attributeList];
+      return;
+    }
+  
+    this.filteredData = this.attributeList.filter(item => {
+      const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
+      
+      return  normalize(item.attributeName).includes(searchText)||
+              normalize(item.attributeDescription).includes(searchText) || 
+              normalize(item.searchType).includes(searchText)
+    }); 
+  }
+  
+  clearSearchText(): void {
+    this.searchValue = '';
+    this.filteredData = [...this.attributeList];
   }
 }
