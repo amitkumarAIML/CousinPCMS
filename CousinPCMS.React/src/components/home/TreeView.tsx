@@ -173,6 +173,19 @@ const TreeView: React.FC = () => {
         // No-op
     };
 
+    // Helper to update isLeaf recursively
+    const updateIsLeaf = (nodes: CustomTreeDataNode[]): CustomTreeDataNode[] => {
+        return nodes.map(node => {
+            const children = node.children ? updateIsLeaf(node.children) : undefined;
+            const isLeaf = !children || children.length === 0;
+            return {
+                ...node,
+                isLeaf,
+                children: children && children.length > 0 ? children : undefined,
+            };
+        });
+    };
+
     const onDrop: TreeProps['onDrop'] = (info) => {
         // console.log('onDrop', info);
         const dropKey = info.node.key;
@@ -239,7 +252,7 @@ const TreeView: React.FC = () => {
         }
 
         // Update state with the modified structure
-        setTreeData(data);
+        setTreeData(updateIsLeaf(data));
 
         // --- TODO: Persist the change ---
         // Here you would ideally make an API call to update the parent/order
