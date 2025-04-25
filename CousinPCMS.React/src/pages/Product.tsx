@@ -7,8 +7,6 @@ import {deleteProduct} from '../services/ProductService';
 import {showNotification} from '../services/DataService';
 import SKUsList from '../components/product/SKUsList';
 
-const {TabPane} = Tabs;
-
 const Product: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -16,7 +14,7 @@ const Product: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const productIdFromSession = sessionStorage.getItem('productId') || '3024';
+    const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       setProductId(productIdFromSession);
     } else {
@@ -73,17 +71,27 @@ const Product: React.FC = () => {
   );
 
   return (
-    <div className="bg-white shadow-cousins-box rounded-lg m-5">
-      <div className="p-4 pb-1">
+    <div className="bg-white shadow-cousins-box rounded-lg">
+      <div className="p-2 pb-1">
         <span className="text-sm font-medium">Product Form</span>
-        <Tabs activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={tabBarExtraContent} className="product-tabs">
-          <TabPane tab="Product Details" key="1">
-            <ProductDetails />
-          </TabPane>
-          <TabPane tab="SKUs" key="2">
-            <SKUsList />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          tabBarExtraContent={tabBarExtraContent}
+          className="product-tabs"
+          items={[
+            {
+              label: 'Product Details',
+              key: '1',
+              children: <ProductDetails />,
+            },
+            {
+              label: 'SKUs',
+              key: '2',
+              children: <SKUsList />,
+            },
+          ]}
+        />
       </div>
     </div>
   );

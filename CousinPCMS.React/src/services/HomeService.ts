@@ -31,9 +31,9 @@ export const getSkuByProductId = async (productID: number): Promise<SkuListRespo
 };
 
 // Get all attributes
-export const getAllAttributes = async (): Promise<AttributeModel[]> => {
+export const getAllAttributes = async (): Promise<AttributeModelResponse> => {
   const response = await http.get<AttributeModelResponse>('Attributes/GetAllAttributes');
-  return response.value;
+  return response;
 };
 
 // Get distinct attribute sets by category ID

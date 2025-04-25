@@ -87,7 +87,7 @@ const ProductDetails: React.FC = () => {
   }, [productForm]);
 
   useEffect(() => {
-    const productIdFromSession = sessionStorage.getItem('productId') || '3024';
+    const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
       getProductById(productIdFromSession)
@@ -685,7 +685,7 @@ const ProductDetails: React.FC = () => {
       </div>
       <Modal
         title="Select Category"
-        visible={isCategoryModalVisible}
+        open={isCategoryModalVisible}
         onOk={confirmCategorySelection}
         onCancel={closeCategoryModal}
         width={600}
@@ -717,18 +717,13 @@ const ProductDetails: React.FC = () => {
       </Modal>
       <Modal
         title="Add Product"
-        visible={isVisibleAddProductModal}
+        open={isVisibleAddProductModal}
         onCancel={handleAddModalCancel}
         footer={null}
         width={600}
         destroyOnClose
       >
-        <Form
-          form={addAssociatedProductForm}
-          layout="vertical"
-          onFinish={handleAddAssociatedProductSubmit}
-          className="px-3 py-1"
-        >
+        <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'Required'}]}>
               <Input type="number" />
