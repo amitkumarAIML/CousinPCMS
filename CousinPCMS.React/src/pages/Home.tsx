@@ -1,10 +1,11 @@
-import TreeView from "../components/home/TreeView";
+import TreeView from "../components/home/TreeView"
 
 const Home = () => {
-    return <div> 
+  return (
+    <div>
       <TreeView />
-    </div>;
-  };
-  
-export default Home;
-  
+    </div>
+  )
+}
+
+export default Home
