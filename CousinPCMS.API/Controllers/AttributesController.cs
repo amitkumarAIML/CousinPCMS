@@ -367,6 +367,38 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// update attribute value detail.
+        /// </summary>
+        /// <param name="objModel"> <see cref="AddAttributeValueRequestModel"/>The object with add details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateAttributeValue")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateAttributeValue(AddAttributeValueRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateAttributeValue)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _attributeService.UpdateAttributeValue(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateAttributeValue)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateAttributeValue)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// add an attribute set detail.
         /// </summary>
         /// <param name="objModel"> <see cref="AddAttributeSetRequestModel"/>The object with add details.</param>
