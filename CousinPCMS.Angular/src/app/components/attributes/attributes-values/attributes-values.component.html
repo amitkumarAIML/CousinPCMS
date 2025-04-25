@@ -6,12 +6,12 @@
         <input nz-input formControlName="attributeName" class="w-full" />
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
+    <!-- <nz-form-item>
       <nz-form-label [nzNoColon]="true">Attribute Value Group Id</nz-form-label>
       <nz-form-control>
         <input nz-input class="w-full" />
       </nz-form-control>
-    </nz-form-item>
+    </nz-form-item> -->
 
     <nz-form-item>
       <nz-form-label [nzNoColon]="true">Attribute Value</nz-form-label>
@@ -34,7 +34,11 @@
 
     <div class="flex justify-end gap-3 mt-5">
       <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
-      <button nz-button class="text-white" nzType="primary" [nzLoading]="btnLoading" (click)="addAttributesValues()">Save</button>
+      @if (attributeData.length === 0) {
+        <button nz-button class="text-white" nzType="primary" [nzLoading]="btnLoading" (click)="addAttributesValues()">Save</button>
+      } @else {
+        <button nz-button class="text-white"   nzType="primary" [nzLoading]="btnLoading" (click)="updateAttributesValues()">Update</button>
+      }
     </div>
   </div>
 </form>

@@ -82,5 +82,10 @@ export class AttributesService {
     );
   }
 
- 
+  updateAttributesValues(attributesData: AttributeValuesRequestModel): Observable<ApiResponse<any>> {
+    return this.httpService.post<ApiResponse<any>>(`Attributes/UpdateAttributeValue`, attributesData).pipe(
+      map((response: ApiResponse<any>) => response),
+      catchError((error) => throwError(() => error))
+    )
+  }
 }

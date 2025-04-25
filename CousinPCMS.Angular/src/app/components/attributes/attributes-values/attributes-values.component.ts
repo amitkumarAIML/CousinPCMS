@@ -18,8 +18,9 @@ export class AttributesValuesComponent {
   attributesValuesForm: FormGroup;
   btnLoading: boolean = false;
   @Input() attributeName: string = '';
-
+  @Input() attributeData:any={};
   @Output() attributeValueSave = new EventEmitter<any>();
+
 
   constructor(private fb: FormBuilder, private dataService: DataService, private attributeService: AttributesService) {
     this.attributesValuesForm = this.fb.group({
@@ -36,11 +37,19 @@ export class AttributesValuesComponent {
       this.attributesValuesForm.get('attributeName')?.disable();
       this.attributesValuesForm.get('attributeName')?.setValue(this.attributeName);
     }
+  
+    if (this.attributeData && this.attributeData.attributeValue) {
+      this.attributesValuesForm.get('attributeValue')?.disable();
+      this.attributesValuesForm.reset();
+      this.attributesValuesForm.get('attributeName')?.setValue(this.attributeName);
+      this.attributesValuesForm.get('attributeValue')?.setValue(this.attributeData.attributeValue);
+      this.attributesValuesForm.get('alternateValues')?.setValue(this.attributeData.alternateValues);
+      this.attributesValuesForm.get('newAlternateValue')?.setValue(this.attributeData.newAlternateValue);
+    } 
   }
 
   addAttributesValues() {
     this.attributesValuesForm.markAllAsTouched();
-
     if (!this.attributesValuesForm.valid) {
       this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
       return;
@@ -71,7 +80,38 @@ export class AttributesValuesComponent {
   }
 
   handleCancel() {
-    this.attributeValueSave.emit('cancel');
     this.attributesValuesForm.reset();
+    this.attributeValueSave.emit('cancel');
+  }
+
+  updateAttributesValues() {
+    this.attributesValuesForm.markAllAsTouched();
+    if (!this.attributesValuesForm.valid) {
+      this.dataService.ShowNotification('error', '', 'Please fill in all required fields.');
+      return;
+    }
+    const data: AttributeValuesRequestModel = this.dataService.cleanEmptyNullToString(this.attributesValuesForm.getRawValue());
+
+    this.btnLoading = true;
+    this.attributeService.updateAttributesValues(data).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataService.ShowNotification('success', '', 'Attribute Values updated successfully.');
+          this.attributeValueSave.emit('save');
+          this.attributesValuesForm.reset();
+        } else {
+          this.dataService.ShowNotification('error', '', 'Attribute Values Failed To updated');
+        }
+        this.btnLoading = false;
+      },
+      error: (err) => {
+        this.btnLoading = false;
+        if (err?.error) {
+          this.dataService.ShowNotification('error', '', err.error.title);
+        } else {
+          this.dataService.ShowNotification('error', '', 'Something went wrong');
+        }
+      },
+    });
   }
 }

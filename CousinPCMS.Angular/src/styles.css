@@ -149,3 +149,6 @@ label {
 .no-padding-modal .ant-modal-body {
   padding: 0px !important;
 }
+.ant-table-column-sorter-inner{
+padding-right: 10px !important;
+}

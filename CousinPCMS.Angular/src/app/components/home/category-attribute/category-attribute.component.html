@@ -44,15 +44,15 @@
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzNoColon]="true">list Position</nz-form-label>
-            <nz-form-control nzErrorTip="">
+            <nz-form-control nzErrorTip="List position already exists, please choose another number">
               <input nz-input type="number" class="w-full" formControlName="listPosition">
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <div class="px-3 mt-2 flex justify-end">
-          <button nz-button nzType="primary"  (click)="saveAttributeSets()" class="text-white">Save</button>
-          <button nz-button nzType="primary"  (click)="updateAttributeSets()" class="text-white">update</button>
+          <button nz-button nzType="primary"  *ngIf="!isEditable" (click)="saveAttributeSets()" class="text-white">Save</button>
+          <button nz-button nzType="primary"  *ngIf="isEditable" (click)="updateAttributeSets()" class="text-white">update</button>
         </div>
       </ng-container>
     </nz-modal>
@@ -65,10 +65,10 @@
         nzSize="small" [nzLoading]="isAttributeSetloading" [nzScroll]="{x:'600px',y: '300px'}">
         <thead>
           <tr>
-            <th [nzWidth]="'200px'">Attribute Name</th>
+            <th [nzWidth]="'200px'" (click)="sort('attributeName')" nzShowSort>Attribute Name</th>
             <th [nzWidth]="'40px'" >Required</th>
-            <th [nzWidth]="'50px'">Not Important</th>
-            <th [nzWidth]="'50px'">List Position</th>
+            <!-- <th [nzWidth]="'50px'">Not Important</th> -->
+            <th [nzWidth]="'50px'"(click)="sort('listPosition')" nzShowSort>List Position</th>
             <th [nzWidth]="'35px'">Action</th>
           </tr>
         </thead>
@@ -77,11 +77,11 @@
           <tr>
             <td>{{ data.attributeName }}</td>
             <td><label nz-checkbox [(ngModel)]="data.attributeRequired" [disabled]="true"></label></td>
-            <td><label nz-checkbox [(ngModel)]="data.notImportant" [disabled]="true"></label></td>
+            <!-- <td><label nz-checkbox [(ngModel)]="data.notImportant" [disabled]="true"></label></td> -->
             <td>{{ data.listPosition }}</td>
             <td>
-             <span class="flex gap-x-1"> <a (click)="editAtrributeSets(data)">
-                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
+             <span class="flex gap-x-2"> <a (click)="editAtrributeSets(data,$index )">
+                <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" >Edit</nz-icon>
               </a>
               <a (click)="deleteAttributeSets(data)">
                 <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline">Unlink</nz-icon>                  

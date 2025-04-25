@@ -219,21 +219,21 @@
                           <a (click)="startEdit(data)">
                             <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                           </a>
-                          <a (click)="deleteAssociatedProduct(data)">
+                          <!-- <a (click)="deleteAssociatedProduct(data)">
                             <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline" />
-                          </a>
+                          </a> -->
                           } @else {
                           <a (click)="startEdit(data)">
                             <nz-icon nzType="edit" nzTheme="outline" class="text-primary-theme w-5 h-4" />
                           </a>
-                          <a
+                          <!-- <a
                             nz-popconfirm
                             [nzPopconfirmTitle]="'Are you sure you want to delete this product?'"
                             (nzOnConfirm)="deleteAssociatedProduct(data)"                            
                             [nzIcon]="iconTpl"
                           >
                             <nz-icon nzType="delete" class="text-danger w-5 h-4" nzTheme="outline" />
-                          </a>
+                          </a> -->
                           }
                         </span>
                         <ng-template #iconTpl>
