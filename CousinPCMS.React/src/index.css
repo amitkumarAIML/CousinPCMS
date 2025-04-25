@@ -31,3 +31,7 @@ body {
   color: var(--color-primary-font);
   background-color: var(--color-bg);
 }
+
+.ant-tabs-ink-bar{
+  height: 3px !important;
+}

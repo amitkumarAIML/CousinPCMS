@@ -6,8 +6,8 @@ export const CategoryCharLimit = {
   } as const;
   
   export const DepartmentCharLimit = {
-    akiDepartmentName: 50,
-    akiDepartmentDescText: 2000,
+    akiDepartmentName: 100,
+    akiDepartmentDescText: 5000,
     akiDepartmentImageURL: 255,
     akiDepartmentKeyWords: 500
   } as const;

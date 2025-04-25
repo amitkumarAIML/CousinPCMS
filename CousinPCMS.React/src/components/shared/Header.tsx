@@ -22,6 +22,9 @@ const Header = () => {
         <li className={`cursor-pointer ${isActive('/skus') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/skus')}>
           SKUs
         </li>
+        <li className={`cursor-pointer ${isActive('/attributes') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/attributes')}>
+          Attributes
+        </li>
       </ul>
     </div>
   );

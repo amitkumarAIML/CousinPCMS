@@ -63,6 +63,12 @@ export interface ProductResponse {
 }
 
 
+export interface ProductListApiResponse {
+  totalRecords: number;
+  products: Product[];
+}
+
+
 export interface ProductUpdateResponse {
     value: Product;
     isSuccess: boolean;
