@@ -105,10 +105,10 @@ const TreeView: React.FC = () => {
 
       const node = info.node as unknown as CustomTreeDataNode;
       if (node.dataType === 'category') {
-        sessionStorage.setItem('selectedCategoryId', String(node.id));
+        sessionStorage.setItem('categoryId', String(node.id));
         const deptId = findDepartmentIdForCategoryKey(node.key, treeData);
         if (deptId !== undefined) {
-          sessionStorage.setItem('selectedDepartmentId', String(deptId));
+          sessionStorage.setItem('departmentId', String(deptId));
           const getPath = (key: React.Key, nodes: CustomTreeDataNode[], path: React.Key[] = []): React.Key[] | null => {
             for (const n of nodes) {
               if (n.key === key) return [...path, n.key];
@@ -123,8 +123,8 @@ const TreeView: React.FC = () => {
           if (path) setExpandedKeys((prev) => [...prev, ...path.slice(0, -1)]);
         }
       } else if (node.dataType === 'department') {
-        sessionStorage.setItem('selectedDepartmentId', String(node.id));
-        sessionStorage.removeItem('selectedCategoryId');
+        sessionStorage.setItem('departmentId', String(node.id));
+        sessionStorage.removeItem('categoryId');
       }
     },
     [treeData, findDepartmentIdForCategoryKey]
@@ -377,8 +377,8 @@ const TreeView: React.FC = () => {
   useEffect(() => {
     if (loading || treeData.length === 0) return;
 
-    const savedDeptId = sessionStorage.getItem('selectedDepartmentId');
-    const savedCatId = sessionStorage.getItem('selectedCategoryId');
+    const savedDeptId = sessionStorage.getItem('departmentId');
+    const savedCatId = sessionStorage.getItem('categoryId');
     let initialSelectedKey: React.Key | null = null;
     let keysToExpand: React.Key[] = [];
 
