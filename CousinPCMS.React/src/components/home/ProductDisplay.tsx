@@ -35,6 +35,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       setLstAllAttributeSets([]);
       setAllProductAttributes([]);
       setFilteredData([]);
+      onProductSelected(undefined);
       setDisplayText('Click a category to view the product');
       return;
     }
@@ -109,26 +110,27 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     }
   }, [selectedCategory, searchValue]); // Re-run fetch if category or search changes (search handled internally now)
 
-  // Effect to trigger data fetching when selectedCategory changes
   useEffect(() => {
     const persistedProductId = sessionStorage.getItem('productId');
-    const persistedCategoryId = sessionStorage.getItem('categoryId');
+    const persistedCategoryId = sessionStorage.getItem('CategoryId');
 
     if (persistedCategoryId === selectedCategory && persistedProductId) {
       setSelectedProduct(Number(persistedProductId));
     } else {
       setSelectedProduct(undefined);
-      sessionStorage.removeItem('productId'); // Clear product if category changes
+      sessionStorage.removeItem('productId');
     }
 
-    fetchData(); // Fetch data based on the current selectedCategory
+    fetchData(); // fetch when category changes
 
     if (selectedCategory) {
-      sessionStorage.setItem('categoryId', selectedCategory);
+      sessionStorage.setItem('CategoryId', selectedCategory);
     } else {
-      sessionStorage.removeItem('categoryId');
+      sessionStorage.removeItem('CategoryId');
+      setProducts([]);
+      setDisplayText('Click a category to view the product');
     }
-  }, [selectedCategory, fetchData]); // Depend on selectedCategory and the fetchData function itself
+  }, [selectedCategory, fetchData]);
 
   // --- Search Handling ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,15 +169,16 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
     sessionStorage.setItem('productId', product.akiProductID.toString());
-    sessionStorage.removeItem('itemNumber'); // Keep this if needed
-    onProductSelected(product.akiProductID); // Call the callback prop
+    sessionStorage.removeItem('itemNumber');
+    onProductSelected(product.akiProductID);
   };
 
   const handleAttributeSetClick = (attributeSet: AttributeSetModel) => {
     if (!attributeSet || !attributeSet.akiCategoryID) return;
-    // Decide if clicking an attribute set should select it visually
-    // setSelectedProduct(attributeSet.akiCategoryID); // Using akiCategoryID for selection highlight
+    setSelectedProduct(attributeSet.akiCategoryID); // Using akiCategoryID for selection highlight
     setCategoryData(attributeSet);
+    sessionStorage.removeItem('productId');
+    onProductSelected(undefined);
     setCategoryAttriIsVisible(true);
   };
 
@@ -191,11 +194,9 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   };
 
   const handleAddProduct = () => {
-    // Clear any previous data when adding a new product
-    setSelectedProduct(undefined); // Clear selection
-    sessionStorage.removeItem('productId'); // Clear storage
-    setCategoryData({categoryId: selectedCategory}); // Pass current category ID if needed
-    // If using a ref to reset: productFormRef.current?.resetForm();
+    setSelectedProduct(undefined);
+    sessionStorage.removeItem('productId');
+    setCategoryData({categoryId: selectedCategory});
     setIsProductModalOpen(true);
   };
 
