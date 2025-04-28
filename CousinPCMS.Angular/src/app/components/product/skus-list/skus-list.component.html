@@ -1,34 +1,32 @@
 <div class="px-4 pt-1">
-  <nz-table #headerTable [nzData]="skusList" nzSize="small" nzBordered [nzShowPagination]="false"  [nzLoading]="loading"       [nzFrontPagination]="false"
-  [nzScroll]="{ y: '660px' }"  class="no-header-scroll">
-<thead>
-  <tr>
-    <th nzWidth="40px"></th>
-    <th nzWidth="200px">SkuName</th>
-    <th>ManufacturerRef</th>
-    <th>ITEM_NUMBER</th>
-    <th>ListOrder</th>
-    <th>Obsolete</th>
-    <th>Unavailable</th>
-    <th>CatActive</th>
-    <th>TemplateID</th>
-    <th>AltSkuName</th>
-    <th>CommodityCode</th>
-  </tr>
-</thead>
-<tbody>
-  @for (data of headerTable.data; track $index) {
-    <tr  
-        (click)="onRowSelect(data)"
-        [class.selected-row]="selectedRow === data">
-        
+  <nz-table #headerTable [nzData]="skusList" nzSize="small" nzBordered [nzShowPagination]="false" [nzLoading]="loading"
+    [nzFrontPagination]="false" class="no-header-scroll">
+    <thead>
+      <tr>
+        <th nzWidth="40px"></th>
+        <th nzWidth="200px">Sku Name</th>
+        <th nzWidth="200px">ManufacturerRef</th>
+        <th nzWidth="100px">ITEM_NUMBER</th>
+        <th nzWidth="100px">List Order</th>
+        <th nzWidth="60px">Obsolete</th>
+        <th nzWidth="60px">Unavailable</th>
+        <th nzWidth="60px">Cat Active</th>
+        <th nzWidth="90px">TemplateID</th>
+        <th nzWidth="150px">AltSku Name</th>
+        <th nzWidth="100px">Commodity Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of headerTable.data; track $index) {
+      <tr (click)="onRowSelect(data)" [class.selected-row]="selectedRow === data">
+
         <!-- Play Icon for Row Selection -->
         @if(selectedRow === data) {
-            <td (click)="onRowSelect(data)">
-                <nz-icon nzType="caret-right" nzTheme="outline" style="font-size: 16px;" />
-            </td>
+        <td (click)="onRowSelect(data)">
+          <nz-icon nzType="caret-right" nzTheme="outline" style="font-size: 16px;" />
+        </td>
         } @else {
-            <td></td>
+        <td></td>
         }
         <td>{{ data.skuName }}</td>
         <td>{{ data.akiManufacturerRef }}</td>
@@ -40,8 +38,8 @@
         <td>{{ data.akiTemplateID }}</td>
         <td>{{ data.akiAltSKUName }}</td>
         <td>{{ data.akiCommodityCode }}</td>
-    </tr>
-  }
-</tbody>
-</nz-table>
+      </tr>
+      }
+    </tbody>
+  </nz-table>
 </div>

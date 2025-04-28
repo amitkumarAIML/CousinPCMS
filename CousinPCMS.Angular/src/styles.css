@@ -94,7 +94,7 @@ label {
 }
 
 .ant-table-thead .ant-table-cell {
-  background: #cbd5e1 !important;
+  /* background: #cbd5e1 !important; */
   color: var(--color-primary-font);
   font-size: 11px;
 }
@@ -155,4 +155,7 @@ label {
 
 .attributeTable-border-none .ant-table-tbody > tr > td {
   border-bottom:none;
+}
+.skusList .ant-table-container table > thead > tr:first-child th:first-child {
+  border-top-left-radius: 0px !important; 
 }

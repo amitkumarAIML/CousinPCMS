@@ -71,6 +71,7 @@ export class ProductDisplayComponent {
     this.selectedProduct = product?.akiProductID;
     this.categoryData = product;
     this.categoryAttriIsVisible = true; // Opens the modal
+    this.productSelected.emit(undefined);
   }
 
   handleOk(val: string) {
@@ -84,6 +85,8 @@ export class ProductDisplayComponent {
   handleCancel() {
     this.categoryAttriIsVisible = false;
   }
+
+  isSetAttributslist:any={};
 
   getDataInParallel(): void {
     // this.loading = true;
@@ -110,6 +113,7 @@ export class ProductDisplayComponent {
         }
         if (attributeList.isSuccess) {
           this.lstAllAttributeSets = attributeList.value;
+         this.isSetAttributslist=attributeList.value
           this.allProductAtrributes = [
             ...(Array.isArray(this.products) ? this.products : []),
             ...(Array.isArray(this.lstAllAttributeSets) ? this.lstAllAttributeSets : [])

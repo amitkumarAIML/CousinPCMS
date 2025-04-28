@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DataService } from '../../shared/services/data.service';
@@ -38,20 +38,18 @@ export class ProductComponent {
  @Output() eventComplete = new EventEmitter<string>();
 
  @ViewChild(ProductDetailsComponent) productDetailsComp!: ProductDetailsComponent;
-
+ @Input() isSetAttributslist:any
   constructor(private dataService : DataService, 
     private readonly router: Router, private productService : ProductsService) {
   }
 
   ngOnInit(): void {  
     this.getProductById();
-   
+    this.isSetAttributslist;
   }
 
   getProductById() {
     const productId = sessionStorage.getItem('productId') || '';
-    console.log('productId',productId);
-    
     if (productId) {
     this.productService.getProductById(productId).subscribe({
       next: (response: ProductResponse) => {

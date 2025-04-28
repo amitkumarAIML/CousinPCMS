@@ -248,6 +248,19 @@
             </div>
           </div>
         </div>
+        <!-- Set Attribute -->
+      <!-- Set Attribute -->
+    @if (isSetAttributslist) {
+      <nz-form-item class="w-full mt-1">
+        <nz-form-label nzFor="urlLinks" [nzNoColon]="true" class="product-link">
+          Attribute
+        </nz-form-label>
+        <nz-form-control>
+          <a (click)="goToSetAttribute()" class="underline">{{ setAttributeName }}</a>
+        </nz-form-control>
+      </nz-form-item>
+    }
+
       </div>
 
       <!-- Right Section -->
@@ -485,3 +498,12 @@
 <ng-template #addProductTitletemplate>
   <span class="text-gray-600">Add Product</span>
 </ng-template>
+
+<!-- Set Attribute form -->
+<div>
+  <nz-modal [(nzVisible)]="isSetAttributeVisable" nzTitle="Attribute set form" [nzFooter]="null" nzClosable="true" class="content-center" nzWidth="1100px" (nzOnCancel)="btnCancel()">
+    <ng-container *nzModalContent>
+      <cousins-category-attribute [categoryData]="categoryData"></cousins-category-attribute>
+    </ng-container>
+  </nz-modal>
+</div>
