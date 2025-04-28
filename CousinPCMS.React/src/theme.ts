@@ -24,7 +24,6 @@ export const theme = {
 
     // Progress
     colorInfo: '#21B6E1', // @progress-default-color
-    colorFillSecondary: '#cbd5e0', // @progress-remaining-color
     colorTextDescription: '#67768c', // @progress-info-text-color
     fontSizeLG: 10, // @progress-text-font-size (1.3em relative to 10px base)
   },

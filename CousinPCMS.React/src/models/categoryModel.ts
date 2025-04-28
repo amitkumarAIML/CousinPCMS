@@ -4,4 +4,5 @@ export interface CategoryModel {
   akiCategoryName: string;
   akiCategoryIsActive: boolean;
   akiDepartment?: string | number;
+  selected?: boolean;
 }

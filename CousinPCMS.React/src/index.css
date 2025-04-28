@@ -39,3 +39,7 @@ body {
 .ant-tree-treenode .ant-tree-draggable-icon {
   display: none !important;
 }
+
+.ant-tree .ant-tree-node-content-wrapper{
+padding-inline: 0 !important;
+}
