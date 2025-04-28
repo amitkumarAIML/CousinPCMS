@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {NzButtonModule} from 'ng-zorro-antd/button';
@@ -26,7 +26,6 @@ import { AttributesValuesComponent } from '../attributes-values/attributes-value
   styleUrl: './attributes-details.component.css',
 })
 export class AttributesDetailsComponent {
-
   searchValue: string = '';
   attributesValues: AttributeValueModel[] = [];
   searchType: any[] = [];
@@ -42,7 +41,7 @@ export class AttributesDetailsComponent {
   isEdit: boolean = false;
   attributeName: string = '';
   newValueBtnDisable: boolean = true;
-
+  attributeData:any={};
   constructor(private fb: FormBuilder, private dataService: DataService, private readonly router: Router, private attributeService: AttributesService) {
     this.attributesForm = this.fb.group({
       attributeName: ['', [Validators.required]],
@@ -77,6 +76,7 @@ export class AttributesDetailsComponent {
     //   this.dataService.ShowNotification('error', '', 'Please Add Attributes Name First.');
     //   return;
     // }
+    this.attributeData = [];
     this.addNewAttributeValueModal = true;
   }
 
@@ -282,5 +282,9 @@ export class AttributesDetailsComponent {
   btnCancel(): void {
     this.dataService.ShowNotification('info', '', 'Delete action cancelled');
   }
-  
+
+  updateAttribueValues(row:any){
+    this.addNewAttributeValueModal=true;
+    this.attributeData = row;
+  }
 }

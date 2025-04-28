@@ -24,8 +24,9 @@
     </nz-tabset>
 
     <ng-template #extraTemplate>
-      @if(activeTab === 0) {
+      
       <div class="flex gap-x-3 mb-2">
+        @if(activeTab === 0) {
         <button nz-button nzType="default" class="" (click)="cancel()">Cancel</button>
         <button
           nz-button
@@ -44,8 +45,11 @@
         <ng-template #iconTpl>
           <nz-icon nzType="question-circle-o" class="text-danger me-2" />
         </ng-template>
-      </div>
+      }@else {
+        <button nz-button nzType="default" class="me-4" (click)="cancel()">Cancel</button>
       }
+      </div>
+      
     </ng-template>
   </nz-spin>
 </div>

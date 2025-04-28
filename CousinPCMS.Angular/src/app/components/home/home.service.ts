@@ -90,4 +90,7 @@ export class HomeService {
   triggerReloadAttributes() {
     this.reloadAttributesSource.next();
   }
+  updateAttributeSets(attributesData:AddAttributeSetRequestModel) {
+    return this.httpService.post(`Attributes/UpdateAttributeSets`, attributesData);
+  }
 }
