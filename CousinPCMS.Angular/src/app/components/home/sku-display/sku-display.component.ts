@@ -16,7 +16,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 @Component({
   selector: 'cousins-sku-display',
-  imports: [NzSpinModule, CommonModule, NzFormModule, NzIconModule, FormsModule, NzInputModule, SkusComponent, NzModalModule, SkusListComponent,
+  imports: [NzSpinModule, CommonModule, NzFormModule, NzIconModule, FormsModule, NzInputModule, SkusComponent, NzModalModule,
     NzTableModule,
     FormsModule,
     NzCheckboxModule,
