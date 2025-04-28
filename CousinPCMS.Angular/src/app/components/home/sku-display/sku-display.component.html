@@ -1,20 +1,21 @@
 <div class="sku-container">
   <div class="sku-header flex justify-between items-center">
     <div class="flex gap-2">
-      <span> SKU Name</span>   
       <a (click)="addSKU()">Add</a>
       <a (click)="editSku()">Edit</a>
-   </div>
+    </div>
     <nz-form-item>
       <nz-form-control>
         <nz-input-group [nzSuffix]="inputClearTpl">
-          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox placeholder="Search" />
+          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox
+            placeholder="Search" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
     <ng-template #inputClearTpl>
       @if (searchValue) {
-      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle" (click)="clearSearchText()"></span>
+      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle"
+        (click)="clearSearchText()"></span>
       }@else{
       <nz-icon nzType="search" />
       }
@@ -22,25 +23,60 @@
   </div>
 
   <nz-spin [nzSpinning]="loading">
-    @if (filteredData && filteredData.length > 0) {
-    <ul class="sku-list divide-y divide-gray-200 leading-2">
-      @for (sku of filteredData; track $index) {
-      <li class="sku-item" (click)="onSkuClick(sku)" [ngClass]="{'bg-bg-light': selectedSku === sku?.akiSKUID}">
-        {{ sku.skuName }}
-      </li>
-      }
-    </ul>
-    } @else {
-    <div class="empty-message h-48">
-      {{ displayText }}
-    </div>
-    }
+    <nz-table #headerTable [nzData]="filteredData" nzSize="small" [nzShowPagination]="false" [nzLoading]="loading"
+      [nzFrontPagination]="false" [nzScroll]="{ x:'1200px',}" class="no-header-scroll skusList overflow-y-auto">
+      <thead class="bg-light-border">
+        <tr>
+          <th nzWidth="40px"></th>
+          <th nzWidth="200px">Sku Name</th>
+          <th>ManufacturerRef</th>
+          <th>ITEM_NUMBER</th>
+          <th>List Order</th>
+          <th>Obsolete</th>
+          <th>Unavailable</th>
+          <th>Cat Active</th>
+          <th>TemplateID</th>
+          <th>AltSku Name</th>
+          <th>Commodity Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (data of headerTable.data; track $index) {
+        <tr (click)="onRowSelect(data)" [class.selected-row]="selectedRow === data"
+          [ngClass]="{'bg-bg-light': selectedSku === data?.akiSKUID}">
+          <!-- Play Icon for Row Selection -->
+          @if(selectedRow === data) {
+          <td (click)="onRowSelect(data)" [class.selected-row]="selectedRow === data"
+            [ngClass]="{'bg-bg-light': selectedSku === data?.akiSKUID}">
+            <nz-icon nzType="caret-right" nzTheme="outline" style="font-size: 16px;" />
+          </td>
+          } @else {
+          <td></td>
+          }
+          <td class="w-[200px] truncate">
+            <span class="cursor-pointer" (click)="onSkuClick(data)"> {{ data.skuName }}</span>
+          </td>
+          <td class="truncate">{{ data.akiManufacturerRef }}</td>
+          <td>{{ data.akiitemid }}</td>
+          <td>{{ data.akiListOrder }}</td>
+          <td><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
+          <td><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>
+          <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
+          <td>{{ data.akiTemplateID }}</td>
+          <td>{{ data.akiAltSKUName }}</td>
+          <td>{{ data.akiCommodityCode }}</td>
+        </tr>
+        }
+      </tbody>
+    </nz-table>
   </nz-spin>
+
 </div>
 
 <!-- Category-Product -->
 <div>
-  <nz-modal [(nzVisible)]="productSkusVisible" [nzFooter]="null" nzClosable="false" [nzClassName]="'no-padding-modal'" nzWidth="1500px">
+  <nz-modal [(nzVisible)]="productSkusVisible" [nzFooter]="null" nzClosable="false" [nzClassName]="'no-padding-modal'"
+    nzWidth="1500px">
     <ng-container *nzModalContent>
       <cousins-skus (eventComplete)="handleCancel($event)"></cousins-skus>
     </ng-container>

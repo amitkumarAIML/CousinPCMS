@@ -259,10 +259,8 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
         sessionStorage.removeItem('itemNumber');
         this.categoryData = dep[0].akiCategoryID;
       }
-
+      this.categorySelected.emit(event.origin.key); // Emit selected category
     }
-    this.categorySelected.emit(event.origin.key); // Emit selected category
-
   }
 
   // Helper method to get the icon type based on node properties
