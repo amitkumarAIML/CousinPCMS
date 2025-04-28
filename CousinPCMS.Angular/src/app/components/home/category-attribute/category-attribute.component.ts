@@ -44,12 +44,15 @@ export class CategoryAttributeComponent implements OnInit {
   categoryAttriIsVisible: boolean = false;
   currentAttributeSetName: string = '';
   @Input() categoryData: any = {};
-
+  @Input() categoryDataAttrinbuteSet: any = {}
   searchValue: string = '';
   lstAllAttributeSets: AttributeSetModel[] = [];
-  isEditable:boolean=false;
+  isEditable: boolean = false;
   filteredData: AttributeModel[] = [];
-  currentRowIndex!:number;
+  currentRowIndex!: number;
+  sortField = '';
+  sortOrder: any = null;
+  
   constructor(private fb: FormBuilder,
     private homeService: HomeService,
     private dataService: DataService,
@@ -65,7 +68,7 @@ export class CategoryAttributeComponent implements OnInit {
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['categoryData'] && this.categoryData) {
-  
+
       if (this.categoryData && this.categoryData.origin) {
         const attributeSetName = `Attribute Set For - ${this.categoryData.origin.title}`;
         this.currentAttributeSetName = attributeSetName;
@@ -83,7 +86,6 @@ export class CategoryAttributeComponent implements OnInit {
         this.addAttributeSetsForm.get('categoryID')?.setValue(this.categoryData.akiCategoryID);
         this.getAttributeSetsByAttributeSetName(setName);
       }
-
     }
   }
 
@@ -102,7 +104,7 @@ export class CategoryAttributeComponent implements OnInit {
             const existingIds = this.lstAllAttributeSets.map((attribute: any) => attribute.attributeName);
             this.attributeList = this.attributeList.filter((attributeSets: any) => !existingIds.includes(attributeSets.attributeName));
           }
-          this.filteredData = [...this.attributeList];          
+          this.filteredData = [...this.attributeList];
           this.isAttributeloading = false;
         } else {
           this.dataService.ShowNotification('error', '', 'Failed To Load Data')
@@ -114,7 +116,7 @@ export class CategoryAttributeComponent implements OnInit {
   }
 
   addAttributeData(data: any) {
-    this.isEditable=false;
+    this.isEditable = false;
     this.categoryAttriIsVisible = true;
     const existingName = this.addAttributeSetsForm.get('attributeSetName')?.value || '';
     const maxListOrder = this.lstAllAttributeSets && this.lstAllAttributeSets.length > 0
@@ -144,7 +146,7 @@ export class CategoryAttributeComponent implements OnInit {
         if (response.isSuccess) {
           this.dataService.ShowNotification('success', '', 'AttributeSets deleted successsully');
           this.getAttributeSetsByAttributeSetName(this.currentAttributeSetName);
-          this.homeService.triggerReloadAttributes(); 
+          this.homeService.triggerReloadAttributes();
         } else {
           this.dataService.ShowNotification('error', '', 'AttributeSets not deleted successsully');
         }
@@ -164,9 +166,9 @@ export class CategoryAttributeComponent implements OnInit {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Attribute added successfully');
             this.categoryAttriIsVisible = false
-            const newAttributeSetName=this.addAttributeSetsForm.get('attributeSetName')?.value
+            const newAttributeSetName = this.addAttributeSetsForm.get('attributeSetName')?.value
             this.getAttributeSetsByAttributeSetName(newAttributeSetName);
-            this.homeService.triggerReloadAttributes(); 
+            this.homeService.triggerReloadAttributes();
           } else {
             this.dataService.ShowNotification('error', '', 'Attribute not added successfully');
           }
@@ -197,7 +199,11 @@ export class CategoryAttributeComponent implements OnInit {
     this.homeService.getAttributeSetsByAttributeSetName(encodedAttributeSetName).subscribe({
       next: (response: any) => {
         if (response.isSuccess) {
-          this.lstAllAttributeSets = response.value.sort((a: any, b: any) => a.listPosition - b.listPosition);
+          if (response.value) {
+            this.lstAllAttributeSets = response.value.sort((a: any, b: any) => a.listPosition - b.listPosition);
+          } else {
+            this.lstAllAttributeSets = [];
+          }
           this.isAttributeSetloading = false;
           this.getAllAttributes();
         } else {
@@ -210,10 +216,10 @@ export class CategoryAttributeComponent implements OnInit {
       }
     })
   }
- 
-  editAtrributeSets(row: any,index:number) {
-    this.isEditable=true;
-    this.currentRowIndex=index;  
+
+  editAtrributeSets(row: any, index: number) {
+    this.isEditable = true;
+    this.currentRowIndex = index;
     this.categoryAttriIsVisible = true;
     const existingName = this.addAttributeSetsForm.get('attributeSetName')?.value || '';
 
@@ -225,17 +231,17 @@ export class CategoryAttributeComponent implements OnInit {
       attributeSetName: existingName.trim(),
       categoryID: this.addAttributeSetsForm.get('categoryID')?.value,
       attributeName: row.attributeName.trim(),
-      attributeRequired: row.attributeRequired ,
-      notImportant:  row.notImportant,
+      attributeRequired: row.attributeRequired,
+      notImportant: row.notImportant,
       listPosition: row.listPosition,
     });
 
   }
   updateAttributeSets(): void {
-    this.isEditable=true;
+    this.isEditable = true;
     const listPosition = Number(this.addAttributeSetsForm.get('listPosition')?.value);
 
-// Check if the listPosition already exists, but allow if it's the same row
+    // Check if the listPosition already exists, but allow if it's the same row
     const isListPositionDuplicate = this.lstAllAttributeSets.some((attribute: any, idx: number) => {
       return idx !== this.currentRowIndex && Number(attribute.listPosition) === listPosition;
     });
@@ -253,9 +259,9 @@ export class CategoryAttributeComponent implements OnInit {
           if (response.isSuccess) {
             this.dataService.ShowNotification('success', '', 'Attributesets updated successfully');
             this.categoryAttriIsVisible = false
-            const newAttributeSetName=this.addAttributeSetsForm.get('attributeSetName')?.value
+            const newAttributeSetName = this.addAttributeSetsForm.get('attributeSetName')?.value
             this.getAttributeSetsByAttributeSetName(newAttributeSetName);
-            this.homeService.triggerReloadAttributes(); 
+            this.homeService.triggerReloadAttributes();
           } else {
             this.dataService.ShowNotification('error', '', 'Attributesets not updated successfully');
           }
@@ -270,30 +276,29 @@ export class CategoryAttributeComponent implements OnInit {
       });
     }
   }
-   
+
   onSearch() {
     const searchText = this.searchValue?.toLowerCase().replace(/\s/g, '') || '';
-  
+
     if (!searchText) {
       this.filteredData = [...this.attributeList];
       return;
     }
-  
+
     this.filteredData = this.attributeList.filter(item => {
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
-      
-      return  normalize(item.attributeName).includes(searchText)||
-              normalize(item.attributeDescription).includes(searchText) || 
-              normalize(item.searchType).includes(searchText)
-    }); 
+
+      return normalize(item.attributeName).includes(searchText) ||
+        normalize(item.attributeDescription).includes(searchText) ||
+        normalize(item.searchType).includes(searchText)
+    });
   }
-  
+
   clearSearchText(): void {
     this.searchValue = '';
     this.filteredData = [...this.attributeList];
   }
-  sortField = '';
-  sortOrder: any = null;
+ 
   sort(field: string): void {
     this.sortField = field;
     this.sortOrder = this.sortOrder === 'ascend' ? 'descend' : 'ascend';
@@ -316,7 +321,7 @@ export class CategoryAttributeComponent implements OnInit {
           return 0;
       }
     });
-    
+
   }
 
   compare(a: any, b: any, isAsc: boolean): number {

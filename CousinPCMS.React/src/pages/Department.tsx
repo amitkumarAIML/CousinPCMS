@@ -295,13 +295,13 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   </Form.Item>
                   {/* Colour Selection */}
                   <Form.Item label="Colour" name="akiColor" colon={false} className="flex-grow" rules={[hexColorRule]}>
-                    <Input type="color" className="w-full h-10" onChange={(e) => handleColorChange(e, 'akiColor')} />
+                    <Input type="color" className="w-full" onChange={(e) => handleColorChange(e, 'akiColor')} />
                   </Form.Item>
                   <Form.Item label="OR Enter hex colour value" name="akiColor" colon={false} className="flex-grow" rules={[hexColorRule]}>
                     <Input maxLength={7} placeholder="#RRGGBB" onChange={(e) => handleHexChange(e, 'akiColor')} />
                   </Form.Item>
                   <Form.Item label="Featured Product Background Colour" name="akiFeaturedProdBGColor" colon={false} className="flex-grow" rules={[hexColorRule]}>
-                    <Input type="color" className="w-full h-10" onChange={(e) => handleColorChange(e, 'akiFeaturedProdBGColor')} />
+                    <Input type="color" className="w-full" onChange={(e) => handleColorChange(e, 'akiFeaturedProdBGColor')} />
                   </Form.Item>
                   <Form.Item label="OR Enter hex colour value" name="akiFeaturedProdBGColor" colon={false} className="flex-grow" rules={[hexColorRule]}>
                     <Input maxLength={7} placeholder="#RRGGBB" onChange={(e) => handleHexChange(e, 'akiFeaturedProdBGColor')} />

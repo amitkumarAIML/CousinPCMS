@@ -1,6 +1,6 @@
 <div class="product-container">
   <div class="product-header flex justify-between items-center">
- <div class="flex gap-2">
+ <div class="flex gap-1 me-1">
     <span>Product Name</span>   
     <a (click)="addProduct()">Add</a>
     <a (click)="editProduct()">Edit</a>
@@ -56,7 +56,7 @@
 <div>
   <nz-modal [(nzVisible)]="categoryProductVisible" [nzFooter]="null" nzClosable="false" [nzClassName]="'no-padding-modal'" nzWidth="1500px">
     <ng-container *nzModalContent>
-      <cousins-product (eventComplete)="handleOk($event)" ></cousins-product>
+      <cousins-product (eventComplete)="handleOk($event)" [isSetAttributslist]="isSetAttributslist" ></cousins-product>
     </ng-container>
   </nz-modal>
 </div>
