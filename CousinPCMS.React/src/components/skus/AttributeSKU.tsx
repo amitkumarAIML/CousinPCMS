@@ -5,7 +5,7 @@ import type {TableProps} from 'antd/es/table';
 
 // --- Import Services and Types ---
 import { getSkuLinkedAttributes } from '../../services/SkusService';
-import { showNotification } from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type { ApiResponse } from '../../models/generalModel';
 import type { LikedSkuModel } from '../../models/skusModel';
 
@@ -31,6 +31,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   // --- Effects ---
 
   // Effect to fetch data when skuData (specifically akiitemid) changes
+  const notify = useNotification();
   const getSkuLinkedAttributesHandler = async (itemId: number | string) => {
     setLoading(true);
     setLinkedAttributeList([]); // Clear previous results
@@ -44,10 +45,10 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
         }));
         setLinkedAttributeList(dataWithKeys);
       } else {
-        showNotification('info', response.exceptionInformation || 'No linked attributes found.');
+        notify.info(response.exceptionInformation || 'No linked attributes found.');
       }
     } catch {
-      showNotification('error', 'Failed to load linked attributes.');
+      notify.error('Failed to load linked attributes.');
     } finally {
       setLoading(false);
     }

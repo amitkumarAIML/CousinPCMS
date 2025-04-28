@@ -1,12 +1,12 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useNavigate} from 'react-router';
 import {Form, Input, InputNumber, Select, Checkbox, Button, Upload, Modal, Spin} from 'antd';
-import {UploadOutlined} from '@ant-design/icons';
 import type {FormInstance} from 'antd/es/form';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import {getLayoutTemplateList, getCompetitorDetails, getPriceGroupDetails, getPriceBreaksDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
-import {getCountryOrigin, getCommodityCodes, showNotification} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type {Country} from '../../models/countryOriginModel';
 import type {CommodityCode} from '../../models/commodityCodeModel';
 import type {layoutSkus} from '../../models/layoutTemplateModel';
@@ -51,6 +51,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   const akiManufacturerRef = Form.useWatch('akiManufacturerRef', form);
   const akiitemid = Form.useWatch('akiitemid', form);
   const akiImageURL = Form.useWatch('akiImageURL', form);
+  const notify = useNotification();
   const fetchSkuAttributesByCategoryId = useCallback(async (categoryId: string | number) => {
     setIsLoadingAttributeNames(true);
     setSavedAttributes([]);
@@ -59,16 +60,16 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       if (response.isSuccess && response.value) {
         setSavedAttributes(response.value);
       } else if (!response.isSuccess && response.exceptionInformation) {
-        showNotification('warning', response.exceptionInformation);
+        notify.warning(response.exceptionInformation);
       }
       console.log(`No attributes found for category ${categoryId} or request failed.`);
     } catch (error) {
       console.error('Error fetching SKU attributes:', error);
-      showNotification('error', 'Failed to load SKU attributes.');
+      notify.error('Failed to load SKU attributes.');
     } finally {
       setIsLoadingAttributeNames(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     onFormInstanceReady(form);
@@ -95,11 +96,11 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
         setPricingFormulas(pfRes?.isSuccess ? pfRes.value : []);
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
-        showNotification('error', 'Failed to load some form options.');
+        notify.error('Failed to load some form options.');
       }
     };
     fetchDropdowns();
-  }, []);
+  }, [notify]);
   useEffect(() => {
     if (skuData) {
       form.resetFields();
@@ -130,9 +131,9 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       if (info.file.status === 'uploading') {
         console.log('Uploading...');
       } else if (info.file.status === 'done') {
-        showNotification('success', `${info.file.name} file uploaded successfully (simulated)`);
+        notify.success(`${info.file.name} file uploaded successfully (simulated)`);
       } else if (info.file.status === 'error') {
-        showNotification('error', `${info.file.name} file upload failed.`);
+        notify.error(`${info.file.name} file upload failed.`);
       }
     } else if (info.file.status === 'removed') {
       form.setFieldsValue({akiImageURL: ''});

@@ -7,7 +7,7 @@ import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../
 import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl} from '../services/ProductService';
 import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl} from '../services/CategoryService';
 import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl} from '../services/SkusService';
-import {showNotification} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 
 const AdditionalImages: React.FC = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
@@ -24,6 +24,7 @@ const AdditionalImages: React.FC = () => {
 
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
+  const notify = useNotification();
 
   const fetchImages = useCallback(async (id: string | number, type: 'product' | 'category' | 'sku') => {
     setLoadingData(true);
@@ -51,16 +52,16 @@ const AdditionalImages: React.FC = () => {
         }
       } else {
         setDisplayText(response.exceptionInformation || 'Failed to load images.');
-        if (response.exceptionInformation) showNotification('error', response.exceptionInformation);
+        if (response.exceptionInformation) notify.error(response.exceptionInformation);
       }
     } catch (error) {
       console.error(`Error fetching images for ${type} ${id}:`, error);
       setDisplayText('Error loading images.');
-      showNotification('error', 'Something went wrong while fetching images.');
+      notify.error('Something went wrong while fetching images.');
     } finally {
       setLoadingData(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -168,18 +169,18 @@ const AdditionalImages: React.FC = () => {
           throw new Error('Invalid context type for saving image');
       }
       if (response.isSuccess) {
-        showNotification('success', 'Image Added Successfully');
+        notify.success('Image Added Successfully');
         setFileList((prev) => [...prev, saveData]);
         setShowForm(false);
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed to add image.');
+        notify.error(response.exceptionInformation || 'Failed to add image.');
       }
     } catch (error) {
       console.error(`Error saving image for ${contextType} ${contextId}:`, error);
       if (typeof error === 'object' && error && 'error' in error && typeof (error as {error?: {title?: string}}).error?.title === 'string') {
-        showNotification('error', (error as {error: {title: string}}).error.title);
+        notify.error((error as {error: {title: string}}).error.title);
       } else {
-        showNotification('error', 'Something went wrong while saving the image.');
+        notify.error('Something went wrong while saving the image.');
       }
     } finally {
       setLoading(false);
@@ -212,17 +213,17 @@ const AdditionalImages: React.FC = () => {
           throw new Error('Invalid context type for deleting image');
       }
       if (response.isSuccess) {
-        showNotification('success', `${contextType.charAt(0).toUpperCase() + contextType.slice(1)} image successfully deleted.`);
+        notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} image successfully deleted.`);
         setFileList((prevList) => prevList.filter((_, i) => i !== index));
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed to delete image.');
+        notify.error(response.exceptionInformation || 'Failed to delete image.');
       }
     } catch (error) {
       console.error(`Error deleting image for ${contextType} ${contextId}:`, error);
       if (typeof error === 'object' && error && 'error' in error && typeof (error as {error?: {title?: string}}).error?.title === 'string') {
-        showNotification('error', (error as {error: {title: string}}).error.title);
+        notify.error((error as {error: {title: string}}).error.title);
       } else {
-        showNotification('error', 'Something went wrong during deletion.');
+        notify.error('Something went wrong during deletion.');
       }
     } finally {
       setLoadingData(false);

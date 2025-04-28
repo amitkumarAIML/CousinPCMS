@@ -5,7 +5,7 @@ import {DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl} from '../services/ProductService';
 import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl} from '../services/CategoryService';
 import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl} from '../services/SkusService';
-import {showNotification} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel} from '../models/linkMaintenanaceModel';
 import type {ApiResponse} from '../models/generalModel';
 
@@ -24,6 +24,7 @@ const LinkMaintenance: React.FC = () => {
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
 
   const location = useLocation();
+  const notify = useNotification();
 
   const fetchLinks = useCallback(async (id: string | number, type: 'product' | 'category' | 'sku') => {
     setLoadingData(true);
@@ -52,16 +53,16 @@ const LinkMaintenance: React.FC = () => {
         }
       } else {
         setDisplayText(response.exceptionInformation || 'Failed to load links.');
-        if (response.exceptionInformation) showNotification('error', response.exceptionInformation);
+        if (response.exceptionInformation) notify.error(response.exceptionInformation);
       }
     } catch (error) {
       console.error('Error fetching links:', error);
       setDisplayText('Error loading links.');
-      showNotification('error', 'Something went wrong while fetching links.');
+      notify.error('Something went wrong while fetching links.');
     } finally {
       setLoadingData(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -122,16 +123,15 @@ const LinkMaintenance: React.FC = () => {
 
   const handleSave = async () => {
     if (!contextId || !contextType) {
-      showNotification('error', 'Context ID or Type is missing.');
+      notify.error('Context ID or Type is missing.');
       return;
     }
-
     setLoading(true);
     try {
       const values = await form.validateFields();
 
       if (checkDuplicateUrl(values.linkURL)) {
-        showNotification('error', 'This URL already exists.');
+        notify.error('This URL already exists.');
         setLoading(false);
         return;
       }
@@ -159,19 +159,19 @@ const LinkMaintenance: React.FC = () => {
       }
 
       if (response.isSuccess) {
-        showNotification('success', 'Link Added Successfully');
+        notify.success('Link Added Successfully');
         setLinks((prev) => [...prev, values]);
         setShowForm(false);
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed to add link.');
+        notify.error(response.exceptionInformation || 'Failed to add link.');
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo) {
-        showNotification('error', 'Please fill in all required fields correctly.');
+        notify.error('Please fill in all required fields correctly.');
       } else if (typeof errorInfo === 'object' && errorInfo !== null && 'error' in errorInfo && (errorInfo as {error?: {title?: string}}).error?.title) {
-        showNotification('error', (errorInfo as {error?: {title?: string}}).error!.title!);
+        notify.error((errorInfo as {error?: {title?: string}}).error!.title!);
       } else {
-        showNotification('error', 'Something went wrong during save.');
+        notify.error('Something went wrong during save.');
       }
     } finally {
       setLoading(false);
@@ -180,7 +180,7 @@ const LinkMaintenance: React.FC = () => {
 
   const handleDeleteLink = async (linkToDelete: LinkValue, index: number) => {
     if (!contextId || !contextType) {
-      showNotification('error', 'Context ID or Type is missing.');
+      notify.error('Context ID or Type is missing.');
       return;
     }
 
@@ -211,13 +211,13 @@ const LinkMaintenance: React.FC = () => {
       }
 
       if (response.isSuccess) {
-        showNotification('success', `${contextType.charAt(0).toUpperCase() + contextType.slice(1)} link successfully deleted.`);
+        notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} link successfully deleted.`);
         setLinks((prevList) => prevList.filter((_, i) => i !== index));
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed to delete link.');
+        notify.error(response.exceptionInformation || 'Failed to delete link.');
       }
     } catch {
-      showNotification('error', 'Something went wrong during deletion.');
+      notify.error('Something went wrong during deletion.');
     } finally {
       setLoadingData(false);
     }

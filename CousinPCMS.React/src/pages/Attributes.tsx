@@ -4,7 +4,7 @@ import {Table, Button, Input, Checkbox, Form, Spin} from 'antd';
 import {SearchOutlined, CloseCircleFilled, EditOutlined} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 import {getAttributesList} from '../services/AttributesService';
-import {showNotification} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 import type {AttributeModel} from '../models/attributeModel';
 
 interface AttributeItem extends AttributeModel {
@@ -16,6 +16,7 @@ const Attributes: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [attributeList, setAttributeList] = useState<AttributeItem[]>([]);
   const navigate = useNavigate();
+  const notify = useNotification();
 
   const fetchAllAttributes = useCallback(async () => {
     setLoading(true);
@@ -28,17 +29,17 @@ const Attributes: React.FC = () => {
         }));
         setAttributeList(dataWithKeys);
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed to load attributes.');
+        notify.error(response.exceptionInformation || 'Failed to load attributes.');
         setAttributeList([]);
       }
     } catch (error) {
       console.error('Error fetching attributes list:', error);
-      showNotification('error', 'Something went wrong loading attributes.');
+      notify.error('Something went wrong loading attributes.');
       setAttributeList([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     sessionStorage.removeItem('attributeName');

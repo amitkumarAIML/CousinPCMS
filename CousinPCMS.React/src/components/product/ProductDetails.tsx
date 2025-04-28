@@ -6,12 +6,13 @@ import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
 import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
-import {getCountryOrigin, getCommodityCodes, getAllCategory, showNotification} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory} from '../../services/DataService';
 import {Country} from '../../models/countryOriginModel';
 import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
 import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -72,6 +73,8 @@ const ProductDetails: React.FC = () => {
 
   useEffect(() => {}, [productForm]);
 
+  const notify = useNotification();
+
   useEffect(() => {
     const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
@@ -89,15 +92,15 @@ const ProductDetails: React.FC = () => {
               akiProductIsActive: !!product.akiProductIsActive,
             });
           } else {
-            showNotification('error', response.exceptionInformation || 'Failed To Load Product Data');
+            notify.error(response.exceptionInformation || 'Failed To Load Product Data');
           }
         })
         .catch(() => {
-          showNotification('error', 'Something went wrong while fetching product data.');
+          notify.error('Something went wrong while fetching product data.');
         })
         .finally(() => setProductLoading(false));
     } else {
-      showNotification('error', 'Product ID not found. Please select a product.');
+      notify.error('Product ID not found. Please select a product.');
       setProductLoading(false);
     }
 
@@ -112,16 +115,14 @@ const ProductDetails: React.FC = () => {
         setFilteredCategories(categoriesData || []);
       } catch (e) {
         console.error('Error fetching initial data:', e);
-        showNotification('error', 'Could not load necessary form options.');
+        notify.error('Could not load necessary form options.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchInitialData();
-
     productForm.getFieldValue('akiProductName')?.disable?.();
-  }, [productForm]);
+  }, [productForm, notify]);
 
   const fetchAdditionalProduct = useCallback(
     async (productId: number) => {
@@ -133,13 +134,13 @@ const ProductDetails: React.FC = () => {
         const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
         addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } catch {
-        showNotification('error', 'Error fetching associated products list.');
+        notify.error('Error fetching associated products list.');
         setAdditionalProductList([]);
       } finally {
         setIsAdditionalPLoading(false);
       }
     },
-    [addAssociatedProductForm]
+    [addAssociatedProductForm, notify]
   );
 
   useEffect(() => {
@@ -166,13 +167,13 @@ const ProductDetails: React.FC = () => {
         },
       }));
     } catch {
-      showNotification('error', 'Could not load products.');
+      notify.error('Could not load products.');
       setProductListModal([]);
       setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, total: 0}}));
     } finally {
       setLoadingProductModal(false);
     }
-  }, [isVisibleAddProductModal, productSearchValueModal, productModalTableParams, additionalProductList, akiProductID]);
+  }, [isVisibleAddProductModal, productSearchValueModal, productModalTableParams, additionalProductList, akiProductID, notify]);
 
   useEffect(() => {
     fetchProductsForModal();
@@ -240,11 +241,11 @@ const ProductDetails: React.FC = () => {
 
   const handleAddAssociatedProductSubmit = async (values: Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}) => {
     if (!selectedProductIdModal) {
-      showNotification('error', 'Please select a product from the grid below.');
+      notify.error('Please select a product from the grid below.');
       return;
     }
     if (akiProductID === undefined) {
-      showNotification('error', 'Current product context is missing.');
+      notify.error('Current product context is missing.');
       return;
     }
 
@@ -252,7 +253,7 @@ const ProductDetails: React.FC = () => {
 
     const isListOrderExist = additionalProductList.some((p) => Number(p.listOrder) === listOrder);
     if (isListOrderExist) {
-      showNotification('error', 'List order already exists.');
+      notify.error('List order already exists.');
       return;
     }
 
@@ -265,7 +266,7 @@ const ProductDetails: React.FC = () => {
     try {
       const response = await addAssociatedProduct(payload);
       if (response.isSuccess) {
-        showNotification('success', 'Associated product added successfully');
+        notify.success('Associated product added successfully');
         setIsVisibleAddProductModal(false);
         addAssociatedProductForm.resetFields();
         setSelectedProductIdModal(null);
@@ -275,10 +276,10 @@ const ProductDetails: React.FC = () => {
         const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
         addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } else {
-        showNotification('error', response.exceptionInformation || 'Associated product not added');
+        notify.error(response.exceptionInformation || 'Associated product not added');
       }
     } catch {
-      showNotification('error', 'Something went wrong');
+      notify.error('Something went wrong');
     }
   };
 
@@ -306,7 +307,7 @@ const ProductDetails: React.FC = () => {
       const isListOrderExist = additionalProductList.some((p) => Number(p.listOrder) === listOrder && p.additionalProduct !== currentEditingId);
 
       if (isListOrderExist) {
-        showNotification('error', 'List order already exists.');
+        notify.error('List order already exists.');
         return;
       }
 
@@ -318,14 +319,14 @@ const ProductDetails: React.FC = () => {
 
       const response = await updateAssociatedProduct(payload);
       if (response.isSuccess) {
-        showNotification('success', 'Associated product updated successfully');
+        notify.success('Associated product updated successfully');
         setEditingId(null);
         fetchAdditionalProduct(akiProductID);
       } else {
-        showNotification('error', response.exceptionInformation || 'Associated product not updated');
+        notify.error(response.exceptionInformation || 'Associated product not updated');
       }
     } catch {
-      showNotification('error', 'Something went wrong');
+      notify.error('Something went wrong');
     }
   };
 

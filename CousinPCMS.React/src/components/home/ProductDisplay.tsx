@@ -6,7 +6,7 @@ import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons'; // Import i
 import {Product} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
 import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
-import {showNotification} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import ProductComponent from '../../pages/Product';
 import CategoryAttribute from './CategoryAttribute';
 
@@ -28,6 +28,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const [categoryData, setCategoryData] = useState({}); // Data for attribute modal
   const [searchValue, setSearchValue] = useState('');
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const notify = useNotification();
 
   const fetchData = useCallback(async () => {
     if (!selectedCategory) {
@@ -60,7 +61,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
         setLstAllAttributeSets(currentAttributeSets);
       } else {
         setLstAllAttributeSets([]);
-        showNotification('error', 'Failed to load attribute sets');
+        notify.error('Failed to load attribute sets');
       }
 
       const combinedData: (Product | AttributeSetModel)[] = [...(Array.isArray(currentProducts) ? currentProducts : []), ...(Array.isArray(currentAttributeSets) ? currentAttributeSets : [])];
@@ -99,7 +100,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      showNotification('error', 'Failed to load data');
+      notify.error('Failed to load data');
       setDisplayText('Error loading data');
       setProducts([]);
       setLstAllAttributeSets([]);
@@ -108,7 +109,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchValue]); // Re-run fetch if category or search changes (search handled internally now)
+  }, [selectedCategory, searchValue, notify]); // Re-run fetch if category or search changes (search handled internally now)
 
   useEffect(() => {
     const persistedProductId = sessionStorage.getItem('productId');
@@ -185,7 +186,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const handleEditProduct = () => {
     const productToEdit = products.find((p) => p.akiProductID === selectedProduct);
     if (!productToEdit) {
-      showNotification('error', 'Please select a product name from the list to edit.');
+      notify.error('Please select a product name from the list to edit.');
       return;
     }
     // Pass product data to the ProductForm modal for editing

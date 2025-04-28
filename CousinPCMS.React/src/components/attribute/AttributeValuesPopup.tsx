@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Input, Button} from 'antd';
 import {addAttributesValues} from '../../services/AttributesService';
-import {showNotification} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type {AttributeValuesRequestModel} from '../../models/attributesModel';
 
 const {TextArea} = Input;
@@ -23,6 +23,7 @@ interface AttributeValueFormData {
 const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, onClose, skuId, itemNumber}) => {
   const [form] = Form.useForm<AttributeValueFormData>();
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
+  const notify = useNotification();
 
   useEffect(() => {
     if (attributeName !== undefined && attributeName !== null) {
@@ -53,15 +54,15 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       const response = await addAttributesValues(payload);
 
       if (response.isSuccess) {
-        showNotification('success', 'Attribute Value added successfully.');
+        notify.success('Attribute Value added successfully.');
         form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
         onClose('save');
       } else {
-        showNotification('error', response.exceptionInformation || 'Attribute Value Failed To Add');
+        notify.error(response.exceptionInformation || 'Attribute Value Failed To Add');
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo && Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields)) {
-        showNotification('error', 'Please fill in all required fields.');
+        notify.error('Please fill in all required fields.');
       } else if (
         typeof errorInfo === 'object' &&
         errorInfo !== null &&
@@ -69,9 +70,9 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
         (errorInfo as {error?: {title?: string}}).error !== undefined &&
         (errorInfo as {error?: {title?: string}}).error?.title
       ) {
-        showNotification('error', (errorInfo as {error?: {title?: string}}).error?.title || '');
+        notify.error((errorInfo as {error?: {title?: string}}).error?.title || '');
       } else {
-        showNotification('error', 'Failed to submit attribute value.');
+        notify.error('Failed to submit attribute value.');
       }
       console.log('Validation Failed:', errorInfo);
     } finally {

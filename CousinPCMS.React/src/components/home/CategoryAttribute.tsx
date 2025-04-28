@@ -1,11 +1,11 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Modal, Form, Input, Checkbox, Button, Table, Spin} from 'antd';
 import {getAllAttributes, getAttributeSetsByAttributeSetName, addAttributeSets, deleteAttributeSets, updateAttributeSets1} from '../../services/HomeService';
-import {extractUserMessage, showNotification} from '../../services/DataService';
+import {extractUserMessage} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
 import type {AttributeModel, AttributeModelResponse, AttributeSetModel} from '../../models/attributeModel';
 import {ApiResponse} from '../../models/generalModel';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
 
 interface CategoryAttributeProps {
   categoryData: any;
@@ -67,12 +67,12 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           setAttributeList(filtered);
           setFilteredData(filtered);
         } else {
-          showNotification('error', 'Failed To Load Data');
+          notify.error('Failed To Load Data');
         }
         setIsAttributeloading(false);
       });
     },
-    [lstAllAttributeSets]
+    [lstAllAttributeSets, notify]
   );
 
   // Fetch attribute sets by name
@@ -85,7 +85,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             setLstAllAttributeSets(response.value);
             fetchAllAttributes(response.value); // Pass new data here
           } else {
-            showNotification('error', 'Failed to load attribute sets');
+            notify.error('Failed to load attribute sets');
             setLstAllAttributeSets([]);
             fetchAllAttributes([]);
           }
@@ -96,10 +96,10 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           setIsAttributeSetloading(false);
           setLstAllAttributeSets([]);
           fetchAllAttributes([]);
-          showNotification('error', 'Failed to load attribute sets');
+          notify.error('Failed to load attribute sets');
         });
     },
-    [fetchAllAttributes]
+    [fetchAllAttributes, notify]
   );
 
   // Add attribute data to form
@@ -107,7 +107,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     setCategoryAttriIsVisible(true);
     setIsEditable(false);
     if (!data || !data.attributeName) {
-      showNotification('error', 'Attribute name is missing.');
+      notify.error('Attribute name is missing.');
       return;
     }
     const existingName = form.getFieldValue('attributeSetName')?.trim() || '';
@@ -128,10 +128,10 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
   const handleDeleteAttributeSet = (item: AttributeSetModel) => {
     deleteAttributeSets(item.attributeName, item.attributeSetName).then((response: any) => {
       if (response.isSuccess) {
-        showNotification('success', 'AttributeSets deleted successfully');
+        notify.success('AttributeSets deleted successfully');
         fetchAttributeSetsByAttributeSetName(currentAttributeSetName);
       } else {
-        showNotification('error', 'AttributeSets not deleted successfully');
+        notify.error('AttributeSets not deleted successfully');
       }
     });
   };
@@ -143,7 +143,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
       .then((values) => {
         addAttributeSets(values).then((response: ApiResponse<string>) => {
           if (response.isSuccess) {
-            showNotification('success', 'Attribute added successfully');
+            notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
             fetchAttributeSetsByAttributeSetName(values.attributeSetName);
             if (eventComplete) eventComplete('ok');
@@ -174,7 +174,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     const maxListOrder = lstAllAttributeSets.length > 0 ? Math.max(...lstAllAttributeSets.map((a) => Number(a.listPosition) || 0)) : 0;
     const nextListPosition = maxListOrder + 1;
     if (!row || !row.attributeName) {
-      showNotification('error', 'Attribute name is missing.');
+      notify.error('Attribute name is missing.');
       return;
     }
     form.setFieldsValue({
@@ -204,7 +204,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
 
         updateAttributeSets1(values).then((response: ApiResponse<string>) => {
           if (response.isSuccess) {
-            showNotification('success', 'Attribute added successfully');
+            notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
             fetchAttributeSetsByAttributeSetName(values.attributeSetName);
             if (eventComplete) eventComplete('ok');

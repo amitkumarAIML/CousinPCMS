@@ -6,9 +6,10 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {cleanEmptyNullToString, getCommodityCodes, showNotification} from '../services/DataService';
+import {getCommodityCodes, cleanEmptyNullToString} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment} from '../services/DepartmentService';
-import {useNavigate, useLocation} from 'react-router';
+import {useLocation, useNavigate} from 'react-router';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -27,6 +28,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
   const departmentId = sessionStorage.getItem('departmentId') || '';
+  const notify = useNotification();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +38,11 @@ const Department: React.FC<DepartmentInfoProps> = () => {
         setLayoutOptions(layouts);
       } catch (error) {
         console.error('Error fetching initial data:', error);
-        showNotification('error', 'Failed to load form data.');
+        notify.error('Failed to load form data.');
       }
     };
     fetchData();
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     // If on add page, do not fetch department or show error
@@ -49,7 +51,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       return;
     }
     if (!departmentId) {
-      showNotification('error', 'Department ID not found. Please select a department.');
+      notify.error('Department ID not found. Please select a department.');
       navigate('/home');
       return;
     }
@@ -66,17 +68,17 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             akiFeaturedProdBGColor: response.value[0].akiFeaturedProdBGColor?.startsWith('#') ? response.value[0].akiFeaturedProdBGColor : `#${response.value[0].akiFeaturedProdBGColor || 'FFFF80'}`,
           });
         } else {
-          showNotification('error', 'Failed To Load Data');
+          notify.error('Failed To Load Data');
         }
       } catch (error) {
         console.log('Error fetching department:', error);
-        showNotification('error', 'Something went wrong');
+        notify.error('Something went wrong');
       } finally {
         setLoading(false); // Hide spinner after department fetch
       }
     };
     fetchDepartment();
-  }, [form, location.pathname]);
+  }, [form, departmentId, navigate, notify]);
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Department) => {
     const {value} = event.target;
@@ -97,11 +99,11 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       return;
     }
     if (info.file.status === 'done') {
-      showNotification('success', `${info.file.name} file uploaded successfully.`);
+      notify.success(`${info.file.name} file uploaded successfully.`);
       form.setFieldsValue({akiDepartmentImageURL: info.file.response?.url || info.file.name});
       console.log('Upload Done:', info.file.response);
     } else if (info.file.status === 'error') {
-      showNotification('error', `${info.file.name} file upload failed.`);
+      notify.error(`${info.file.name} file upload failed.`);
       console.error('Upload Error:', info.file.error);
     } else if (info.file.originFileObj) {
       form.setFieldsValue({akiDepartmentImageURL: info.file.name});
@@ -127,20 +129,20 @@ const Department: React.FC<DepartmentInfoProps> = () => {
         updateDepartment(cleanedForm)
           .then((response) => {
             if (response.isSuccess) {
-              showNotification('success', 'Department Details Updated Successfully');
+              notify.success('Department Details Updated Successfully');
               navigate('/home');
             } else {
-              showNotification('error', 'Department Details Failed to Update');
+              notify.error('Department Details Failed to Update');
             }
           })
           .catch((err) => {
             console.error('Error updating department:', err);
-            showNotification('error', 'Something went wrong');
+            notify.error('Failed to update department details.');
           });
       })
       .catch((errorInfo) => {
         console.log('Validation Failed:', errorInfo);
-        showNotification('error', 'Please fill in all required fields correctly.');
+        notify.error('Please fill in all required fields correctly.');
       });
   };
 

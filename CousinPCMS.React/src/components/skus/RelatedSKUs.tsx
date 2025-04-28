@@ -5,7 +5,7 @@ import type {TableProps} from 'antd/es/table';
 
 // --- Import Services and Types ---
 import { getRelatedSkuItem } from '../../services/SkusService';
-import { showNotification } from '../../services/DataService';
+import { useNotification } from '../../contexts.ts/NotificationProvider';
 
 // Define interface for the main SKU data prop
 interface MainSkuData {
@@ -34,6 +34,7 @@ interface RelatedSkuProps {
 }
 
 const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
+  const notify = useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
   const [relatedSkusList, setRelatedSkusList] = useState<RelatedSkuItem[]>([]); // Master list
@@ -51,7 +52,8 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
 
       const itemNumber = skuData.akiitemid;
       if (itemNumber) {
-        loadRelatedSku(itemNumber);
+        // Defer calling loadRelatedSku until after its declaration
+        setTimeout(() => loadRelatedSku(itemNumber), 0);
       } else {
         console.warn('Related SKUs: Main SKU Item Number is missing.');
         setRelatedSkusList([]); // Clear list if no item number
@@ -63,7 +65,7 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
       setRelatedSkusList([]);
       setSearchValue('');
     }
-  }, [skuData]); // Dependency array includes skuData
+  }, [skuData]); // Do not add loadRelatedSku to avoid use-before-assign
 
   // --- Data Fetching ---
   const loadRelatedSku = async (itemNumber: string) => {
@@ -79,11 +81,11 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
         }));
         setRelatedSkusList(dataWithKeys);
       } else {
-        showNotification('info', response.exceptionInformation || 'No related SKUs found.');
+        notify.info(response.exceptionInformation || 'No related SKUs found.');
         setRelatedSkusList([]);
       }
     } catch {
-      showNotification('error', 'Something went wrong loading related SKUs.');
+      notify.error('Something went wrong loading related SKUs.');
       setRelatedSkusList([]);
     } finally {
       setLoading(false);

@@ -3,7 +3,7 @@ import {Table, Checkbox, Spin} from 'antd';
 import {CaretRightOutlined} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 import {getSkuItemById} from '../../services/SkusService';
-import {showNotification} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
 
 const SKUsList = () => {
@@ -11,6 +11,7 @@ const SKUsList = () => {
   const [skusList, setSkusList] = useState<SKuList[]>([]);
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
   const [productId] = useState<string | null>(sessionStorage.getItem('productId') || '3024');
+  const notify = useNotification();
 
   useEffect(() => {
     const loadSkuForProduct = async () => {
@@ -27,18 +28,18 @@ const SKUsList = () => {
           const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive);
           setSkusList(activeSkus);
         } else {
-          showNotification('info', data.exceptionInformation || 'No SKU data found or request failed.');
+          notify.info(data.exceptionInformation || 'No SKU data found or request failed.');
           setSkusList([]);
         }
       } catch (error) {
-        showNotification('error', error instanceof Error ? error.message : 'Something went wrong while fetching SKUs.');
+        notify.error(error instanceof Error ? error.message : 'Something went wrong while fetching SKUs.');
         setSkusList([]);
       } finally {
         setLoading(false);
       }
     };
     loadSkuForProduct();
-  }, [productId]);
+  }, [productId, notify]);
 
   const handleRowSelect = (record: SKuList) => {
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));

@@ -2,30 +2,31 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
-import {showNotification} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 import SKUsList from '../components/product/SKUsList';
 
 const Product: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
   const [loading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const notify = useNotification();
 
   useEffect(() => {
     const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       console.log(`Product ID from session: ${productIdFromSession}`);
     } else {
-      showNotification('error', 'Product ID not found. Please select a product.');
+      notify.error('Product ID not found. Please select a product.');
       navigate('/home');
     }
-  }, [navigate]);
+  }, [navigate, notify]);
 
   const handleCancel = () => {
     navigate('/home');
   };
 
   const handleSave = () => {
-    showNotification('info', 'Save functionality is not implemented in this component.');
+    notify.info('Save functionality is not implemented in this component.');
   };
 
   const tabBarExtraContent = (

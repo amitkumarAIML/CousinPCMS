@@ -3,6 +3,7 @@ import { CommodityCode, CommodityCodeResponse } from '../models/commodityCodeMod
 import { Country, CountryResponse } from '../models/countryOriginModel';
 
 
+
 // Country origin
 export const getCountryOrigin = async (): Promise<Country[]> => {
   const response = await http.get<CountryResponse>('Account/GetCountryOrigin');
@@ -22,10 +23,6 @@ export const getAllCategory = async (): Promise<any[]> => {
 };
 
 
-export function showNotification(type: 'success' | 'error', msg: string) {
-  // you can’t call hooks in plain modules—
-  // so instead export a hook wrapper for components:
-}
 
 export const extractUserMessage = (fullMsg: string): string => {
   const marker = /CorrelationId\s*:/i;

@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Spin, Modal, Input} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import {getSkuByProductId} from '../../services/HomeService';
-import {showNotification} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type {SKuList} from '../../models/skusModel';
 import SKUsComponent from '../../pages/SKUs';
 
@@ -19,6 +19,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const [selectedSku, setSelectedSku] = useState<number | undefined>(undefined);
   const [searchValue, setSearchValue] = useState('');
   const [productSkusVisible, setProductSkusVisible] = useState(false);
+  const notify = useNotification();
 
   useEffect(() => {
     if (!selectedProductId || selectedProductId <= 0 || !selectedCategory || !sessionStorage.getItem('productId')) {
@@ -54,7 +55,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       }
     } catch {
       setDisplayText('Failed to load SKU');
-      showNotification('error', 'Something went wrong');
+      notify.error('Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const editSku = () => {
     if (!selectedSku) {
       setProductSkusVisible(false);
-      showNotification('error', 'Please select sku name.');
+      notify.error('Please select sku name.');
       return;
     }
     setProductSkusVisible(true);

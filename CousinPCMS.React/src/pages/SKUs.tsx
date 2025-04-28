@@ -6,7 +6,7 @@ import SKUDetails from '../components/skus/SKUDetails';
 import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 import {updateSkus, getSkuItemById} from '../services/SkusService';
-import {showNotification} from '../services/DataService';
+import {useNotification} from '../contexts.ts/NotificationProvider';
 import type {SKuList, SkuRequestModel} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
 
@@ -17,6 +17,7 @@ const SKUs: React.FC = () => {
   const [skuData, setSkuData] = useState<SKuList | null>(null);
   const [skuDetailsFormInstance, setSkuDetailsFormInstance] = useState<FormInstance | null>(null);
   const navigate = useNavigate();
+  const notify = useNotification();
 
   const handleFormInstanceReady = useCallback((form: FormInstance) => {
     setSkuDetailsFormInstance(form);
@@ -27,11 +28,11 @@ const SKUs: React.FC = () => {
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
     } else {
-      showNotification('error', 'SKU Item Number not found. Please select an SKU.');
+      notify.error('SKU Item Number not found. Please select an SKU.');
       setLoading(false);
       navigate('/home');
     }
-  }, [navigate]);
+  }, [navigate, notify, fetchSkuByItemNumber]);
 
   const fetchSkuByItemNumber = async (itemNum: string) => {
     setLoading(true);
@@ -40,15 +41,15 @@ const SKUs: React.FC = () => {
       if (response.isSuccess && response.value && response.value.length > 0) {
         setSkuData(response.value[0]);
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed To Load SKU Data');
+        notify.error(response.exceptionInformation || 'Failed To Load SKU Data');
         setSkuData(null);
       }
     } catch (err: unknown) {
       console.error('Error fetching SKU:', err);
       if (err && typeof err === 'object' && 'error' in err && (err as {error?: {title?: string}}).error?.title) {
-        showNotification('error', (err as {error?: {title?: string}}).error?.title || '');
+        notify.error((err as {error?: {title?: string}}).error?.title || '');
       } else {
-        showNotification('error', 'Something went wrong while fetching SKU data.');
+        notify.error('Something went wrong while fetching SKU data.');
       }
       setSkuData(null);
     } finally {
@@ -62,11 +63,11 @@ const SKUs: React.FC = () => {
 
   const handleSave = async () => {
     if (!skuDetailsFormInstance) {
-      showNotification('error', 'SKU details form is not ready.');
+      notify.error('SKU details form is not ready.');
       return;
     }
     if (!skuData) {
-      showNotification('error', 'SKU data is missing.');
+      notify.error('SKU data is missing.');
       return;
     }
     try {
@@ -86,10 +87,10 @@ const SKUs: React.FC = () => {
       setBtnSaveLoading(true);
       const response = await updateSkus(cleanedPayload);
       if (response.isSuccess) {
-        showNotification('success', 'SKU Details Updated Successfully');
+        notify.success('SKU Details Updated Successfully');
         navigate('/home');
       } else {
-        showNotification('error', response.exceptionInformation || 'SKU Details Update Failed');
+        notify.error(response.exceptionInformation || 'SKU Details Update Failed');
       }
     } catch (errorInfo: unknown) {
       console.log('Validation Failed:', errorInfo);
@@ -100,10 +101,10 @@ const SKUs: React.FC = () => {
         Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields) &&
         ((errorInfo as {errorFields?: unknown[]}).errorFields?.length ?? 0) > 0
       ) {
-        showNotification('error', 'Please fill in all required fields correctly.');
+        notify.error('Please fill in all required fields correctly.');
         setActiveTab('1');
       } else {
-        showNotification('error', 'An unexpected error occurred during save.');
+        notify.error('An unexpected error occurred during save.');
       }
     } finally {
       setBtnSaveLoading(false);

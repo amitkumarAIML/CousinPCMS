@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin, Popconfirm} from 'antd';
 import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
 import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes, deleteAttributesValues} from '../../services/AttributesService';
-import {showNotification} from '../../services/DataService';
+import {useNotification} from '../../contexts.ts/NotificationProvider';
 import type {AttributeRequestModel, AttributeValueModel} from '../../models/attributesModel';
 import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
@@ -23,6 +23,8 @@ const AttributeForm: React.FC = () => {
   const [isValueModalVisible, setIsValueModalVisible] = useState<boolean>(false);
   const [isNewValueBtnDisabled, setIsNewValueBtnDisabled] = useState<boolean>(true);
 
+  const notify = useNotification();
+
   const fetchAttributeDetails = useCallback(
     async (name?: string) => {
       if (!name) return;
@@ -38,15 +40,15 @@ const AttributeForm: React.FC = () => {
             showAsCategory: details.showAsCategory,
           });
         } else {
-          showNotification('error', response.exceptionInformation || 'Failed to load attribute details.');
+          notify.error(response.exceptionInformation || 'Failed to load attribute details.');
         }
       } catch {
-        showNotification('error', 'Error loading attribute details.');
+        notify.error('Error loading attribute details.');
       } finally {
         setLoading(false);
       }
     },
-    [form]
+    [form, notify]
   );
 
   const fetchAttributeValues = useCallback(async (name?: string) => {
@@ -58,14 +60,14 @@ const AttributeForm: React.FC = () => {
         setAttributesValues(response.value);
       } else {
         setAttributesValues([]);
-        showNotification('error', response.exceptionInformation || 'Failed to load attribute values.');
+        notify.error(response.exceptionInformation || 'Failed to load attribute values.');
       }
     } catch {
-      showNotification('error', 'Error loading attribute values.');
+      notify.error('Error loading attribute values.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [notify]);
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -74,7 +76,7 @@ const AttributeForm: React.FC = () => {
         if (searchTypeRes.isSuccess) {
           setSearchType(searchTypeRes.value || []);
         } else {
-          showNotification('error', 'Failed to load search types.');
+          notify.error('Failed to load search types.');
         }
 
         const nameFromSession = sessionStorage.getItem('attributeName');
@@ -97,14 +99,14 @@ const AttributeForm: React.FC = () => {
         }
       } catch (error) {
         console.error('Error during initial data load:', error);
-        showNotification('error', 'Error loading initial data.');
+        notify.error('Error loading initial data.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchInitialData();
-  }, [fetchAttributeDetails, fetchAttributeValues, form]);
+  }, [fetchAttributeDetails, fetchAttributeValues, form, notify]);
 
   const filteredData = useMemo(() => {
     const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
@@ -160,14 +162,14 @@ const AttributeForm: React.FC = () => {
       }
 
       if (response.isSuccess) {
-        showNotification('success', `Attribute ${isEdit ? 'updated' : 'added'} successfully.`);
+        notify.success(`Attribute ${isEdit ? 'updated' : 'added'} successfully.`);
         if (!isEdit) {
           setIsEdit(true);
           setAttributeName(currentAttributeName);
           setIsAttributeNameDisabled(true);
           setIsNewValueBtnDisabled(false);
           sessionStorage.setItem('attributeName', currentAttributeName);
-          showNotification('error', 'You can now add values for this attribute.');
+          notify.error('You can now add values for this attribute.');
         }
       } else {
         const message =
@@ -177,11 +179,11 @@ const AttributeForm: React.FC = () => {
             .trim() ||
           response.exceptionInformation ||
           `Failed to ${isEdit ? 'update' : 'add'} attribute.`;
-        showNotification('error', message);
+        notify.error(message);
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo && Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields)) {
-        showNotification('error', 'Please fill in all required fields.');
+        notify.error('Please fill in all required fields.');
       } else if (
         typeof errorInfo === 'object' &&
         errorInfo !== null &&
@@ -189,9 +191,9 @@ const AttributeForm: React.FC = () => {
         (errorInfo as {error?: {title?: string}}).error !== undefined &&
         (errorInfo as {error?: {title?: string}}).error?.title
       ) {
-        showNotification('error', (errorInfo as {error?: {title?: string}}).error?.title || '');
+        notify.error((errorInfo as {error?: {title?: string}}).error?.title || '');
       } else {
-        showNotification('error', 'Failed to submit attribute value.');
+        notify.error('Failed to submit attribute value.');
       }
     } finally {
       setBtnLoading(false);
@@ -203,15 +205,15 @@ const AttributeForm: React.FC = () => {
     try {
       const response = await deleteAttributesValues(record.attributeName, record.attributeValue);
       if (response.isSuccess) {
-        showNotification('success', 'Attribute Value Successfully Deleted');
+        notify.success('Attribute Value Successfully Deleted');
 
         setAttributesValues((prev) => prev.filter((item) => (item as AttributeValueModel).attributeValue !== (record as AttributeValueModel).attributeValue));
       } else {
-        showNotification('error', response.exceptionInformation || 'Failed To Delete Attribute Value');
+        notify.error(response.exceptionInformation || 'Failed To Delete Attribute Value');
       }
     } catch (err) {
       console.error('Error deleting attribute value:', err);
-      showNotification('error', 'An unexpected error occurred.');
+      notify.error('An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
