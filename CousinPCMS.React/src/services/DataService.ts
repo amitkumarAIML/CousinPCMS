@@ -2,6 +2,8 @@ import { http } from '../auth/HttpClient';
 import { CommodityCode, CommodityCodeResponse } from '../models/commodityCodeModel';
 import { Country, CountryResponse } from '../models/countryOriginModel';
 import { message } from 'antd';
+import { useNotification } from '../contexts/NotificationProvider';
+
 
 // Country origin
 export const getCountryOrigin = async (): Promise<Country[]> => {
@@ -21,23 +23,16 @@ export const getAllCategory = async (): Promise<any[]> => {
   return response.value;
 };
 
-export function showNotification(type: 'success' | 'error' | 'warning' | 'info', details: string) {
-  switch (type) {
-    case 'success':
-      message.success(details);
-      break;
-    case 'error':
-      message.error(details);
-      break;
-    case 'warning':
-      message.warning(details);
-      break;
-    case 'info':
-      message.info(details);
-      break;
-    default:
-      message.info(details);
-      break;
-  }
+
+export function showNotification(type: 'success' | 'error', msg: string) {
+  // you can’t call hooks in plain modules—
+  // so instead export a hook wrapper for components:
+}
+
+export const extractUserMessage = (fullMsg: string): string => {
+  const marker = /CorrelationId\s*:/i;
+  const idx = fullMsg.search(marker);
+  if (idx === -1) return fullMsg.trim();
+  return fullMsg.slice(0, idx).replace(/\s+$/, '');
 }
 
