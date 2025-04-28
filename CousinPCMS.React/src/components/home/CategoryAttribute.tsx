@@ -151,7 +151,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             const raw = response?.value || 'Unknown error';
             const userMsg = extractUserMessage(raw);
             notify.error(userMsg);
-            // showNotification('error', 'Attribute not added successfully');
           }
         });
       })
@@ -200,7 +199,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
         });
 
         if (isListPositionDuplicate) {
-          // message.error('List position already exists, please choose another number');
           return;
         }
 
@@ -214,7 +212,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             const raw = response?.value || 'Unknown error';
             const userMsg = extractUserMessage(raw);
             notify.error(userMsg);
-            // showNotification('error', 'Attribute not added successfully');
           }
         });
       })
@@ -233,7 +230,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
       title: 'Action',
       dataIndex: 'action',
       width: 35,
-      render: (_: any, record: AttributeSetModel, index: number) => (
+      render: (_: unknown, record: AttributeSetModel, index: number) => (
         <span className="flex gap-x-1">
           <a onClick={() => editAttributeSet(record, index)}>
             <span className="text-primary-theme"> Edit </span>
@@ -327,8 +324,8 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
         </div>
         <div className="col-span-6 sm:col-span-2">
           <Spin spinning={isAttributeloading}>
-            <div className="h-70 overflow-y-scroll border border-gray-200 rounded-md bg-white">
-              <div className="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-gray-200">Attribute Details</div>
+            <div className="h-70 overflow-y-scroll border border-border rounded-md bg-white">
+              <div className="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-border">Attribute Details</div>
               <div className="w-64 flex items-center">
                 <Input
                   placeholder="Search"
@@ -340,7 +337,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
               {filteredData.length > 0 ? (
                 <div>
                   {filteredData.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center px-4 py-2 cursor-pointer text-secondary-font border-b border-gray-100">
+                    <div key={idx} className="flex justify-between items-center px-4 py-2 cursor-pointer text-secondary-font border-b ">
                       <span>{item.attributeName}</span>
                       <a onClick={() => addAttributeData(item)} className="text-primary-theme">
                         Link

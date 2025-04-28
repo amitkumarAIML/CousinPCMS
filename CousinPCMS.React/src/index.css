@@ -3,6 +3,7 @@
 @theme {
   --color-primary-theme: #21b6e1;
   --color-primary-theme-hover: #4acfed;
+  --color-primary-theme-active: #c9fbff;
   --color-primary-font: #343941;
   --color-secondary-font: #67768c;
   --color-border: #cbd5e0;

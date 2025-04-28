@@ -110,7 +110,7 @@ const Attributes: React.FC = () => {
     <div className="bg-white rounded-lg shadow-md m-5">
       <div className="grid grid-cols-1 md:grid-cols-2 items-start md:items-center gap-y-4 p-4 pb-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-lg font-medium text-gray-700 mr-3">Attribute List</span>
+          <span className="text-lg font-medium text-primary-font mr-3">Attribute List</span>
           <Form layout="inline" className="flex-grow max-w-xs">
             <Form.Item className="mb-0 flex-grow">
               <Input
@@ -129,7 +129,7 @@ const Attributes: React.FC = () => {
           </Link>
         </div>
       </div>
-      <hr className="mt-2 mb-0 border-gray-200" />
+      <hr className="mt-2 mb-0 border-border" />
       <div className="p-4">
         <Spin spinning={loading}>
           <Table columns={columns} dataSource={filteredData} rowKey="key" size="small" bordered pagination={false} className="attributes-list-table" />

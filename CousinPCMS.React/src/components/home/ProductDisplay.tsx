@@ -221,15 +221,15 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
 
   return (
-    <div className="border border-[#CBD5E1] rounded-[5px] w-full bg-white overflow-hidden">
+    <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       {/* Header */}
-      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-[#d1d5db] flex justify-between items-center">
+      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Product Name</span>
-          <button className="text-blue-500 hover:underline text-xs" onClick={() => setIsProductModalOpen(true)}>
+          <button className="text-primary-theme hover:underline text-xs" onClick={() => setIsProductModalOpen(true)}>
             Add
           </button>
-          <button className={`text-blue-500 hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
+          <button className={`text-primary-theme hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
             Edit
           </button>
         </div>
@@ -242,14 +242,14 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       <Spin spinning={loading}>
         <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
           {filteredData && filteredData.length > 0 ? (
-            <ul className="divide-y divide-gray-200 p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
+            <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
               {filteredData.map((item: Product | AttributeSetModel) => {
                 if ('akiProductID' in item) {
                   const isSelected = selectedProduct === item.akiProductID;
                   return (
                     <li
                       key={`prod-${item.akiProductID}`}
-                      className={` px-4 py-2 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                      className={` px-4 py-2 cursor-pointer text-[10px]  transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font'}`}
                       onClick={() => handleProductClick(item)}
                     >
                       {item.akiProductName}
@@ -262,7 +262,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
                       className=" px-4 py-2 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
                       onClick={() => handleAttributeSetClick(item)}
                     >
-                      <span className="text-blue-600 italic">{item.attributeSetName}</span>
+                      <span className="text-primary-theme italic">{item.attributeSetName}</span>
                     </li>
                   );
                 }

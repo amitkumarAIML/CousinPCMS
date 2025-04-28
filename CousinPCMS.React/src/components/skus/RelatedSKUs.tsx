@@ -142,15 +142,15 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
   ];
 
   return (
-    <div className="px-4 pt-1">
-      {' '}
+    <div>
+      
       {/* Match parent padding */}
       {/* Search and Display Area */}
       {/* Using Antd Form components for consistent layout/styling */}
       <Form layout="vertical" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-x-3 items-end">
           <Form.Item label="Search" className="md:col-span-2 mb-0">
-            {' '}
+            
             {/* Adjust span */}
             <Input
               placeholder="Search related SKUs..."
@@ -162,12 +162,12 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
           {/* Spacer column if needed */}
           {/* <div className="hidden md:block md:col-span-1"></div> */}
           <Form.Item label="Sku Name" className="md:col-span-2 mb-0">
-            {' '}
+            
             {/* Adjust span */}
             <Input value={displaySkuName} disabled />
           </Form.Item>
           <Form.Item label="Sku ID" className="md:col-span-1 mb-0">
-            {' '}
+            
             {/* Label added for consistency */}
             <Input value={displaySkuId} disabled />
           </Form.Item>

@@ -108,15 +108,14 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   };
 
   return (
-    <div className="border border-[#CBD5E1] rounded-[5px] w-full bg-white overflow-hidden">
-      {/* Header */}
-      <div className="bg-light-border text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-[#d1d5db] flex justify-between items-center">
+    <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
+      <div className="bg-light-border text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>SKU Name</span>
-          <button className="text-blue-500 hover:underline text-xs" onClick={addSKU}>
+          <button className="text-primary-theme hover:underline text-xs" onClick={addSKU}>
             Add
           </button>
-          <button className="text-blue-500 hover:underline text-xs" onClick={editSku}>
+          <button className="text-primary-theme hover:underline text-xs" onClick={editSku}>
             Edit
           </button>
         </div>
@@ -129,15 +128,17 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
           />
         </div>
       </div>
-      {/* SKU List */}
+
       <Spin spinning={loading}>
         <div className="min-h-[48px] flex flex-col justify-center items-center bg-white">
           {filteredData && filteredData.length > 0 ? (
-            <ul className="sku-list list-none p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full divide-y divide-gray-200 leading-tight">
+            <ul className="sku-list list-none p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full divide-y divide-border leading-tight">
               {filteredData.map((sku) => (
                 <li
                   key={sku.akiSKUID}
-                  className={`sku-item px-4 py-2 cursor-pointer text-[10px] text-[#67768C] transition-colors duration-300 ${selectedSku === sku.akiSKUID ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                  className={`sku-item px-4 py-2 cursor-pointer text-[10px]  transition-colors duration-300 ${
+                    selectedSku === sku.akiSKUID ? ' bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font '
+                  }`}
                   onClick={() => onSkuClick(sku)}
                 >
                   {sku.skuName}
@@ -149,9 +150,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
           )}
         </div>
       </Spin>
-      {/* SKU Modal (for Add/Edit) */}
+
       <Modal open={productSkusVisible} onCancel={() => handleCancel('cancel')} footer={null} closable={false} width={1500} className="no-padding-modal">
-        {/* TODO: Replace with actual Skus component and pass eventComplete */}
         <SKUsComponent />
       </Modal>
     </div>

@@ -34,6 +34,10 @@ export const theme = {
       verticalLabelPadding: 0, // @form-vertical-label-padding
       itemHeight: 0, // @form-item-label-height
     },
+    Tree: {
+      nodeSelectedBg: '#c9fbff',
+      nodeSelectedColor: '#343941',
+    },
     Modal: {
       paddingContentHorizontal: 15, // @modal-body-padding
       paddingContentVertical: 15, // @modal-body-padding

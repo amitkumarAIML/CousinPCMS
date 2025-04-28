@@ -528,7 +528,7 @@ const ProductDetails: React.FC = () => {
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
                   >
-                    <Button icon={<UploadOutlined />}>Upload</Button>
+                    <Button type='primary' >Upload</Button>
                   </Upload>
                   <span className="whitespace-nowrap">
                     {akiProductImageURL?.length || 0} / {charLimit.akiProductImageURL}

@@ -108,18 +108,18 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   ];
 
   return (
-    <div className="px-4 pt-1">
-      {' '}
+    <div >
+      
       {/* Match parent padding */}
       {/* Search Bar */}
       <Form layout="vertical" className="mb-4">
-        {' '}
+        
         {/* Added margin-bottom */}
         <div className="grid grid-cols-1 md:grid-cols-5">
-          {' '}
+          
           {/* Keep grid layout */}
           <Form.Item label="Search" className="md:col-span-2 mb-0">
-            {' '}
+            
             {/* Adjust span */}
             <Input
               placeholder="Search by name or value..."
