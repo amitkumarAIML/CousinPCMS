@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
-import {QuestionCircleOutlined, EditOutlined, DeleteOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import {EditOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
@@ -11,16 +11,7 @@ import {layoutDepartment} from '../models/layoutTemplateModel';
 import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
-import {
-  getCategoryById,
-  getCategoryLayouts,
-  updateCategory,
-  getAdditionalCategory,
-  addAssociatedProduct,
-  updateAssociatedProduct,
-  deleteAssociatedProduct,
-  deleteCategory,
-} from '../services/CategoryService';
+import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct} from '../services/CategoryService';
 import {getCountryOrigin, getCommodityCodes} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
@@ -40,7 +31,6 @@ const Category: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
-  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [isAssociatePLoading, setIsAssociatePLoading] = useState<boolean>(false);
   const [loadingProduct, setLoadingProduct] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -61,11 +51,12 @@ const Category: React.FC = () => {
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
   useEffect(() => {
-    const currentCategoryId = '3284';
+    const currentCategoryId = sessionStorage.getItem('CategoryId') || null;
     if (currentCategoryId) {
       setCategoryId(currentCategoryId);
     } else {
       message.error('Category ID not found. Please select from home page.');
+      navigate('/home');
     }
     const fetchInitialData = async () => {
       try {
@@ -255,45 +246,7 @@ const Category: React.FC = () => {
       message.error('Something went wrong');
     }
   };
-  const handleDeleteCategory = async () => {
-    if (!categoryId) return;
-    setDeleteLoading(true);
-    try {
-      const response = await deleteCategory(categoryId);
-      if (response.isSuccess) {
-        message.success('Category successfully deleted');
-        sessionStorage.removeItem('categoryId');
-        sessionStorage.removeItem('productId');
-        sessionStorage.removeItem('itemNumber');
-        sessionStorage.removeItem('skuId');
-        navigate('/home');
-      } else {
-        message.error(response.exceptionInformation || 'Category not deleted');
-      }
-    } catch {
-      message.error('Something went wrong');
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
-  const handleDeleteAssociatedProduct = async (record: AdditionalCategoryModel) => {
-    if (!categoryId) return;
-    const payload = {
-      product: record.product,
-      prodCategory: categoryId,
-    };
-    try {
-      const response = await deleteAssociatedProduct(payload);
-      if (response.isSuccess) {
-        message.success('Associated product successfully deleted');
-        fetchAdditionalCategory(categoryId);
-      } else {
-        message.error(response.exceptionInformation || 'Associated product not deleted');
-      }
-    } catch {
-      message.error('Something went wrong');
-    }
-  };
+
   const handleStartEdit = (record: AdditionalCategoryModel) => {
     editAssociatedProductForm.setFieldsValue({...record});
     setEditingId(record.product);
@@ -431,17 +384,7 @@ const Category: React.FC = () => {
             </Popconfirm>
           </span>
         ) : (
-          <span className="flex gap-x-3">
-            <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
-            <Popconfirm
-              title="Are you sure delete this product?"
-              onConfirm={() => handleDeleteAssociatedProduct(record)}
-              icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-              disabled={editingId !== null}
-            >
-              <Button icon={<DeleteOutlined />} type="text" danger disabled={editingId !== null} style={{padding: '0 5px'}} />
-            </Popconfirm>
-          </span>
+          <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
         );
       },
     },
@@ -472,18 +415,6 @@ const Category: React.FC = () => {
           <span className="text-sm font-medium">Category Form</span>
           <div className="flex gap-x-3">
             <Button onClick={() => navigate('/home')}>Cancel</Button>
-            <Popconfirm
-              title="Are you sure delete this category?"
-              onConfirm={handleDeleteCategory}
-              okText="Yes"
-              cancelText="No"
-              placement="left"
-              icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-            >
-              <Button danger loading={deleteLoading}>
-                Delete
-              </Button>
-            </Popconfirm>
             <Button type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
               Save
             </Button>
@@ -663,7 +594,6 @@ const Category: React.FC = () => {
                         pagination={false}
                         size="small"
                         bordered
-                        scroll={{y: 200}}
                         className="no-header-scroll"
                       />
                     </Form>
@@ -771,7 +701,6 @@ const Category: React.FC = () => {
             onChange={handleProductTableChange}
             size="small"
             bordered
-            scroll={{y: 240}}
           />
         </div>
       </Modal>

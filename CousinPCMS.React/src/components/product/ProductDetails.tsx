@@ -1,29 +1,16 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
-import {QuestionCircleOutlined, UploadOutlined, EditOutlined, DeleteOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import {UploadOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
-import {
-  getProductById,
-  getLayoutTemplateList,
-  getAllProducts,
-  getAdditionalProduct,
-  addAssociatedProduct,
-  updateAssociatedProduct,
-  deleteAssociatedProduct
-} from '../../services/ProductService';
-import {
-  getCountryOrigin,
-  getCommodityCodes,
-  getAllCategory,
-  showNotification
-} from '../../services/DataService';
+import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory, showNotification} from '../../services/DataService';
 import {Country} from '../../models/countryOriginModel';
 import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
-import {AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct, Product} from '../../models/productModel';
+import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
 
 interface CategorySelectItem {
@@ -83,8 +70,7 @@ const ProductDetails: React.FC = () => {
   const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
   const akiProductImageURL = Form.useWatch('akiProductImageURL', productForm);
 
-  useEffect(() => {
-  }, [productForm]);
+  useEffect(() => {}, [productForm]);
 
   useEffect(() => {
     const productIdFromSession = sessionStorage.getItem('productId');
@@ -118,12 +104,7 @@ const ProductDetails: React.FC = () => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([
-          getCountryOrigin(),
-          getCommodityCodes(),
-          getLayoutTemplateList(),
-          getAllCategory(),
-        ]);
+        const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
         setCountries(countriesData || []);
         setCommodityCode(commoditiesData || []);
         setLayoutOptions(layoutsData || []);
@@ -348,27 +329,6 @@ const ProductDetails: React.FC = () => {
     }
   };
 
-  const handleDeleteAssociatedProduct = async (record: AdditionalProductModel) => {
-    if (akiProductID === undefined) return;
-
-    const payload: DeleteAssociatedProductModelForProduct = {
-      product: akiProductID,
-      addproduct: record.additionalProduct.toString(),
-    };
-
-    try {
-      const response = await deleteAssociatedProduct(payload);
-      if (response.isSuccess) {
-        showNotification('success', 'Associated product successfully deleted');
-        fetchAdditionalProduct(akiProductID);
-      } else {
-        showNotification('error', response.exceptionInformation || 'Associated product not deleted');
-      }
-    } catch {
-      showNotification('error', 'Something went wrong');
-    }
-  };
-
   const handleFileChange = (info: UploadChangeParam<UploadFile>) => {
     const file = info.file?.originFileObj;
     if (file) {
@@ -405,9 +365,7 @@ const ProductDetails: React.FC = () => {
       title: '',
       dataIndex: 'select',
       width: 50,
-      render: (_, record) => (
-        <Checkbox checked={selectedCategoryInModal?.akiCategoryID === record.akiCategoryID} onChange={() => handleCategorySelectInModal(record)} />
-      ),
+      render: (_, record) => <Checkbox checked={selectedCategoryInModal?.akiCategoryID === record.akiCategoryID} onChange={() => handleCategorySelectInModal(record)} />,
     },
     {title: 'ID', dataIndex: 'akiCategoryID', width: 80},
     {title: 'Category Name', dataIndex: 'akiCategoryName'},
@@ -451,17 +409,7 @@ const ProductDetails: React.FC = () => {
             </Popconfirm>
           </span>
         ) : (
-          <span className="flex gap-x-3">
-            <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
-            <Popconfirm
-              title="Delete this associated product?"
-              onConfirm={() => handleDeleteAssociatedProduct(record)}
-              icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-              disabled={editingId !== null}
-            >
-              <Button icon={<DeleteOutlined />} type="text" danger disabled={editingId !== null} style={{padding: '0 5px'}} />
-            </Popconfirm>
-          </span>
+          <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
         );
       },
     },
@@ -624,16 +572,7 @@ const ProductDetails: React.FC = () => {
                     </Button>
                   </div>
                   <Form form={editAssociatedProductForm} component={false}>
-                    <Table
-                      columns={associatedProductColumns}
-                      dataSource={additionalProductList}
-                      rowKey="additionalProduct"
-                      loading={isAdditionalPLoading}
-                      pagination={false}
-                      size="small"
-                      bordered
-                      scroll={{y: 200}}
-                    />
+                    <Table columns={associatedProductColumns} dataSource={additionalProductList} rowKey="additionalProduct" loading={isAdditionalPLoading} pagination={false} size="small" bordered />
                   </Form>
                 </div>
               </div>
@@ -683,13 +622,7 @@ const ProductDetails: React.FC = () => {
           </div>
         </Form>
       </div>
-      <Modal
-        title="Select Category"
-        open={isCategoryModalVisible}
-        onOk={confirmCategorySelection}
-        onCancel={closeCategoryModal}
-        width={600}
-      >
+      <Modal title="Select Category" open={isCategoryModalVisible} onOk={confirmCategorySelection} onCancel={closeCategoryModal} width={600}>
         <Input
           placeholder="Search Category Name"
           value={categorySearchValue}
@@ -704,25 +637,10 @@ const ProductDetails: React.FC = () => {
           className="mb-4"
         />
         <Spin spinning={loadingProductModal}>
-          <Table
-            columns={categoryModalColumns}
-            dataSource={filteredCategories}
-            rowKey="akiCategoryID"
-            size="small"
-            bordered
-            pagination={{pageSize: 10}}
-            scroll={{y: 300}}
-          />
+          <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered pagination={{pageSize: 10}} />
         </Spin>
       </Modal>
-      <Modal
-        title="Add Product"
-        open={isVisibleAddProductModal}
-        onCancel={handleAddModalCancel}
-        footer={null}
-        width={600}
-        destroyOnClose
-      >
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={600} destroyOnClose>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'Required'}]}>
@@ -765,7 +683,6 @@ const ProductDetails: React.FC = () => {
             onChange={handleProductModalTableChange}
             size="small"
             bordered
-            scroll={{y: 240}}
           />
         </div>
       </Modal>

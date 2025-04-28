@@ -139,7 +139,6 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
           size="small"
           bordered
           pagination={false} // Matches nzShowPagination="false"
-          scroll={{y: 600}} // Adjust scroll height as needed
           className="linked-attributes-table" // Add specific class if needed
         />
       </Spin>

@@ -182,7 +182,6 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
           size="small"
           bordered
           pagination={false} // Matches nzShowPagination="false"
-          scroll={{y: 600}} // Adjust height as needed, slightly less than Angular version due to search bar etc.
           className="related-skus-table" // Add specific class if needed
         />
       </Spin>

@@ -97,7 +97,6 @@ const SKUsList = () => {
           size="small"
           bordered
           pagination={false}
-          scroll={{y: 660}}
           className="no-header-scroll"
           onRow={(record) => ({
             onClick: () => handleRowSelect(record),

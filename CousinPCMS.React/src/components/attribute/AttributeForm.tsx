@@ -352,7 +352,6 @@ const AttributeForm: React.FC = () => {
                   size="small"
                   bordered
                   pagination={false}
-                  scroll={{y: 400}} // Adjust height
                 />
               </div>
             </div>

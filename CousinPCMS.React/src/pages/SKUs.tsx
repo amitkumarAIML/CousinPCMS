@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useNavigate} from 'react-router';
-import {Tabs, Button, Spin, Popconfirm} from 'antd';
-import {QuestionCircleOutlined} from '@ant-design/icons';
+import {Tabs, Button, Spin} from 'antd';
 import type {FormInstance} from 'antd/es/form';
 
 // --- Import Child Components ---
@@ -10,14 +9,10 @@ import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 
 // --- Import Services and Types ---
-import {
-  updateSkus,
-  deleteSkus,
-  getSkuItemById
-} from '../services/SkusService';
-import { showNotification } from '../services/DataService';
-import type { SKuList, SkuRequestModel } from '../models/skusModel';
-import type { ApiResponse } from '../models/generalModel';
+import {updateSkus, getSkuItemById} from '../services/SkusService';
+import {showNotification} from '../services/DataService';
+import type {SKuList, SkuRequestModel} from '../models/skusModel';
+import type {ApiResponse} from '../models/generalModel';
 
 const {TabPane} = Tabs;
 
@@ -25,7 +20,6 @@ const SKUs: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('1'); // Antd Tabs use string keys
   const [loading, setLoading] = useState<boolean>(true);
   const [btnSaveLoading, setBtnSaveLoading] = useState<boolean>(false);
-  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [skuData, setSkuData] = useState<SKuList | null>(null);
 
   // State to hold the form instance from the SkuDetails child component
@@ -67,8 +61,8 @@ const SKUs: React.FC = () => {
       }
     } catch (err: unknown) {
       console.error('Error fetching SKU:', err);
-      if (err && typeof err === 'object' && 'error' in err && (err as { error?: { title?: string } }).error?.title) {
-        showNotification('error', (err as { error?: { title?: string } }).error?.title || '');
+      if (err && typeof err === 'object' && 'error' in err && (err as {error?: {title?: string}}).error?.title) {
+        showNotification('error', (err as {error?: {title?: string}}).error?.title || '');
       } else {
         showNotification('error', 'Something went wrong while fetching SKU data.');
       }
@@ -84,37 +78,6 @@ const SKUs: React.FC = () => {
   const handleCancel = () => {
     navigate('/home');
     // props.onCancel?.(); // If parent needs notification
-  };
-
-  const handleDelete = async () => {
-    if (!skuData?.akiSKUID) {
-      // Use the internal ID if available, otherwise maybe itemNumber
-      showNotification('error', 'Cannot delete: SKU ID is missing.');
-      return;
-    }
-    setDeleteLoading(true);
-    try {
-      // Assuming deleteSkus takes the internal akiSKUID
-      const response = await deleteSkus(skuData.akiSKUID);
-      if (response.isSuccess) {
-        showNotification('success', 'SKU Successfully Deleted');
-        sessionStorage.removeItem('itemNumber');
-        sessionStorage.removeItem('skuId'); // Also remove skuId if used
-        navigate('/home');
-        // props.onDeleteComplete?.();
-      } else {
-        showNotification('error', response.exceptionInformation || 'SKU Deletion Failed');
-      }
-    } catch (err: unknown) {
-      console.error('Error deleting SKU:', err);
-      if (err && typeof err === 'object' && 'error' in err && (err as { error?: { title?: string } }).error?.title) {
-        showNotification('error', (err as { error?: { title?: string } }).error?.title || '');
-      } else {
-        showNotification('error', 'Something went wrong during deletion.');
-      }
-    } finally {
-      setDeleteLoading(false);
-    }
   };
 
   const handleSave = async () => {
@@ -139,7 +102,7 @@ const SKUs: React.FC = () => {
       // Assume dataService.cleanEmptyNullToString exists or implement similar logic
       const cleanData = (obj: Record<string, unknown>): SkuRequestModel => {
         // Build the cleaned object as a plain object, then cast to SkuRequestModel
-        const cleaned: Record<string, unknown> = { ...obj };
+        const cleaned: Record<string, unknown> = {...obj};
         if (skuData) {
           cleaned.akiSKUID = skuData.akiSKUID;
           cleaned.akiProductID = skuData.akiProductID;
@@ -172,8 +135,8 @@ const SKUs: React.FC = () => {
         errorInfo &&
         typeof errorInfo === 'object' &&
         'errorFields' in errorInfo &&
-        Array.isArray((errorInfo as { errorFields?: unknown[] }).errorFields) &&
-        ((errorInfo as { errorFields?: unknown[] }).errorFields?.length ?? 0) > 0
+        Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields) &&
+        ((errorInfo as {errorFields?: unknown[]}).errorFields?.length ?? 0) > 0
       ) {
         showNotification('error', 'Please fill in all required fields correctly.');
         setActiveTab('1');
@@ -190,19 +153,7 @@ const SKUs: React.FC = () => {
     activeTab === '1' ? ( // Only show buttons on the first tab ('Sku')
       <div className="flex gap-x-3 mb-2 mr-4">
         <Button onClick={handleCancel}>Cancel</Button>
-        <Popconfirm
-          title="Are you sure delete this SKU?"
-          onConfirm={handleDelete}
-          okText="Yes"
-          cancelText="No"
-          placement="left"
-          icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-          disabled={!skuData} // Disable if no data loaded
-        >
-          <Button danger loading={deleteLoading} disabled={!skuData}>
-            Delete
-          </Button>
-        </Popconfirm>
+
         <Button type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={!skuData}>
           Save
         </Button>
@@ -236,11 +187,7 @@ const SKUs: React.FC = () => {
         <Tabs activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={tabBarExtraContent} className="sku-tabs">
           <TabPane tab="Sku" key="1">
             {/* Conditionally render SkuDetails only after data is loaded */}
-            {skuData ? (
-              <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />
-            ) : (
-              !loading && <div className="p-4 text-center text-gray-500">SKU data could not be loaded.</div>
-            )}
+            {skuData ? <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} /> : !loading && <div className="p-4 text-center text-gray-500">SKU data could not be loaded.</div>}
           </TabPane>
 
           <TabPane tab="Related Skus" key="2" disabled={!skuData}>
