@@ -27,6 +27,7 @@ import {Router} from '@angular/router';
 import { AdditionalProductModel, AssociatedProductRequestModelForProduct, DeleteAssociatedProductModelForProduct } from '../../../shared/models/productModel';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { ProductCharLimit } from '../../../shared/char.constant';
+import { CategoryAttributeComponent } from '../../home/category-attribute/category-attribute.component';
 
 @Component({
   selector: 'cousins-product-details',
@@ -47,7 +48,9 @@ import { ProductCharLimit } from '../../../shared/char.constant';
     NzUploadModule,
     NzButtonModule,
     NzSpinModule,
-    NzPopconfirmModule
+    NzPopconfirmModule,
+    CategoryAttributeComponent,
+    NzIconModule
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
@@ -89,6 +92,9 @@ export class ProductDetailsComponent {
 
   @Input() productData!: any;
   charLimit = ProductCharLimit;
+  @Input() isSetAttributslist:any
+  setAttributeName:string='';
+  categoryData: any = {};
 
   constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService, private router: Router) {
     this.productForm = this.fb.group({
@@ -134,9 +140,23 @@ export class ProductDetailsComponent {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['productData']) {
       if (this.productData) {
-        this.productForm.patchValue(this.productData);     
+        this.productForm.patchValue(this.productData);
       } 
     }
+   if (changes['isSetAttributslist'] && this.isSetAttributslist) {
+    if (Array.isArray(this.isSetAttributslist)) {
+      this.setAttributeName = this.isSetAttributslist[0]?.attributeSetName || '';
+      this.categoryData = this.isSetAttributslist[0];
+    } 
+    else if (Array.isArray(this.isSetAttributslist.value)) {
+      this.setAttributeName = this.isSetAttributslist.value[0]?.attributeSetName || '';
+      this.categoryData = this.isSetAttributslist.value[0];
+    }
+    else {
+      this.setAttributeName = this.isSetAttributslist.attributeSetName || '';
+      this.categoryData = this.isSetAttributslist;
+    }
+   }
   }
 
   ngOnInit() {
@@ -471,4 +491,13 @@ export class ProductDetailsComponent {
       this.getAllProducts();
     }
   
+    isSetAttributeVisable=false;
+  goToSetAttribute(){
+    this.isSetAttributeVisable=true;
+    this.categoryData = this.isSetAttributslist?.[0];
+  }
+  btnCancel(){
+    this.isSetAttributeVisable=false;
+
+  }
 }
