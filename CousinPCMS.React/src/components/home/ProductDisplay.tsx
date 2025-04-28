@@ -35,6 +35,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       setLstAllAttributeSets([]);
       setAllProductAttributes([]);
       setFilteredData([]);
+      onProductSelected(undefined);
       setDisplayText('Click a category to view the product');
       return;
     }
@@ -109,26 +110,27 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     }
   }, [selectedCategory, searchValue]); // Re-run fetch if category or search changes (search handled internally now)
 
-  // Effect to trigger data fetching when selectedCategory changes
   useEffect(() => {
     const persistedProductId = sessionStorage.getItem('productId');
-    const persistedCategoryId = sessionStorage.getItem('categoryId');
+    const persistedCategoryId = sessionStorage.getItem('CategoryId');
 
     if (persistedCategoryId === selectedCategory && persistedProductId) {
       setSelectedProduct(Number(persistedProductId));
     } else {
       setSelectedProduct(undefined);
-      sessionStorage.removeItem('productId'); // Clear product if category changes
+      sessionStorage.removeItem('productId');
     }
 
-    fetchData(); // Fetch data based on the current selectedCategory
+    fetchData(); // fetch when category changes
 
     if (selectedCategory) {
-      sessionStorage.setItem('categoryId', selectedCategory);
+      sessionStorage.setItem('CategoryId', selectedCategory);
     } else {
-      sessionStorage.removeItem('categoryId');
+      sessionStorage.removeItem('CategoryId');
+      setProducts([]);
+      setDisplayText('Click a category to view the product');
     }
-  }, [selectedCategory, fetchData]); // Depend on selectedCategory and the fetchData function itself
+  }, [selectedCategory, fetchData]);
 
   // --- Search Handling ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,15 +169,16 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
     sessionStorage.setItem('productId', product.akiProductID.toString());
-    sessionStorage.removeItem('itemNumber'); // Keep this if needed
-    onProductSelected(product.akiProductID); // Call the callback prop
+    sessionStorage.removeItem('itemNumber');
+    onProductSelected(product.akiProductID);
   };
 
   const handleAttributeSetClick = (attributeSet: AttributeSetModel) => {
     if (!attributeSet || !attributeSet.akiCategoryID) return;
-    // Decide if clicking an attribute set should select it visually
-    // setSelectedProduct(attributeSet.akiCategoryID); // Using akiCategoryID for selection highlight
+    setSelectedProduct(attributeSet.akiCategoryID); // Using akiCategoryID for selection highlight
     setCategoryData(attributeSet);
+    sessionStorage.removeItem('productId');
+    onProductSelected(undefined);
     setCategoryAttriIsVisible(true);
   };
 
@@ -191,11 +194,9 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   };
 
   const handleAddProduct = () => {
-    // Clear any previous data when adding a new product
-    setSelectedProduct(undefined); // Clear selection
-    sessionStorage.removeItem('productId'); // Clear storage
-    setCategoryData({categoryId: selectedCategory}); // Pass current category ID if needed
-    // If using a ref to reset: productFormRef.current?.resetForm();
+    setSelectedProduct(undefined);
+    sessionStorage.removeItem('productId');
+    setCategoryData({categoryId: selectedCategory});
     setIsProductModalOpen(true);
   };
 
@@ -220,15 +221,15 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
 
   return (
-    <div className="border border-[#CBD5E1] rounded-[5px] w-full bg-white overflow-hidden">
+    <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       {/* Header */}
-      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-[#d1d5db] flex justify-between items-center">
+      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Product Name</span>
-          <button className="text-blue-500 hover:underline text-xs" onClick={() => setIsProductModalOpen(true)}>
+          <button className="text-primary-theme hover:underline text-xs" onClick={() => setIsProductModalOpen(true)}>
             Add
           </button>
-          <button className={`text-blue-500 hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
+          <button className={`text-primary-theme hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
             Edit
           </button>
         </div>
@@ -241,14 +242,14 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       <Spin spinning={loading}>
         <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
           {filteredData && filteredData.length > 0 ? (
-            <ul className="divide-y divide-gray-200 p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
+            <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
               {filteredData.map((item: Product | AttributeSetModel) => {
                 if ('akiProductID' in item) {
                   const isSelected = selectedProduct === item.akiProductID;
                   return (
                     <li
                       key={`prod-${item.akiProductID}`}
-                      className={` px-4 py-2 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                      className={` px-4 py-2 cursor-pointer text-[10px]  transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font'}`}
                       onClick={() => handleProductClick(item)}
                     >
                       {item.akiProductName}
@@ -261,7 +262,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
                       className=" px-4 py-2 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
                       onClick={() => handleAttributeSetClick(item)}
                     >
-                      <span className="text-blue-600 italic">{item.attributeSetName}</span>
+                      <span className="text-primary-theme italic">{item.attributeSetName}</span>
                     </li>
                   );
                 }

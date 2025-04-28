@@ -22,6 +22,7 @@ export interface AttributeModel {
     notImportant: boolean;
     listPosition: number;
     attributesetIsActive: boolean;
+    akiCategoryID?: number;
   }
   
   export interface AttributeModelResponse {

@@ -24,7 +24,6 @@ export const theme = {
 
     // Progress
     colorInfo: '#21B6E1', // @progress-default-color
-    colorFillSecondary: '#cbd5e0', // @progress-remaining-color
     colorTextDescription: '#67768c', // @progress-info-text-color
     fontSizeLG: 10, // @progress-text-font-size (1.3em relative to 10px base)
   },
@@ -34,6 +33,10 @@ export const theme = {
       verticalLabelMargin: 0, // @form-vertical-label-margin
       verticalLabelPadding: 0, // @form-vertical-label-padding
       itemHeight: 0, // @form-item-label-height
+    },
+    Tree: {
+      nodeSelectedBg: '#c9fbff',
+      nodeSelectedColor: '#343941',
     },
     Modal: {
       paddingContentHorizontal: 15, // @modal-body-padding

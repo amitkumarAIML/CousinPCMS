@@ -5,11 +5,14 @@ import {RouterProvider} from 'react-router';
 import routes from './routes.ts';
 import {ConfigProvider} from 'antd';
 import theme from './theme.ts';
+import {NotificationProvider} from './contexts.ts/NotificationProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider theme={theme}>
-      <RouterProvider router={routes} />
+      <NotificationProvider>
+        <RouterProvider router={routes} />
+      </NotificationProvider>
     </ConfigProvider>
   </StrictMode>
 );

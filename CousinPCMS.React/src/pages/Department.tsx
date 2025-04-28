@@ -8,6 +8,7 @@ import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
 import {getCommodityCodes, showNotification} from '../services/DataService';
 import {getLayoutTemplateList, getDepartmentById} from '../services/DepartmentService';
+import {useNavigate} from 'react-router';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -17,20 +18,19 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const [form] = Form.useForm<Department>();
   const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
   const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
-  const [loading, setLoading] = useState(true); // Spinner state
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const akiDepartmentName = Form.useWatch('akiDepartmentName', form);
   const akiDepartmentDescText = Form.useWatch('akiDepartmentDescText', form);
   const akiDepartmentImageURL = Form.useWatch('akiDepartmentImageURL', form);
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
+  const departmentId = sessionStorage.getItem('departmentId') || '1';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [commodities, layouts] = await Promise.all([
-          getCommodityCodes(),
-          getLayoutTemplateList()
-        ]);
+        const [commodities, layouts] = await Promise.all([getCommodityCodes(), getLayoutTemplateList()]);
         setCommodityCode(commodities);
         setLayoutOptions(layouts);
       } catch (error) {
@@ -42,9 +42,14 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   }, []);
 
   useEffect(() => {
+    if (!departmentId) {
+      showNotification('error', 'Department ID not found. Please select a department.');
+      navigate('/home');
+      return;
+    }
     const fetchDepartment = async () => {
       try {
-        const response = await getDepartmentById('1');
+        const response = await getDepartmentById(departmentId);
         if (response.isSuccess && response.value && response.value.length > 0) {
           form.setFieldsValue({
             ...response.value[0],
@@ -108,7 +113,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   };
 
   return (
-    <Spin spinning={loading} >
+    <Spin spinning={loading}>
       <div className="bg-white shadow-cousins-box rounded-lg m-5">
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Department Form</span>

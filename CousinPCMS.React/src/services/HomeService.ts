@@ -49,8 +49,9 @@ export const deleteAttributeSets = async (attributeName: string, attributeSetNam
 };
 
 // Add attribute sets
-export const addAttributeSets = async (attributesData: AddAttributeSetRequestModel): Promise<void> => {
-  await http.post('Attributes/AddAttributeSets', attributesData);
+export const addAttributeSets = async (attributesData: AddAttributeSetRequestModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Attributes/AddAttributeSets', attributesData);
+  return response;
 };
 
 // Get attribute sets by attribute set name
@@ -58,3 +59,9 @@ export const getAttributeSetsByAttributeSetName = async (attributeSetName: strin
   const response = await http.get<ApiResponse<AttributeSetModel[]>>('Attributes/GetAttributeSetsByAttributeSetName', { params: { attributeSetName } });
   return response;
 };
+
+
+export const updateAttributeSets1 = async (attributesData: AddAttributeSetRequestModel): Promise<ApiResponse<string>> => {
+  const response =  await http.post<ApiResponse<string>>(`Attributes/UpdateAttributeSets`, attributesData);
+  return response;
+}

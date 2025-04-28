@@ -6,6 +6,8 @@ import SKUs from './pages/SKUs';
 import Product from './pages/Product';
 import Home from './pages/Home';
 import Attributes from './pages/Attributes';
+import AdditionalImages from './components/AdditionalImages';
+import LinkMaintenance from './components/LinkMaintenance';
 
 const routes = createBrowserRouter([
   {
@@ -30,7 +32,20 @@ const routes = createBrowserRouter([
       },
       {
         path: 'SKUs',
-        Component: SKUs,
+        children: [
+          {
+            path: '',
+            Component: SKUs,
+          },
+          {
+            path: 'additional-image',
+            Component: AdditionalImages,
+          },
+          {
+            path: 'link-maintenance',
+            Component: LinkMaintenance,
+          },
+        ],
       },
       {
         path: 'attributes',
