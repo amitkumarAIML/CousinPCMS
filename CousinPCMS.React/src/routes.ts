@@ -20,11 +20,27 @@ const routes = createBrowserRouter([
       },
       {
         path: 'departments',
-        Component: Department,
+        children: [
+          {
+            path: '',
+            Component: Department,
+          },
+          {
+            path: 'Add',
+            Component: Department,
+          },
+          {
+            path: 'Edit',
+            Component: Department,
+          },
+        ],
       },
       {
         path: 'category',
-        Component: Category,
+        children: [
+          {path: '', Component: Category},
+          {path: 'add', Component: Category}
+        ],
       },
       {
         path: 'products',

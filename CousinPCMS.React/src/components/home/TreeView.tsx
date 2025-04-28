@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import {Tree, Spin, message} from 'antd';
-import {FolderOpenOutlined, FolderOutlined, PartitionOutlined} from '@ant-design/icons';
+import {Tree, Spin, message, Menu} from 'antd';
+import {FolderOpenOutlined, FolderOutlined, PartitionOutlined, PlusOutlined} from '@ant-design/icons';
 import type {TreeDataNode, TreeProps} from 'antd';
 import type {EventDataNode, DataNode} from 'antd/es/tree';
 import {Department} from '../../models/departmentModel';
 import {CategoryModel} from '../../models/categoryModel';
 import {getDepartments} from '../../services/DepartmentService';
 import {getCategoriesByDepartment} from '../../services/HomeService';
+import {useNavigate} from 'react-router';
 
 interface CustomTreeDataNode extends TreeDataNode {
   dataType: 'department' | 'category';
@@ -87,6 +88,71 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
   const [error, setError] = useState<string | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const navigate = useNavigate();
+
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    node: CustomTreeDataNode | null;
+  }>({visible: false, x: 0, y: 0, node: null});
+
+  // Hide context menu on click elsewhere
+  useEffect(() => {
+    const handleClick = () => setContextMenu((cm) => (cm.visible ? {...cm, visible: false} : cm));
+    if (contextMenu.visible) {
+      window.addEventListener('click', handleClick);
+    }
+    return () => window.removeEventListener('click', handleClick);
+  }, [contextMenu.visible]);
+
+  // Right-click handler for tree nodes
+  const onRightClick = useCallback((info: {event: React.MouseEvent; node: EventDataNode<DataNode>}) => {
+    setContextMenu({
+      visible: true,
+      x: info.event.clientX,
+      y: info.event.clientY,
+      node: info.node as unknown as CustomTreeDataNode,
+    });
+  }, []);
+
+  // Context menu click handler
+  const handleMenuClick = useCallback(
+    (e: {key: string}) => {
+      if (!contextMenu.node) return;
+      // Example: handle menu actions here
+      if (e.key === 'add-department') {
+        navigate('/departments/add');
+      } else if (e.key === 'add-category') {
+        message.info('Add Category clicked');
+        navigate('/category/add');
+      } else if (e.key === 'add-sub-category') {
+        message.info('Add Sub Category clicked');
+      }
+      setContextMenu((cm) => ({...cm, visible: false}));
+    },
+    [contextMenu.node, navigate]
+  );
+
+  // Build context menu items based on node type/level
+  const getMenuItems = () => {
+    if (!contextMenu.node) return [];
+    console.log('contextMenu.node', contextMenu.node);
+    if (contextMenu.node.dataType === 'department') {
+      // 1st parent level
+      return [
+        {key: 'add-department', icon: <PlusOutlined />, label: 'Add Department'},
+        {key: 'add-category', icon: <PlusOutlined />, label: 'Add Category'},
+      ];
+    } else if (contextMenu.node.dataType === 'category') {
+      // inner level
+      return [
+        {key: 'add-sub-category', icon: <PlusOutlined />, label: 'Add Sub Category'},
+        {key: 'add-attribute-set', icon: <PlusOutlined />, label: 'Add Attribute Set'},
+      ];
+    }
+    return [];
+  };
 
   const findDepartmentIdForCategoryKey = useCallback((key: React.Key, nodes: CustomTreeDataNode[], parentDeptId?: string | number): string | number | undefined => {
     for (const node of nodes) {
@@ -456,8 +522,9 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       onSelect,
       height: 800,
       virtual: true,
+      onRightClick, // <-- add right click handler
     }),
-    [displayTreeData, onLoadData, onDrop, expandedKeys, selectedKeys, onSelect]
+    [displayTreeData, onLoadData, onDrop, expandedKeys, selectedKeys, onSelect, onRightClick]
   );
 
   if (loading && treeData.length === 0) {
@@ -472,7 +539,28 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     return <div style={{color: 'red', padding: 10}}>Error: {error}</div>;
   }
 
-  return <Tree {...treeProps} />;
+  return (
+    <div style={{position: 'relative'}}>
+      <Tree {...treeProps} />
+      {contextMenu.visible && (
+        <div
+          style={{
+            position: 'fixed',
+            top: contextMenu.y,
+            left: contextMenu.x,
+            zIndex: 1000,
+            background: '#fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: 4,
+            minWidth: 180,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Menu onClick={handleMenuClick} items={getMenuItems()} />
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default TreeView;

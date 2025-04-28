@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {useNavigate} from 'react-router';
+import {useLocation, useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
 import {EditOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
@@ -29,6 +29,7 @@ const Category: React.FC = () => {
   const [editAssociatedProductForm] = Form.useForm<AdditionalCategoryModel>();
   const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModel, 'additionalCategory'> & {product: string}>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const [isAssociatePLoading, setIsAssociatePLoading] = useState<boolean>(false);
@@ -51,6 +52,11 @@ const Category: React.FC = () => {
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
   useEffect(() => {
+    if (location.pathname === '/category/add') {
+      setLoading(false);
+      return;
+    }
+
     const currentCategoryId = sessionStorage.getItem('CategoryId') || null;
     if (currentCategoryId) {
       setCategoryId(currentCategoryId);
@@ -75,6 +81,7 @@ const Category: React.FC = () => {
     };
     fetchInitialData();
   }, [navigate]);
+
   const fetchCategoryById = useCallback(
     async (id: string) => {
       setLoading(true);
@@ -112,6 +119,7 @@ const Category: React.FC = () => {
     },
     [categoryForm]
   );
+
   const fetchAdditionalCategory = useCallback(
     async (id: string) => {
       setIsAssociatePLoading(true);

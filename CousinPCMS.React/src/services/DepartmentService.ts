@@ -10,7 +10,7 @@ export const getDepartments = async (): Promise<DepartmentResponse> => {
 
 // Call the PUT API to update department
 export const updateDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
-  const response = await http.put<DepartmentResponse>('Department/UpdateDepartment', departmentData);
+  const response = await http.patch<DepartmentResponse>('Department/UpdateDepartment', departmentData);
   return response;
 };
 

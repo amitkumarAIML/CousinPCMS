@@ -6,9 +6,9 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {getCommodityCodes, showNotification} from '../services/DataService';
-import {getLayoutTemplateList, getDepartmentById} from '../services/DepartmentService';
-import {useNavigate} from 'react-router';
+import {cleanEmptyNullToString, getCommodityCodes, showNotification} from '../services/DataService';
+import {getLayoutTemplateList, getDepartmentById, updateDepartment} from '../services/DepartmentService';
+import {useNavigate, useLocation} from 'react-router';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -20,12 +20,13 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const akiDepartmentName = Form.useWatch('akiDepartmentName', form);
   const akiDepartmentDescText = Form.useWatch('akiDepartmentDescText', form);
   const akiDepartmentImageURL = Form.useWatch('akiDepartmentImageURL', form);
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
-  const departmentId = sessionStorage.getItem('departmentId') || '1';
+  const departmentId = sessionStorage.getItem('departmentId') || '';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +43,11 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   }, []);
 
   useEffect(() => {
+    // If on add page, do not fetch department or show error
+    if (location.pathname === '/departments/add') {
+      setLoading(false);
+      return;
+    }
     if (!departmentId) {
       showNotification('error', 'Department ID not found. Please select a department.');
       navigate('/home');
@@ -70,7 +76,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchDepartment();
-  }, [form]);
+  }, [form, location.pathname]);
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Department) => {
     const {value} = event.target;
@@ -108,8 +114,34 @@ const Department: React.FC<DepartmentInfoProps> = () => {
     message: 'Please enter a valid 6-digit hex color (e.g., #RRGGBB)',
   };
 
-  const handleFormSubmit = (values: Department) => {
-    console.log('Form Submitted:', values);
+  const handleFormSubmit = () => {
+    console.log('Form Submitted:', form.getFieldsValue());
+    form
+      .validateFields()
+      .then((values) => {
+        values.akiDepartmentIsActive = true;
+
+        const cleanedForm = cleanEmptyNullToString(values);
+        console.log('Form Values:', values, cleanedForm);
+
+        updateDepartment(cleanedForm)
+          .then((response) => {
+            if (response.isSuccess) {
+              showNotification('success', 'Department Details Updated Successfully');
+              navigate('/home');
+            } else {
+              showNotification('error', 'Department Details Failed to Update');
+            }
+          })
+          .catch((err) => {
+            console.error('Error updating department:', err);
+            showNotification('error', 'Something went wrong');
+          });
+      })
+      .catch((errorInfo) => {
+        console.log('Validation Failed:', errorInfo);
+        showNotification('error', 'Please fill in all required fields correctly.');
+      });
   };
 
   return (
@@ -119,7 +151,9 @@ const Department: React.FC<DepartmentInfoProps> = () => {
           <span className="text-sm font-medium">Department Form</span>
           <div className="flex gap-x-3">
             <Button type="default">Cancel</Button>
-            <Button type="primary">Save</Button>
+            <Button type="primary" onClick={handleFormSubmit}>
+              Save
+            </Button>
           </div>
         </div>
         <hr className="mt-2 mb-1 border-light-border" />
@@ -128,7 +162,6 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             form={form}
             layout="vertical"
             className="rounded-lg"
-            onFinish={handleFormSubmit}
             initialValues={{
               akiDepartmentWebActive: false,
               akiDeptPromptUserifblank: false,
@@ -140,7 +173,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
               <div className="lg:col-span-6 md:col-span-6">
                 <div className="grid grid-cols-2 gap-x-4">
-                  <Form.Item label="Department ID" name="akiDepartmentID" rules={[{required: true}]} colon={false} className="col-span-1">
+                  <Form.Item label="Department ID" name="akiDepartmentID" colon={false} className="col-span-1">
                     <Input disabled className="w-full" />
                   </Form.Item>
                   {/* Department Name */}
@@ -175,7 +208,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   </div>
                   {/* Image URL & Upload */}
                   <div className="flex items-end gap-x-2 relative col-span-2">
-                    <Form.Item label="Image URL" name="akiDepartmentImageURL" colon={false} className="w-full" rules={[{type: 'url', message: 'Please enter a valid URL'}]}>
+                    <Form.Item label="Image URL" name="akiDepartmentImageURL" colon={false} className="w-full">
                       <Input maxLength={charLimit.akiDepartmentImageURL} className="w-full " />
                     </Form.Item>
                     <Upload

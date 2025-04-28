@@ -1,8 +1,7 @@
 import axios, {AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 
-
 const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL, 
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -98,23 +97,28 @@ httpClient.interceptors.response.use(
 );
 
 export const http = {
-  get: async <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response: AxiosResponse<T> = await httpClient.get(httpClient.defaults.baseURL+url, config);
+  get: async <T = unknown,>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.get(httpClient.defaults.baseURL + url, config);
     return response.data;
   },
 
-  post: async <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    const response: AxiosResponse<T> = await httpClient.post(httpClient.defaults.baseURL+url, data, config);
+  post: async <T = unknown,>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.post(httpClient.defaults.baseURL + url, data, config);
     return response.data;
   },
 
-  put: async <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    const response: AxiosResponse<T> = await httpClient.put(httpClient.defaults.baseURL+url, data, config);
+  put: async <T = unknown,>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.put(httpClient.defaults.baseURL + url, data, config);
     return response.data;
   },
 
-  delete: async <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response: AxiosResponse<T> = await httpClient.delete(httpClient.defaults.baseURL+url, config);
+  patch: async <T = unknown,>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.patch(httpClient.defaults.baseURL + url, data, config);
+    return response.data;
+  },
+
+  delete: async <T = unknown,>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response: AxiosResponse<T> = await httpClient.delete(httpClient.defaults.baseURL + url, config);
     return response.data;
   },
 };
