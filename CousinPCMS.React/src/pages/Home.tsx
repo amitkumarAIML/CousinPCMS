@@ -8,9 +8,9 @@ const Home = () => {
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-4 m-4 mb-0">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-2 m-2">
       <div className="lg:col-span-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
           <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
             <TreeView onCategorySelected={(categoryId) => setSelectedCategory(categoryId?.toString() || '')} />
           </div>

@@ -34,7 +34,7 @@ body {
   background-color: var(--color-white) !important;
   box-shadow: var(--shadow-cousins-box) !important;
   border-radius: 8px !important;
-  margin: 16px !important;
+  margin: 8px !important;
   margin-bottom: 0 !important;
   min-height: calc(100vh - 80px) !important;
 }

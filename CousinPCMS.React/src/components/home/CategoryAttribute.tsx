@@ -217,7 +217,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
       dataIndex: 'action',
       width: 35,
       render: (_: unknown, record: AttributeSetModel, index: number) => (
-        <span className="flex gap-x-1">
+        <span className="flex gap-x-1 justify-around">
           <a onClick={() => editAttributeSet(record, index)}>
             <span className="text-primary-theme"> Edit </span>
           </a>
