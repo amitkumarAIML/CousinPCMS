@@ -14,6 +14,9 @@ import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product
 import {ProductCharLimit} from '../../models/char.constant';
 import {useNotification} from '../../contexts.ts/useNotification';
 import {useLocation} from 'react-router';
+import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
+import {AttributeSetModel} from '../../models/attributeModel';
+import CategoryAttribute from '../home/CategoryAttribute';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -66,7 +69,11 @@ const ProductDetails = () => {
     pagination: {current: 1, pageSize: 10, total: 0},
   });
 
+  const [attributslist, setAttributslist] = useState<AttributeSetModel>();
+
   const charLimit = ProductCharLimit;
+
+  const [isSetAttributeVisable, setIsSetAttributeVisable] = useState<boolean>(false);
 
   const akiProductName = Form.useWatch('akiProductName', productForm);
   const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
@@ -95,6 +102,7 @@ const ProductDetails = () => {
       }
     };
     fetchInitialData();
+    attributeSet();
 
     if (location.pathname === '/products/add') {
       productForm.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId'));
@@ -102,6 +110,7 @@ const ProductDetails = () => {
       setLoading(false);
       return;
     }
+
     const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
@@ -473,6 +482,27 @@ const ProductDetails = () => {
     window.location.href = '/products/additional-images';
   };
 
+  const attributeSet = async () => {
+    try {
+      const cateId = sessionStorage.getItem('CategoryId') || '';
+      const response = await getDistinctAttributeSetsByCategoryId(cateId);
+      if (!response.isSuccess || !response.value || response.value.length === 0) {
+        notify.error('Failed to load attribute set data.');
+        return;
+      }
+      setAttributslist(response.value[0]);
+      console.log('Attribute Set:', response);
+    } catch (error) {
+      console.error('Error in API call:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const goToSetAttribute = () => {
+    setIsSetAttributeVisable(true);
+  };
+
   return (
     <Spin spinning={loading || productLoading}>
       <div>
@@ -602,6 +632,13 @@ const ProductDetails = () => {
                   </Form>
                 </div>
               </div>
+              {attributslist && (
+                <Form.Item label="Attribute" className="w-full mt-1">
+                  <a onClick={goToSetAttribute} className="underline">
+                    {attributslist.attributeSetName}
+                  </a>
+                </Form.Item>
+              )}
             </div>
             <div className="lg:col-span-5 md:col-span-6 lg:pl-10">
               <Form.Item name="akiProductIsActive" valuePropName="checked" className="mt-2">
@@ -711,6 +748,9 @@ const ProductDetails = () => {
             bordered
           />
         </div>
+      </Modal>
+      <Modal title="Attribute Set Form" open={isSetAttributeVisable} onCancel={() => setIsSetAttributeVisable(false)} footer={null} width={1100} destroyOnClose>
+        {attributslist && <CategoryAttribute categoryData={attributslist} />}
       </Modal>
     </Spin>
   );
