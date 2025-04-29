@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import ProductDisplay from '../components/home/ProductDisplay';
 import TreeView from '../components/home/TreeView';
 import SkusDisplay from '../components/home/SkusDisplay';
@@ -6,6 +6,13 @@ import SkusDisplay from '../components/home/SkusDisplay';
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const storedCategoryId = sessionStorage.getItem('CategoryId');
+    const storedProductId = sessionStorage.getItem('productId');
+    if (storedCategoryId) setSelectedCategory(storedCategoryId);
+    if (storedProductId && !isNaN(Number(storedProductId))) setSelectedProductId(Number(storedProductId));
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-4 m-4 mb-0">
