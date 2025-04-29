@@ -26,7 +26,7 @@
       </div>
       <!-- Right section: Buttons -->
       <div class="flex justify-start md:justify-end gap-x-3">
-        <button nz-button nzType="default" [routerLink]="'/home'">Cancel</button>
+        <button nz-button nzType="default" [routerLink]="'/home'">Close</button>
         <button nz-button nzType="primary" class="text-white" [routerLink]="'/attributes/add'">Add</button>
       </div>
     </div>
@@ -36,7 +36,7 @@
       <div class="attributeTable-border-none border border-light-border rounded-lg p-1">
         <nz-table #basicTable [nzData]="tableRows" nzSize="small" [nzShowPagination]="false" [nzScroll]="{x:'w-full'}"
           [nzPageSize]="50">
-          <tbody class="pt-2">
+          <tbody class="pt-2 text-xs">
             <tr *ngFor="let row of basicTable.data">
               <td *ngFor="let attr of row" class="w-[200px] h-3">
                 <span class="cursor-pointer text-secondary-font hover:text-primary-theme-hover pb-2"

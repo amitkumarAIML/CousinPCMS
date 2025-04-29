@@ -15,8 +15,8 @@
 
     <ng-template #extraTemplate>
       <div class="flex gap-x-3 mb-2">
-        <button nz-button nzType="default" class="" (click)="cancel()">Cancel</button>
-        <button
+        <button nz-button nzType="default" class="" (click)="cancel()">Close</button>
+        <!-- <button
           nz-button
           nzType="default"
           class=""
@@ -28,7 +28,7 @@
           nzPopconfirmPlacement="left"
         >
           Delete
-        </button>
+        </button> -->
         <button nz-button nzType="primary" class="text-white me-3" [nzLoading]="btnLoading" (click)="saveDetails()">Save</button>
         <ng-template #iconTpl>
           <nz-icon nzType="question-circle-o" class="text-danger me-2" />

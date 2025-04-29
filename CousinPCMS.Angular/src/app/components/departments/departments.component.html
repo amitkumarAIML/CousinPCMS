@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center p-4 pb-1">
       <span class="text-sm font-medium">Department Form</span>
       <div class="flex gap-x-3">
-        <button nz-button nzType="default" class="" (click)="cancel()">Cancel</button>
-        <button
+        <button nz-button nzType="default" class="" (click)="cancel()">Close</button>
+        <!-- <button
           nz-button
           nzType="default"
           class=""
@@ -15,7 +15,7 @@
           [nzIcon]="iconTpl"
         >
           Delete
-        </button>
+        </button> -->
         <button nz-button nzType="primary" class="text-white" [nzLoading]="btnLoading" (click)="saveDetails()">Save</button>
       </div>
       <ng-template #iconTpl>
