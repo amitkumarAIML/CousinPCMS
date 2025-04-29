@@ -52,24 +52,27 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   const akiitemid = Form.useWatch('akiitemid', form);
   const akiImageURL = Form.useWatch('akiImageURL', form);
   const notify = useNotification();
-  const fetchSkuAttributesByCategoryId = useCallback(async (categoryId: string | number) => {
-    setIsLoadingAttributeNames(true);
-    setSavedAttributes([]);
-    try {
-      const response: ApiResponse<AttributeModel[]> = await getSkuAttributesBycategoryId(String(categoryId));
-      if (response.isSuccess && response.value) {
-        setSavedAttributes(response.value);
-      } else if (!response.isSuccess && response.exceptionInformation) {
-        notify.warning(response.exceptionInformation);
+  const fetchSkuAttributesByCategoryId = useCallback(
+    async (categoryId: string | number) => {
+      setIsLoadingAttributeNames(true);
+      setSavedAttributes([]);
+      try {
+        const response: ApiResponse<AttributeModel[]> = await getSkuAttributesBycategoryId(String(categoryId));
+        if (response.isSuccess && response.value) {
+          setSavedAttributes(response.value);
+        } else if (!response.isSuccess && response.exceptionInformation) {
+          notify.warning(response.exceptionInformation);
+        }
+        console.log(`No attributes found for category ${categoryId} or request failed.`);
+      } catch (error) {
+        console.error('Error fetching SKU attributes:', error);
+        notify.error('Failed to load SKU attributes.');
+      } finally {
+        setIsLoadingAttributeNames(false);
       }
-      console.log(`No attributes found for category ${categoryId} or request failed.`);
-    } catch (error) {
-      console.error('Error fetching SKU attributes:', error);
-      notify.error('Failed to load SKU attributes.');
-    } finally {
-      setIsLoadingAttributeNames(false);
-    }
-  }, [notify]);
+    },
+    [notify]
+  );
 
   useEffect(() => {
     onFormInstanceReady(form);
@@ -403,7 +406,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       </Form>
       <Modal
         title={`Attribute Values for: ${selectedAttributeForModal?.attributeName || ''}`}
-        visible={isAttributeValueModalVisible}
+        open={isAttributeValueModalVisible}
         onCancel={handleAttributeValueModalClose}
         footer={null}
         width={600}

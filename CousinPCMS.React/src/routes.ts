@@ -78,6 +78,8 @@ const routes = createBrowserRouter([
             path: '',
             Component: SKUs,
           },
+          {path: 'add', Component: SKUs},
+          {path: 'edit', Component: SKUs},
           {
             path: 'additional-images',
             Component: AdditionalImages,
@@ -86,6 +88,7 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
+          
         ],
       },
       {
