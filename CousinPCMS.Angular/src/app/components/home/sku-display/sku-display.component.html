@@ -14,28 +14,27 @@
       <thead class="bg-light-border">
         <tr>
           <th nzWidth="40px">SKUs</th>
-          <th nzWidth="300px">
+          <th nzWidth="240px">
             <div class="flex justify-between gap-2">
               <div class="flex items-center gap-2">
                 <a (click)="addSKU()">Add</a>
                 <a (click)="editSku()">Edit</a>
               </div>
-              <nz-input-group [nzSuffix]="inputClearTpl">
+              <nz-input-group [nzSuffix]="inputClearTpl" class="w-[160px]">
                 <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()"
                   placeholder="Search" />
               </nz-input-group>
             </div>
           </th>
-
-          <th>ManufacturerRef</th>
-          <th>ITEM_NUMBER</th>
-          <th>List Order</th>
-          <th>Obsolete</th>
-          <th>Unavailable</th>
-          <th>Cat Active</th>
-          <th>TemplateID</th>
-          <th>AltSku Name</th>
-          <th>Commodity Code</th>
+          <th nzWidth="200px">ManufacturerRef</th>
+          <th nzWidth="100px">ITEM_NUMBER</th>
+          <th nzWidth="60px">List Order</th>
+          <th nzWidth="60px">Obsolete</th>
+          <th nzWidth="65px">Unavailable</th>
+          <th nzWidth="60px">Cat Active</th>
+          <th nzWidth="100px">TemplateID</th>
+          <th nzWidth="100px">AltSku Name</th>
+          <th nzWidth="100px">Commodity Code</th>
         </tr>
       </thead>
       <tbody>
@@ -57,9 +56,9 @@
           <td class="truncate">{{ data.akiManufacturerRef }}</td>
           <td>{{ data.akiitemid }}</td>
           <td>{{ data.akiListOrder }}</td>
-          <td><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
-          <td><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>
-          <td><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
+          <td  class="text-center" ><label nz-checkbox [(ngModel)]="data.akiObsolete" [disabled]="true"></label></td>
+          <td  class="text-center" ><label nz-checkbox [(ngModel)]="data.salesBlocked" [disabled]="true"></label></td>
+          <td  class="text-center" ><label nz-checkbox [(ngModel)]="data.akiSKUIsActive" [disabled]="true"></label></td>
           <td>{{ data.akiTemplateID }}</td>
           <td>{{ data.akiAltSKUName }}</td>
           <td>{{ data.akiCommodityCode }}</td>
