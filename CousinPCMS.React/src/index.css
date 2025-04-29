@@ -30,6 +30,15 @@ body {
   background-color: var(--color-bg);
 }
 
+@utility main-container {
+  background-color: var(--color-white) !important;
+  box-shadow: var(--shadow-cousins-box) !important;
+  border-radius: 8px !important;
+  margin: 16px !important;
+  margin-bottom: 0 !important;
+  min-height: calc(100vh - 80px) !important;
+}
+
 .ant-tabs-ink-bar {
   height: 3px !important;
 }
@@ -38,6 +47,6 @@ body {
   display: none !important;
 }
 
-.ant-tree .ant-tree-node-content-wrapper{
-padding-inline: 0 !important;
+.ant-tree .ant-tree-node-content-wrapper {
+  padding-inline: 0 !important;
 }

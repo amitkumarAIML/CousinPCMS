@@ -6,7 +6,7 @@ import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import {getLayoutTemplateList, getCompetitorDetails, getPriceGroupDetails, getPriceBreaksDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
 import {getCountryOrigin, getCommodityCodes} from '../../services/DataService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type {Country} from '../../models/countryOriginModel';
 import type {CommodityCode} from '../../models/commodityCodeModel';
 import type {layoutSkus} from '../../models/layoutTemplateModel';
@@ -157,7 +157,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
   const goToAdditionalImage = () => {
     if (!skuData?.akiSKUID) return;
-    navigate(`/SKUs/additional-image`);
+    navigate(`/SKUs/additional-images`);
   };
 
   const goToUploadForm = () => {

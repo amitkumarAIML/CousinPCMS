@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 import SKUsList from '../components/product/SKUsList';
 
 const Product: React.FC = () => {
@@ -16,7 +16,6 @@ const Product: React.FC = () => {
     if (productIdFromSession) {
       console.log(`Product ID from session: ${productIdFromSession}`);
     } else {
-      notify.error('Product ID not found. Please select a product.');
       navigate('/home');
     }
   }, [navigate, notify]);
@@ -39,7 +38,7 @@ const Product: React.FC = () => {
   );
 
   return (
-    <div className="bg-white shadow-cousins-box rounded-lg m-5">
+    <div className="main-container">
       <div className="p-4 pb-1">
         <span className="text-sm font-medium">Product Form</span>
         <Tabs

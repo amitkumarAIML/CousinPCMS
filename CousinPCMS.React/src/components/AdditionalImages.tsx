@@ -7,7 +7,7 @@ import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../
 import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl} from '../services/ProductService';
 import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl} from '../services/CategoryService';
 import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 
 const AdditionalImages: React.FC = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
@@ -231,8 +231,7 @@ const AdditionalImages: React.FC = () => {
   };
 
   return (
-    <div className="bg-white shadow-cousins-box rounded-lg m-5">
-      
+    <div className="main-container">
       <div className="flex flex-wrap justify-between items-center p-4 pb-1">
         <span className="text-sm font-medium">Additional Images</span>
         <Button type="default" onClick={goBack}>
@@ -243,7 +242,6 @@ const AdditionalImages: React.FC = () => {
       <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4">
           <div className="bg-white p-4 border border-border rounded lg:col-span-1 md:col-span-1">
-            
             <div className="flex justify-between items-center mb-2">
               <label className="font-medium">Current Images</label>
               <Button type="primary" onClick={handleAddClick} size="small">
@@ -252,7 +250,6 @@ const AdditionalImages: React.FC = () => {
             </div>
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
-                
                 {fileList.length > 0 ? (
                   <List
                     size="small"
@@ -289,7 +286,6 @@ const AdditionalImages: React.FC = () => {
 
           {showForm && (
             <div className="p-4 border border-border rounded lg:col-span-2 md:col-span-1">
-              
               <label className="block mb-2 font-medium">Add New Image</label>
               <div className="p-4 space-y-6">
                 <Form layout="vertical">

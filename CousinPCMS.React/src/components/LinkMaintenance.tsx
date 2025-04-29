@@ -5,7 +5,7 @@ import {DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl} from '../services/ProductService';
 import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl} from '../services/CategoryService';
 import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel} from '../models/linkMaintenanaceModel';
 import type {ApiResponse} from '../models/generalModel';
 
@@ -224,7 +224,7 @@ const LinkMaintenance: React.FC = () => {
   };
 
   return (
-    <div className="bg-white shadow-cousins-box rounded-lg m-5">
+    <div className="main-container">
       <div className="flex flex-wrap justify-between items-center p-4 pb-1">
         <span className="text-sm font-medium">Link Maintenance</span>
         {!showForm && (

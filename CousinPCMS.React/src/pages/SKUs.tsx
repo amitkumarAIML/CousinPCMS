@@ -6,7 +6,7 @@ import SKUDetails from '../components/skus/SKUDetails';
 import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 import {updateSkus, getSkuItemById} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 import type {SKuList, SkuRequestModel} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
 
@@ -23,6 +23,32 @@ const SKUs: React.FC = () => {
     setSkuDetailsFormInstance(form);
   }, []);
 
+  const fetchSkuByItemNumber = useCallback(
+    async (itemNum: string) => {
+      setLoading(true);
+      try {
+        const response: ApiResponse<SKuList[]> = await getSkuItemById(itemNum);
+        if (response.isSuccess && response.value && response.value.length > 0) {
+          setSkuData(response.value[0]);
+        } else {
+          notify.error(response.exceptionInformation || 'Failed To Load SKU Data');
+          setSkuData(null);
+        }
+      } catch (err: unknown) {
+        console.error('Error fetching SKU:', err);
+        if (err && typeof err === 'object' && 'error' in err && (err as {error?: {title?: string}}).error?.title) {
+          notify.error((err as {error?: {title?: string}}).error?.title || '');
+        } else {
+          notify.error('Something went wrong while fetching SKU data.');
+        }
+        setSkuData(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [notify]
+  );
+
   useEffect(() => {
     const itemNumFromSession = sessionStorage.getItem('itemNumber') || '145341';
     if (itemNumFromSession) {
@@ -33,29 +59,6 @@ const SKUs: React.FC = () => {
       navigate('/home');
     }
   }, [navigate, notify, fetchSkuByItemNumber]);
-
-  const fetchSkuByItemNumber = async (itemNum: string) => {
-    setLoading(true);
-    try {
-      const response: ApiResponse<SKuList[]> = await getSkuItemById(itemNum);
-      if (response.isSuccess && response.value && response.value.length > 0) {
-        setSkuData(response.value[0]);
-      } else {
-        notify.error(response.exceptionInformation || 'Failed To Load SKU Data');
-        setSkuData(null);
-      }
-    } catch (err: unknown) {
-      console.error('Error fetching SKU:', err);
-      if (err && typeof err === 'object' && 'error' in err && (err as {error?: {title?: string}}).error?.title) {
-        notify.error((err as {error?: {title?: string}}).error?.title || '');
-      } else {
-        notify.error('Something went wrong while fetching SKU data.');
-      }
-      setSkuData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCancel = () => {
     navigate('/home');
@@ -124,7 +127,7 @@ const SKUs: React.FC = () => {
   return (
     <>
       <Spin spinning={loading}>
-        <div className="bg-white shadow-cousins-box rounded-lg m-5">
+        <div className="main-container">
           <div className="p-4 pb-1">
             <span className="text-sm font-medium">Sku Form</span>
             <Tabs

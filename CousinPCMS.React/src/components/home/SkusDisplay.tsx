@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Spin, Modal, Input} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import {getSkuByProductId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList} from '../../models/skusModel';
 import SKUsComponent from '../../pages/SKUs';
 

@@ -4,7 +4,7 @@ import {Table, Button, Input, Checkbox, Form, Spin} from 'antd';
 import {SearchOutlined, CloseCircleFilled, EditOutlined} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 import {getAttributesList} from '../services/AttributesService';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 import type {AttributeModel} from '../models/attributeModel';
 
 interface AttributeItem extends AttributeModel {
@@ -108,10 +108,10 @@ const Attributes: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md m-5">
+    <div className="main-container">
       <div className="grid grid-cols-1 md:grid-cols-2 items-start md:items-center gap-y-4 p-4 pb-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-lg font-medium text-primary-font mr-3">Attribute List</span>
+          <span className="text-sm font-medium">Attribute List</span>
           <Form layout="inline" className="flex-grow max-w-xs">
             <Form.Item className="mb-0 flex-grow">
               <Input

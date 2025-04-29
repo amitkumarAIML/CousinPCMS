@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Attributes from './pages/Attributes';
 import AdditionalImages from './components/AdditionalImages';
 import LinkMaintenance from './components/LinkMaintenance';
+import AttributeForm from './components/attribute/AttributeForm';
 
 const routes = createBrowserRouter([
   {
@@ -39,12 +40,33 @@ const routes = createBrowserRouter([
         path: 'category',
         children: [
           {path: '', Component: Category},
-          {path: 'add', Component: Category}
+          {path: 'add', Component: Category},
+          {
+            path: 'additional-images',
+            Component: AdditionalImages,
+          },
+          {
+            path: 'link-maintenance',
+            Component: LinkMaintenance,
+          },
         ],
       },
       {
         path: 'products',
-        Component: Product,
+        children: [
+          {
+            path: '',
+            Component: Product,
+          },
+          {
+            path: 'additional-images',
+            Component: AdditionalImages,
+          },
+          {
+            path: 'link-maintenance',
+            Component: LinkMaintenance,
+          },
+        ],
       },
       {
         path: 'SKUs',
@@ -54,7 +76,7 @@ const routes = createBrowserRouter([
             Component: SKUs,
           },
           {
-            path: 'additional-image',
+            path: 'additional-images',
             Component: AdditionalImages,
           },
           {
@@ -65,7 +87,20 @@ const routes = createBrowserRouter([
       },
       {
         path: 'attributes',
-        Component: Attributes,
+        children: [
+          {
+            path: '',
+            Component: Attributes,
+          },
+          {
+            path: 'add',
+            Component: AttributeForm,
+          },
+          {
+            path: 'edit',
+            Component: AttributeForm,
+          },
+        ],
       },
     ],
   },

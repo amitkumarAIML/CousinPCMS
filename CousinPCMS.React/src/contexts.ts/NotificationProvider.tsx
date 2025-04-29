@@ -1,10 +1,8 @@
 import {message} from 'antd';
-import {createContext, ReactNode, useContext} from 'react';
+import {ReactNode} from 'react';
+import { NotificationContext } from './NotificationContext';
 
-// infer the type of messageApi from useMessage():
-type MessageApi = ReturnType<typeof message.useMessage>[0];
-
-const NotificationContext = createContext<MessageApi | null>(null);
+export type MessageApi = ReturnType<typeof message.useMessage>[0];
 
 export function NotificationProvider({children}: {children: ReactNode}) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -14,12 +12,4 @@ export function NotificationProvider({children}: {children: ReactNode}) {
       {children}
     </NotificationContext.Provider>
   );
-}
-
-export function useNotification(): MessageApi {
-  const api = useContext(NotificationContext);
-  if (!api) {
-    throw new Error('useNotification must be used within NotificationProvider');
-  }
-  return api;
 }

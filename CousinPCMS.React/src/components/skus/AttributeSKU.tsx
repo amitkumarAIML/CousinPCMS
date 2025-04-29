@@ -5,7 +5,7 @@ import type {TableProps} from 'antd/es/table';
 
 // --- Import Services and Types ---
 import { getSkuLinkedAttributes } from '../../services/SkusService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type { ApiResponse } from '../../models/generalModel';
 import type { LikedSkuModel } from '../../models/skusModel';
 

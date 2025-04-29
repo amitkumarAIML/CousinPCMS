@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
-import {UploadOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
@@ -12,7 +12,7 @@ import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
 import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -529,7 +529,7 @@ const ProductDetails: React.FC = () => {
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
                   >
-                    <Button type='primary' >Upload</Button>
+                    <Button type="primary">Upload</Button>
                   </Upload>
                   <span className="whitespace-nowrap">
                     {akiProductImageURL?.length || 0} / {charLimit.akiProductImageURL}

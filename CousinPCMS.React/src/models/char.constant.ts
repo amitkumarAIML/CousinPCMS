@@ -26,3 +26,7 @@ export const CategoryCharLimit = {
     akiImageURL: 255
   } as const;
   
+  export const AttributeFormCharLimit = {
+    attributeName: 50,
+    attributeDescription: 100,
+  };

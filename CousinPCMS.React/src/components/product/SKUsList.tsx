@@ -3,7 +3,7 @@ import {Table, Checkbox, Spin} from 'antd';
 import {CaretRightOutlined} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 import {getSkuItemById} from '../../services/SkusService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
 
 const SKUsList = () => {

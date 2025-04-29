@@ -5,7 +5,7 @@ import type {TableProps} from 'antd/es/table';
 
 // --- Import Services and Types ---
 import { getRelatedSkuItem } from '../../services/SkusService';
-import { useNotification } from '../../contexts.ts/NotificationProvider';
+import { useNotification } from '../../contexts.ts/useNotification';
 
 // Define interface for the main SKU data prop
 interface MainSkuData {

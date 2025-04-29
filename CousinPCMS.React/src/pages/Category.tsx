@@ -417,7 +417,7 @@ const Category: React.FC = () => {
     },
   ];
   return (
-    <div className="bg-white rounded-lg shadow-cousins-box m-5">
+    <div className="main-container">
       <Spin spinning={loading}>
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Category Form</span>
@@ -507,7 +507,7 @@ const Category: React.FC = () => {
                   <Input.TextArea rows={3} maxLength={2000} />
                 </Form.Item>
                 <div className="flex items-end gap-x-3 relative">
-                  <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{type: 'url', message: 'Please enter a valid URL (or leave blank)'}]}>
+                  <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL (or leave blank)'}]}>
                     <Input maxLength={charLimit.akiCategoryImageURL} />
                   </Form.Item>
                   <Upload

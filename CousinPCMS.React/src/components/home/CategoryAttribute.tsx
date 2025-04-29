@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Modal, Form, Input, Checkbox, Button, Table, Spin} from 'antd';
 import {getAllAttributes, getAttributeSetsByAttributeSetName, addAttributeSets, deleteAttributeSets, updateAttributeSets1} from '../../services/HomeService';
 import {extractUserMessage} from '../../services/DataService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
 import type {AttributeModel, AttributeModelResponse, AttributeSetModel} from '../../models/attributeModel';
 import {ApiResponse} from '../../models/generalModel';

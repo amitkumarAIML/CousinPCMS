@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {useNavigate} from 'react-router';
-import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin, Popconfirm} from 'antd';
-import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
-import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes, deleteAttributesValues} from '../../services/AttributesService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin} from 'antd';
+import {CloseCircleFilled, EditOutlined, SearchOutlined} from '@ant-design/icons';
+import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes} from '../../services/AttributesService';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type {AttributeRequestModel, AttributeValueModel} from '../../models/attributesModel';
 import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
+import {AttributeFormCharLimit} from '../../models/char.constant';
 
 const AttributeForm: React.FC = () => {
   const [form] = Form.useForm<AttributeRequestModel>();
@@ -22,6 +23,9 @@ const AttributeForm: React.FC = () => {
   const [isAttributeNameDisabled, setIsAttributeNameDisabled] = useState<boolean>(false);
   const [isValueModalVisible, setIsValueModalVisible] = useState<boolean>(false);
   const [isNewValueBtnDisabled, setIsNewValueBtnDisabled] = useState<boolean>(true);
+  const [editValueData, setEditValueData] = useState<AttributeValueModel | null>(null);
+  const attributeNametxt = Form.useWatch('attributeName', form);
+  const attributeDescriptionetxt = Form.useWatch('attributeDescription', form);
 
   const notify = useNotification();
 
@@ -51,23 +55,26 @@ const AttributeForm: React.FC = () => {
     [form, notify]
   );
 
-  const fetchAttributeValues = useCallback(async (name?: string) => {
-    if (!name) return;
-    setLoading(true);
-    try {
-      const response = await getAttributeValuesByAttributesName(name);
-      if (response.isSuccess && response.value) {
-        setAttributesValues(response.value);
-      } else {
-        setAttributesValues([]);
-        notify.error(response.exceptionInformation || 'Failed to load attribute values.');
+  const fetchAttributeValues = useCallback(
+    async (name?: string) => {
+      if (!name) return;
+      setLoading(true);
+      try {
+        const response = await getAttributeValuesByAttributesName(name);
+        if (response.isSuccess && response.value) {
+          setAttributesValues(response.value);
+        } else {
+          setAttributesValues([]);
+          notify.error(response.exceptionInformation || 'Failed to load attribute values.');
+        }
+      } catch {
+        notify.error('Error loading attribute values.');
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      notify.error('Error loading attribute values.');
-    } finally {
-      setLoading(false);
-    }
-  }, [notify]);
+    },
+    [notify]
+  );
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -199,53 +206,32 @@ const AttributeForm: React.FC = () => {
       setBtnLoading(false);
     }
   };
-
-  const handleDeleteAttributeValue = async (record: AttributeValueModel) => {
-    setLoading(true);
-    try {
-      const response = await deleteAttributesValues(record.attributeName, record.attributeValue);
-      if (response.isSuccess) {
-        notify.success('Attribute Value Successfully Deleted');
-
-        setAttributesValues((prev) => prev.filter((item) => (item as AttributeValueModel).attributeValue !== (record as AttributeValueModel).attributeValue));
-      } else {
-        notify.error(response.exceptionInformation || 'Failed To Delete Attribute Value');
-      }
-    } catch (err) {
-      console.error('Error deleting attribute value:', err);
-      notify.error('An unexpected error occurred.');
-    } finally {
-      setLoading(false);
-    }
+  const handleEditAttribute = (record: AttributeValueModel) => {
+    setEditValueData(record);
+    setIsValueModalVisible(true);
   };
 
   const valueColumns = [
-    {key: 'spacer', width: 50, render: () => null},
     {title: 'Attribute Name', dataIndex: 'attributeName', ellipsis: true},
     {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true},
+    {title: 'New Alternate Value', dataIndex: 'newAlternateValue', ellipsis: true},
+    {title: 'Alternate Value', dataIndex: 'alternateValues', ellipsis: true},
     {
       title: 'Action',
       key: 'action',
       width: 60,
       align: 'center' as const,
       render: (_: unknown, record: AttributeValueModel) => (
-        <Popconfirm title="Delete this attribute value?" onConfirm={() => handleDeleteAttributeValue(record as AttributeValueModel)} okText="Yes" cancelText="No">
-          <Button type="text" danger size="small" style={{padding: '0 5px'}} aria-label={`Delete value ${(record as AttributeValueModel).attributeValue}`} />
-        </Popconfirm>
+        <Button type="link" icon={<EditOutlined />} onClick={() => handleEditAttribute(record)} size="small" style={{padding: '0 5px', color: '#1890ff'}} aria-label={`Edit ${record.attributeName}`} />
       ),
     },
   ];
 
-  const charCount = (fieldName: keyof AttributeRequestModel, limit: number) => {
-    const value = form.getFieldValue(fieldName) || '';
-    return limit - value.length;
-  };
-
   return (
-    <div className="bg-white rounded-lg shadow-md m-5 pb-4">
+    <div className="main-container">
       <Spin spinning={loading}>
         <div className="flex justify-between items-center p-4 pb-1">
-          <span className="text-lg font-medium text-primary-font">{isEdit ? `Edit Attribute: ${attributeName}` : 'Add New Attribute'}</span>
+          <span className="text-lg font-medium text-primary-font">{isEdit ? 'Edit Attribute' : 'Add Attribute'}</span>
           <div className="flex gap-x-3">
             <Button onClick={handleCancel}>Cancel</Button>
           </div>
@@ -268,19 +254,23 @@ const AttributeForm: React.FC = () => {
                   </div>
                 </div>
 
-                <Form.Item label="Attribute Name" name="attributeName" rules={[{required: true, message: 'Attribute Name is required.'}]} className="mb-3">
-                  <div className="relative">
-                    <Input maxLength={50} disabled={isAttributeNameDisabled} />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2  text-xs">{charCount('attributeName', 50)}</span>
-                  </div>
-                </Form.Item>
+                <div className="relative">
+                  <Form.Item label="Attribute Name" name="attributeName" rules={[{required: true, message: 'Attribute Name is required.'}]} className="mb-3">
+                    <Input maxLength={AttributeFormCharLimit.attributeName} disabled={isAttributeNameDisabled} />
+                  </Form.Item>
+                  <span className="absolute -right-12 top-6">
+                    {attributeNametxt?.length} / {AttributeFormCharLimit.attributeName}
+                  </span>
+                </div>
 
-                <Form.Item label="Attribute Description" name="attributeDescription" className="mb-3">
-                  <div className="relative">
-                    <Input maxLength={100} />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2  text-xs">{charCount('attributeDescription', 100)}</span>
-                  </div>
-                </Form.Item>
+                <div className="relative">
+                  <Form.Item label="Attribute Description" name="attributeDescription" className="mb-3">
+                    <Input maxLength={AttributeFormCharLimit.attributeDescription} />
+                  </Form.Item>
+                  <span className="absolute -right-14 top-6">
+                    {attributeDescriptionetxt?.length} / {AttributeFormCharLimit.attributeDescription}
+                  </span>
+                </div>
               </div>
             </div>
           </Form>
@@ -319,8 +309,28 @@ const AttributeForm: React.FC = () => {
         </div>
       </Spin>
 
-      <Modal title="Add New Attribute Value" visible={isValueModalVisible} onCancel={() => handleValueModalClose('cancel')} footer={null} destroyOnClose maskClosable={false} width={500}>
-        {attributeName && <AttributesValues attributeName={attributeName} onClose={handleValueModalClose} />}
+      <Modal
+        title={editValueData ? 'Edit Attribute' : 'Add Attribute '}
+        open={isValueModalVisible}
+        onCancel={() => {
+          setEditValueData(null);
+          handleValueModalClose('cancel');
+        }}
+        footer={null}
+        destroyOnClose
+        maskClosable={false}
+        width={500}
+      >
+        {attributeName && (
+          <AttributesValues
+            attributeName={attributeName}
+            onClose={(reason) => {
+              setEditValueData(null);
+              handleValueModalClose(reason);
+            }}
+            valueData={editValueData}
+          />
+        )}
       </Modal>
     </div>
   );

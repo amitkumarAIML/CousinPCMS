@@ -7,7 +7,7 @@ import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
 import {getCommodityCodes, cleanEmptyNullToString} from '../services/DataService';
-import {useNotification} from '../contexts.ts/NotificationProvider';
+import {useNotification} from '../contexts.ts/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
 
@@ -95,19 +95,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
 
   const handleFileChange = (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === 'uploading') {
-      console.log('Uploading:', info.file.name);
       return;
     }
     if (info.file.status === 'done') {
-      notify.success(`${info.file.name} file uploaded successfully.`);
       form.setFieldsValue({akiDepartmentImageURL: info.file.response?.url || info.file.name});
-      console.log('Upload Done:', info.file.response);
     } else if (info.file.status === 'error') {
       notify.error(`${info.file.name} file upload failed.`);
       console.error('Upload Error:', info.file.error);
     } else if (info.file.originFileObj) {
       form.setFieldsValue({akiDepartmentImageURL: info.file.name});
-      console.log('File Selected:', info.file.name);
     }
   };
 
@@ -148,7 +144,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
 
   return (
     <Spin spinning={loading}>
-      <div className="bg-white shadow-cousins-box rounded-lg m-5">
+      <div className="main-container">
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Department Form</span>
           <div className="flex gap-x-3">
@@ -218,7 +214,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                         console.log('Custom request uploading:', file);
                         setTimeout(() => {
                           console.log('Simulating upload success');
-                          onSuccess?.({url: `https://example.com/uploads/${(file as File).name}`}, (file as UploadFile).originFileObj);
+                          onSuccess?.({url: (file as File).name}, (file as UploadFile).originFileObj);
                         }, 1000);
                       }}
                       headers={{authorization: 'your-auth-token'}}

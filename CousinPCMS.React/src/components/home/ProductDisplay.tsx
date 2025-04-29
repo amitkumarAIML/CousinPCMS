@@ -6,7 +6,7 @@ import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons'; // Import i
 import {Product} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
 import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import ProductComponent from '../../pages/Product';
 import CategoryAttribute from './CategoryAttribute';
 

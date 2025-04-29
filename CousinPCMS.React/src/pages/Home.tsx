@@ -9,22 +9,18 @@ const Home = () => {
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2 p-2">
-      {/* Left Section */}
-      <div className="lg:col-span-7">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {/* Category Tree */}
-          <div className="p-2 bg-white rounded-md shadow-md tree-view-scroll">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-4 m-4 mb-0">
+      <div className="lg:col-span-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+          <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
             <TreeView onCategorySelected={(categoryId) => setSelectedCategory(categoryId?.toString() || '')} />
           </div>
-          {/* Product Display */}
-          <div className="p-2 bg-white rounded-md shadow-md card">
+          <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)] ">
             <ProductDisplay selectedCategory={selectedCategory} onProductSelected={setSelectedProductId} />
           </div>
         </div>
       </div>
-      {/* Right Section */}
-      <div className="lg:col-span-5 p-2 bg-white rounded-md shadow-md card">
+      <div className="lg:col-span-6 p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
         <SkusDisplay selectedProductId={selectedProductId} selectedCategory={selectedCategory} />
       </div>
     </div>

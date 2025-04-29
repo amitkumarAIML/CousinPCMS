@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Input, Button} from 'antd';
 import {addAttributesValues} from '../../services/AttributesService';
-import {useNotification} from '../../contexts.ts/NotificationProvider';
+import {useNotification} from '../../contexts.ts/useNotification';
 import type {AttributeValuesRequestModel} from '../../models/attributesModel';
 
 const {TextArea} = Input;
@@ -9,8 +9,7 @@ const {TextArea} = Input;
 interface AttributesValuesProps {
   attributeName: string | null | undefined;
   onClose: (reason: 'save' | 'cancel') => void;
-  skuId?: number | string;
-  itemNumber?: string | number;
+  valueData?: AttributeValueFormData | null;
 }
 
 interface AttributeValueFormData {
@@ -20,13 +19,20 @@ interface AttributeValueFormData {
   newAlternateValue?: string;
 }
 
-const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, onClose, skuId, itemNumber}) => {
+const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, onClose, valueData}) => {
   const [form] = Form.useForm<AttributeValueFormData>();
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const notify = useNotification();
 
   useEffect(() => {
-    if (attributeName !== undefined && attributeName !== null) {
+    if (valueData) {
+      form.setFieldsValue({
+        attributeName: valueData.attributeName,
+        attributeValue: valueData.attributeValue,
+        alternateValues: valueData.alternateValues,
+        newAlternateValue: valueData.newAlternateValue,
+      });
+    } else if (attributeName !== undefined && attributeName !== null) {
       form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
       form.setFieldsValue({
         attributeName: attributeName,
@@ -34,7 +40,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
     } else {
       form.resetFields();
     }
-  }, [attributeName, form]);
+  }, [attributeName, valueData, form]);
 
   const cleanData = (rawData: Partial<AttributeValueFormData>): AttributeValuesRequestModel => {
     const cleaned: Partial<AttributeValuesRequestModel> = {};
