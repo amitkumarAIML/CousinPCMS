@@ -319,7 +319,7 @@ const AttributesDetails: React.FC = () => {
       {/* Modal for Adding/Editing New Value */}
       <Modal
         title={valueDataForModal ? `Edit Attribute Value: ${valueDataForModal.attributeValue}` : 'Add New Attribute Value'}
-        visible={isValueModalVisible}
+        open={isValueModalVisible}
         onCancel={() => handleValueModalClose('cancel')}
         footer={null}
         destroyOnClose

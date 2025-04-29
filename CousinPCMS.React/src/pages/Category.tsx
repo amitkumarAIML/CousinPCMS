@@ -27,7 +27,7 @@ interface TableParams {
 const Category: React.FC = () => {
   const [categoryForm] = Form.useForm<UpdateCategoryModel & {additionalImages?: string; urlLinks?: string}>();
   const [editAssociatedProductForm] = Form.useForm<AdditionalCategoryModel>();
-  const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModel, 'additionalCategory'> & {product: string}>();
+  const [addAssociatedProductForm] = Form.useForm<{listorder: number; product: number; productName: string}>();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState<boolean>(false);
@@ -42,7 +42,6 @@ const Category: React.FC = () => {
   const [returnOptions] = useState<{value: string; label: string}[]>([]);
   const [additionalCategoryList, setAdditionalCategoryList] = useState<AdditionalCategoryModel[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [selectedProductIdModal, setSelectedProductIdModal] = useState<number | null>(null);
   const [isVisibleAddProductModal, setIsVisibleAddProductModal] = useState<boolean>(false);
   const [productNameList, setProductNameList] = useState<Product[]>([]);
   const [productSearchValue, setProductSearchValue] = useState<string>('');
@@ -83,7 +82,7 @@ const Category: React.FC = () => {
       }
     };
     fetchInitialData();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const fetchCategoryById = useCallback(
     async (id: string) => {
@@ -146,41 +145,55 @@ const Category: React.FC = () => {
       fetchAdditionalCategory(categoryId);
     }
   }, [categoryId, fetchCategoryById, fetchAdditionalCategory]);
+  type ProductApiResponse = {
+    products: Product[];
+    totalRecords: number;
+    [key: string]: unknown;
+  };
   const fetchProductsForModal = useCallback(async () => {
     if (!isVisibleAddProductModal) return;
-    console.log('Fetching products for modal...');
     setLoadingProduct(true);
     try {
-      const response = await getAllProducts(productTableParams.pagination?.current ?? 1, productTableParams.pagination?.pageSize ?? 10, productSearchValue);
+      const current = productTableParams.pagination?.current ?? 1;
+      const pageSize = productTableParams.pagination?.pageSize ?? 10;
+      const response = await getAllProducts(current, pageSize, productSearchValue);
       let fetchedProducts: Product[] = [];
+      let totalRecords = 0;
       if (response && response.value && Array.isArray(response.value)) {
         fetchedProducts = response.value as Product[];
-      } else if (response && response.value && typeof response.value === 'object' && 'products' in response.value && Array.isArray((response.value as {products: unknown}).products)) {
-        fetchedProducts = (response.value as {products: Product[]}).products;
+      } else if (response && response.value && typeof response.value === 'object' && 'products' in response.value && Array.isArray((response.value as unknown as ProductApiResponse).products)) {
+        const apiResp = response.value as unknown as ProductApiResponse;
+        fetchedProducts = apiResp.products;
+        totalRecords = apiResp.totalRecords || 0;
       }
       if (additionalCategoryList.length > 0) {
         const existingIds = additionalCategoryList.map((cat) => cat.product);
         fetchedProducts = fetchedProducts.filter((prod: Product) => !existingIds.includes(prod.akiProductID));
       }
       setProductNameList(fetchedProducts);
-      setProductTableParams((prev) => ({
-        ...prev,
-        pagination: {
-          ...prev.pagination,
-          total: fetchedProducts.length,
-        },
-      }));
+      setProductTableParams((prev) => {
+        if (prev.pagination && prev.pagination.total === totalRecords) return prev;
+        return {
+          ...prev,
+          pagination: {
+            ...prev.pagination,
+            total: totalRecords,
+          },
+        };
+      });
     } catch {
       message.error('Could not load products.');
       setProductNameList([]);
-      setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, total: 0}}));
     } finally {
       setLoadingProduct(false);
     }
-  }, [isVisibleAddProductModal, productSearchValue, productTableParams.pagination, additionalCategoryList]);
+  }, [isVisibleAddProductModal, productTableParams.pagination, productSearchValue, additionalCategoryList]);
+
   useEffect(() => {
-    fetchProductsForModal();
-  }, [fetchProductsForModal]);
+    if (isVisibleAddProductModal) {
+      fetchProductsForModal();
+    }
+  }, [isVisibleAddProductModal, productSearchValue, productTableParams.pagination, fetchProductsForModal]);
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
     if (!categoryId) return;
     setBtnLoading(true);
@@ -221,8 +234,8 @@ const Category: React.FC = () => {
       setBtnLoading(false);
     }
   };
-  const handleAddAssociatedProductSubmit = async (values: {listorder: number}) => {
-    if (!selectedProductIdModal) {
+  const handleAddAssociatedProductSubmit = async (values: {listorder: number; product: number; productName: string}) => {
+    if (!values.product) {
       message.error('Please select a product from the grid below.');
       return;
     }
@@ -237,7 +250,7 @@ const Category: React.FC = () => {
       return;
     }
     const payload: AssociatedProductRequestModel = {
-      product: selectedProductIdModal,
+      product: values.product,
       additionalCategory: categoryId,
       listorder: listOrder,
       isAdditionalProduct: true,
@@ -248,7 +261,6 @@ const Category: React.FC = () => {
         message.success('Associated product added successfully');
         setIsVisibleAddProductModal(false);
         addAssociatedProductForm.resetFields();
-        setSelectedProductIdModal(null);
         fetchAdditionalCategory(categoryId);
       } else {
         message.error(response.exceptionInformation || 'Associated product not added');
@@ -298,7 +310,6 @@ const Category: React.FC = () => {
     }
   };
   const showAddProductModal = () => {
-    setSelectedProductIdModal(null);
     addAssociatedProductForm.resetFields();
     setProductSearchValue('');
     setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
@@ -306,12 +317,14 @@ const Category: React.FC = () => {
   };
   const handleModalCancel = () => {
     setIsVisibleAddProductModal(false);
-    setSelectedProductIdModal(null);
     addAssociatedProductForm.resetFields();
   };
   const handleProductSelect = (record: ProductSearchResult) => {
-    setSelectedProductIdModal(record.akiProductID);
-    addAssociatedProductForm.setFieldsValue({listorder: addAssociatedProductForm.getFieldValue('listorder')});
+    addAssociatedProductForm.setFieldsValue({
+      listorder: addAssociatedProductForm.getFieldValue('listorder'),
+      product: record.akiProductID, // Hidden field for ID
+      productName: record.akiProductName, // Visible field for name
+    });
     message.success(`Selected: ${record.akiProductName}`);
   };
   const handleFileChange = (info: UploadChangeParam<UploadFile>, formInstance: typeof categoryForm, fieldName: string) => {
@@ -416,7 +429,7 @@ const Category: React.FC = () => {
       dataIndex: 'akiProductIsActive',
       width: 80,
       align: 'center',
-      render: (isActive) => (isActive ? <CheckCircleOutlined className="text-success text-lg" /> : <StopOutlined className="text-danger text-lg" />),
+      render: (isActive) => (isActive ? <CheckCircleOutlined className="text-primary-theme" /> : <StopOutlined className="text-danger" />),
     },
   ];
   return (
@@ -451,7 +464,7 @@ const Category: React.FC = () => {
                   <Form.Item label="Category Name" name="akiCategoryName" rules={[{required: true, message: 'Category name is required'}]}>
                     <Input maxLength={charLimit.akiCategoryName} className="pr-12" />
                   </Form.Item>
-                  <span className="absolute -right-13 top-5 text-xs">
+                  <span className="absolute -right-13 top-5">
                     {akiCategoryName?.length || 0} / {charLimit.akiCategoryName}
                   </span>
                 </div>
@@ -526,7 +539,7 @@ const Category: React.FC = () => {
                   >
                     <Button type="primary">Upload</Button>
                   </Upload>
-                  <span className=" absolute -right-14 top-1/2 text-xs">
+                  <span className=" absolute -right-14 top-1/2">
                     {akiCategoryImageURL?.length || 0} / {charLimit.akiCategoryImageURL}
                   </span>
                 </div>
@@ -679,8 +692,11 @@ const Category: React.FC = () => {
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'List order is required'}]}>
               <Input type="number" />
             </Form.Item>
-            <Form.Item label="Product Name" name="product" rules={[{required: true, message: 'Please select a product from the list below'}]}>
-              <Input readOnly placeholder="Select product from table..." />
+            <Form.Item name="product" style={{display: 'none'}}>
+              <Input type="hidden" />
+            </Form.Item>
+            <Form.Item label="Product Name" name="productName" rules={[{required: true, message: 'Please select a product from the list below'}]}>
+              <Input disabled placeholder="Select product from table..." />
             </Form.Item>
           </div>
           <div className="flex justify-between items-center gap-3 mt-4 mb-4">

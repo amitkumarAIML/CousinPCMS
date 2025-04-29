@@ -403,7 +403,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       </Form>
       <Modal
         title={`Attribute Values for: ${selectedAttributeForModal?.attributeName || ''}`}
-        visible={isAttributeValueModalVisible}
+        open={isAttributeValueModalVisible}
         onCancel={handleAttributeValueModalClose}
         footer={null}
         width={600}

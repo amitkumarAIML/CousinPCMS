@@ -511,7 +511,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
         if (deptId) {
           keysToExpand.unshift(`dept-${deptId}`);
         }
-        // Call onCategorySelected if category is found in tree
         onCategorySelected(Number(savedCatId));
       } else if (savedDeptId) {
         const deptKey = `dept-${savedDeptId}`;
@@ -554,7 +553,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       onSelect,
       height: 800,
       virtual: true,
-      onRightClick, // <-- add right click handler
+      onRightClick,
     }),
     [displayTreeData, onLoadData, onDrop, expandedKeys, selectedKeys, onSelect, onRightClick]
   );

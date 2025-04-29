@@ -34,6 +34,10 @@ export const theme = {
       verticalLabelPadding: 0, // @form-vertical-label-padding
       itemHeight: 0, // @form-item-label-height
     },
+    Menu: {
+      itemHeight: 20,
+      horizontalItemBorderRadius: 8,
+    },
     Tree: {
       nodeSelectedBg: '#c9fbff',
       nodeSelectedColor: '#343941',
