@@ -2,7 +2,6 @@ import {useState} from 'react';
 import ProductDisplay from '../components/home/ProductDisplay';
 import TreeView from '../components/home/TreeView';
 import SkusDisplay from '../components/home/SkusDisplay';
-// import SkusDisplay from "../components/home/SkusDisplay"
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');

@@ -17,7 +17,6 @@ export interface AttributeRequestModel {
 }
 
 export interface AttributeValueModel {
-    // odataetag: string;
     attributeName: string;
     attributeValue: string;
     newAlternateValue: string;

@@ -34,7 +34,7 @@ interface TableParams {
   filters?: Record<string, FilterValue | null>;
 }
 
-const ProductDetails: React.FC = () => {
+const ProductDetails = () => {
   const [productForm] = Form.useForm<Product>();
   const [editAssociatedProductForm] = Form.useForm<Omit<AdditionalProductModel, 'additionalProductName'>>();
   const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}>();
@@ -118,7 +118,7 @@ const ProductDetails: React.FC = () => {
               akiProductIsActive: !!product.akiProductIsActive,
             });
           } else {
-            notify.error(response.exceptionInformation || 'Failed To Load Product Data');
+            notify.error('Failed To Load Product Data');
           }
         })
         .catch(() => {
@@ -161,19 +161,36 @@ const ProductDetails: React.FC = () => {
     if (!isVisibleAddProductModal) return;
     setLoadingProductModal(true);
     try {
-      const response = await getAllProducts(productModalTableParams.pagination?.current ?? 1, productModalTableParams.pagination?.pageSize ?? 10, productSearchValueModal);
-      let fetchedProducts: AssociatedProductSearchResult[] = response && response.value ? [response.value as AssociatedProductSearchResult] : [];
-      const totalRecords = fetchedProducts.length;
+      const current = productModalTableParams.pagination?.current ?? 1;
+      const pageSize = productModalTableParams.pagination?.pageSize ?? 10;
+      const response = await getAllProducts(current, pageSize, productSearchValueModal);
+      let fetchedProducts: AssociatedProductSearchResult[] = [];
+      let totalRecords = 0;
+      if (
+        response &&
+        response.value &&
+        typeof response.value === 'object' &&
+        'products' in response.value &&
+        Array.isArray((response.value as unknown as {products: AssociatedProductSearchResult[]}).products)
+      ) {
+        const apiResp = response.value as unknown as {products: AssociatedProductSearchResult[]; totalRecords: number};
+        fetchedProducts = apiResp.products;
+        totalRecords = apiResp.totalRecords || 0;
+      }
       const currentProductAndAssociatedIds = [akiProductID, ...additionalProductList.map((p) => p.additionalProduct)].filter((id) => id !== undefined);
       fetchedProducts = fetchedProducts.filter((prod: AssociatedProductSearchResult) => !currentProductAndAssociatedIds.includes(prod.akiProductID));
       setProductListModal(fetchedProducts);
-      setProductModalTableParams((prev) => ({
-        ...prev,
-        pagination: {
-          ...prev.pagination,
-          total: totalRecords,
-        },
-      }));
+      setProductModalTableParams((prev) => {
+        const prevTotal = prev.pagination?.total ?? 0;
+        if (prevTotal === totalRecords) return prev;
+        return {
+          ...prev,
+          pagination: {
+            ...prev.pagination,
+            total: totalRecords,
+          },
+        };
+      });
     } catch {
       notify.error('Could not load products.');
       setProductListModal([]);
@@ -284,7 +301,7 @@ const ProductDetails: React.FC = () => {
         const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
         addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } else {
-        notify.error(response.exceptionInformation || 'Associated product not added');
+        notify.error('Associated product not added');
       }
     } catch {
       notify.error('Something went wrong');
@@ -331,7 +348,7 @@ const ProductDetails: React.FC = () => {
         setEditingId(null);
         fetchAdditionalProduct(akiProductID);
       } else {
-        notify.error(response.exceptionInformation || 'Associated product not updated');
+        notify.error('Associated product not updated');
       }
     } catch {
       notify.error('Something went wrong');
@@ -430,7 +447,7 @@ const ProductDetails: React.FC = () => {
       title: 'Product Name',
       dataIndex: 'akiProductName',
       render: (text, record) => (
-        <a onClick={() => handleProductSelectInModal(record)} className="text-primary-theme hover:bg-primary-theme-hover cursor-pointer">
+        <a onClick={() => handleProductSelectInModal(record)} className="text-primary-theme cursor-pointer">
           {text}
         </a>
       ),
@@ -440,7 +457,7 @@ const ProductDetails: React.FC = () => {
       dataIndex: 'akiProductIsActive',
       width: 80,
       align: 'center',
-      render: (isActive) => (isActive ? <CheckCircleOutlined className="text-success text-lg" /> : <StopOutlined className="text-danger text-lg" />),
+      render: (isActive) => (isActive ? <CheckCircleOutlined className="text-primary-theme" /> : <StopOutlined className="text-danger" />),
     },
   ];
 
@@ -656,7 +673,7 @@ const ProductDetails: React.FC = () => {
               <Input type="number" />
             </Form.Item>
             <Form.Item label="Product Name" name="product" rules={[{required: true, message: 'Select product below'}]}>
-              <Input readOnly placeholder="Select product from table..." />
+              <Input disabled placeholder="Select product from table..." />
             </Form.Item>
           </div>
           <div className="flex justify-between items-center gap-3 mt-4 mb-4">

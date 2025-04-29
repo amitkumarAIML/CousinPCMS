@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Spin, Modal, Input} from 'antd'; // Import antd components
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons'; // Import icons
+import {Spin, Modal, Input} from 'antd';
+import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 
-// Assume these child components exist
 import {Product} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
 import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
@@ -23,7 +22,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const [displayText, setDisplayText] = useState('Click a category to view the product');
   const [loading, setLoading] = useState(false);
   const [categoryAttriIsVisible, setCategoryAttriIsVisible] = useState(false);
-  const [categoryData, setCategoryData] = useState({}); // Data for attribute modal
+  const [categoryData, setCategoryData] = useState({});
   const [searchValue, setSearchValue] = useState('');
   const notify = useNotification();
   const navigate = useNavigate();
@@ -39,7 +38,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     }
 
     setLoading(true);
-    setDisplayText(''); // Clear display text while loading
+    setDisplayText('');
 
     try {
       const [productListResponse, attributeListResponse] = await Promise.all([getProductListByCategoryId(selectedCategory), getDistinctAttributeSetsByCategoryId(selectedCategory)]);
@@ -55,8 +54,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       let currentAttributeSets: AttributeSetModel[] = [];
       if (attributeListResponse.isSuccess && attributeListResponse.value) {
         currentAttributeSets = attributeListResponse.value;
-      } else {
-        // notify.error('Failed to load attribute sets');
       }
 
       const combinedData: (Product | AttributeSetModel)[] = [...(Array.isArray(currentProducts) ? currentProducts : []), ...(Array.isArray(currentAttributeSets) ? currentAttributeSets : [])];
@@ -78,15 +75,13 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
         else setDisplayText('');
       }
 
-      // Re-select product from session storage if it exists after data loads
       const persistedProductId = sessionStorage.getItem('productId');
       if (persistedProductId) {
         const numProductId = Number(persistedProductId);
-        // Ensure the persisted product is actually in the newly loaded list
+
         if (currentProducts.some((p) => p.akiProductID === numProductId)) {
           setSelectedProduct(numProductId);
         } else {
-          // Product ID from session storage is not in the current category's list
           sessionStorage.removeItem('productId');
           setSelectedProduct(undefined);
         }
@@ -103,7 +98,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchValue, notify]); // Re-run fetch if category or search changes (search handled internally now)
+  }, [selectedCategory, searchValue, notify]);
 
   useEffect(() => {
     const persistedProductId = sessionStorage.getItem('productId');
@@ -116,18 +111,16 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       sessionStorage.removeItem('productId');
     }
 
-    fetchData(); // fetch when category changes
+    fetchData();
 
     if (selectedCategory) {
       sessionStorage.setItem('CategoryId', selectedCategory);
     } else {
-      // sessionStorage.removeItem('CategoryId');
       setProducts([]);
       setDisplayText('Click a category to view the product');
     }
   }, [selectedCategory, fetchData]);
 
-  // --- Search Handling ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
@@ -159,7 +152,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     else setDisplayText('');
   };
 
-  // --- Event Handlers ---
   const handleProductClick = (product: Product) => {
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
@@ -170,7 +162,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
 
   const handleAttributeSetClick = (attributeSet: AttributeSetModel) => {
     if (!attributeSet || !attributeSet.akiCategoryID) return;
-    setSelectedProduct(attributeSet.akiCategoryID); // Using akiCategoryID for selection highlight
+    setSelectedProduct(attributeSet.akiCategoryID);
     setCategoryData(attributeSet);
     sessionStorage.removeItem('productId');
     onProductSelected(undefined);
@@ -183,26 +175,23 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       notify.error('Please select a product name from the list to edit.');
       return;
     }
-    // Pass product data to the ProductForm modal for editing
+
     navigate('/products/edit');
-    setCategoryData(productToEdit); // Re-using categoryData state, maybe rename?
+    setCategoryData(productToEdit);
   };
 
   const handleAddProduct = () => {
     navigate('/products/add');
   };
 
-  // --- Modal Handlers ---
   const handleAttributeModalCancel = () => {
     setCategoryAttriIsVisible(false);
   };
 
-  // --- Rendering ---
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
 
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
-      {/* Header */}
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Product Name</span>
@@ -218,7 +207,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
         </div>
       </div>
 
-      {/* Product List */}
       <Spin spinning={loading}>
         <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
           {filteredData && filteredData.length > 0 ? (
@@ -255,7 +243,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
         </div>
       </Spin>
 
-      {/* Category Attributes Modal */}
       <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
         {categoryData && <CategoryAttribute categoryData={categoryData} />}
       </Modal>

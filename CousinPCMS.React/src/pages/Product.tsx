@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import {useNotification} from '../contexts.ts/useNotification';
 import SKUsList from '../components/product/SKUsList';
 
-const Product: React.FC = () => {
+const Product = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
   const [loading] = useState<boolean>(false);
   const navigate = useNavigate();

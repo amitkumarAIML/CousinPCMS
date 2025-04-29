@@ -1,5 +1,3 @@
-// char-limit.constant.ts
-
 export const CategoryCharLimit = {
     akiCategoryName: 100,
     akiCategoryImageURL: 255

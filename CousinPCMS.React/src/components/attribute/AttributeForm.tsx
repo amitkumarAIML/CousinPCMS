@@ -9,7 +9,7 @@ import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
 import {AttributeFormCharLimit} from '../../models/char.constant';
 
-const AttributeForm: React.FC = () => {
+const AttributeForm = () => {
   const [form] = Form.useForm<AttributeRequestModel>();
   const navigate = useNavigate();
 
@@ -44,7 +44,7 @@ const AttributeForm: React.FC = () => {
             showAsCategory: details.showAsCategory,
           });
         } else {
-          notify.error(response.exceptionInformation || 'Failed to load attribute details.');
+          notify.error('Failed to load attribute details.');
         }
       } catch {
         notify.error('Error loading attribute details.');
@@ -65,7 +65,7 @@ const AttributeForm: React.FC = () => {
           setAttributesValues(response.value);
         } else {
           setAttributesValues([]);
-          notify.error(response.exceptionInformation || 'Failed to load attribute values.');
+          notify.error('Failed to load attribute values.');
         }
       } catch {
         notify.error('Error loading attribute values.');
@@ -186,7 +186,7 @@ const AttributeForm: React.FC = () => {
             .trim() ||
           response.exceptionInformation ||
           `Failed to ${isEdit ? 'update' : 'add'} attribute.`;
-        notify.error(message);
+        notify.error(String(message || 'Failed to save attribute.'));
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo && Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields)) {

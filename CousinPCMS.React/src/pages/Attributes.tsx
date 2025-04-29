@@ -11,7 +11,7 @@ interface AttributeItem extends AttributeModel {
   key: string;
 }
 
-const Attributes: React.FC = () => {
+const Attributes = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
   const [attributeList, setAttributeList] = useState<AttributeItem[]>([]);
@@ -29,7 +29,7 @@ const Attributes: React.FC = () => {
         }));
         setAttributeList(dataWithKeys);
       } else {
-        notify.error(response.exceptionInformation || 'Failed to load attributes.');
+        notify.error('Failed to load attributes.');
         setAttributeList([]);
       }
     } catch (error) {

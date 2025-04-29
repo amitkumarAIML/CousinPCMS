@@ -1,10 +1,9 @@
 import {useState, useEffect} from 'react';
 import {Table, Checkbox, Spin} from 'antd';
-import {CaretRightOutlined} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
-import {getSkuItemById} from '../../services/SkusService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
+import {getSkuByProductId} from '../../services/HomeService';
 
 const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -23,7 +22,7 @@ const SKUsList = () => {
       setLoading(true);
       setSelectedRow(null);
       try {
-        const data: SkuListResponse = await getSkuItemById(String(productId));
+        const data: SkuListResponse = await getSkuByProductId(Number(productId));
         if (data.isSuccess && data.value) {
           const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive);
           setSkusList(activeSkus);
@@ -53,11 +52,6 @@ const SKUsList = () => {
   };
 
   const columns: TableProps<SKuList>['columns'] = [
-    {
-      key: 'select',
-      width: 40,
-      render: (_, record) => (selectedRow?.akiitemid === record.akiitemid ? <CaretRightOutlined style={{fontSize: '16px', color: '#1890ff'}} /> : null),
-    },
     {title: 'SkuName', dataIndex: 'skuName', width: 200, ellipsis: true},
     {title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef', ellipsis: true},
     {title: 'ITEM_NUMBER', dataIndex: 'akiitemid'},

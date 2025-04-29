@@ -102,7 +102,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     node: CustomTreeDataNode | null;
   }>({visible: false, x: 0, y: 0, node: null});
 
-  // Hide context menu on click elsewhere
   useEffect(() => {
     const handleClick = () => setContextMenu((cm) => (cm.visible ? {...cm, visible: false} : cm));
     if (contextMenu.visible) {
@@ -111,7 +110,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     return () => window.removeEventListener('click', handleClick);
   }, [contextMenu.visible]);
 
-  // Right-click handler for tree nodes
   const onRightClick = useCallback((info: {event: React.MouseEvent; node: EventDataNode<DataNode>}) => {
     setContextMenu({
       visible: true,
@@ -122,7 +120,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     onSelect([info.node.key], info);
   }, []);
 
-  // Context menu click handler
   const handleMenuClick = useCallback(
     (e: {key: string}) => {
       if (!contextMenu.node) return;
@@ -144,18 +141,15 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     [contextMenu.node, navigate]
   );
 
-  // Build context menu items based on node type/level
   const getMenuItems = () => {
     if (!contextMenu.node) return [];
     if (contextMenu.node.dataType === 'department') {
-      // 1st parent level
       return [
         {key: 'add-department', icon: <PlusOutlined />, label: 'Add Department'},
         {key: 'edit-department', icon: <EditOutlined />, label: 'Edit Department'},
         {key: 'add-category', icon: <PlusOutlined />, label: 'Add Category'},
       ];
     } else if (contextMenu.node.dataType === 'category') {
-      // inner level
       return [
         {key: 'edit-category', icon: <EditOutlined />, label: 'Edit Category'},
         {key: 'add-sub-category', icon: <PlusOutlined />, label: 'Add Sub Category'},
@@ -244,12 +238,13 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       try {
         const response = await getDepartments();
         if (response?.isSuccess && Array.isArray(response.value)) {
-          const deptNodes: CustomTreeDataNode[] = response.value.map((dept: Department) => ({
+          const departments = response.value.filter((res: Department) => res.akiDepartmentIsActive);
+          const deptNodes: CustomTreeDataNode[] = departments.map((dept: Department) => ({
             key: `dept-${dept.akiDepartmentID}`,
             title: (
               <span>
                 <PartitionOutlined style={{marginRight: 6}} />
-                {dept.akiDepartmentName}
+                {dept.akiDepartmentName.toUpperCase()}
               </span>
             ),
             id: dept.akiDepartmentID,
@@ -309,7 +304,8 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
         .then((response) => {
           let categoryNodes: CustomTreeDataNode[] = [];
           if (response?.isSuccess && Array.isArray(response.value)) {
-            categoryNodes = buildCategoryTree(response.value, selectedKeys);
+            const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive);
+            categoryNodes = buildCategoryTree(categories, selectedKeys);
           } else {
             message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
           }
@@ -382,12 +378,10 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
           item = resetTitle(item);
         });
       } else {
-        // Drop between nodes
         let ar: CustomTreeDataNode[] = [];
         let i: number = -1;
         let targetNodeParentChildren: CustomTreeDataNode[] | null = null;
 
-        // Find drop target node's location
         const findDropLocation = (nodes: CustomTreeDataNode[], key: React.Key): boolean => {
           for (let index = 0; index < nodes.length; index++) {
             if (nodes[index].key === key) {

@@ -48,8 +48,6 @@ export interface ProductRequest {
     akiProductIndexText4: string;
     akiProductIndexText5: string;
     categoryName: string;
-
-    // akiProductDescription: string;
     akiProductText: string;
 
 }
@@ -59,7 +57,7 @@ export interface ProductResponse {
     value: Product[];
     isSuccess: boolean;
     isError: boolean;
-    exceptionInformation: any;
+    exceptionInformation: unknown;
 }
 
 
@@ -73,7 +71,7 @@ export interface ProductUpdateResponse {
     value: Product;
     isSuccess: boolean;
     isError: boolean;
-    exceptionInformation: any;
+    exceptionInformation: unknown;
 }
 export interface AssociatedProductRequestModelForProduct{
     product?:number;
@@ -98,5 +96,5 @@ export interface AdditionalProductModel {
     value: AdditionalProductModel[];
     isSuccess: boolean;
     isError: boolean;
-    exceptionInformation: any;
+    exceptionInformation: unknown;
   }

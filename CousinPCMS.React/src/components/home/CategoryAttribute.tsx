@@ -9,7 +9,7 @@ import {ApiResponse} from '../../models/generalModel';
 
 interface CategoryAttributeProps {
   categoryData: any;
-  eventComplete?: (event: any) => void;
+  eventComplete?: (event: 'ok' | 'cancel') => void;
 }
 
 const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, eventComplete}) => {
@@ -27,7 +27,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
 
   const notify = useNotification();
 
-  // Fetch attribute sets and attributes when categoryData changes
   useEffect(() => {
     if (categoryData) {
       let attributeSetName = '';
@@ -51,7 +50,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     }
   }, [categoryData]);
 
-  // Fetch all attributes
   const fetchAllAttributes = useCallback(
     (attributeSets?: AttributeSetModel[]) => {
       setIsAttributeloading(true);
@@ -63,7 +61,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             const existingIds = sets.map((a) => a.attributeName);
             filtered = filtered.filter((a: any) => !existingIds.includes(a.attributeName));
           }
-          console.log('Filtered attributes:', filtered); // Debug log
           setAttributeList(filtered);
           setFilteredData(filtered);
         } else {
@@ -75,7 +72,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     [lstAllAttributeSets, notify]
   );
 
-  // Fetch attribute sets by name
   const fetchAttributeSetsByAttributeSetName = useCallback(
     (attributeSetName: string) => {
       setIsAttributeSetloading(true);
@@ -83,7 +79,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
         .then((response: ApiResponse<AttributeSetModel[]>) => {
           if (response.isSuccess && Array.isArray(response.value)) {
             setLstAllAttributeSets(response.value);
-            fetchAllAttributes(response.value); // Pass new data here
+            fetchAllAttributes(response.value);
           } else {
             notify.error('Failed to load attribute sets');
             setLstAllAttributeSets([]);
@@ -92,7 +88,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           setIsAttributeSetloading(false);
         })
         .catch((error) => {
-          console.error('Error fetching attribute sets:', error); // Debug log
+          console.error('Error fetching attribute sets:', error);
           setIsAttributeSetloading(false);
           setLstAllAttributeSets([]);
           fetchAllAttributes([]);
@@ -102,7 +98,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     [fetchAllAttributes, notify]
   );
 
-  // Add attribute data to form
   const addAttributeData = (data: AttributeModel) => {
     setCategoryAttriIsVisible(true);
     setIsEditable(false);
@@ -124,7 +119,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     });
   };
 
-  // Delete attribute set
   const handleDeleteAttributeSet = (item: AttributeSetModel) => {
     deleteAttributeSets(item.attributeName, item.attributeSetName).then((response: any) => {
       if (response.isSuccess) {
@@ -136,7 +130,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     });
   };
 
-  // Save attribute set
   const saveAttributeSets = () => {
     form
       .validateFields()
@@ -154,18 +147,14 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           }
         });
       })
-      .catch(() => {
-        // Validation error
-      });
+      .catch(() => {});
   };
 
-  // Cancel modal
   const handleCancel = () => {
     setCategoryAttriIsVisible(false);
     if (eventComplete) eventComplete('cancel');
   };
 
-  // Edit attribute set
   const editAttributeSet = (row: AttributeSetModel, index: number) => {
     setCategoryAttriIsVisible(true);
     setCurrentRowIndex(index);
@@ -215,12 +204,9 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           }
         });
       })
-      .catch(() => {
-        // Validation error
-      });
+      .catch(() => {});
   };
 
-  // Table columns
   const columns = [
     {title: 'Attribute Name', dataIndex: 'attributeName', width: 200},
     {title: 'Required', dataIndex: 'attributeRequired', width: 40, render: (val: boolean) => <Checkbox checked={val} disabled />},
@@ -265,7 +251,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
 
   return (
     <div className="p-1">
-      {/* Attribute Set Form */}
       <Form form={form} layout="vertical">
         <div className="grid grid-cols-12 gap-4 py-2">
           <div className="col-span-12 sm:col-span-5">
@@ -280,7 +265,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           </div>
         </div>
       </Form>
-      {/* Attribute Set Modal */}
+
       <Modal open={categoryAttriIsVisible} title="Attribute Details" onCancel={handleCancel} footer={null} width={500} centered destroyOnClose>
         <Spin spinning={isAttributeSetloading}>
           <Form form={form} layout="vertical" className="p-2">
@@ -317,7 +302,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           </Form>
         </Spin>
       </Modal>
-      {/* Attribute Grid */}
+
       <div className="grid grid-cols-6 gap-4 py-2">
         <div className="col-span-6 sm:col-span-4">
           <Table columns={columns} dataSource={lstAllAttributeSets} rowKey="attributeName" bordered size="small" loading={isAttributeSetloading} pagination={false} />

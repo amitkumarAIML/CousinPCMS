@@ -1,83 +1,71 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {Input, Table, Checkbox, Spin, Form} from 'antd'; // Added Form for layout consistency
+import {Input, Table, Checkbox, Spin, Form} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 
-// --- Import Services and Types ---
-import { getRelatedSkuItem } from '../../services/SkusService';
-import { useNotification } from '../../contexts.ts/useNotification';
+import {getRelatedSkuItem} from '../../services/SkusService';
+import {useNotification} from '../../contexts.ts/useNotification';
 
-// Define interface for the main SKU data prop
 interface MainSkuData {
   skuName: string;
   akiSKUID: number | string;
-  akiitemid: string; // Item Number used for fetching related
-  // Add other fields if needed by this component (likely not)
+  akiitemid: string;
 }
 
-// Define interface for the related SKU list items (adjust based on actual API response)
 interface RelatedSkuItem {
   relatedItemNo: string;
   relationType: string;
   relatedSKUName: string;
   itemManufactureRef: string;
-  itemNo: string; // Assuming this is the ITEM_NUMBER of the related SKU
+  itemNo: string;
   itemObsolte: boolean;
-  itemIsUnavailable: boolean; // Maps to salesBlocked? Check API/model
-  // Add a unique key if available, otherwise use relatedItemNo or itemNo
+  itemIsUnavailable: boolean;
+
   key?: string | number;
 }
 
-// --- Component Props ---
 interface RelatedSkuProps {
-  skuData: MainSkuData | null; // Accept main SKU data from parent
+  skuData: MainSkuData | null;
 }
 
 const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
   const notify = useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [relatedSkusList, setRelatedSkusList] = useState<RelatedSkuItem[]>([]); // Master list
-  // Display state for top inputs (derived from props)
+  const [relatedSkusList, setRelatedSkusList] = useState<RelatedSkuItem[]>([]);
+
   const [displaySkuName, setDisplaySkuName] = useState<string>('');
   const [displaySkuId, setDisplaySkuId] = useState<number | string>('');
 
-  // --- Effects ---
-
-  // Effect to update display fields and fetch related SKUs when main skuData changes
   useEffect(() => {
     if (skuData) {
       setDisplaySkuName(skuData.skuName || '');
-      setDisplaySkuId(skuData.akiSKUID || ''); // Use internal ID if available
+      setDisplaySkuId(skuData.akiSKUID || '');
 
       const itemNumber = skuData.akiitemid;
       if (itemNumber) {
-        // Defer calling loadRelatedSku until after its declaration
         setTimeout(() => loadRelatedSku(itemNumber), 0);
       } else {
         console.warn('Related SKUs: Main SKU Item Number is missing.');
-        setRelatedSkusList([]); // Clear list if no item number
+        setRelatedSkusList([]);
       }
     } else {
-      // Clear everything if skuData is null
       setDisplaySkuName('');
       setDisplaySkuId('');
       setRelatedSkusList([]);
       setSearchValue('');
     }
-  }, [skuData]); // Do not add loadRelatedSku to avoid use-before-assign
+  }, [skuData]);
 
-  // --- Data Fetching ---
   const loadRelatedSku = async (itemNumber: string) => {
     setLoading(true);
-    setRelatedSkusList([]); // Clear previous results
+    setRelatedSkusList([]);
     try {
       const response = await getRelatedSkuItem(itemNumber);
       if (response.isSuccess && response.value) {
-        // Convert ItemModel[] to RelatedSkuItem[] by mapping fields if possible
         const dataWithKeys = (response.value as unknown as RelatedSkuItem[]).map((item: RelatedSkuItem) => ({
           ...item,
-          key: item.itemNo || item.relatedItemNo, // Fallback key
+          key: item.itemNo || item.relatedItemNo,
         }));
         setRelatedSkusList(dataWithKeys);
       } else {
@@ -92,11 +80,10 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
     }
   };
 
-  // --- Filtering Logic (using useMemo for efficiency) ---
   const filteredSkusList = useMemo(() => {
     const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
     if (!normalizedSearch) {
-      return relatedSkusList; // Return full list if search is empty
+      return relatedSkusList;
     }
 
     const normalize = (str: string | undefined | null) => str?.toLowerCase().replace(/\s/g, '') || '';
@@ -109,9 +96,8 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
         normalize(item.itemManufactureRef).includes(normalizedSearch) ||
         normalize(item.itemNo).includes(normalizedSearch)
     );
-  }, [searchValue, relatedSkusList]); // Recalculate only when search or master list changes
+  }, [searchValue, relatedSkusList]);
 
-  // --- Event Handlers ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
@@ -120,13 +106,12 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
     setSearchValue('');
   };
 
-  // --- Table Column Definition ---
   const columns: TableProps<RelatedSkuItem>['columns'] = [
     {title: 'Related', dataIndex: 'relatedItemNo', width: 200},
     {title: 'RelationType', dataIndex: 'relationType', ellipsis: true},
     {title: 'RelatedSkuName', dataIndex: 'relatedSKUName', ellipsis: true},
     {title: 'ManufacturerRef', dataIndex: 'itemManufactureRef', ellipsis: true},
-    {title: 'ITEM_NUMBER', dataIndex: 'itemNo'}, // ITEM_NUMBER of the *related* item
+    {title: 'ITEM_NUMBER', dataIndex: 'itemNo'},
     {
       title: 'Obsolete',
       dataIndex: 'itemObsolte',
@@ -136,7 +121,7 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
     },
     {
       title: 'Unavailable',
-      dataIndex: 'itemIsUnavailable', // Assuming this maps correctly
+      dataIndex: 'itemIsUnavailable',
       width: 100,
       align: 'center',
       render: (isUnavailable) => <Checkbox checked={isUnavailable} disabled />,
@@ -145,15 +130,9 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
 
   return (
     <div>
-      
-      {/* Match parent padding */}
-      {/* Search and Display Area */}
-      {/* Using Antd Form components for consistent layout/styling */}
       <Form layout="vertical" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-x-3 items-end">
           <Form.Item label="Search" className="md:col-span-2 mb-0">
-            
-            {/* Adjust span */}
             <Input
               placeholder="Search related SKUs..."
               value={searchValue}
@@ -161,31 +140,18 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
               suffix={searchValue ? <CloseCircleFilled onClick={clearSearchText} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />}
             />
           </Form.Item>
-          {/* Spacer column if needed */}
-          {/* <div className="hidden md:block md:col-span-1"></div> */}
+
           <Form.Item label="Sku Name" className="md:col-span-2 mb-0">
-            
-            {/* Adjust span */}
             <Input value={displaySkuName} disabled />
           </Form.Item>
           <Form.Item label="Sku ID" className="md:col-span-1 mb-0">
-            
-            {/* Label added for consistency */}
             <Input value={displaySkuId} disabled />
           </Form.Item>
         </div>
       </Form>
-      {/* Related SKUs Table */}
+
       <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={filteredSkusList}
-          rowKey="key" // Use the key assigned during fetch
-          size="small"
-          bordered
-          pagination={false} // Matches nzShowPagination="false"
-          className="related-skus-table" // Add specific class if needed
-        />
+        <Table columns={columns} dataSource={filteredSkusList} rowKey="key" size="small" bordered pagination={false} className="related-skus-table" />
       </Spin>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {useNavigate} from 'react-router';
 import {Tabs, Button, Spin} from 'antd';
 import type {FormInstance} from 'antd/es/form';
@@ -10,7 +10,7 @@ import {useNotification} from '../contexts.ts/useNotification';
 import type {SKuList, SkuRequestModel} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
 
-const SKUs: React.FC = () => {
+const SKUs = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
   const [loading, setLoading] = useState<boolean>(true);
   const [btnSaveLoading, setBtnSaveLoading] = useState<boolean>(false);
@@ -31,7 +31,7 @@ const SKUs: React.FC = () => {
         if (response.isSuccess && response.value && response.value.length > 0) {
           setSkuData(response.value[0]);
         } else {
-          notify.error(response.exceptionInformation || 'Failed To Load SKU Data');
+          notify.error('Failed To Load SKU Data');
           setSkuData(null);
         }
       } catch (err: unknown) {
@@ -61,7 +61,6 @@ const SKUs: React.FC = () => {
     } else {
       notify.error('SKU Item Number not found. Please select an SKU.');
       setLoading(false);
-      // navigate('/home');
     }
   }, [navigate, notify, fetchSkuByItemNumber]);
 
@@ -98,10 +97,9 @@ const SKUs: React.FC = () => {
         notify.success('SKU Details Updated Successfully');
         navigate('/home');
       } else {
-        notify.error(response.exceptionInformation || 'SKU Details Update Failed');
+        notify.error('SKU Details Update Failed');
       }
     } catch (errorInfo: unknown) {
-      console.log('Validation Failed:', errorInfo);
       if (
         errorInfo &&
         typeof errorInfo === 'object' &&

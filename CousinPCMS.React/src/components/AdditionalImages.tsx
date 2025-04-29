@@ -9,7 +9,7 @@ import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImages
 import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
 
-const AdditionalImages: React.FC = () => {
+const AdditionalImages = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -26,42 +26,45 @@ const AdditionalImages: React.FC = () => {
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
   const notify = useNotification();
 
-  const fetchImages = useCallback(async (id: string | number, type: 'product' | 'category' | 'sku') => {
-    setLoadingData(true);
-    setFileList([]);
-    setDisplayText('');
-    try {
-      let response: ApiResponse<AdditionalImagesModel[]>;
-      switch (type) {
-        case 'product':
-          response = await getProductAdditionalImages(String(id));
-          break;
-        case 'category':
-          response = await getCategoryAdditionalImages(String(id));
-          break;
-        case 'sku':
-          response = await getSkuAdditionalImages(String(id));
-          break;
-        default:
-          throw new Error('Invalid context type');
-      }
-      if (response.isSuccess && response.value) {
-        setFileList(response.value);
-        if (response.value.length === 0) {
-          setDisplayText('No additional images found.');
+  const fetchImages = useCallback(
+    async (id: string | number, type: 'product' | 'category' | 'sku') => {
+      setLoadingData(true);
+      setFileList([]);
+      setDisplayText('');
+      try {
+        let response: ApiResponse<AdditionalImagesModel[]>;
+        switch (type) {
+          case 'product':
+            response = await getProductAdditionalImages(String(id));
+            break;
+          case 'category':
+            response = await getCategoryAdditionalImages(String(id));
+            break;
+          case 'sku':
+            response = await getSkuAdditionalImages(String(id));
+            break;
+          default:
+            throw new Error('Invalid context type');
         }
-      } else {
-        setDisplayText(response.exceptionInformation || 'Failed to load images.');
-        if (response.exceptionInformation) notify.error(response.exceptionInformation);
+        if (response.isSuccess && response.value) {
+          setFileList(response.value);
+          if (response.value.length === 0) {
+            setDisplayText('No additional images found.');
+          }
+        } else {
+          setDisplayText('Failed to load images.');
+          if (response.exceptionInformation) notify.error(String(response.exceptionInformation));
+        }
+      } catch (error) {
+        console.error(`Error fetching images for ${type} ${id}:`, error);
+        setDisplayText('Error loading images.');
+        notify.error('Something went wrong while fetching images.');
+      } finally {
+        setLoadingData(false);
       }
-    } catch (error) {
-      console.error(`Error fetching images for ${type} ${id}:`, error);
-      setDisplayText('Error loading images.');
-      notify.error('Something went wrong while fetching images.');
-    } finally {
-      setLoadingData(false);
-    }
-  }, [notify]);
+    },
+    [notify]
+  );
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -173,7 +176,7 @@ const AdditionalImages: React.FC = () => {
         setFileList((prev) => [...prev, saveData]);
         setShowForm(false);
       } else {
-        notify.error(response.exceptionInformation || 'Failed to add image.');
+        notify.error('Failed to add image.');
       }
     } catch (error) {
       console.error(`Error saving image for ${contextType} ${contextId}:`, error);
@@ -216,7 +219,7 @@ const AdditionalImages: React.FC = () => {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} image successfully deleted.`);
         setFileList((prevList) => prevList.filter((_, i) => i !== index));
       } else {
-        notify.error(response.exceptionInformation || 'Failed to delete image.');
+        notify.error('Failed to delete image.');
       }
     } catch (error) {
       console.error(`Error deleting image for ${contextType} ${contextId}:`, error);

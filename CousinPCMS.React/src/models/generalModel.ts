@@ -7,12 +7,12 @@ export interface APIResult<T> {
 export interface NavItem {
   label: string;
   path: string;
-  keywords?: string[]; // optional
+  keywords?: string[];
 }
 
 export interface ApiResponse<T> {
   isSuccess: boolean;
   isError: boolean;
-  exceptionInformation: any;
+  exceptionInformation: unknown;
   value: T;
 }

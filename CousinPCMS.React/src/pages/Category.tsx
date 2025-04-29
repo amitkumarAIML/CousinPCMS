@@ -24,7 +24,7 @@ interface TableParams {
   filters?: Record<string, FilterValue | null>;
 }
 
-const Category: React.FC = () => {
+const Category = () => {
   const [categoryForm] = Form.useForm<UpdateCategoryModel & {additionalImages?: string; urlLinks?: string}>();
   const [editAssociatedProductForm] = Form.useForm<AdditionalCategoryModel>();
   const [addAssociatedProductForm] = Form.useForm<{listorder: number; product: number; productName: string}>();
@@ -91,7 +91,6 @@ const Category: React.FC = () => {
         const response = await getCategoryById(id);
         if (response.isSuccess && response.value && Array.isArray(response.value)) {
           const details = response.value[0];
-          console.log(details);
           setCategoryDetails(details);
           categoryForm.setFieldsValue({
             ...details,
@@ -226,7 +225,7 @@ const Category: React.FC = () => {
         message.success('Category details updated successfully');
         navigate('/home');
       } else {
-        message.error(response.exceptionInformation || 'Category details not updated');
+        message.error('Category details not updated');
       }
     } catch {
       message.error('Something went wrong');
@@ -263,7 +262,7 @@ const Category: React.FC = () => {
         addAssociatedProductForm.resetFields();
         fetchAdditionalCategory(categoryId);
       } else {
-        message.error(response.exceptionInformation || 'Associated product not added');
+        message.error('Associated product not added');
       }
     } catch {
       message.error('Something went wrong');
@@ -300,7 +299,7 @@ const Category: React.FC = () => {
         setEditingId(null);
         fetchAdditionalCategory(categoryId!);
       } else {
-        message.error(response.exceptionInformation || 'Associated product not updated');
+        message.error('Associated product not updated');
       }
     } catch (error) {
       if ((error as {errorFields?: unknown}).errorFields) return;
@@ -322,8 +321,8 @@ const Category: React.FC = () => {
   const handleProductSelect = (record: ProductSearchResult) => {
     addAssociatedProductForm.setFieldsValue({
       listorder: addAssociatedProductForm.getFieldValue('listorder'),
-      product: record.akiProductID, // Hidden field for ID
-      productName: record.akiProductName, // Visible field for name
+      product: record.akiProductID,
+      productName: record.akiProductName,
     });
     message.success(`Selected: ${record.akiProductName}`);
   };
@@ -419,7 +418,7 @@ const Category: React.FC = () => {
       title: 'Product Name',
       dataIndex: 'akiProductName',
       render: (text, record) => (
-        <a onClick={() => handleProductSelect(record)} className="text-primary-theme hover:text-primary-theme-hover cursor-pointer">
+        <a onClick={() => handleProductSelect(record)} className="text-primary-theme cursor-pointer">
           {text}
         </a>
       ),

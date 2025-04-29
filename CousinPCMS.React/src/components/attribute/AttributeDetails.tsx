@@ -1,53 +1,43 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Form,
-  Input,
-  Select,
-  Checkbox,
-  Button,
-  Table,
-  Modal,
-  Spin,
-  Popconfirm
-} from 'antd';
-import { SearchOutlined, CloseCircleFilled, EditOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { addAttributes, updateAttributes, deleteAttributesValues, getAttributeValuesByAttributesName } from '../../services/AttributesService';
-import type { TableProps } from 'antd';
-import type { AttributeRequestModel, AttributeValueModel } from '../../models/attributesModel';
-// import notification utility if needed, or use Antd notification directly
-import { notification } from 'antd';
+import React, {useState, useMemo, useCallback} from 'react';
+import {useNavigate} from 'react-router';
+import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin, Popconfirm} from 'antd';
+import {SearchOutlined, CloseCircleFilled, EditOutlined, DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import {addAttributes, updateAttributes, deleteAttributesValues, getAttributeValuesByAttributesName} from '../../services/AttributesService';
+import type {TableProps} from 'antd';
+import type {AttributeRequestModel, AttributeValueModel} from '../../models/attributesModel';
+
+import {notification} from 'antd';
 import AttributeValuesPopup from './AttributeValuesPopup';
 
-// Interface for form values
 interface AttributeDetailsFormData extends Omit<AttributeRequestModel, 'showAsCategory'> {
   showAsCategory?: boolean;
 }
 
-// Fix AttributeValueItem type to match AttributeValueModel
 interface AttributeValueItem extends AttributeValueModel {
   key: string;
   id?: number;
 }
 
-const AttributesDetails: React.FC = () => {
+const searchType: {code: string; description: string}[] = [
+  {code: 'TYPE1', description: 'Type 1'},
+  {code: 'TYPE2', description: 'Type 2'},
+];
+
+const AttributesDetails = () => {
   const [form] = Form.useForm<AttributeDetailsFormData>();
   const navigate = useNavigate();
 
-  // --- State Variables ---
-  const [btnLoading, setBtnLoading] = useState<boolean>(false); // Save/Update button loading
-  const [tableLoading, setTableLoading] = useState<boolean>(false); // Table loading specifically
-  const [searchValue, setSearchValue] = useState<string>(''); // Search for values table
-  const [attributesValues, setAttributesValues] = useState<AttributeValueItem[]>([]); // Master list of values
+  const [btnLoading, setBtnLoading] = useState<boolean>(false);
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [attributesValues, setAttributesValues] = useState<AttributeValueItem[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [attributeName, setAttributeName] = useState<string>('');
   const [isAttributeNameDisabled, setIsAttributeNameDisabled] = useState<boolean>(false);
   const [isValueModalVisible, setIsValueModalVisible] = useState<boolean>(false);
   const [isNewValueBtnDisabled, setIsNewValueBtnDisabled] = useState<boolean>(true);
-  // State to hold data for the value being edited in the modal
-  const [valueDataForModal, setValueDataForModal] = useState<AttributeValueModel | null>(null);
 
-  // --- Effects ---
+  const [valueDataForModal, setValueDataForModal] = useState<AttributeValueModel | null>(null);
 
   const fetchAttributeValues = useCallback(async (name: string) => {
     if (!name) {
@@ -74,39 +64,39 @@ const AttributesDetails: React.FC = () => {
     }
   }, []);
 
-  // --- Filtering ---
   const filteredData = useMemo(() => {
     const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
     if (!normalizedSearch) return attributesValues;
     const normalize = (str: string | undefined | null) => str?.toLowerCase().replace(/\s/g, '') || '';
-    return attributesValues.filter((item) => normalize((item as AttributeValueModel).attributeName).includes(normalizedSearch) || normalize((item as AttributeValueModel).attributeValue).includes(normalizedSearch));
+    return attributesValues.filter(
+      (item) => normalize((item as AttributeValueModel).attributeName).includes(normalizedSearch) || normalize((item as AttributeValueModel).attributeValue).includes(normalizedSearch)
+    );
   }, [searchValue, attributesValues]);
 
-  // --- Event Handlers ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value);
   const clearSearchText = () => setSearchValue('');
 
   const handleCancel = () => {
-    setIsEdit(false); // Reset edit state if needed
+    setIsEdit(false);
     sessionStorage.removeItem('attributeName');
     navigate('/attributes');
   };
 
   const showAddValueModal = () => {
-    setValueDataForModal(null); // Ensure it's an "Add" modal
+    setValueDataForModal(null);
     setIsValueModalVisible(true);
   };
 
   const showEditValueModal = (record: AttributeValueItem) => {
-    setValueDataForModal(record); // Pass existing data for editing
+    setValueDataForModal(record);
     setIsValueModalVisible(true);
   };
 
   const handleValueModalClose = (reason: 'save' | 'cancel') => {
     setIsValueModalVisible(false);
-    setValueDataForModal(null); // Clear edit data
+    setValueDataForModal(null);
     if (reason === 'save' && attributeName) {
-      fetchAttributeValues(attributeName); // Refetch values after save/update
+      fetchAttributeValues(attributeName);
     }
   };
 
@@ -114,10 +104,10 @@ const AttributesDetails: React.FC = () => {
     setBtnLoading(true);
     try {
       const values = await form.validateFields();
-      // Use state for name in edit mode, form value in add mode
+
       const currentAttributeName = isEdit ? attributeName : values.attributeName;
       if (!currentAttributeName) {
-        throw new Error('Attribute Name is missing.'); // Should be caught by validation anyway
+        throw new Error('Attribute Name is missing.');
       }
 
       const payload: AttributeRequestModel = {
@@ -125,24 +115,20 @@ const AttributesDetails: React.FC = () => {
         attributeName: currentAttributeName,
         showAsCategory: !!values.showAsCategory,
       };
-      // const cleanedPayload = dataService.cleanEmptyNullToString(payload); // Apply cleaning if needed
 
       const response = isEdit ? await updateAttributes(payload) : await addAttributes(payload);
 
       if (response.isSuccess) {
-        notification.success({ message: '', description: `Attribute ${isEdit ? 'updated' : 'added'} successfully.` });
+        notification.success({message: '', description: `Attribute ${isEdit ? 'updated' : 'added'} successfully.`});
         if (!isEdit) {
           setIsEdit(true);
           setAttributeName(currentAttributeName);
           setIsAttributeNameDisabled(true);
           setIsNewValueBtnDisabled(false);
           sessionStorage.setItem('attributeName', currentAttributeName);
-          // No need to refetch values yet as none exist for a new attribute
-          setAttributesValues([]); // Ensure values list is empty
-          notification.info({ message: '', description: 'You can now add values.' });
-        } else {
-          // Optionally refetch details if update might change something displayed
-          // fetchAttributeDetails(currentAttributeName);
+
+          setAttributesValues([]);
+          notification.info({message: '', description: 'You can now add values.'});
         }
       } else {
         const message =
@@ -152,46 +138,44 @@ const AttributesDetails: React.FC = () => {
             .trim() ||
           response.exceptionInformation ||
           `Failed to ${isEdit ? 'update' : 'add'} attribute.`;
-        notification.error({ message: '', description: message });
+        notification.error({message: 'Error', description: String(message || 'An error occurred.')});
       }
     } catch (errorInfo) {
       if (errorInfo && typeof errorInfo === 'object' && 'errorFields' in errorInfo) {
-        notification.error({ message: 'Validation Error', description: 'Please fill in all required fields.' });
+        notification.error({message: 'Validation Error', description: 'Please fill in all required fields.'});
       } else {
-        notification.error({ message: 'Error', description: 'An unexpected error occurred.' });
+        notification.error({message: 'Error', description: 'An unexpected error occurred.'});
       }
     } finally {
       setBtnLoading(false);
     }
   };
 
-  // Fix handleDeleteAttributeValue property access
   const handleDeleteAttributeValue = async (record: AttributeValueItem) => {
     setTableLoading(true);
     try {
       const response = await deleteAttributesValues(record.attributeName, record.attributeValue);
       if (response.isSuccess) {
         setAttributesValues((prev) => prev.filter((item) => item.key !== record.key));
-        notification.success({ message: '', description: 'Attribute Value Successfully Deleted' });
+        notification.success({message: '', description: 'Attribute Value Successfully Deleted'});
       }
     } catch (err) {
-      if (err && typeof err === 'object' && 'error' in (err as Record<string, unknown>) && (err as { error?: { title?: string } }).error?.title) {
-        notification.error({ message: '', description: (err as { error?: { title?: string } }).error?.title || '' });
+      if (err && typeof err === 'object' && 'error' in (err as Record<string, unknown>) && (err as {error?: {title?: string}}).error?.title) {
+        notification.error({message: '', description: (err as {error?: {title?: string}}).error?.title || ''});
       } else {
-        notification.error({ message: 'Error', description: 'Something went wrong during deletion.' });
+        notification.error({message: 'Error', description: 'Something went wrong during deletion.'});
       }
     } finally {
       setTableLoading(false);
     }
   };
 
-  // --- Table Columns ---
-  const valueColumns: TableProps<AttributeValueItem>["columns"] = [
-    { key: 'spacer', width: 50, render: () => null },
-    { title: 'Attribute Name', dataIndex: 'attributeName', ellipsis: true },
-    { title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true },
-    { title: 'New Alternate Value', dataIndex: 'newAlternateValue', ellipsis: true },
-    { title: 'Alternate Values', dataIndex: 'alternateValues', ellipsis: true },
+  const valueColumns: TableProps<AttributeValueItem>['columns'] = [
+    {key: 'spacer', width: 50, render: () => null},
+    {title: 'Attribute Name', dataIndex: 'attributeName', ellipsis: true},
+    {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true},
+    {title: 'New Alternate Value', dataIndex: 'newAlternateValue', ellipsis: true},
+    {title: 'Alternate Values', dataIndex: 'alternateValues', ellipsis: true},
     {
       title: 'Action',
       key: 'action',
@@ -199,47 +183,36 @@ const AttributesDetails: React.FC = () => {
       align: 'center',
       render: (_: unknown, record: AttributeValueItem) => (
         <span className="flex justify-center items-center gap-x-3">
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => showEditValueModal(record)}
-            size="small"
-            style={{ padding: '0 5px' }}
-            aria-label={`Edit value ${record.attributeValue}`}
-          />
-          <Popconfirm title="Delete this attribute value?" onConfirm={() => handleDeleteAttributeValue(record)} okText="Yes" cancelText="No" icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-            <Button type="text" icon={<DeleteOutlined />} danger size="small" style={{ padding: '0 5px' }} aria-label={`Delete value ${record.attributeValue}`} />
+          <Button type="link" icon={<EditOutlined />} onClick={() => showEditValueModal(record)} size="small" style={{padding: '0 5px'}} aria-label={`Edit value ${record.attributeValue}`} />
+          <Popconfirm title="Delete this attribute value?" onConfirm={() => handleDeleteAttributeValue(record)} okText="Yes" cancelText="No" icon={<QuestionCircleOutlined style={{color: 'red'}} />}>
+            <Button type="text" icon={<DeleteOutlined />} danger size="small" style={{padding: '0 5px'}} aria-label={`Delete value ${record.attributeValue}`} />
           </Popconfirm>
         </span>
       ),
     },
   ];
 
-  // --- Character Count Logic ---
   const charCount = (fieldName: keyof AttributeDetailsFormData, limit: number) => {
     const value = form.getFieldValue(fieldName) || '';
     return limit - value.length;
   };
 
-  // Add loading state for <Spin spinning={loading}>
   const [loading] = useState<boolean>(false);
 
   return (
     <div className="main-container">
       <Spin spinning={loading}>
-        {/* Header */}
         <div className="flex justify-between items-center p-4 pb-1">
-          <span className="text-lg font-medium text-gray-700">Attribute Form</span>
+          <span className="text-sm font-medium">Attribute Form</span>
           <div className="flex gap-x-3">
             <Button onClick={handleCancel}>Close</Button>
           </div>
         </div>
         <hr className="mt-2 mb-2 border-gray-200" />
-        {/* Form and Table Area */}
+
         <div className="p-4">
           <Form form={form} layout="vertical">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-12 gap-y-0">
-              {/* Left Form Section */}
               <div className="lg:col-span-5 md:col-span-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-end">
                   <Form.Item label="Search Type" name="searchType" rules={[{required: true, message: 'Required'}]} className="mb-3">
@@ -270,18 +243,12 @@ const AttributesDetails: React.FC = () => {
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">{charCount('attributeDescription', 100)}</span>
                   </div>
                 </Form.Item>
-              </div>{' '}
-              {/* End Left Form Section */}
-            </div>{' '}
-            {/* End Form Grid */}
-          </Form>{' '}
-          {/* End Antd Form */}
-          {/* Attribute Values Section */}
+              </div>
+            </div>
+          </Form>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 mt-6">
             <div className="lg:col-span-5 md:col-span-12">
-              {' '}
-              {/* Matches col-span above */}
-              {/* Search and Buttons Row */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 items-end mb-4">
                 <Form layout="vertical" className="md:col-span-2">
                   <Form.Item label="Search Values" className="mb-0">
@@ -304,19 +271,17 @@ const AttributesDetails: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              {/* Values Table */}
+
               <Spin spinning={tableLoading}>
                 <div className="grid grid-cols-1 mt-2">
-                  <Table columns={valueColumns} dataSource={filteredData} rowKey="key" size="small" bordered pagination={false} scroll={{y: 400}} />
+                  <Table columns={valueColumns} dataSource={filteredData} rowKey="key" size="small" bordered pagination={false} />
                 </div>
               </Spin>
             </div>
           </div>
-        </div>{' '}
-        {/* End p-4 container */}
+        </div>
       </Spin>
 
-      {/* Modal for Adding/Editing New Value */}
       <Modal
         title={valueDataForModal ? `Edit Attribute Value: ${valueDataForModal.attributeValue}` : 'Add New Attribute Value'}
         open={isValueModalVisible}

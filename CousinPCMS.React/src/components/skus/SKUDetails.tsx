@@ -61,9 +61,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
         if (response.isSuccess && response.value) {
           setSavedAttributes(response.value);
         } else if (!response.isSuccess && response.exceptionInformation) {
-          notify.warning(response.exceptionInformation);
+          notify.warning(String(response.exceptionInformation));
         }
-        console.log(`No attributes found for category ${categoryId} or request failed.`);
       } catch (error) {
         console.error('Error fetching SKU attributes:', error);
         notify.error('Failed to load SKU attributes.');
@@ -131,9 +130,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     const file = info.file?.originFileObj;
     if (file) {
       form.setFieldsValue({akiImageURL: file.name});
-      if (info.file.status === 'uploading') {
-        console.log('Uploading...');
-      } else if (info.file.status === 'done') {
+      if (info.file.status === 'done') {
         notify.success(`${info.file.name} file uploaded successfully (simulated)`);
       } else if (info.file.status === 'error') {
         notify.error(`${info.file.name} file upload failed.`);

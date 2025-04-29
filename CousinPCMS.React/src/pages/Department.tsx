@@ -45,15 +45,14 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   }, [notify]);
 
   useEffect(() => {
-    // If on add page, do not fetch department or show error
     if (location.pathname === '/departments/add') {
-      form.setFieldValue('akiDepartmentID', 0); // Clear department ID field
+      form.setFieldValue('akiDepartmentID', 0);
       setLoading(false);
       return;
     }
     if (!departmentId) {
       notify.error('Department ID not found. Please select a department.');
-      // navigate('/home');
+
       return;
     }
     const fetchDepartment = async () => {
@@ -72,10 +71,9 @@ const Department: React.FC<DepartmentInfoProps> = () => {
           notify.error('Failed To Load Data');
         }
       } catch (error) {
-        console.log('Error fetching department:', error);
-        notify.error('Something went wrong');
+        notify.error('Something went wrong' + error);
       } finally {
-        setLoading(false); // Hide spinner after department fetch
+        setLoading(false);
       }
     };
     fetchDepartment();
@@ -114,15 +112,12 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   };
 
   const handleFormSubmit = () => {
-    console.log('Form Submitted:', form.getFieldsValue());
     form
       .validateFields()
       .then((values) => {
         values.akiDepartmentIsActive = true;
 
         const cleanedForm = cleanEmptyNullToString(values);
-        console.log('Form Values:', values, cleanedForm);
-
         updateDepartment(cleanedForm)
           .then((response) => {
             if (response.isSuccess) {
@@ -138,8 +133,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
           });
       })
       .catch((errorInfo) => {
-        console.log('Validation Failed:', errorInfo);
-        notify.error('Please fill in all required fields correctly.');
+        notify.error('Please fill in all required fields correctly.' + errorInfo);
       });
   };
 
@@ -175,7 +169,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   <Form.Item label="Department ID" name="akiDepartmentID" colon={false} className="col-span-1">
                     <Input disabled className="w-full" />
                   </Form.Item>
-                  {/* Department Name */}
+
                   <Form.Item label="List Order" name="akiDepartmentListOrder" rules={[{required: true, message: 'Please enter a list order number'}]} colon={false} className="col-span-1">
                     <Input type="number" className="w-full" />
                   </Form.Item>
@@ -187,7 +181,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       {akiDepartmentName?.length || 0} / {charLimit.akiDepartmentName}
                     </span>
                   </div>
-                  {/* Checkboxes */}
+
                   <div className="col-span-2 nz-checkbox-wrapper flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mt-2 mb-2">
                     <Form.Item name="akiDepartmentWebActive" valuePropName="checked" noStyle>
                       <Checkbox>Web Active</Checkbox>
@@ -196,7 +190,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       <Checkbox>Prompt User If Price Group Is Blank</Checkbox>
                     </Form.Item>
                   </div>
-                  {/* Department Text */}
+
                   <div className="relative col-span-2">
                     <Form.Item label="Department Text" name="akiDepartmentDescText" colon={false}>
                       <Input.TextArea rows={3} maxLength={charLimit.akiDepartmentDescText} className="w-full " />
@@ -205,16 +199,14 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       {akiDepartmentDescText?.length || 0} / {charLimit.akiDepartmentDescText}
                     </span>
                   </div>
-                  {/* Image URL & Upload */}
+
                   <div className="flex items-end gap-x-2 relative col-span-2">
                     <Form.Item label="Image URL" name="akiDepartmentImageURL" colon={false} className="w-full">
                       <Input maxLength={charLimit.akiDepartmentImageURL} className="w-full " />
                     </Form.Item>
                     <Upload
                       customRequest={({file, onSuccess}) => {
-                        console.log('Custom request uploading:', file);
                         setTimeout(() => {
-                          console.log('Simulating upload success');
                           onSuccess?.({url: (file as File).name}, (file as UploadFile).originFileObj);
                         }, 1000);
                       }}
@@ -237,7 +229,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   <Form.Item label="Image Width" name="akiDepartmentImageWidth" colon={false}>
                     <Input type="number" />
                   </Form.Item>
-                  {/* Key Words */}
+
                   <div className="relative col-span-2">
                     <Form.Item label="Key Words" name="akiDepartmentKeyWords" colon={false}>
                       <Input maxLength={charLimit.akiDepartmentKeyWords} className="w-full " />
@@ -246,7 +238,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       {akiDepartmentKeyWords?.length || 0} / {charLimit.akiDepartmentKeyWords}
                     </span>
                   </div>
-                  {/* Commodity Code */}
+
                   <Form.Item label="Commodity Code" name="akiDepartmentCommodityCode" htmlFor="commodityCode" colon={false}>
                     <Select
                       id="commodityCode"
@@ -266,7 +258,6 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                 </div>
               </div>
 
-              {/* Right Column */}
               <div className="lg:col-span-5 md:col-span-6 lg:pl-20">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                   <div className="col-span-2 flex items-center space-x-2 my-2">
@@ -292,7 +283,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       }))}
                     />
                   </Form.Item>
-                  {/* Colour Selection */}
+
                   <Form.Item label="Colour" name="akiColor" colon={false} className="flex-grow" rules={[hexColorRule]}>
                     <Input type="color" className="w-full" onChange={(e) => handleColorChange(e, 'akiColor')} />
                   </Form.Item>

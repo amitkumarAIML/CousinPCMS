@@ -64,7 +64,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
         form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
         onClose('save');
       } else {
-        notify.error(response.exceptionInformation || 'Attribute Value Failed To Add');
+        notify.error('Attribute Value Failed To Add');
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo && Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields)) {
@@ -80,7 +80,6 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       } else {
         notify.error('Failed to submit attribute value.');
       }
-      console.log('Validation Failed:', errorInfo);
     } finally {
       setBtnLoading(false);
     }

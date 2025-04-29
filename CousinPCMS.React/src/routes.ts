@@ -9,6 +9,7 @@ import Attributes from './pages/Attributes';
 import AdditionalImages from './components/AdditionalImages';
 import LinkMaintenance from './components/LinkMaintenance';
 import AttributeForm from './components/attribute/AttributeForm';
+import AttributeMultiUpload from './components/attribute/AttributeMultiUpload';
 
 const routes = createBrowserRouter([
   {
@@ -49,7 +50,7 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
-          {path: 'edit', Component: Category}
+          {path: 'edit', Component: Category},
         ],
       },
       {
@@ -68,7 +69,7 @@ const routes = createBrowserRouter([
             Component: LinkMaintenance,
           },
           {path: 'add', Component: Product},
-          {path: 'edit', Component: Product}
+          {path: 'edit', Component: Product},
         ],
       },
       {
@@ -88,7 +89,10 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
-          
+          {
+            path: 'attribute-multi-upload',
+            Component: AttributeMultiUpload,
+          },
         ],
       },
       {

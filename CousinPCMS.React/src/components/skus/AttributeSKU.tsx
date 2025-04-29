@@ -1,51 +1,42 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {Input, Table, Checkbox, Spin, Form} from 'antd'; // Added Form for layout
+import {Input, Table, Checkbox, Spin, Form} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 
-// --- Import Services and Types ---
-import { getSkuLinkedAttributes } from '../../services/SkusService';
+import {getSkuLinkedAttributes} from '../../services/SkusService';
 import {useNotification} from '../../contexts.ts/useNotification';
-import type { ApiResponse } from '../../models/generalModel';
-import type { LikedSkuModel } from '../../models/skusModel';
+import type {ApiResponse} from '../../models/generalModel';
+import type {LikedSkuModel} from '../../models/skusModel';
 
-// --- Component Props ---
 interface AttributeSkuProps {
-  // Expecting the parent SKU data containing the item ID
   skuData: {
-    akiitemid: number | string | null | undefined; // The key identifier needed
-    // Include other fields only if necessary for this component
+    akiitemid: number | string | null | undefined;
   } | null;
 }
 
-// Add a unique key to the model if not present in API response
 interface LinkedAttributeItem extends LikedSkuModel {
-  key: string; // Composite key for React list rendering
+  key: string;
 }
 
 const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [linkedAttributeList, setLinkedAttributeList] = useState<LinkedAttributeItem[]>([]); // Master list with keys
+  const [linkedAttributeList, setLinkedAttributeList] = useState<LinkedAttributeItem[]>([]);
 
-  // --- Effects ---
-
-  // Effect to fetch data when skuData (specifically akiitemid) changes
   const notify = useNotification();
   const getSkuLinkedAttributesHandler = async (itemId: number | string) => {
     setLoading(true);
-    setLinkedAttributeList([]); // Clear previous results
+    setLinkedAttributeList([]);
     try {
       const response: ApiResponse<LikedSkuModel[]> = await getSkuLinkedAttributes(String(itemId));
       if (response.isSuccess && response.value) {
-        // Add a unique key to each item for the table
         const dataWithKeys = response.value.map((item, index) => ({
           ...item,
           key: `${item.akiAttributeName}-${item.akiAttributeValue}-${index}`,
         }));
         setLinkedAttributeList(dataWithKeys);
       } else {
-        notify.info(response.exceptionInformation || 'No linked attributes found.');
+        notify.info('No linked attributes found.');
       }
     } catch {
       notify.error('Failed to load linked attributes.');
@@ -59,21 +50,19 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
     if (itemNumber) {
       getSkuLinkedAttributesHandler(itemNumber);
     }
-  }, [skuData]); // Dependency: skuData
+  }, [skuData]);
 
-  // --- Filtering Logic (using useMemo) ---
   const filteredAttributeList = useMemo(() => {
     const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
     if (!normalizedSearch) {
-      return linkedAttributeList; // Return full list if search is empty
+      return linkedAttributeList;
     }
 
     const normalize = (str: string | undefined | null) => str?.toLowerCase().replace(/\s/g, '') || '';
 
     return linkedAttributeList.filter((item) => normalize(item.akiAttributeName).includes(normalizedSearch) || normalize(item.akiAttributeValue).includes(normalizedSearch));
-  }, [searchValue, linkedAttributeList]); // Recalculate when search or master list changes
+  }, [searchValue, linkedAttributeList]);
 
-  // --- Event Handlers ---
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
@@ -82,13 +71,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
     setSearchValue('');
   };
 
-  // --- Table Column Definition ---
   const columns: TableProps<LinkedAttributeItem>['columns'] = [
-    {
-      key: 'spacer', // Empty column for alignment?
-      width: 80,
-      render: () => null, // Render nothing, just takes up space
-    },
     {
       title: 'Attribute Name',
       dataIndex: 'akiAttributeName',
@@ -109,19 +92,10 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   ];
 
   return (
-    <div >
-      
-      {/* Match parent padding */}
-      {/* Search Bar */}
+    <div>
       <Form layout="vertical" className="mb-4">
-        
-        {/* Added margin-bottom */}
         <div className="grid grid-cols-1 md:grid-cols-5">
-          
-          {/* Keep grid layout */}
           <Form.Item label="Search" className="md:col-span-2 mb-0">
-            
-            {/* Adjust span */}
             <Input
               placeholder="Search by name or value..."
               value={searchValue}
@@ -131,17 +105,9 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
           </Form.Item>
         </div>
       </Form>
-      {/* Linked Attributes Table */}
+
       <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={filteredAttributeList}
-          rowKey="key" // Use the generated unique key
-          size="small"
-          bordered
-          pagination={false} // Matches nzShowPagination="false"
-          className="linked-attributes-table" // Add specific class if needed
-        />
+        <Table columns={columns} dataSource={filteredAttributeList} rowKey="key" size="small" bordered pagination={false} className="linked-attributes-table" />
       </Spin>
     </div>
   );

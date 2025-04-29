@@ -11,7 +11,7 @@ import type {ApiResponse} from '../models/generalModel';
 
 const {Option} = Select;
 
-const LinkMaintenance: React.FC = () => {
+const LinkMaintenance = () => {
   const [form] = Form.useForm();
   const [links, setLinks] = useState<LinkValue[]>([]);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -26,43 +26,46 @@ const LinkMaintenance: React.FC = () => {
   const location = useLocation();
   const notify = useNotification();
 
-  const fetchLinks = useCallback(async (id: string | number, type: 'product' | 'category' | 'sku') => {
-    setLoadingData(true);
-    setLinks([]);
-    setDisplayText('');
-    try {
-      let response: ApiResponse<LinkValue[]>;
-      switch (type) {
-        case 'product':
-          response = await getProductUrls(String(id));
-          break;
-        case 'category':
-          response = await getCategoryUrls(String(id));
-          break;
-        case 'sku':
-          response = await getSkuUrls(String(id));
-          break;
-        default:
-          throw new Error('Invalid context type');
-      }
-
-      if (response.isSuccess && response.value) {
-        setLinks(response.value);
-        if (response.value.length === 0) {
-          setDisplayText('No links added yet.');
+  const fetchLinks = useCallback(
+    async (id: string | number, type: 'product' | 'category' | 'sku') => {
+      setLoadingData(true);
+      setLinks([]);
+      setDisplayText('');
+      try {
+        let response: ApiResponse<LinkValue[]>;
+        switch (type) {
+          case 'product':
+            response = await getProductUrls(String(id));
+            break;
+          case 'category':
+            response = await getCategoryUrls(String(id));
+            break;
+          case 'sku':
+            response = await getSkuUrls(String(id));
+            break;
+          default:
+            throw new Error('Invalid context type');
         }
-      } else {
-        setDisplayText(response.exceptionInformation || 'Failed to load links.');
-        if (response.exceptionInformation) notify.error(response.exceptionInformation);
+
+        if (response.isSuccess && response.value) {
+          setLinks(response.value);
+          if (response.value.length === 0) {
+            setDisplayText('No links added yet.');
+          }
+        } else {
+          setDisplayText('Failed to load links.');
+          if (response.exceptionInformation) notify.error(String(response.exceptionInformation));
+        }
+      } catch (error) {
+        console.error('Error fetching links:', error);
+        setDisplayText('Error loading links.');
+        notify.error('Something went wrong while fetching links.');
+      } finally {
+        setLoadingData(false);
       }
-    } catch (error) {
-      console.error('Error fetching links:', error);
-      setDisplayText('Error loading links.');
-      notify.error('Something went wrong while fetching links.');
-    } finally {
-      setLoadingData(false);
-    }
-  }, [notify]);
+    },
+    [notify]
+  );
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
@@ -163,7 +166,7 @@ const LinkMaintenance: React.FC = () => {
         setLinks((prev) => [...prev, values]);
         setShowForm(false);
       } else {
-        notify.error(response.exceptionInformation || 'Failed to add link.');
+        notify.error('Failed to add link.');
       }
     } catch (errorInfo) {
       if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo) {
@@ -214,7 +217,7 @@ const LinkMaintenance: React.FC = () => {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} link successfully deleted.`);
         setLinks((prevList) => prevList.filter((_, i) => i !== index));
       } else {
-        notify.error(response.exceptionInformation || 'Failed to delete link.');
+        notify.error('Failed to delete link.');
       }
     } catch {
       notify.error('Something went wrong during deletion.');
@@ -286,8 +289,6 @@ const LinkMaintenance: React.FC = () => {
                 <Form.Item label="Link Text" name="linkText" rules={[{required: true, message: 'Link Text is required.'}]}>
                   <Input placeholder="e.g., View Datasheet" />
                 </Form.Item>
-
-                {''}
                 <Form.Item
                   label="Link URL"
                   name="linkURL"
