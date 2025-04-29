@@ -1,34 +1,32 @@
 <div class="sku-container">
-  <div class="sku-header flex justify-between items-center">
-    <div class="flex gap-2">
-      <a (click)="addSKU()">Add</a>
-      <a (click)="editSku()">Edit</a>
-    </div>
-    <nz-form-item>
-      <nz-form-control>
-        <nz-input-group [nzSuffix]="inputClearTpl">
-          <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()" #searchBox
-            placeholder="Search" />
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <ng-template #inputClearTpl>
-      @if (searchValue) {
-      <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle"
-        (click)="clearSearchText()"></span>
-      }@else{
-      <nz-icon nzType="search" />
-      }
-    </ng-template>
-  </div>
+  <ng-template #inputClearTpl>
+    @if (searchValue) {
+    <span aria-hidden="true" nz-icon nzTheme="fill" class="cursor-pointer" nzType="close-circle"
+      (click)="clearSearchText()"></span>
+    }@else{
+    <nz-icon nzType="search" />
+    }
+  </ng-template>
 
   <nz-spin [nzSpinning]="loading">
     <nz-table #headerTable [nzData]="filteredData" nzSize="small" [nzShowPagination]="false" [nzLoading]="loading"
       [nzFrontPagination]="false" [nzScroll]="{ x:'1200px',}" class="no-header-scroll skusList overflow-y-auto">
       <thead class="bg-light-border">
         <tr>
-          <th nzWidth="40px"></th>
-          <th nzWidth="200px">Sku Name</th>
+          <th nzWidth="40px">SKUs</th>
+          <th nzWidth="300px">
+            <div class="flex justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <a (click)="addSKU()">Add</a>
+                <a (click)="editSku()">Edit</a>
+              </div>
+              <nz-input-group [nzSuffix]="inputClearTpl">
+                <input nz-input type="text" class="rounded" [(ngModel)]="searchValue" (input)="onSearch()"
+                  placeholder="Search" />
+              </nz-input-group>
+            </div>
+          </th>
+
           <th>ManufacturerRef</th>
           <th>ITEM_NUMBER</th>
           <th>List Order</th>

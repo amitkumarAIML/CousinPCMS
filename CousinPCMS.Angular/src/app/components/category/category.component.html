@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center p-4 pb-1">
       <span class="text-sm font-medium">Category Form</span>
       <div class="flex gap-x-3">
-        <button nz-button nzType="default" [routerLink]="'/home'" class="">Cancel</button>
-        <button
+        <button nz-button nzType="default" [routerLink]="'/home'" class="">Close</button>
+        <!-- <button
           nz-button
           nzType="default"
           [nzLoading]="deleteLoading"
@@ -16,7 +16,7 @@
           class=""
         >
           Delete
-        </button>
+        </button> -->
         <button nz-button nzType="primary" [nzLoading]="btnLoading" (click)="submitCategoryUpdateForm()" class="text-white">Save</button>
       </div>
     </div>
@@ -466,7 +466,7 @@
         </ng-template>
       </div>
       <div class="flex gap-3">
-        <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+        <button nz-button nzType="default" (click)="handleCancel()">Close</button>
         <button (click)="addAssociatedProductSubmitForm()" nz-button class="text-white" nzType="primary">Save</button>
       </div>
     </div>
