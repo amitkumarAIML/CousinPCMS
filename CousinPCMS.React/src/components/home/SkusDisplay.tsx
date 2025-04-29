@@ -1,10 +1,9 @@
 import {useEffect, useState} from 'react';
-import {Spin, Modal, Input} from 'antd';
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
+import {Spin, Input, TableProps, Table, Checkbox} from 'antd';
+import {SearchOutlined, CloseCircleFilled, CaretRightOutlined} from '@ant-design/icons';
 import {getSkuByProductId} from '../../services/HomeService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList} from '../../models/skusModel';
-import SKUsComponent from '../../pages/SKUs';
 
 interface SkusDisplayProps {
   selectedProductId?: number;
@@ -18,8 +17,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const [loading, setLoading] = useState(false);
   const [selectedSku, setSelectedSku] = useState<number | undefined>(undefined);
   const [searchValue, setSearchValue] = useState('');
-  const [productSkusVisible, setProductSkusVisible] = useState(false);
   const notify = useNotification();
+  const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
 
   useEffect(() => {
     if (!selectedProductId || selectedProductId <= 0 || !selectedCategory || !sessionStorage.getItem('productId')) {
@@ -88,13 +87,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     setFilteredData([...skus]);
   };
 
-  const handleCancel = (val: string) => {
-    setProductSkusVisible(false);
-    if (val !== 'cancel') {
-      loadSkuForProduct();
-    }
-  };
-
   const editSku = () => {
     if (!selectedSku) {
       setProductSkusVisible(false);
@@ -104,15 +96,52 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     setProductSkusVisible(true);
   };
 
-  const addSKU = () => {
-    setProductSkusVisible(true);
+  const addSKU = () => {};
+
+  const handleRowSelect = (record: SKuList) => {
+    setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
+    if (record.akiitemid !== selectedRow?.akiitemid) {
+      sessionStorage.setItem('itemNumber', record.akiitemid || '');
+      sessionStorage.setItem('skuId', String(record.akiSKUID || ''));
+    } else {
+      sessionStorage.removeItem('itemNumber');
+      sessionStorage.removeItem('skuId');
+    }
   };
+
+  const columns: TableProps<SKuList>['columns'] = [
+    {title: 'SkuName', dataIndex: 'skuName'},
+    {title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef'},
+    {title: 'ITEM_NUMBER', dataIndex: 'akiitemid'},
+    {title: 'ListOrder', dataIndex: 'akiListOrder'},
+    {
+      title: 'Obsolete',
+      dataIndex: 'akiObsolete',
+      align: 'center',
+      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
+    },
+    {
+      title: 'Unavailable',
+      dataIndex: 'salesBlocked',
+      align: 'center',
+      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
+    },
+    {
+      title: 'CatActive',
+      dataIndex: 'akiSKUIsActive',
+      align: 'center',
+      render: (isActive) => <Checkbox checked={isActive} disabled />,
+    },
+    {title: 'TemplateID', dataIndex: 'akiTemplateID'},
+    {title: 'AltSkuName', dataIndex: 'akiAltSKUName'},
+    {title: 'CommodityCode', dataIndex: 'akiCommodityCode'},
+  ];
 
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       <div className="bg-light-border text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <span>SKU Name</span>
+          <span>SKUs</span>
           <button className="text-primary-theme hover:underline text-xs" onClick={addSKU}>
             Add
           </button>
@@ -130,7 +159,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         </div>
       </div>
 
-      <Spin spinning={loading}>
+      {/* <Spin spinning={loading}>
         <div className="min-h-[48px] flex flex-col justify-center items-center bg-white">
           {filteredData && filteredData.length > 0 ? (
             <ul className="sku-list list-none p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full divide-y divide-border leading-tight">
@@ -150,11 +179,12 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
             <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>
           )}
         </div>
+      </Spin> */}
+      <Spin spinning={loading}>
+        <div className="pt-2">
+          <Table scroll={{x: 1500}} columns={columns} dataSource={filteredData} rowKey="akiitemid" size="small" bordered pagination={false} />
+        </div>
       </Spin>
-
-      <Modal open={productSkusVisible} onCancel={() => handleCancel('cancel')} footer={null} closable={false} width={1500} className="no-padding-modal">
-        <SKUsComponent />
-      </Modal>
     </div>
   );
 };

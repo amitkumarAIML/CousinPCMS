@@ -56,7 +56,7 @@ const SKUs: React.FC = () => {
     } else {
       notify.error('SKU Item Number not found. Please select an SKU.');
       setLoading(false);
-      navigate('/home');
+      // navigate('/home');
     }
   }, [navigate, notify, fetchSkuByItemNumber]);
 

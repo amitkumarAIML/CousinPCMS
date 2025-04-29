@@ -1,13 +1,15 @@
 import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import {Tree, Spin, message, Menu} from 'antd';
-import {FolderOpenOutlined, FolderOutlined, PartitionOutlined, PlusOutlined} from '@ant-design/icons';
+import {Tree, Spin, message, Menu, Modal} from 'antd';
+import {EditOutlined, FolderOpenOutlined, FolderOutlined, PartitionOutlined, PlusOutlined} from '@ant-design/icons';
 import type {TreeDataNode, TreeProps} from 'antd';
 import type {EventDataNode, DataNode} from 'antd/es/tree';
 import {Department} from '../../models/departmentModel';
 import {CategoryModel} from '../../models/categoryModel';
 import {getDepartments} from '../../services/DepartmentService';
-import {getCategoriesByDepartment} from '../../services/HomeService';
+import {getCategoriesByDepartment, getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {useNavigate} from 'react-router';
+import CategoryAttribute from './CategoryAttribute';
+import {useNotification} from '../../contexts.ts/useNotification';
 
 interface CustomTreeDataNode extends TreeDataNode {
   dataType: 'department' | 'category';
@@ -88,7 +90,10 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
   const [error, setError] = useState<string | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const [categoryAttriisVisible, setCategoryAttriisVisible] = useState(false);
+  const [categoryData, setCategoryData] = useState(null);
   const navigate = useNavigate();
+  const notify = useNotification();
 
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -114,20 +119,25 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       y: info.event.clientY,
       node: info.node as unknown as CustomTreeDataNode,
     });
+    onSelect([info.node.key], info);
   }, []);
 
   // Context menu click handler
   const handleMenuClick = useCallback(
     (e: {key: string}) => {
       if (!contextMenu.node) return;
-      // Example: handle menu actions here
       if (e.key === 'add-department') {
         navigate('/departments/add');
+      } else if (e.key === 'edit-department') {
+        navigate('/departments/edit');
       } else if (e.key === 'add-category') {
-        message.info('Add Category clicked');
         navigate('/category/add');
+      } else if (e.key === 'edit-category') {
+        navigate('/category/edit');
       } else if (e.key === 'add-sub-category') {
-        message.info('Add Sub Category clicked');
+        navigate('/category/add');
+      } else if (e.key === 'add-attribute-set') {
+        attributeSet(contextMenu.node);
       }
       setContextMenu((cm) => ({...cm, visible: false}));
     },
@@ -137,21 +147,42 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
   // Build context menu items based on node type/level
   const getMenuItems = () => {
     if (!contextMenu.node) return [];
-    console.log('contextMenu.node', contextMenu.node);
     if (contextMenu.node.dataType === 'department') {
       // 1st parent level
       return [
         {key: 'add-department', icon: <PlusOutlined />, label: 'Add Department'},
+        {key: 'edit-department', icon: <EditOutlined />, label: 'Edit Department'},
         {key: 'add-category', icon: <PlusOutlined />, label: 'Add Category'},
       ];
     } else if (contextMenu.node.dataType === 'category') {
       // inner level
       return [
+        {key: 'edit-category', icon: <EditOutlined />, label: 'Edit Category'},
         {key: 'add-sub-category', icon: <PlusOutlined />, label: 'Add Sub Category'},
         {key: 'add-attribute-set', icon: <PlusOutlined />, label: 'Add Attribute Set'},
       ];
     }
     return [];
+  };
+
+  const attributeSet = async (node: any) => {
+    try {
+      const response = await getDistinctAttributeSetsByCategoryId(node.id);
+      if (response.value === null) {
+        setCategoryAttriisVisible(true);
+        setCategoryData(node);
+      } else {
+        notify.warning(`Attribute Set For ${getNodeTitleText(node)} is already added.`);
+      }
+    } catch (error) {
+      console.error('Error in API call:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAttributeModalCancel = () => {
+    setCategoryAttriisVisible(false);
   };
 
   const findDepartmentIdForCategoryKey = useCallback((key: React.Key, nodes: CustomTreeDataNode[], parentDeptId?: string | number): string | number | undefined => {
@@ -174,6 +205,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
       const node = info.node as unknown as CustomTreeDataNode;
       if (node.dataType === 'category') {
+        sessionStorage.setItem('departmentId', String((node.data as CategoryModel)?.akiDepartment ?? ''));
         sessionStorage.setItem('CategoryId', String(node.id));
         sessionStorage.removeItem('productId');
         sessionStorage.removeItem('itemNumber');
@@ -559,6 +591,9 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
           <Menu onClick={handleMenuClick} items={getMenuItems()} />
         </div>
       )}
+      <Modal title="Attribute Set Form" open={categoryAttriisVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
+        {categoryData && <CategoryAttribute categoryData={categoryData} />}
+      </Modal>
     </div>
   );
 };

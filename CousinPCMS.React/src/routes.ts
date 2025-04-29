@@ -49,6 +49,7 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
+          {path: 'edit', Component: Category}
         ],
       },
       {
@@ -66,6 +67,8 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
+          {path: 'add', Component: Product},
+          {path: 'edit', Component: Product}
         ],
       },
       {

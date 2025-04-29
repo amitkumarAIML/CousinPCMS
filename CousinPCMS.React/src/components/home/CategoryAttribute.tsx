@@ -32,9 +32,9 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     if (categoryData) {
       let attributeSetName = '';
       let categoryID = '';
-      if (categoryData.origin) {
-        attributeSetName = `Attribute Set For - ${categoryData.origin.title}`;
-        categoryID = categoryData.origin.key;
+      if (categoryData.data) {
+        attributeSetName = `Attribute Set For - ${categoryData.data.akiCategoryName}`;
+        categoryID = categoryData.id;
       } else {
         attributeSetName = categoryData.attributeSetName || '';
         categoryID = categoryData.akiCategoryID || '';
@@ -145,7 +145,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           if (response.isSuccess) {
             notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
-            fetchAttributeSetsByAttributeSetName(values.attributeSetName);
+            fetchAttributeSetsByAttributeSetName(encodeURIComponent(values.attributeSetName));
             if (eventComplete) eventComplete('ok');
           } else {
             const raw = response?.value || 'Unknown error';

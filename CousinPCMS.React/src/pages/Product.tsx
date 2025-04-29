@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
@@ -10,15 +10,6 @@ const Product: React.FC = () => {
   const [loading] = useState<boolean>(false);
   const navigate = useNavigate();
   const notify = useNotification();
-
-  useEffect(() => {
-    const productIdFromSession = sessionStorage.getItem('productId');
-    if (productIdFromSession) {
-      console.log(`Product ID from session: ${productIdFromSession}`);
-    } else {
-      navigate('/home');
-    }
-  }, [navigate, notify]);
 
   const handleCancel = () => {
     navigate('/home');

@@ -6,9 +6,9 @@ import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons'; // Import i
 import {Product} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
 import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/useNotification';
-import ProductComponent from '../../pages/Product';
 import CategoryAttribute from './CategoryAttribute';
+import {useNavigate} from 'react-router';
+import {useNotification} from '../../contexts.ts/useNotification';
 
 interface ProductDisplayProps {
   selectedCategory: string;
@@ -18,22 +18,19 @@ interface ProductDisplayProps {
 function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayProps) {
   const [selectedProduct, setSelectedProduct] = useState<number | undefined>(undefined);
   const [products, setProducts] = useState<Product[]>([]);
-  const [lstAllAttributeSets, setLstAllAttributeSets] = useState<AttributeSetModel[]>([]);
   const [allProductAttributes, setAllProductAttributes] = useState<(Product | AttributeSetModel)[]>([]);
   const [filteredData, setFilteredData] = useState<(Product | AttributeSetModel)[]>([]);
   const [displayText, setDisplayText] = useState('Click a category to view the product');
   const [loading, setLoading] = useState(false);
   const [categoryAttriIsVisible, setCategoryAttriIsVisible] = useState(false);
-  const [categoryProductVisible, setCategoryProductVisible] = useState(false);
   const [categoryData, setCategoryData] = useState({}); // Data for attribute modal
   const [searchValue, setSearchValue] = useState('');
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const notify = useNotification();
+  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     if (!selectedCategory) {
       setProducts([]);
-      setLstAllAttributeSets([]);
       setAllProductAttributes([]);
       setFilteredData([]);
       onProductSelected(undefined);
@@ -58,10 +55,8 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       let currentAttributeSets: AttributeSetModel[] = [];
       if (attributeListResponse.isSuccess && attributeListResponse.value) {
         currentAttributeSets = attributeListResponse.value;
-        setLstAllAttributeSets(currentAttributeSets);
       } else {
-        setLstAllAttributeSets([]);
-        notify.error('Failed to load attribute sets');
+        // notify.error('Failed to load attribute sets');
       }
 
       const combinedData: (Product | AttributeSetModel)[] = [...(Array.isArray(currentProducts) ? currentProducts : []), ...(Array.isArray(currentAttributeSets) ? currentAttributeSets : [])];
@@ -103,7 +98,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       notify.error('Failed to load data');
       setDisplayText('Error loading data');
       setProducts([]);
-      setLstAllAttributeSets([]);
       setAllProductAttributes([]);
       setFilteredData([]);
     } finally {
@@ -127,7 +121,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (selectedCategory) {
       sessionStorage.setItem('CategoryId', selectedCategory);
     } else {
-      sessionStorage.removeItem('CategoryId');
+      // sessionStorage.removeItem('CategoryId');
       setProducts([]);
       setDisplayText('Click a category to view the product');
     }
@@ -190,32 +184,17 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       return;
     }
     // Pass product data to the ProductForm modal for editing
+    navigate('/products/edit');
     setCategoryData(productToEdit); // Re-using categoryData state, maybe rename?
-    setCategoryProductVisible(true);
   };
 
   const handleAddProduct = () => {
-    setSelectedProduct(undefined);
-    sessionStorage.removeItem('productId');
-    setCategoryData({categoryId: selectedCategory});
-    setIsProductModalOpen(true);
+    navigate('/products/add');
   };
 
   // --- Modal Handlers ---
   const handleAttributeModalCancel = () => {
     setCategoryAttriIsVisible(false);
-  };
-
-  const handleProductModalOk = (eventData: any) => {
-    setIsProductModalOpen(false);
-    if (eventData !== 'cancel') {
-      fetchData();
-      if (typeof eventData === 'number') {
-        setSelectedProduct(eventData);
-        sessionStorage.setItem('productId', eventData.toString());
-        onProductSelected(eventData);
-      }
-    }
   };
 
   // --- Rendering ---
@@ -227,7 +206,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Product Name</span>
-          <button className="text-primary-theme hover:underline text-xs" onClick={() => setIsProductModalOpen(true)}>
+          <button className="text-primary-theme hover:underline text-xs" onClick={handleAddProduct}>
             Add
           </button>
           <button className={`text-primary-theme hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
@@ -279,11 +258,6 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       {/* Category Attributes Modal */}
       <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
         {categoryData && <CategoryAttribute categoryData={categoryData} />}
-      </Modal>
-
-      {/* Category Product Add/Edit Modal */}
-      <Modal open={isProductModalOpen} onCancel={() => setIsProductModalOpen(false)} footer={null} width={1200}>
-        <ProductComponent />
       </Modal>
     </div>
   );

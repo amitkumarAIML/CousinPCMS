@@ -47,12 +47,13 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   useEffect(() => {
     // If on add page, do not fetch department or show error
     if (location.pathname === '/departments/add') {
+      form.setFieldValue('akiDepartmentID', 0); // Clear department ID field
       setLoading(false);
       return;
     }
     if (!departmentId) {
       notify.error('Department ID not found. Please select a department.');
-      navigate('/home');
+      // navigate('/home');
       return;
     }
     const fetchDepartment = async () => {

@@ -13,6 +13,7 @@ import {layoutProduct} from '../../models/layoutTemplateModel';
 import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
 import {useNotification} from '../../contexts.ts/useNotification';
+import {useLocation} from 'react-router';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -42,7 +43,7 @@ const ProductDetails: React.FC = () => {
   const [isAdditionalPLoading, setIsAdditionalPLoading] = useState<boolean>(false);
   const [loadingProductModal, setLoadingProductModal] = useState<boolean>(false);
 
-  const [productLoading, setProductLoading] = useState<boolean>(true);
+  const [productLoading, setProductLoading] = useState<boolean>(false);
   const [akiProductID, setAkiProductID] = useState<number | undefined>(undefined);
 
   const [countries, setCountries] = useState<Country[]>([]);
@@ -74,8 +75,33 @@ const ProductDetails: React.FC = () => {
   useEffect(() => {}, [productForm]);
 
   const notify = useNotification();
+  const location = useLocation();
 
   useEffect(() => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+      try {
+        const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
+        setCountries(countriesData || []);
+        setCommodityCode(commoditiesData || []);
+        setLayoutOptions(layoutsData || []);
+        setCategoryList(categoriesData || []);
+        setFilteredCategories(categoriesData || []);
+      } catch (e) {
+        console.error('Error fetching initial data:', e);
+        notify.error('Could not load necessary form options.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialData();
+
+    if (location.pathname === '/products/add') {
+      productForm.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId'));
+      productForm.setFieldValue('akiProductID', 0);
+      setLoading(false);
+      return;
+    }
     const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
@@ -103,24 +129,6 @@ const ProductDetails: React.FC = () => {
       notify.error('Product ID not found. Please select a product.');
       setProductLoading(false);
     }
-
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
-        setCountries(countriesData || []);
-        setCommodityCode(commoditiesData || []);
-        setLayoutOptions(layoutsData || []);
-        setCategoryList(categoriesData || []);
-        setFilteredCategories(categoriesData || []);
-      } catch (e) {
-        console.error('Error fetching initial data:', e);
-        notify.error('Could not load necessary form options.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInitialData();
     productForm.getFieldValue('akiProductName')?.disable?.();
   }, [productForm, notify]);
 

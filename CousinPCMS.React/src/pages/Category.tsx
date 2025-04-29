@@ -53,6 +53,9 @@ const Category: React.FC = () => {
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
   useEffect(() => {
     if (location.pathname === '/category/add') {
+      categoryForm.setFieldValue('akiDepartment', sessionStorage.getItem('departmentId'));
+      categoryForm.setFieldValue('akiCategoryID', 0);
+      categoryForm.setFieldValue('akiCategoryParentID', sessionStorage.getItem('CategoryId'));
       setLoading(false);
       return;
     }
@@ -664,7 +667,7 @@ const Category: React.FC = () => {
           </Form>
         </div>
       </Spin>
-      <Modal title="Add Product" visible={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={600} destroyOnClose>
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={600} destroyOnClose>
         <Form
           form={addAssociatedProductForm}
           layout="vertical"
