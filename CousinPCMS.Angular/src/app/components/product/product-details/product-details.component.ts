@@ -499,26 +499,35 @@ export class ProductDetailsComponent {
       .subscribe({
         next: (response) => {
           if (response.isSuccess) {
-            this.isSetAttributslist = response.value; 
-            if (Array.isArray(this.isSetAttributslist)) {
-              this.setAttributeName = this.isSetAttributslist[0]?.attributeSetName || '';
-              this.categoryData = this.isSetAttributslist[0];
-            } else if (Array.isArray(this.isSetAttributslist.value)) {
-              this.setAttributeName = this.isSetAttributslist.value[0]?.attributeSetName || '';
-              this.categoryData = this.isSetAttributslist.value[0];
+            this.isSetAttributslist = response.value || null;  // <-- safe assignment
+  
+            if (this.isSetAttributslist) { // only proceed if not null
+              if (Array.isArray(this.isSetAttributslist)) {
+                this.setAttributeName = this.isSetAttributslist[0]?.attributeSetName || '';
+                this.categoryData = this.isSetAttributslist[0];
+              } 
+              else if (this.isSetAttributslist.value && Array.isArray(this.isSetAttributslist.value)) {
+                this.setAttributeName = this.isSetAttributslist.value[0]?.attributeSetName || '';
+                this.categoryData = this.isSetAttributslist.value[0];
+              } 
+              else {
+                this.setAttributeName = this.isSetAttributslist?.attributeSetName || '';
+                this.categoryData = this.isSetAttributslist;
+              }
             } else {
-              this.setAttributeName = this.isSetAttributslist?.attributeSetName || '';
-              this.categoryData = this.isSetAttributslist;
+              this.setAttributeName = '';
+              this.categoryData = null;
             }
             
           } else {
-            this.dataService.ShowNotification('error', '','Failed to load attribute sets');
+            this.dataService.ShowNotification('error', '', 'Failed to load attribute sets');
           }
         },
         error: (error) => {
-         this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+          this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
         }
       });
   }
+  
 
 }
