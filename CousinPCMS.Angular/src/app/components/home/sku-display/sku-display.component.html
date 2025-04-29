@@ -10,11 +10,11 @@
 
   <nz-spin [nzSpinning]="loading">
     <nz-table #headerTable [nzData]="filteredData" nzSize="small" [nzShowPagination]="false" [nzLoading]="loading"
-      [nzFrontPagination]="false" [nzScroll]="{ x:'1200px',}" class="no-header-scroll skusList overflow-y-auto">
+      [nzFrontPagination]="false" class="no-header-scroll skusList overflow-y-auto">
       <thead class="bg-light-border">
         <tr>
           <th nzWidth="40px">SKUs</th>
-          <th nzWidth="240px">
+          <th nzWidth="200px">
             <div class="flex justify-between gap-2">
               <div class="flex items-center gap-2">
                 <a (click)="addSKU()">Add</a>
@@ -26,7 +26,7 @@
               </nz-input-group>
             </div>
           </th>
-          <th nzWidth="200px">ManufacturerRef</th>
+          <th nzWidth="150px">ManufacturerRef</th>
           <th nzWidth="100px">ITEM_NUMBER</th>
           <th nzWidth="60px">List Order</th>
           <th nzWidth="60px">Obsolete</th>
