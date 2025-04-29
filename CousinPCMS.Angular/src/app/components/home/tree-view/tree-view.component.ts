@@ -248,6 +248,8 @@ export class TreeViewComponent implements OnInit, AfterViewInit {
       sessionStorage.removeItem('categoryId');
       sessionStorage.removeItem('productId');
       sessionStorage.removeItem('itemNumber');
+      this.categorySelected.emit(undefined); // Emit selected category
+
     } else {
       const cat = this.categories.filter((r) => r.akiCategoryID == event.origin.key);
       if (cat.length > 0) {

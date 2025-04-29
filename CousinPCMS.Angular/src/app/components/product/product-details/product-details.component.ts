@@ -62,7 +62,7 @@ export class ProductDetailsComponent {
   commodityCode: CommodityCode[] = [];
 
   isCategoryModalVisible = false;
-  selectedCategoryId: string | null = null;
+  selectedCategoryId: string='';
   selectedCategoryName: string | null = null;
 
   categoryList: any[] = [];
@@ -96,7 +96,8 @@ export class ProductDetailsComponent {
   setAttributeName:string='';
   categoryData: any = {};
 
-  constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService, private router: Router) {
+  constructor(private fb: FormBuilder, private productService: ProductsService, private dataService: DataService, private categoryService: CategoryService, private router: Router, private homeService: HomeService
+  ) {
     this.productForm = this.fb.group({
       akiCategoryID: [],
       akiProductCommodityCode: [],
@@ -143,31 +144,24 @@ export class ProductDetailsComponent {
         this.productForm.patchValue(this.productData);
       } 
     }
-   if (changes['isSetAttributslist'] && this.isSetAttributslist) {
-    if (Array.isArray(this.isSetAttributslist)) {
-      this.setAttributeName = this.isSetAttributslist[0]?.attributeSetName || '';
-      this.categoryData = this.isSetAttributslist[0];
-    } 
-    else if (Array.isArray(this.isSetAttributslist.value)) {
-      this.setAttributeName = this.isSetAttributslist.value[0]?.attributeSetName || '';
-      this.categoryData = this.isSetAttributslist.value[0];
-    }
-    else {
-      this.setAttributeName = this.isSetAttributslist.attributeSetName || '';
-      this.categoryData = this.isSetAttributslist;
-    }
-   }
+
   }
 
   ngOnInit() {
     const akiProductIDStr = sessionStorage.getItem('productId');
     this.akiProductID = akiProductIDStr ? +akiProductIDStr : undefined;
+    this.selectedCategoryId = sessionStorage.getItem('categoryId') || '';
+
     this.getLayoutTemplate();
     this.getCommodityCodes();
     this.getCountryOrigin();
     this.getAllCategory();
     this.getAdditionalProduct();
     this.productForm.get('akiProductName')?.disable();
+
+    if (this.selectedCategoryId) {
+      this.getDistinctAttributeSetsByCategoryId();
+    }
   }
 
   getFormData() {
@@ -500,4 +494,31 @@ export class ProductDetailsComponent {
     this.isSetAttributeVisable=false;
 
   }
+  getDistinctAttributeSetsByCategoryId() {
+    this.homeService.getDistinctAttributeSetsByCategoryId(this.selectedCategoryId)
+      .subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.isSetAttributslist = response.value; 
+            if (Array.isArray(this.isSetAttributslist)) {
+              this.setAttributeName = this.isSetAttributslist[0]?.attributeSetName || '';
+              this.categoryData = this.isSetAttributslist[0];
+            } else if (Array.isArray(this.isSetAttributslist.value)) {
+              this.setAttributeName = this.isSetAttributslist.value[0]?.attributeSetName || '';
+              this.categoryData = this.isSetAttributslist.value[0];
+            } else {
+              this.setAttributeName = this.isSetAttributslist?.attributeSetName || '';
+              this.categoryData = this.isSetAttributslist;
+            }
+            
+          } else {
+            this.dataService.ShowNotification('error', '','Failed to load attribute sets');
+          }
+        },
+        error: (error) => {
+         this.dataService.ShowNotification('error', '', error.error || 'Something went wrong');
+        }
+      });
+  }
+
 }
