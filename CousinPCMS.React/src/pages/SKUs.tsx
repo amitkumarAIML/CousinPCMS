@@ -50,7 +50,12 @@ const SKUs: React.FC = () => {
   );
 
   useEffect(() => {
-    const itemNumFromSession = sessionStorage.getItem('itemNumber') || '145341';
+    if (location.pathname === '/departments/add') {
+      setLoading(false);
+      return;
+    }
+
+    const itemNumFromSession = sessionStorage.getItem('itemNumber') || '';
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
     } else {
