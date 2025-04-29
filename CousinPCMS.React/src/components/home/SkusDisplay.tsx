@@ -23,7 +23,9 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!selectedProductId || selectedProductId <= 0 || !selectedCategory || !sessionStorage.getItem('productId')) {
+    console.log('selectedProductId', selectedProductId, selectedCategory, sessionStorage.getItem('productId'));
+
+    if (!selectedProductId || !selectedCategory || !sessionStorage.getItem('productId')) {
       setDisplayText('Click on a product to view the SKU');
       setSkus([]);
       setFilteredData([]);
@@ -44,17 +46,28 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
           setSkus(activeSkus);
           setFilteredData(activeSkus);
           setDisplayText(activeSkus.length > 0 ? '' : 'No SKU Found');
+          // Set selected row based on itemNumber in sessionStorage
+          const persistedItemNumber = sessionStorage.getItem('itemNumber');
+          if (persistedItemNumber) {
+            const found = activeSkus.find((p) => String(p.akiitemid) === String(persistedItemNumber));
+            setSelectedRow(found || null);
+          } else {
+            setSelectedRow(null);
+          }
         } else {
           setSkus([]);
           setFilteredData([]);
           setDisplayText('No SKU Found');
+          setSelectedRow(null);
         }
       } else {
         setDisplayText('Failed to load SKU');
+        setSelectedRow(null);
       }
     } catch {
       setDisplayText('Failed to load SKU');
       notify.error('Something went wrong');
+      setSelectedRow(null);
     } finally {
       setLoading(false);
     }

@@ -98,19 +98,9 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchValue, notify]);
+  }, [selectedCategory, searchValue, notify, onProductSelected]);
 
   useEffect(() => {
-    const persistedProductId = sessionStorage.getItem('productId');
-    const persistedCategoryId = sessionStorage.getItem('CategoryId');
-
-    if (persistedCategoryId === selectedCategory && persistedProductId) {
-      setSelectedProduct(Number(persistedProductId));
-    } else {
-      setSelectedProduct(undefined);
-      sessionStorage.removeItem('productId');
-    }
-
     fetchData();
 
     if (selectedCategory) {
