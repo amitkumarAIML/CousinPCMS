@@ -46,10 +46,16 @@ body {
 .ant-tree-treenode .ant-tree-draggable-icon {
   display: none !important;
 }
-.ant-tree-title{
+
+.ant-tree-title {
   color: var(--color-primary-font) !important;
 }
 
 .ant-tree .ant-tree-node-content-wrapper {
   padding-inline: 0 !important;
+}
+
+.ant-list-items {
+  height: 200px;
+  overflow-y: scroll;
 }

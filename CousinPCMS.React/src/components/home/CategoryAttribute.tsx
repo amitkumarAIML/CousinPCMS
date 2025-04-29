@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Modal, Form, Input, Checkbox, Button, Table, Spin} from 'antd';
+import {Modal, Form, Input, Checkbox, Button, Table, Spin, List} from 'antd';
 import {getAllAttributes, getAttributeSetsByAttributeSetName, addAttributeSets, deleteAttributeSets, updateAttributeSets1} from '../../services/HomeService';
 import {extractUserMessage} from '../../services/DataService';
 import {useNotification} from '../../contexts.ts/useNotification';
@@ -252,16 +252,58 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
   return (
     <div className="p-1">
       <Form form={form} layout="vertical">
-        <div className="grid grid-cols-12 gap-4 py-2">
-          <div className="col-span-12 sm:col-span-5">
-            <Form.Item label="Attribute Set Name" name="attributeSetName" rules={[{required: true, message: 'Required'}]}>
-              <Input disabled value={form.getFieldValue('attributeSetName') || ''} />
-            </Form.Item>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-8 grid grid-cols-12 gap-4">
+            <div className="col-span-6">
+              <Form.Item label="Attribute Set Name" name="attributeSetName" rules={[{required: true, message: 'Required'}]}>
+                <Input disabled value={form.getFieldValue('attributeSetName') || ''} />
+              </Form.Item>
+            </div>
+            <div className="col-span-6">
+              <Form.Item label="Category Id" name="categoryID" rules={[{required: true, message: 'Required'}]}>
+                <Input disabled value={form.getFieldValue('categoryID') || ''} />
+              </Form.Item>
+            </div>
+            <div className="col-span-12">
+              <Table columns={columns} dataSource={lstAllAttributeSets} rowKey="attributeName" bordered size="small" loading={isAttributeSetloading} pagination={false} />
+            </div>
           </div>
-          <div className="col-span-12 sm:col-span-3">
-            <Form.Item label="Category Id" name="categoryID" rules={[{required: true, message: 'Required'}]}>
-              <Input disabled value={form.getFieldValue('categoryID') || ''} />
-            </Form.Item>
+          <div className="col-span-4">
+            <Spin spinning={isAttributeloading}>
+              <div className=" border border-border rounded-md bg-white">
+                <List
+                  size="small"
+                  header={
+                    <div className="text-sm flex justify-between gap-2 px-2 font-medium text-primary-font sticky top-0 bg-white z-10 ">
+                      Attribute Details
+                      <Input
+                        placeholder="Search"
+                        value={searchValue}
+                        onChange={onSearch}
+                        className="w-40"
+                        suffix={searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />}
+                      />
+                    </div>
+                  }
+                  dataSource={filteredData}
+                  renderItem={(item) => (
+                    <List.Item className="cursor-pointer text-secondary-font flex justify-between items-center px-4 py-2">
+                      <span>{item.attributeName}</span>
+                      <a onClick={() => addAttributeData(item)} className="text-primary-theme">
+                        Link
+                      </a>
+                    </List.Item>
+                  )}
+                  locale={{
+                    emptyText: (
+                      <div className="flex-grow flex items-center justify-center h-40">
+                        <span className="text-sm">No attributes found</span>
+                      </div>
+                    ),
+                  }}
+                />
+              </div>
+            </Spin>
           </div>
         </div>
       </Form>
@@ -302,43 +344,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           </Form>
         </Spin>
       </Modal>
-
-      <div className="grid grid-cols-6 gap-4 py-2">
-        <div className="col-span-6 sm:col-span-4">
-          <Table columns={columns} dataSource={lstAllAttributeSets} rowKey="attributeName" bordered size="small" loading={isAttributeSetloading} pagination={false} />
-        </div>
-        <div className="col-span-6 sm:col-span-2">
-          <Spin spinning={isAttributeloading}>
-            <div className="h-70 overflow-y-scroll border border-border rounded-md bg-white">
-              <div className="text-sm font-medium text-center text-primary-font sticky top-0 bg-white z-10 border-b border-border">Attribute Details</div>
-              <div className="w-64 flex items-center">
-                <Input
-                  placeholder="Search"
-                  value={searchValue}
-                  onChange={onSearch}
-                  suffix={searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />}
-                />
-              </div>
-              {filteredData.length > 0 ? (
-                <div>
-                  {filteredData.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center px-4 py-2 cursor-pointer text-secondary-font border-b ">
-                      <span>{item.attributeName}</span>
-                      <a onClick={() => addAttributeData(item)} className="text-primary-theme">
-                        Link
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex-grow flex items-center justify-center">
-                  <span className="text-sm">No attributes found</span>
-                </div>
-              )}
-            </div>
-          </Spin>
-        </div>
-      </div>
     </div>
   );
 };
