@@ -27,7 +27,7 @@ export const extractUserMessage = (fullMsg: string): string => {
 export const cleanEmptyNullToString = (obj: any) => {
   const result: any = {};
   for (const key in obj) {
-    result[key] = obj[key] === null ? '' : obj[key];
+    result[key] = obj[key] === null || obj[key] ===  undefined ? '' : obj[key];
   }
   return result;
 };

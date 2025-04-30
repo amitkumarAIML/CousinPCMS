@@ -8,7 +8,12 @@ export const getDepartments = async (): Promise<DepartmentResponse> => {
 };
 
 export const updateDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
-  const response = await http.patch<DepartmentResponse>('Department/UpdateDepartment', departmentData);
+  const response = await http.post<DepartmentResponse>('Department/UpdateDepartment', departmentData);
+  return response;
+};
+
+export const addDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
+  const response = await http.post<DepartmentResponse>('Department/AddDepartment', departmentData);
   return response;
 };
 

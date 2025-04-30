@@ -8,6 +8,8 @@ const {TextArea} = Input;
 
 interface AttributesValuesProps {
   attributeName: string | null | undefined;
+  skuId: number;
+  itemNumber: string;
   onClose: (reason: 'save' | 'cancel') => void;
   valueData?: AttributeValueFormData | null;
 }

@@ -11,10 +11,11 @@ import {layoutDepartment} from '../models/layoutTemplateModel';
 import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
-import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct} from '../services/CategoryService';
+import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
 import {getCountryOrigin, getCommodityCodes} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
+import {useNotification} from '../contexts.ts/useNotification';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -34,7 +35,7 @@ const Category = () => {
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const [isAssociatePLoading, setIsAssociatePLoading] = useState<boolean>(false);
   const [loadingProduct, setLoadingProduct] = useState<boolean>(false);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string>('');
   const [categoryDetails, setCategoryDetails] = useState<CategoryResponseModel | null>(null);
   const [countries, setCountries] = useState<Country[]>([]);
   const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
@@ -50,22 +51,44 @@ const Category = () => {
   });
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
+  const [isEdit, setIsEdit] = useState(false);
+  const notify = useNotification();
+  const defaultValue = {
+    akiCategoryGuidePrice: 0,
+    akiCategoryGuideWeight: 0,
+    akiCategoryListOrder: 0,
+    akiCategoryPopular: false,
+    akiCategoryImageURL: '',
+    akiCategoryImageHeight: 0,
+    akiCategoryImageWidth: 0,
+    akiCategoryIncludeInSearchByManufacture: false,
+    akiCategoryMinimumDigits: 0,
+    akiCategoryReturnType: '',
+    akiCategoryShowPriceBreaks: false,
+    akiCategoryCommodityCode: '',
+    akiCategoryPromptUserIfPriceGroupIsBlank: false,
+    akiCategoryCountryOfOrigin: '',
+    akiCategoryTickBoxNotInUse: false,
+    akiCategoryUseComplexSearch: false,
+    akiCategoryDiscount: 0,
+    akiCategoryLogInAndGreenTickOnly: false,
+    akiCategoryPrintCatImage: '',
+    akiCategoryPrintCatTemp: false,
+    akiCategoryAlternativeTitle: '',
+    akiCategoryIndex1: '',
+    akiCategoryIndex2: '',
+    akiCategoryIndex3: '',
+    akiCategoryIndex4: '',
+    akiCategoryIndex5: '',
+    aki_Indentation: 0,
+    akiDepartment: '',
+    akidepartmentname: '',
+    // akI_Show_Category_Text: false,
+    // akI_Show_Category_Image: false,
+    akI_Layout_Template: '',
+    akiCategoryDescriptionText: '',
+  };
   useEffect(() => {
-    if (location.pathname === '/category/add') {
-      categoryForm.setFieldValue('akiDepartment', sessionStorage.getItem('departmentId'));
-      categoryForm.setFieldValue('akiCategoryID', 0);
-      categoryForm.setFieldValue('akiCategoryParentID', sessionStorage.getItem('CategoryId'));
-      setLoading(false);
-      return;
-    }
-
-    const currentCategoryId = sessionStorage.getItem('CategoryId') || null;
-    if (currentCategoryId) {
-      setCategoryId(currentCategoryId);
-    } else {
-      message.error('Category ID not found. Please select from home page.');
-      navigate('/home');
-    }
     const fetchInitialData = async () => {
       try {
         const [countriesData, commoditiesData, layoutsData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getCategoryLayouts()]);
@@ -78,11 +101,29 @@ const Category = () => {
           }))
         );
       } catch {
-        message.error('Could not load necessary form options.');
+        notify.error('Could not load necessary form options.');
       }
     };
+
     fetchInitialData();
-  }, [navigate, location.pathname]);
+
+    if (location.pathname === '/category/add') {
+      categoryForm.setFieldValue('akiDepartment', sessionStorage.getItem('departmentId'));
+      categoryForm.setFieldValue('akiCategoryID', '0');
+      categoryForm.setFieldValue('akiCategoryParentID', sessionStorage.getItem('CategoryId') ? sessionStorage.getItem('CategoryId') : '0');
+      setLoading(false);
+      return;
+    }
+    const currentCategoryId = sessionStorage.getItem('CategoryId') || '';
+    if (currentCategoryId) {
+      setCategoryId(currentCategoryId);
+      categoryForm.setFieldValue('akiCategoryID', currentCategoryId);
+      setIsEdit(true);
+    } else {
+      notify.error('Category ID not found. Please select from home page.');
+      // navigate('/home');
+    }
+  }, [navigate, location.pathname, categoryForm, notify]);
 
   const fetchCategoryById = useCallback(
     async (id: string) => {
@@ -110,15 +151,15 @@ const Category = () => {
             urlLinks: String((details as Record<string, unknown>).urlLinksCount || 0),
           });
         } else {
-          message.error('Failed to load category details.');
+          notify.error('Failed to load category details.');
         }
       } catch {
-        message.error('Something went wrong');
+        notify.error('Something went wrong');
       } finally {
         setLoading(false);
       }
     },
-    [categoryForm]
+    [categoryForm, notify]
   );
 
   const fetchAdditionalCategory = useCallback(
@@ -130,20 +171,22 @@ const Category = () => {
         const maxListOrder = data.length > 0 ? Math.max(...data.map((cat) => Number(cat.listOrder) || 0)) : 0;
         addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } catch {
-        message.error('Error fetching associated products list.');
+        notify.error('Error fetching associated products list.');
         setAdditionalCategoryList([]);
       } finally {
         setIsAssociatePLoading(false);
       }
     },
-    [addAssociatedProductForm]
+    [addAssociatedProductForm, notify]
   );
+
   useEffect(() => {
     if (categoryId) {
       fetchCategoryById(categoryId);
       fetchAdditionalCategory(categoryId);
     }
   }, [categoryId, fetchCategoryById, fetchAdditionalCategory]);
+
   type ProductApiResponse = {
     products: Product[];
     totalRecords: number;
@@ -181,26 +224,30 @@ const Category = () => {
         };
       });
     } catch {
-      message.error('Could not load products.');
+      notify.error('Could not load products.');
       setProductNameList([]);
     } finally {
       setLoadingProduct(false);
     }
-  }, [isVisibleAddProductModal, productTableParams.pagination, productSearchValue, additionalCategoryList]);
+  }, [isVisibleAddProductModal, productTableParams.pagination, productSearchValue, additionalCategoryList, notify]);
 
   useEffect(() => {
     if (isVisibleAddProductModal) {
       fetchProductsForModal();
     }
   }, [isVisibleAddProductModal, productSearchValue, productTableParams.pagination, fetchProductsForModal]);
+
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
-    if (!categoryId) return;
+    // if (!categoryId) return;
     setBtnLoading(true);
-    const updatePayload: UpdateCategoryModel = {
+    console.log('value', values);
+    const payload: UpdateCategoryModel = {
       ...values,
-      akiCategoryID: categoryId,
-      akiCategoryParentID: categoryDetails?.akiCategoryParentID || '',
-      akiDepartment: categoryDetails?.akiDepartment || '',
+      akiCategoryID: values.akiCategoryID || '',
+      // akiCategoryParentID: categoryDetails?.akiCategoryParentID || '',
+      // akiDepartment: categoryDetails?.akiDepartment || '',
+      akiCategoryParentID: values.akiCategoryParentID || '',
+      akiDepartment: values.akiDepartment || '',
       akiCategoryGuidePrice: Number(values.akiCategoryGuidePrice) || 0,
       akiCategoryGuideWeight: Number(values.akiCategoryGuideWeight) || 0,
       akiCategoryListOrder: Number(values.akiCategoryListOrder) || 0,
@@ -220,15 +267,25 @@ const Category = () => {
       aki_Show_Category_Image: (values as UpdateCategoryModel).aki_Show_Category_Image || false,
     };
     try {
-      const response = await updateCategory(updatePayload);
-      if (response.isSuccess) {
-        message.success('Category details updated successfully');
-        navigate('/home');
+      if (isEdit) {
+        const response = await updateCategory(payload);
+        if (response.isSuccess) {
+          notify.success('Category details updated successfully');
+          navigate('/home');
+        } else {
+          notify.error('Category details not updated');
+        }
       } else {
-        message.error('Category details not updated');
+        const response = await addCategory(payload);
+        if (response.isSuccess) {
+          notify.success('Category details Added successfully');
+          navigate('/home');
+        } else {
+          notify.error('Category details not added');
+        }
       }
     } catch {
-      message.error('Something went wrong');
+      notify.error('Something went wrong');
     } finally {
       setBtnLoading(false);
     }
@@ -245,7 +302,7 @@ const Category = () => {
     const listOrder = Number(values.listorder);
     const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder);
     if (isListOrderExist) {
-      message.error('List order already exists, please choose another number.');
+      notify.error('List order already exists, please choose another number.');
       return;
     }
     const payload: AssociatedProductRequestModel = {
@@ -262,10 +319,10 @@ const Category = () => {
         addAssociatedProductForm.resetFields();
         fetchAdditionalCategory(categoryId);
       } else {
-        message.error('Associated product not added');
+        notify.error('Associated product not added');
       }
     } catch {
-      message.error('Something went wrong');
+      notify.error('Something went wrong');
     }
   };
 
@@ -284,7 +341,7 @@ const Category = () => {
       const listOrder = Number(values.listOrder);
       const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.product !== editingId);
       if (isListOrderExist) {
-        message.error('List order already exists, please choose another number.');
+        notify.error('List order already exists, please choose another number.');
         return;
       }
       const payload: AssociatedProductRequestModel = {
@@ -295,16 +352,16 @@ const Category = () => {
       };
       const response = await updateAssociatedProduct(payload);
       if (response.isSuccess) {
-        message.success('Associated product updated successfully');
+        notify.success('Associated product updated successfully');
         setEditingId(null);
         fetchAdditionalCategory(categoryId!);
       } else {
-        message.error('Associated product not updated');
+        notify.error('Associated product not updated');
       }
     } catch (error) {
       if ((error as {errorFields?: unknown}).errorFields) return;
       else {
-        message.error('Something went wrong');
+        notify.error('Something went wrong');
       }
     }
   };
@@ -324,16 +381,16 @@ const Category = () => {
       product: record.akiProductID,
       productName: record.akiProductName,
     });
-    message.success(`Selected: ${record.akiProductName}`);
+    notify.success(`Selected: ${record.akiProductName}`);
   };
   const handleFileChange = (info: UploadChangeParam<UploadFile>, formInstance: typeof categoryForm, fieldName: string) => {
     const file = info.file?.originFileObj;
     if (file) {
       formInstance.setFieldsValue({[fieldName]: file.name});
       if (info.file.status === 'done') {
-        message.success(`${info.file.name} uploaded successfully.`);
+        notify.success(`${info.file.name} uploaded successfully.`);
       } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} upload failed.`);
+        notify.error(`${info.file.name} upload failed.`);
       }
     } else if (info.file.status === 'removed') {
       formInstance.setFieldsValue({[fieldName]: ''});
@@ -439,13 +496,13 @@ const Category = () => {
           <div className="flex gap-x-3">
             <Button onClick={() => navigate('/home')}>Close</Button>
             <Button type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
-              Save
+              {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
         </div>
         <hr className="mt-2 mb-1 border-light-border" />
         <div className="p-4 pt-3">
-          <Form form={categoryForm} layout="vertical" onFinish={handleCategoryUpdateSubmit}>
+          <Form form={categoryForm} layout="vertical" onFinish={handleCategoryUpdateSubmit} initialValues={defaultValue}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
               <div className="lg:col-span-6 md:col-span-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">

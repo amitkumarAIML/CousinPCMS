@@ -9,7 +9,7 @@ const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [skusList, setSkusList] = useState<SKuList[]>([]);
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
-  const [productId] = useState<string | null>(sessionStorage.getItem('productId') || '3024');
+  const [productId] = useState<string | null>(sessionStorage.getItem('productId') || '');
   const notify = useNotification();
 
   useEffect(() => {

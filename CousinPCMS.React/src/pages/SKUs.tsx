@@ -5,7 +5,7 @@ import type {FormInstance} from 'antd/es/form';
 import SKUDetails from '../components/skus/SKUDetails';
 import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
-import {updateSkus, getSkuItemById} from '../services/SkusService';
+import {updateSkus, getSkuItemById, addSkus} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
 import type {SKuList, SkuRequestModel} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
@@ -16,6 +16,7 @@ const SKUs = () => {
   const [btnSaveLoading, setBtnSaveLoading] = useState<boolean>(false);
   const [skuData, setSkuData] = useState<SKuList | null>(null);
   const [skuDetailsFormInstance, setSkuDetailsFormInstance] = useState<FormInstance | null>(null);
+  const [isEdit, setIsEdit] = useState(false);
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -50,11 +51,13 @@ const SKUs = () => {
   );
 
   useEffect(() => {
-    if (location.pathname === '/departments/add') {
+    if (location.pathname === '/skus/add') {
       setLoading(false);
       return;
     }
-
+    if (location.pathname === '/skus/edit') {
+      setIsEdit(true);
+    }
     const itemNumFromSession = sessionStorage.getItem('itemNumber') || '';
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
@@ -73,10 +76,7 @@ const SKUs = () => {
       notify.error('SKU details form is not ready.');
       return;
     }
-    if (!skuData) {
-      notify.error('SKU data is missing.');
-      return;
-    }
+
     try {
       const values = await skuDetailsFormInstance.validateFields();
       const formData = values;
@@ -92,12 +92,22 @@ const SKUs = () => {
       const isLayoutTemplateSet = !!cleanedPayload.akiLayoutTemplate;
       cleanedPayload.akiPrintLayoutTemp = isLayoutTemplateSet;
       setBtnSaveLoading(true);
-      const response = await updateSkus(cleanedPayload);
-      if (response.isSuccess) {
-        notify.success('SKU Details Updated Successfully');
-        navigate('/home');
+      if (isEdit) {
+        const response = await updateSkus(cleanedPayload);
+        if (response.isSuccess) {
+          notify.success('SKU Details Updated Successfully');
+          navigate('/home');
+        } else {
+          notify.error('SKU Details Update Failed');
+        }
       } else {
-        notify.error('SKU Details Update Failed');
+        const response = await addSkus(cleanedPayload);
+        if (response.isSuccess) {
+          notify.success('SKU Details Added Successfully');
+          navigate('/home');
+        } else {
+          notify.error('SKU Details Added Failed');
+        }
       }
     } catch (errorInfo: unknown) {
       if (
@@ -118,21 +128,15 @@ const SKUs = () => {
   };
 
   const tabBarExtraContent = (
-    <div className="flex gap-x-3 mb-2 mr-2">
+    <div className="flex gap-x-3 mb-2 mr-4">
       <Button onClick={handleCancel}>Close</Button>
       {activeTab === '1' && (
-        <Button
-          type="primary"
-          loading={btnSaveLoading}
-          onClick={handleSave}
-          disabled={!skuData}
-        >
-          Save
+        <Button type="primary" loading={btnSaveLoading} onClick={handleSave}>
+          {isEdit ? 'Update' : 'Save'}
         </Button>
       )}
     </div>
   );
-  
 
   return (
     <>

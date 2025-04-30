@@ -29,7 +29,12 @@ export const getCategoryLayouts = async (): Promise<categorylayout[]> => {
 };
 
 export const updateCategory = async (categoryData: UpdateCategoryModel): Promise<ApiResponse<string>> => {
-  const response = await http.patch<ApiResponse<string>>('Category/UpdateCategory', categoryData);
+  const response = await http.post<ApiResponse<string>>('Category/UpdateCategory', categoryData);
+  return response;
+};
+
+export const addCategory = async (categoryData: UpdateCategoryModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Category/AddCategory', categoryData);
   return response;
 };
 
@@ -39,7 +44,7 @@ export const addAssociatedProduct = async (associatedFormProductData: Associated
 };
 
 export const updateAssociatedProduct = async (associatedFormProductData: AssociatedProductRequestModel): Promise<ApiResponse<string>> => {
-  const response = await http.patch<ApiResponse<string>>('Category/UpdateAssociatedProduct', associatedFormProductData);
+  const response = await http.post<ApiResponse<string>>('Category/UpdateAssociatedProduct', associatedFormProductData);
   return response;
 };
 

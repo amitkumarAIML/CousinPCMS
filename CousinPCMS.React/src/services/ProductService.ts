@@ -14,9 +14,15 @@ import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/lin
 import {ApiResponse} from '../models/generalModel';
 
 export const updateProduct = async (productData: ProductRequest): Promise<ApiResponse<string>> => {
-  const response = await http.patch<ApiResponse<string>>('Product/UpdateProduct', productData);
+  const response = await http.post<ApiResponse<string>>('Product/UpdateProduct', productData);
   return response;
 };
+
+export const addProduct = async (productData: ProductRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Product/AddProduct', productData);
+  return response;
+};
+
 
 export const getLayoutTemplateList = async (): Promise<layoutProduct[]> => {
   const response = await http.get<layoutProductResponse>('Product/GetProductLayouts');
@@ -69,7 +75,7 @@ export const addAssociatedProduct = async (associatedFormProductData: Associated
 };
 
 export const updateAssociatedProduct = async (associatedFormProductData: AssociatedProductRequestModelForProduct): Promise<ApiResponse<string>> => {
-  const response = await http.patch<ApiResponse<string>>('Product/UpdateAssociatedProduct', associatedFormProductData);
+  const response = await http.post<ApiResponse<string>>('Product/UpdateAssociatedProduct', associatedFormProductData);
   return response;
 };
 

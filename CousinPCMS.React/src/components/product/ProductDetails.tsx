@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, forwardRef, useImperativeHandle} from 'react';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
 import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
@@ -37,7 +37,7 @@ interface TableParams {
   filters?: Record<string, FilterValue | null>;
 }
 
-const ProductDetails = () => {
+const ProductDetails = forwardRef((props, ref) => {
   const [productForm] = Form.useForm<Product>();
   const [editAssociatedProductForm] = Form.useForm<Omit<AdditionalProductModel, 'additionalProductName'>>();
   const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}>();
@@ -79,10 +79,16 @@ const ProductDetails = () => {
   const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
   const akiProductImageURL = Form.useWatch('akiProductImageURL', productForm);
 
-  useEffect(() => {}, [productForm]);
-
   const notify = useNotification();
   const location = useLocation();
+  const defaultValue = {
+    akiProductImageHeight: 0,
+    akiProductImageWidth: 0,
+    akiProductListOrder: 0,
+    akiProductShowPriceBreaks: false,
+    akiProductWebActive: false,
+    akiProductIsActive: false,
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -101,16 +107,32 @@ const ProductDetails = () => {
         setLoading(false);
       }
     };
+
+    const attributeSet = async () => {
+      try {
+        const cateId = sessionStorage.getItem('CategoryId') || '';
+        const response = await getDistinctAttributeSetsByCategoryId(cateId);
+        if (!response.isSuccess || !response.value || response.value.length === 0) {
+          notify.error('Failed to load attribute set data.');
+          return;
+        }
+        setAttributslist(response.value[0]);
+      } catch (error) {
+        console.error('Error in API call:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchInitialData();
     attributeSet();
 
-    if (location.pathname === '/products/add') {
+    if (location.pathname === '/products/add' || !sessionStorage.getItem('productId')) {
       productForm.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId'));
-      productForm.setFieldValue('akiProductID', 0);
+      productForm.setFieldValue('akiProductID', '0');
+      setAkiProductID(0);
       setLoading(false);
       return;
     }
-
     const productIdFromSession = sessionStorage.getItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
@@ -121,6 +143,7 @@ const ProductDetails = () => {
             setAkiProductID(product.akiProductID);
             productForm.setFieldsValue({
               ...product,
+              category_Name: product.category_Name,
               akiProductPrintLayoutTemp: !!product.akiProductPrintLayoutTemp,
               akiProductShowPriceBreaks: !!product.akiProductShowPriceBreaks,
               akiProductWebActive: !!product.akiProductWebActive,
@@ -138,8 +161,12 @@ const ProductDetails = () => {
       notify.error('Product ID not found. Please select a product.');
       setProductLoading(false);
     }
-    productForm.getFieldValue('akiProductName')?.disable?.();
-  }, [productForm, notify]);
+    // productForm.getFieldValue('akiProductName')?.disable?.();
+  }, [productForm, notify, location.pathname]);
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => productForm,
+  }));
 
   const fetchAdditionalProduct = useCallback(
     async (productId: number) => {
@@ -482,23 +509,6 @@ const ProductDetails = () => {
     window.location.href = '/products/additional-images';
   };
 
-  const attributeSet = async () => {
-    try {
-      const cateId = sessionStorage.getItem('CategoryId') || '';
-      const response = await getDistinctAttributeSetsByCategoryId(cateId);
-      if (!response.isSuccess || !response.value || response.value.length === 0) {
-        notify.error('Failed to load attribute set data.');
-        return;
-      }
-      setAttributslist(response.value[0]);
-      console.log('Attribute Set:', response);
-    } catch (error) {
-      console.error('Error in API call:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const goToSetAttribute = () => {
     setIsSetAttributeVisable(true);
   };
@@ -506,7 +516,11 @@ const ProductDetails = () => {
   return (
     <Spin spinning={loading || productLoading}>
       <div>
-        <Form form={productForm} layout="vertical">
+        <Form form={productForm} layout="vertical" initialValues={defaultValue}>
+          {/* Hidden field for category_Name to ensure it is included in form values */}
+          <Form.Item name="category_Name" style={{display: 'none'}}>
+            <Input type="hidden" />
+          </Form.Item>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
             <div className="lg:col-span-6 md:col-span-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">
@@ -523,7 +537,7 @@ const ProductDetails = () => {
               </div>
               <div className="relative">
                 <Form.Item label="Product Name" name="akiProductName" rules={[{required: true, message: 'Product name is required'}]}>
-                  <Input maxLength={charLimit.akiProductName} disabled className="pr-12" />
+                  <Input maxLength={charLimit.akiProductName} className="pr-12" />
                 </Form.Item>
                 <span className="absolute -right-14 top-7 transform ">
                   {akiProductName?.length || 0} / {charLimit.akiProductName}
@@ -574,7 +588,7 @@ const ProductDetails = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
                 <div className="flex items-end gap-x-2  md:col-span-2">
-                  <Form.Item label="Image URL" name="akiProductImageURL" className="w-full" rules={[{type: 'url', message: 'Please enter a valid URL'}]}>
+                  <Form.Item label="Image URL" name="akiProductImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL'}]}>
                     <Input maxLength={charLimit.akiProductImageURL} className="flex-grow pr-16" />
                   </Form.Item>
                   <Upload
@@ -754,6 +768,6 @@ const ProductDetails = () => {
       </Modal>
     </Spin>
   );
-};
+});
 
 export default ProductDetails;

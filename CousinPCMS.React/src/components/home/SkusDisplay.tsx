@@ -23,8 +23,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('selectedProductId', selectedProductId, selectedCategory, sessionStorage.getItem('productId'));
-
     if (!selectedProductId || !selectedCategory || !sessionStorage.getItem('productId')) {
       setDisplayText('Click on a product to view the SKU');
       setSkus([]);

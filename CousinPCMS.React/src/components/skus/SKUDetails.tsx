@@ -18,7 +18,7 @@ import type {ApiResponse} from '../../models/generalModel';
 import {ItemCharLimit} from '../../models/char.constant';
 import AttributeValuesPopup from '../../components/attribute/AttributeValuesPopup';
 interface SkuDetailsProps {
-  skuData: SKuList | null;
+  skuData?: SKuList | null;
   onFormInstanceReady: (form: FormInstance<SKuList>) => void;
 }
 
@@ -72,10 +72,29 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     },
     [notify]
   );
+  const defaultValue = {
+    akiGuidePriceTBC: 0,
+    akiGuideWeightTBC: 0,
+    akiListOrder: 0,
+    akiObsolete: false,
+    akiSKUIsActive: false,
+    akiWebActive: false,
+    akiCurrentlyPartRestricted: false,
+    akiSKUDescription: '',
+    akiPricingFormula: '',
+    akiPriceGroup: '',
+    akiPriceBreak: '',
+    akiManufacturerRef: '',
+    akiImageURL: '',
+    akiCompetitors: '',
+    akiCommodityCode: '',
+    akiAlternativeTitle: '',
+  };
 
   useEffect(() => {
     onFormInstanceReady(form);
   }, [form, onFormInstanceReady]);
+
   useEffect(() => {
     const fetchDropdowns = async () => {
       try {
@@ -93,17 +112,23 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
         setCommodityCode(commRes || []);
         setLayoutOptions(layoutRes || []);
         setCompetitors(compRes || []);
-        setPriceGroupItem(pgRes?.isSuccess ? pgRes.value : []);
-        setPriceBreaks(pbRes?.isSuccess ? pbRes.value : []);
-        setPricingFormulas(pfRes?.isSuccess ? pfRes.value : []);
+        setPriceGroupItem(pgRes?.isSuccess ? (pgRes.value && pgRes.value.length > 0 ? pgRes.value : []) : []);
+        setPriceBreaks(pbRes?.isSuccess ? (pbRes.value && pbRes.value.length > 0 ? pbRes.value : []) : []);
+        setPricingFormulas(pfRes?.isSuccess ? (pfRes.value && pfRes.value.length > 0 ? pfRes.value : []) : []);
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
         notify.error('Failed to load some form options.');
       }
     };
     fetchDropdowns();
-  }, [notify]);
-  useEffect(() => {
+    if (location.pathname === '/skus/add') {
+      form.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId') || '0');
+      form.setFieldValue('akiProductID', sessionStorage.getItem('productId') || '0');
+      form.setFieldValue('akiSKUID', '0');
+      form.setFieldValue('akiitemid', '0');
+      console.log('SKU Add page loaded', form.getFieldsValue());
+      return;
+    }
     if (skuData) {
       form.resetFields();
       form.setFieldsValue({
@@ -115,7 +140,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
         additionalImages: String((skuData as {additionalImagesCount?: number}).additionalImagesCount || 0),
         urlLinks: String((skuData as {urlLinksCount?: number}).urlLinksCount || 0),
       });
-
       if (skuData.akiCategoryID) {
         fetchSkuAttributesByCategoryId(skuData.akiCategoryID);
       } else {
@@ -125,7 +149,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       form.resetFields();
       setSavedAttributes([]);
     }
-  }, [skuData, form, fetchSkuAttributesByCategoryId]);
+  }, [notify, form, fetchSkuAttributesByCategoryId, skuData]);
+
   const handleFileChange = (info: UploadChangeParam<UploadFile>) => {
     const file = info.file?.originFileObj;
     if (file) {
@@ -169,7 +194,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
   return (
     <div>
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" initialValues={defaultValue}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
           <div className="lg:col-span-6 md:col-span-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3">
@@ -296,10 +321,10 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
               <Form.Item label="Guide Price" name="akiGuidePriceTBC">
-                <InputNumber min={0} step={0.01} precision={2} style={{width: '100%'}} />
+                <InputNumber min={0} style={{width: '100%'}} />
               </Form.Item>
               <Form.Item label="Guide Weight" name="akiGuideWeightTBC">
-                <InputNumber min={0} step={0.01} precision={2} style={{width: '100%'}} />
+                <InputNumber min={0} style={{width: '100%'}} />
               </Form.Item>
               <Form.Item
                 label={

@@ -8,7 +8,7 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { Subscription } from 'rxjs';
 import { SkusListComponent } from './skus-list/skus-list.component';
 import { ProductsService } from './products.service';
-import { ProductRequest, ProductResponse, ProductUpdateResponse } from '../../shared/models/productModel';
+import { Product, ProductRequest, ProductResponse, ProductUpdateResponse } from '../../shared/models/productModel';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzIconModule } from 'ng-zorro-antd/icon';

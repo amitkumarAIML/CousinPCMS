@@ -8,7 +8,7 @@ import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
 import {getCommodityCodes, cleanEmptyNullToString} from '../services/DataService';
 import {useNotification} from '../contexts.ts/useNotification';
-import {getLayoutTemplateList, getDepartmentById, updateDepartment} from '../services/DepartmentService';
+import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
 
 interface DepartmentInfoProps {
@@ -28,6 +28,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
   const departmentId = sessionStorage.getItem('departmentId') || '';
+  const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
 
   useEffect(() => {
@@ -42,19 +43,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchData();
-  }, [notify]);
 
-  useEffect(() => {
-    if (location.pathname === '/departments/add') {
+    if (location.pathname === '/departments/add' || !departmentId) {
       form.setFieldValue('akiDepartmentID', 0);
       setLoading(false);
       return;
     }
-    if (!departmentId) {
-      notify.error('Department ID not found. Please select a department.');
 
-      return;
-    }
+    setIsEdit(true);
+
     const fetchDepartment = async () => {
       try {
         const response = await getDepartmentById(departmentId);
@@ -77,7 +74,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchDepartment();
-  }, [form, departmentId, navigate, notify]);
+  }, [form, departmentId, navigate, notify, location.pathname]);
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Department) => {
     const {value} = event.target;
@@ -116,21 +113,37 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       .validateFields()
       .then((values) => {
         values.akiDepartmentIsActive = true;
-
+        console.log('Form values:', values);
         const cleanedForm = cleanEmptyNullToString(values);
-        updateDepartment(cleanedForm)
-          .then((response) => {
-            if (response.isSuccess) {
-              notify.success('Department Details Updated Successfully');
-              navigate('/home');
-            } else {
-              notify.error('Department Details Failed to Update');
-            }
-          })
-          .catch((err) => {
-            console.error('Error updating department:', err);
-            notify.error('Failed to update department details.');
-          });
+        if (isEdit) {
+          updateDepartment(cleanedForm)
+            .then((response) => {
+              if (response.isSuccess) {
+                notify.success('Department Details Updated Successfully');
+                navigate('/home');
+              } else {
+                notify.error('Department Details Failed to Update');
+              }
+            })
+            .catch((err) => {
+              console.error('Error updating department:', err);
+              notify.error('Failed to update department details.');
+            });
+        } else {
+          addDepartment(cleanedForm)
+            .then((response) => {
+              if (response.isSuccess) {
+                notify.success('Department Details Added Successfully');
+                navigate('/home');
+              } else {
+                notify.error('Department Details Failed to Add');
+              }
+            })
+            .catch((err) => {
+              console.error('Error updating department:', err);
+              notify.error('Failed to update department details.');
+            });
+        }
       })
       .catch((errorInfo) => {
         notify.error('Please fill in all required fields correctly.' + errorInfo);
@@ -143,9 +156,11 @@ const Department: React.FC<DepartmentInfoProps> = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Department Form</span>
           <div className="flex gap-x-3">
-            <Button type="default">Close</Button>
+            <Button type="default" onClick={() => navigate('/home')}>
+              Close
+            </Button>
             <Button type="primary" onClick={handleFormSubmit}>
-              Save
+              {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
         </div>
@@ -161,6 +176,8 @@ const Department: React.FC<DepartmentInfoProps> = () => {
               akiDepartmentIsActive: true,
               akiColor: '#F7941D',
               akiFeaturedProdBGColor: '#FFFF80',
+              akiDepartmentImageWidth: 0,
+              akiDepartmentImageHeight: 0,
             }}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">

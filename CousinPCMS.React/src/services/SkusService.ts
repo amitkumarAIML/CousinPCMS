@@ -14,6 +14,12 @@ export const updateSkus = async (skusData: SkuRequestModel): Promise<ApiResponse
   return response;
 };
 
+export const addSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<SKuList>> => {
+  const response = await http.post<ApiResponse<SKuList>>('Item/AddItem', skusData);
+  return response;
+};
+
+
 export const deleteSkus = async (itemId: number): Promise<ApiResponse<string>> => {
   const response = await http.get<ApiResponse<string>>('Skus/DeleteItem', {params: {itemno: itemId}});
   return response;

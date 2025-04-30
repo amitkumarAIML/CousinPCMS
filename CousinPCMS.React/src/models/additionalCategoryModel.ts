@@ -15,7 +15,6 @@ export interface AssociatedProductRequestModel{
   isAdditionalProduct:boolean
 }
 export interface UpdateCategoryModel{
-
     akiCategoryID: string;
     akiCategoryParentID: string;
     akiCategoryName: string;  

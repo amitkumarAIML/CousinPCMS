@@ -177,6 +177,8 @@ export interface SkuRequestModel {
   akiSKUDescription?: string;
   akiManufacturerRef?: string;
   akiitemid?: string;
+  akiProductID: string,
+  akiCategoryID: string,
   akiListOrder?: string;
   akiObsolete: boolean;
   akiWebActive: boolean;
@@ -193,7 +195,9 @@ export interface SkuRequestModel {
   akiPriceBreak?: string;
   akiPriceGroup?: string;
   akiPricingFormula?: string;
-  akiPrintLayoutTemp: boolean
+  akiPrintLayoutTemp: boolean;
+  additionalImages?: string;
+  urlLinks?: string;
 }
 
 export interface SkuListResponse {
