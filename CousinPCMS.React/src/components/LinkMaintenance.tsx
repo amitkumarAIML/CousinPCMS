@@ -232,7 +232,7 @@ const LinkMaintenance = () => {
         <span className="text-sm font-medium">Video Links</span>
         {!showForm && (
           <Button type="default" onClick={goBack}>
-            Back
+            Close
           </Button>
         )}
       </div>

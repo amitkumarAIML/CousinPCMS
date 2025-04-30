@@ -81,7 +81,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     }
     const filtered = skus.filter((item) => {
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
-      return normalize(item.skuName).includes(searchText);
+      return normalize(item.akiitemid).includes(searchText);
     });
     setFilteredData(filtered);
     if (filtered.length === 0) setDisplayText('No SKU Found');
@@ -147,33 +147,33 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     },
 
     {
-      title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef',
+      title: 'MFR Ref No', dataIndex: 'akiManufacturerRef',width:160
     },
-    { title: 'ITEM_NUMBER', dataIndex: 'akiitemid' },
-    { title: 'ListOrder', dataIndex: 'akiListOrder' },
+    { title: 'Item No', dataIndex: 'akiitemid' ,width:130},
+    { title: 'List Order', dataIndex: 'akiListOrder' ,width:130},
     {
       title: 'Obsolete',
       dataIndex: 'akiObsolete',
       align: 'center',
-      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
+      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,width:120
     },
     {
       title: 'Unavailable',
       dataIndex: 'salesBlocked',
       align: 'center',
-      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
+      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,width:120
     },
     {
       title: 'CatActive',
       dataIndex: 'akiSKUIsActive',
       align: 'center',
-      render: (isActive) => <Checkbox checked={isActive} disabled />,
+      render: (isActive) => <Checkbox checked={isActive} disabled />,width:120
     },
     {
-      title: 'TemplateID', dataIndex: 'akiTemplateID', align: 'center',
+      title: 'Temp ID', dataIndex: 'akiTemplateID', align: 'center', width:120,
     },
     { title: 'AltSkuName', dataIndex: 'akiAltSKUName' },
-    { title: 'CommodityCode', dataIndex: 'akiCommodityCode', align: 'center', },
+    { title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center',width:150 },
   ];
 
   return (

@@ -1,6 +1,7 @@
 export const CategoryCharLimit = {
     akiCategoryName: 100,
-    akiCategoryImageURL: 255
+    akiCategoryImageURL: 255,
+    akiCategoryDescriptionText:5000
   } as const;
   
   export const DepartmentCharLimit = {
