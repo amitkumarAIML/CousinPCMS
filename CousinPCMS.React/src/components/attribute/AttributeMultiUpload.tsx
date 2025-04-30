@@ -1,5 +1,5 @@
 import {useState, useEffect, useCallback} from 'react';
-import {useNavigate, Link} from 'react-router';
+import {useNavigate} from 'react-router';
 import {Table, Checkbox, Spin, Button} from 'antd';
 import type {TableProps} from 'antd/es/table';
 import type {CheckboxChangeEvent} from 'antd/es/checkbox';
@@ -176,9 +176,6 @@ const AttributeMultiUpload = () => {
             <Button type="default" onClick={handleCancel}>
               Close
             </Button>
-            <Link to="/attributes/add">
-              <Button type="primary">New Value</Button>
-            </Link>
           </div>
         </div>
         <hr className="mt-2 mb-1 border-gray-200" />

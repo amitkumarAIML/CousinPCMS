@@ -208,7 +208,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
   };
 
   const columns = [
-    {title: 'Attribute Name', dataIndex: 'attributeName', width: 200},
+    {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200},
     {title: 'Required', dataIndex: 'attributeRequired', width: 40, render: (val: boolean) => <Checkbox checked={val} disabled />},
     {title: 'Not Important', dataIndex: 'notImportant', width: 50, render: (val: boolean) => <Checkbox checked={val} disabled />},
     {title: 'List Position', dataIndex: 'listPosition', width: 50},
@@ -273,21 +273,22 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
               <div className=" border border-border rounded-md bg-white">
                 <List
                   size="small"
+                  className="attribute-list"
                   header={
-                    <div className="text-sm flex justify-between gap-2 px-2 font-medium text-primary-font sticky top-0 bg-white z-10 ">
+                    <div className="flex justify-between pl-2 items-center bg-border gap-2  m-0  text-primary-font sticky top-0 z-10 ">
                       Attribute Details
                       <Input
                         placeholder="Search"
                         value={searchValue}
                         onChange={onSearch}
-                        className="w-40"
+                        className="w-40 m-0"
                         suffix={searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />}
                       />
                     </div>
                   }
                   dataSource={filteredData}
                   renderItem={(item) => (
-                    <List.Item className="cursor-pointer text-secondary-font flex justify-between items-center px-4 py-2">
+                    <List.Item className="cursor-pointer text-secondary-font flex justify-between items-center py-1 px-2">
                       <span>{item.attributeName}</span>
                       <a onClick={() => addAttributeData(item)} className="text-primary-theme">
                         Link
@@ -326,7 +327,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
                   <Checkbox>Not Important</Checkbox>
                 </Form.Item>
               </div>
-              <Form.Item label="List Position" name="listPosition">
+              <Form.Item label="List Order" name="listPosition">
                 <Input type="number" className="w-full" />
               </Form.Item>
             </div>

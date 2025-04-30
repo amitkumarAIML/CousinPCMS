@@ -11,8 +11,8 @@ export const CategoryCharLimit = {
   } as const;
   
   export const ProductCharLimit = {
-    akiProductName: 100,
-    akiProductDescription: 2000,
+    akiProductName: 200,
+    akiProductDescription: 5000,
     akiProductImageURL: 255
   } as const;
   
@@ -20,7 +20,7 @@ export const CategoryCharLimit = {
     akiitemid: 31,
     akiManufacturerRef: 50,
     akiSKUDescription: 2000,
-    skuName: 100,
+    skuName: 200,
     akiImageURL: 255
   } as const;
   

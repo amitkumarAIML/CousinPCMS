@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation, useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
 import {EditOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import IndexEntryFields from '../components/shared/IndexEntryFields';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
@@ -457,11 +458,9 @@ const Category = () => {
             <Button onClick={handleUpdateAssociatedProduct} type="link" style={{padding: 0}}>
               Save
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={handleCancelEdit}>
-              <Button type="link" danger style={{padding: 0}}>
+              <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
                 Close
               </Button>
-            </Popconfirm>
           </span>
         ) : (
           <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
@@ -712,23 +711,7 @@ const Category = () => {
                 <div className="mt-1">
                   <label className="font-medium text-secondary-font block mb-1">Index Entry Text</label>
                   <div className="border border-border rounded-lg p-4">
-                    <div className="grid grid-cols-1 gap-y-1">
-                      <Form.Item label="Index Entry 1" name="akiCategoryIndex1" className="mb-1">
-                        <Input />
-                      </Form.Item>
-                      <Form.Item label="Index Entry 2" name="akiCategoryIndex2" className="mb-1">
-                        <Input />
-                      </Form.Item>
-                      <Form.Item label="Index Entry 3" name="akiCategoryIndex3" className="mb-1">
-                        <Input />
-                      </Form.Item>
-                      <Form.Item label="Index Entry 4" name="akiCategoryIndex4" className="mb-1">
-                        <Input />
-                      </Form.Item>
-                      <Form.Item label="Index Entry 5" name="akiCategoryIndex5" className="mb-1">
-                        <Input />
-                      </Form.Item>
-                    </div>
+                    <IndexEntryFields form={categoryForm} fieldPrefix="akiCategoryIndex" labelPrefix="Index Entry" max={5} />
                   </div>
                 </div>
               </div>

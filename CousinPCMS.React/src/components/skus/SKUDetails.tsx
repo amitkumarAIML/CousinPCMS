@@ -309,7 +309,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                 <Form.Item
                   label={
                     <a onClick={goToAdditionalImage} className="underline cursor-pointer">
-                      No of Additional Images
+                      No of Additional Website Images
                     </a>
                   }
                   name="additionalImages"

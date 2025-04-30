@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback, forwardRef, useImperativeHandle} from 'react';
-import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
+import IndexEntryFields from '../shared/IndexEntryFields';
+import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin,  message} from 'antd';
 import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
@@ -435,6 +436,10 @@ const ProductDetails = forwardRef((props, ref) => {
 
   const associatedProductColumns: TableProps<AdditionalProductModel>['columns'] = [
     {
+      title: 'Product Name',
+      dataIndex: 'additionalProductName',
+    },
+    {
       title: 'List Order',
       dataIndex: 'listOrder',
       width: 100,
@@ -449,10 +454,7 @@ const ProductDetails = forwardRef((props, ref) => {
         return text;
       },
     },
-    {
-      title: 'Product Name',
-      dataIndex: 'additionalProductName',
-    },
+
     {
       title: 'Action',
       key: 'action',
@@ -464,11 +466,9 @@ const ProductDetails = forwardRef((props, ref) => {
             <Button onClick={handleUpdateAssociatedProduct} type="link" style={{padding: 0}}>
               Save
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={handleCancelEdit}>
-              <Button type="link" danger style={{padding: 0}}>
-                Close
-              </Button>
-            </Popconfirm>
+            <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
+              Close
+            </Button>
           </span>
         ) : (
           <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
@@ -607,7 +607,7 @@ const ProductDetails = forwardRef((props, ref) => {
                 <Form.Item
                   label={
                     <a onClick={goToAdditionalImage} className="underline cursor-pointer">
-                      No of Additional Images
+                      No of Additional Website Images
                     </a>
                   }
                   name="additionalImages"
@@ -647,7 +647,7 @@ const ProductDetails = forwardRef((props, ref) => {
                 </div>
               </div>
               {attributslist && (
-                <Form.Item label="Attribute" className="w-full mt-1">
+                <Form.Item label="Attribute Set" className="w-full mt-1">
                   <a onClick={goToSetAttribute} className="underline">
                     {attributslist.attributeSetName}
                   </a>
@@ -676,23 +676,7 @@ const ProductDetails = forwardRef((props, ref) => {
               <div className="mt-1">
                 <label className="font-medium text-primary-font block mb-1">Index Entry Text</label>
                 <div className="border border-border rounded-lg p-4">
-                  <div className="grid grid-cols-1 gap-y-1">
-                    <Form.Item label="Index Entry 1" name="akiProductIndexText1" className="mb-1">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item label="Index Entry 2" name="akiProductIndexText2" className="mb-1">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item label="Index Entry 3" name="akiProductIndexText3" className="mb-1">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item label="Index Entry 4" name="akiProductIndexText4" className="mb-1">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item label="Index Entry 5" name="akiProductIndexText5" className="mb-1">
-                      <Input />
-                    </Form.Item>
-                  </div>
+                  <IndexEntryFields form={productForm} fieldPrefix="akiProductIndexText" labelPrefix="Index Entry" max={5} />
                 </div>
               </div>
             </div>

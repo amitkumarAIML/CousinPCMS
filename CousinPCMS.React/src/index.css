@@ -54,12 +54,14 @@ body {
 .ant-tree .ant-tree-node-content-wrapper {
   padding-inline: 0 !important;
 }
-/* .bg-primary-theme-active .ant-table-cell-fix-left {
+.bg-primary-theme-active .ant-table-cell-fix-left {
   background: var(--color-primary-theme-active) !important ;
-} */
-.bg-primary-theme-active .ant-table-cell-row-hover {
+}
+.bg-primary-theme-active .ant-table-cell-fix-left:hover {
   background: var(--color-primary-theme-active) !important ;
-
+}
+.attribute-list .ant-list-header {
+  padding: 0px !important;
 }
 .ant-list-items {
   height: 200px;

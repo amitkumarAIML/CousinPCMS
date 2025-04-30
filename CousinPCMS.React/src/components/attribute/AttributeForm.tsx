@@ -214,8 +214,6 @@ const AttributeForm = () => {
   const valueColumns = [
     {title: 'Attribute Name', dataIndex: 'attributeName', ellipsis: true},
     {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true},
-    {title: 'New Alternate Value', dataIndex: 'newAlternateValue', ellipsis: true},
-    {title: 'Alternate Value', dataIndex: 'alternateValues', ellipsis: true},
     {
       title: 'Action',
       key: 'action',
@@ -240,70 +238,47 @@ const AttributeForm = () => {
 
         <div className="p-4">
           <Form form={form} layout="vertical">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-12 gap-y-0">
-              <div className="lg:col-span-5 md:col-span-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-end">
-                  <Form.Item label="Search Type" name="searchType" rules={[{required: true, message: 'Search Type is required.'}]} className="mb-3">
-                    <Select placeholder="Select search type" allowClear showSearch options={searchType.map((st) => ({value: st.description, label: st.description, key: st.code}))} />
-                  </Form.Item>
-
-                  <div className="md:col-start-3 flex items-center justify-start md:justify-center h-full pb-3">
-                    <Form.Item name="showAsCategory" valuePropName="checked" noStyle>
-                      <Checkbox>Show as category</Checkbox>
-                    </Form.Item>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <Form.Item label="Attribute Name" name="attributeName" rules={[{required: true, message: 'Attribute Name is required.'}]} className="mb-3">
-                    <Input maxLength={AttributeFormCharLimit.attributeName} disabled={isAttributeNameDisabled} />
-                  </Form.Item>
-                  <span className="absolute -right-12 top-6">
-                    {attributeNametxt?.length} / {AttributeFormCharLimit.attributeName}
-                  </span>
-                </div>
-
-                <div className="relative">
-                  <Form.Item label="Attribute Description" name="attributeDescription" className="mb-3">
-                    <Input maxLength={AttributeFormCharLimit.attributeDescription} />
-                  </Form.Item>
-                  <span className="absolute -right-14 top-6">
-                    {attributeDescriptionetxt?.length} / {AttributeFormCharLimit.attributeDescription}
-                  </span>
-                </div>
+            <div className="grid grid-cols-12 gap-x-12 items-end">
+              <div className="relative col-span-3">
+                <Form.Item label="Attribute Name" name="attributeName" rules={[{required: true, message: 'Attribute Name is required.'}]}>
+                  <Input maxLength={AttributeFormCharLimit.attributeName} disabled={isAttributeNameDisabled} />
+                </Form.Item>
+                <span className="absolute -right-9 top-6">
+                  {attributeNametxt?.length || 0} / {AttributeFormCharLimit.attributeName}
+                </span>
+              </div>
+              <div className="col-span-2 flex items-end justify-center h-full ">
+                <Form.Item name="showAsCategory" valuePropName="checked" noStyle>
+                  <Checkbox>Show as category</Checkbox>
+                </Form.Item>
               </div>
             </div>
           </Form>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 mt-6">
-            <div className="lg:col-span-5 md:col-span-12">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 items-end mb-4">
-                <Form layout="vertical" className="md:col-span-2">
-                  <Form.Item label="Search Values" className="mb-0">
-                    <Input
-                      placeholder="Search attribute values..."
-                      value={searchValue}
-                      onChange={handleSearchChange}
-                      suffix={
-                        searchValue ? <CloseCircleFilled onClick={clearSearchText} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />
-                      }
-                    />
-                  </Form.Item>
-                </Form>
+          <div className="mt-4">
+            <div className="flex justify-between items-center">
+              <Form layout="vertical">
+                <Form.Item label="Attribute Value Search" className="w-96">
+                  <Input
+                    placeholder="Search attribute values..."
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                    suffix={searchValue ? <CloseCircleFilled onClick={clearSearchText} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />}
+                  />
+                </Form.Item>
+              </Form>
 
-                <div className="md:col-span-2 flex justify-start md:justify-end gap-x-2">
-                  <Button type="primary" loading={btnLoading} onClick={handleSaveOrUpdate}>
-                    {isEdit ? 'Update Attribute' : 'Save Attribute'}
-                  </Button>
-                  <Button type="default" onClick={showAddAttributesModal} disabled={isNewValueBtnDisabled}>
-                    New Value
-                  </Button>
-                </div>
+              <div className=" flex gap-x-2">
+                <Button type="primary" loading={btnLoading} onClick={handleSaveOrUpdate}>
+                  {isEdit ? 'Update Attribute' : 'Save Attribute'}
+                </Button>
+                <Button type="default" onClick={showAddAttributesModal} disabled={isNewValueBtnDisabled}>
+                  New Value
+                </Button>
               </div>
-
-              <div className="grid grid-cols-1 mt-2">
-                <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} />
-              </div>
+            </div>
+            <div className="grid grid-cols-1 mt-2">
+              <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} />
             </div>
           </div>
         </div>

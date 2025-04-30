@@ -236,9 +236,9 @@ const AdditionalImages = () => {
   return (
     <div className="main-container">
       <div className="flex flex-wrap justify-between items-center p-4 pb-1">
-        <span className="text-sm font-medium">Additional Images</span>
+        <span className="text-sm font-medium">Additional Website Images</span>
         <Button type="default" onClick={goBack}>
-          Back
+          Close
         </Button>
       </div>
       <hr className="mt-2 mb-2 border-border" />

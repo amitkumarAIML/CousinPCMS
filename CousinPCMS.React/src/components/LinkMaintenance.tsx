@@ -229,7 +229,7 @@ const LinkMaintenance = () => {
   return (
     <div className="main-container">
       <div className="flex flex-wrap justify-between items-center p-4 pb-1">
-        <span className="text-sm font-medium">Link Maintenance</span>
+        <span className="text-sm font-medium">Video Links</span>
         {!showForm && (
           <Button type="default" onClick={goBack}>
             Back
@@ -284,7 +284,7 @@ const LinkMaintenance = () => {
 
           {showForm && (
             <div className="border border-border rounded p-4 md:col-span-2 w-1/2">
-              <label className="text-sm">Link Creator</label>
+              <label className="text-sm">Add New Video Links</label>
               <Form form={form} layout="vertical" className="space-y-2" onFinish={handleSave}>
                 <Form.Item label="Link Text" name="linkText" rules={[{required: true, message: 'Link Text is required.'}]}>
                   <Input placeholder="e.g., View Datasheet" />
