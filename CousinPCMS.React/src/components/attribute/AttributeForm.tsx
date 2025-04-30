@@ -233,7 +233,7 @@ const AttributeForm = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-lg font-medium text-primary-font">{isEdit ? 'Edit Attribute' : 'Add Attribute'}</span>
           <div className="flex gap-x-3">
-            <Button onClick={handleCancel}>Cancel</Button>
+            <Button onClick={handleCancel}>Close</Button>
           </div>
         </div>
         <hr className="mt-2 mb-2 border-border" />

@@ -117,15 +117,22 @@ const SKUs = () => {
     }
   };
 
-  const tabBarExtraContent =
-    activeTab === '1' ? (
-      <div className="flex gap-x-3 mb-2 mr-4">
-        <Button onClick={handleCancel}>Cancel</Button>
-        <Button type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={!skuData}>
+  const tabBarExtraContent = (
+    <div className="flex gap-x-3 mb-2 mr-2">
+      <Button onClick={handleCancel}>Close</Button>
+      {activeTab === '1' && (
+        <Button
+          type="primary"
+          loading={btnSaveLoading}
+          onClick={handleSave}
+          disabled={!skuData}
+        >
           Save
         </Button>
-      </div>
-    ) : null;
+      )}
+    </div>
+  );
+  
 
   return (
     <>

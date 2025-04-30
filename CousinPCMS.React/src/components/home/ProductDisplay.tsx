@@ -184,15 +184,15 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <span>Product Name</span>
+          <span>Products & Attribute Sets</span>
           <button className="text-primary-theme hover:underline text-xs" onClick={handleAddProduct}>
             Add
           </button>
-          <button className={`text-primary-theme hover:underline text-xs ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
+          <button className={`text-primary-theme hover:underline text-xs me-1 ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
             Edit
           </button>
         </div>
-        <div className="w-64">
+        <div className="w-40">
           <Input placeholder="Search" value={searchValue} onChange={handleSearchChange} suffix={inputSuffix} className="rounded" />
         </div>
       </div>
@@ -207,7 +207,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
                   return (
                     <li
                       key={`prod-${item.akiProductID}`}
-                      className={` px-4 py-2 cursor-pointer text-[10px]  transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font'}`}
+                      className={` px-4 py-1 cursor-pointer text-[10px]  transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font'}`}
                       onClick={() => handleProductClick(item)}
                     >
                       {item.akiProductName}
@@ -217,7 +217,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
                   return (
                     <li
                       key={`attr-${item.akiCategoryID}`}
-                      className=" px-4 py-2 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
+                      className=" px-4 py-1 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
                       onClick={() => handleAttributeSetClick(item)}
                     >
                       <span className="text-primary-theme italic">{item.attributeSetName}</span>

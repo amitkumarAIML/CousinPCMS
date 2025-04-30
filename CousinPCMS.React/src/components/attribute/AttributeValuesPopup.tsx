@@ -106,7 +106,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
           <TextArea rows={3} placeholder="Existing alternate values..." />
         </Form.Item>
         <div className="flex justify-end gap-x-3 mt-5">
-          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleCancel}>Close</Button>
           <Button type="primary" loading={btnLoading} onClick={handleSave}>
             Save
           </Button>

@@ -21,7 +21,7 @@ const Product = () => {
 
   const tabBarExtraContent = (
     <div className="flex gap-x-3 mb-2 mr-4">
-      <Button onClick={handleCancel}>Cancel</Button>
+      <Button onClick={handleCancel}>Close</Button>
       <Button type="primary" loading={loading} onClick={handleSave}>
         Save
       </Button>
