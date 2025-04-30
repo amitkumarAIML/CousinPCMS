@@ -439,7 +439,7 @@ const ProductDetails = () => {
             </Button>
             <Popconfirm title="Sure to cancel?" onConfirm={handleCancelEdit}>
               <Button type="link" danger style={{padding: 0}}>
-                Cancel
+                Close
               </Button>
             </Popconfirm>
           </span>
@@ -729,7 +729,7 @@ const ProductDetails = () => {
               style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
-              <Button onClick={handleAddModalCancel}>Cancel</Button>
+              <Button onClick={handleAddModalCancel}>Close</Button>
               <Button type="primary" htmlType="submit">
                 Save
               </Button>

@@ -1,41 +1,30 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import {useNavigate, Link} from 'react-router';
-import {Table, Button, Input, Checkbox, Form, Spin} from 'antd';
-import {SearchOutlined, CloseCircleFilled, EditOutlined} from '@ant-design/icons';
-import type {TableProps} from 'antd/es/table';
-import {getAttributesList} from '../services/AttributesService';
-import {useNotification} from '../contexts.ts/useNotification';
-import type {AttributeModel} from '../models/attributeModel';
-
-interface AttributeItem extends AttributeModel {
-  key: string;
-}
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router';
+import { Input, Button, Spin } from 'antd';
+import { CloseCircleFilled, SearchOutlined } from '@ant-design/icons';
+import { useNotification } from '../contexts.ts/useNotification';
+import type { AttributeModel } from '../models/attributeModel';
+import { getAttributesList } from '../services/AttributesService';
 
 const Attributes = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [attributeList, setAttributeList] = useState<AttributeItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [attributeList, setAttributeList] = useState<AttributeModel[]>([]);
   const navigate = useNavigate();
   const notify = useNotification();
+  const pageSize = 50;
 
   const fetchAllAttributes = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getAttributesList();
       if (response.isSuccess && response.value) {
-        const dataWithKeys = response.value.map((item: AttributeModel) => ({
-          ...item,
-          key: item.attributeName,
-        }));
-        setAttributeList(dataWithKeys);
+        setAttributeList(response.value);
       } else {
         notify.error('Failed to load attributes.');
-        setAttributeList([]);
       }
     } catch (error) {
-      console.error('Error fetching attributes list:', error);
       notify.error('Something went wrong loading attributes.');
-      setAttributeList([]);
     } finally {
       setLoading(false);
     }
@@ -46,98 +35,94 @@ const Attributes = () => {
     fetchAllAttributes();
   }, [fetchAllAttributes]);
 
-  const filteredData = useMemo(() => {
-    const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
-    if (!normalizedSearch) {
-      return attributeList;
-    }
-    const normalize = (str: string | undefined | null) => str?.toLowerCase().replace(/\s/g, '') || '';
-    return attributeList.filter(
-      (item: AttributeModel) =>
-        normalize(item.attributeName).includes(normalizedSearch) || normalize(item.attributeDescription).includes(normalizedSearch) || normalize(item.searchType).includes(normalizedSearch)
-    );
-  }, [searchValue, attributeList]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  };
-
-  const clearSearchText = () => {
-    setSearchValue('');
-  };
-
-  const handleEditAttribute = (record: AttributeItem) => {
-    sessionStorage.setItem('attributeName', record.attributeName);
+  const handleEdit = (attr: AttributeModel) => {
+    sessionStorage.setItem('attributeName', attr.attributeName);
     navigate('/attributes/edit');
   };
 
-  const columns: TableProps<AttributeItem>['columns'] = [
-    {
-      title: 'AttributeName',
-      dataIndex: 'attributeName',
-      width: 300,
-      ellipsis: true,
-    },
-    {
-      title: 'Attribute Description',
-      dataIndex: 'attributeDescription',
-      ellipsis: true,
-    },
-    {
-      title: 'Search Type',
-      dataIndex: 'searchType',
-      width: 200,
-      ellipsis: true,
-    },
-    {
-      title: 'Show As Category',
-      dataIndex: 'showAsCategory',
-      width: 200,
-      align: 'center',
-      render: (showAsCategory) => <Checkbox checked={showAsCategory} disabled />,
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 100,
-      align: 'center',
-      render: (_, record) => (
-        <Button type="link" icon={<EditOutlined />} onClick={() => handleEditAttribute(record)} size="small" style={{padding: '0 5px', color: '#1890ff'}} aria-label={`Edit ${record.attributeName}`} />
-      ),
-    },
-  ];
+  const filteredData = useMemo(() => {
+    const normalizedSearch = searchValue?.toLowerCase().replace(/\s/g, '') || '';
+    return attributeList.filter((attr) => {
+      const normalize = (val: string | undefined | null) => val?.toLowerCase().replace(/\s/g, '') || '';
+      return normalize(attr.attributeName).includes(normalizedSearch);
+    });
+  }, [searchValue, attributeList]);
+
+  // Function to chunk data into columns
+  const chunkData = (data: any[], chunkSize: number) => {
+    let result: any[][] = [];
+    for (let i = 0; i < data.length; i += chunkSize) {
+      result.push(data.slice(i, i + chunkSize));
+    }
+    return result;
+  };
+
+  const chunkedData = chunkData(filteredData, pageSize); // Split into 50 items per "column"
 
   return (
-    <div className="main-container">
-      <div className="grid grid-cols-1 md:grid-cols-2 items-start md:items-center gap-y-4 p-4 pb-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium">Attribute List</span>
-          <Form layout="inline" className="flex-grow max-w-xs">
-            <Form.Item className="mb-0 flex-grow">
+    <div className="h-[calc(100vh-100px)] main-container overflow-x-auto">
+      <Spin spinning={loading}>
+        <div className="grid grid-cols-1 md:grid-cols-2 items-start md:items-center gap-y-4 p-4 pb-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="me-3">Attribute List</span>
+            <div className="max-w-xs w-full">
               <Input
                 placeholder="Search..."
                 value={searchValue}
-                onChange={handleSearchChange}
-                suffix={searchValue ? <CloseCircleFilled onClick={clearSearchText} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />}
+                onChange={(e) => setSearchValue(e.target.value)}
+                suffix={
+                  searchValue ? (
+                    <CloseCircleFilled
+                      onClick={() => setSearchValue('')}
+                      style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }}
+                    />
+                  ) : (
+                    <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                  )
+                }
               />
-            </Form.Item>
-          </Form>
+            </div>
+          </div>
+          <div className="flex justify-start md:justify-end gap-x-3">
+            <Button onClick={() => navigate('/home')}>Close</Button>
+            <Button type="primary" onClick={() => navigate('/attributes/add')}>
+              Add
+            </Button>
+          </div>
         </div>
-        <div className="flex justify-start md:justify-end gap-x-3">
-          <Button onClick={() => navigate('/home')}>Cancel</Button>
-          <Link to="/attributes/add">
-            <Button type="primary">Add</Button>
-          </Link>
+
+        <hr className="border-light-border mt-2" />
+        <div className="p-4">
+
+          <div className="overflow-x-auto border rounded-lg border-light-border">
+            {filteredData.length === 0 ? (
+              <div className="h-64 flex items-center justify-center text-sm text-secondary-font">No data found.</div>
+            ) : (
+              <div className="min-w-max flex space-x-2 px-2 py-1">
+                {chunkedData.map((chunk, chunkIndex) => (
+                  <div
+                    key={chunkIndex}
+                    className="flex flex-col space-y-2 w-[200px]"
+                  >
+                    {chunk.map((attr, index) => (
+                      <div
+                        key={index}
+                        className="cursor-pointer text-secondary-font hover:text-primary-theme-hover p-0 m-0 text-xs"
+                      >
+                        <span onClick={() => handleEdit(attr)}>{attr.attributeName}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <hr className="mt-2 mb-0 border-border" />
-      <div className="p-4">
-        <Spin spinning={loading}>
-          <Table columns={columns} dataSource={filteredData} rowKey="key" size="small" bordered pagination={false} className="attributes-list-table" />
-        </Spin>
-      </div>
+
+
+      </Spin>
     </div>
   );
 };
 
-export default Attributes;
+export default Attributes;  

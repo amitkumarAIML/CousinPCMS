@@ -315,7 +315,7 @@ const LinkMaintenance = () => {
 
                 <Form.Item wrapperCol={{offset: 6, span: 18}}>
                   <div className="flex justify-end gap-x-2">
-                    <Button onClick={handleCancelForm}>Cancel</Button>
+                    <Button onClick={handleCancelForm}>Close</Button>
                     <Button type="primary" onClick={handleSave} loading={loading} disabled={isDuplicateUrl}>
                       Save Link
                     </Button>

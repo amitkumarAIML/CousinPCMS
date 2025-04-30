@@ -143,7 +143,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Department Form</span>
           <div className="flex gap-x-3">
-            <Button type="default">Cancel</Button>
+            <Button type="default">Close</Button>
             <Button type="primary" onClick={handleFormSubmit}>
               Save
             </Button>

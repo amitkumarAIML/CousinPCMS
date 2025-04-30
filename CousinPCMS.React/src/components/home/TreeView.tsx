@@ -566,6 +566,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
   return (
     <div style={{position: 'relative'}}>
+      <div className='text-[11px] bg-light-border rounded-md p-2 text-primary-font'><span>Departments & Categories</span></div>
       <Tree {...treeProps} />
       {contextMenu.visible && (
         <div

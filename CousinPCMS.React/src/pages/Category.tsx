@@ -402,7 +402,7 @@ const Category = () => {
             </Button>
             <Popconfirm title="Sure to cancel?" onConfirm={handleCancelEdit}>
               <Button type="link" danger style={{padding: 0}}>
-                Cancel
+                Close
               </Button>
             </Popconfirm>
           </span>
@@ -437,7 +437,7 @@ const Category = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Category Form</span>
           <div className="flex gap-x-3">
-            <Button onClick={() => navigate('/home')}>Cancel</Button>
+            <Button onClick={() => navigate('/home')}>Close</Button>
             <Button type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
               Save
             </Button>
@@ -710,7 +710,7 @@ const Category = () => {
               style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
-              <Button onClick={handleModalCancel}>Cancel</Button>
+              <Button onClick={handleModalCancel}>Close</Button>
               <Button type="primary" htmlType="submit">
                 Save
               </Button>

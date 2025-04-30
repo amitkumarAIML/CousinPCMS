@@ -66,8 +66,7 @@ export const theme = {
       colorBorder: '#CBD5E0',
     },
     Table: {
-      rowHoverBg: 'transparent',
-      headerBg: '#cbd5e0',
+      headerBg: '#e2e8f0',
       headerColor: '#343941',
       cellPaddingBlockSM: 0,
     },

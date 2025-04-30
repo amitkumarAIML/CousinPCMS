@@ -1,17 +1,17 @@
-import {useEffect, useState} from 'react';
-import {Spin, Input, TableProps, Table, Checkbox} from 'antd';
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
-import {getSkuByProductId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/useNotification';
-import type {SKuList} from '../../models/skusModel';
-import {useNavigate} from 'react-router';
+import { useEffect, useState } from 'react';
+import { Spin, Input, TableProps, Table, Checkbox } from 'antd';
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { getSkuByProductId } from '../../services/HomeService';
+import { useNotification } from '../../contexts.ts/useNotification';
+import type { SKuList } from '../../models/skusModel';
+import { useNavigate } from 'react-router';
 
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
 }
 
-const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCategory}) => {
+const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCategory }) => {
   const [skus, setSkus] = useState<SKuList[]>([]);
   const [filteredData, setFilteredData] = useState<SKuList[]>([]);
   const [displayText, setDisplayText] = useState('Click on a product to view the SKU');
@@ -114,10 +114,45 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   };
 
   const columns: TableProps<SKuList>['columns'] = [
-    {title: 'SkuName', dataIndex: 'skuName'},
-    {title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef'},
-    {title: 'ITEM_NUMBER', dataIndex: 'akiitemid'},
-    {title: 'ListOrder', dataIndex: 'akiListOrder'},
+
+    {
+      title: (
+        <div className="flex gap-1 my-1">
+          <div className="flex gap-x-2 items-center">
+            <span>SKUs</span>
+            <button className="text-primary-theme hover:underline text-xs" onClick={addSKU}>
+              Add
+            </button>
+            <button className="text-primary-theme hover:underline text-xs" onClick={editSku}>
+              Edit
+            </button>
+          </div>
+          <div className="w-40 flex items-center">
+            <Input
+              placeholder="Search"
+              value={searchValue}
+              onChange={onSearch}
+              suffix={
+                searchValue ? (
+                  <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" />
+                ) : (
+                  <SearchOutlined />
+                )
+              }
+            />
+          </div>
+        </div>
+      ),
+      dataIndex: 'skuName',
+
+      width: 250,
+    },
+
+    {
+      title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef',
+    },
+    { title: 'ITEM_NUMBER', dataIndex: 'akiitemid' },
+    { title: 'ListOrder', dataIndex: 'akiListOrder' },
     {
       title: 'Obsolete',
       dataIndex: 'akiObsolete',
@@ -136,47 +171,30 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,
     },
-    {title: 'TemplateID', dataIndex: 'akiTemplateID'},
-    {title: 'AltSkuName', dataIndex: 'akiAltSKUName'},
-    {title: 'CommodityCode', dataIndex: 'akiCommodityCode'},
+    {
+      title: 'TemplateID', dataIndex: 'akiTemplateID', align: 'center',
+    },
+    { title: 'AltSkuName', dataIndex: 'akiAltSKUName' },
+    { title: 'CommodityCode', dataIndex: 'akiCommodityCode', align: 'center', },
   ];
 
   return (
-    <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
-      <div className="bg-light-border text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
-        <div className="flex gap-2 items-center">
-          <span>SKUs</span>
-          <button className="text-primary-theme hover:underline text-xs" onClick={addSKU}>
-            Add
-          </button>
-          <button className="text-primary-theme hover:underline text-xs" onClick={editSku}>
-            Edit
-          </button>
-        </div>
-        <div className="w-64 flex items-center">
-          <Input
-            placeholder="Search"
-            value={searchValue}
-            onChange={onSearch}
-            suffix={searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />}
-          />
-        </div>
-      </div>
-
+    <div className="">
       <Spin spinning={loading}>
-        <div className="p-2">
+        <div className="">
           <Table
-            scroll={{x: 700}}
+            scroll={{ x: 1000 }}
             columns={columns}
+            tableLayout='auto'
             dataSource={filteredData}
             rowKey="akiitemid"
             size="small"
             bordered
             pagination={false}
-            locale={{emptyText: displayText}}
+            locale={{ emptyText: displayText }}
             onRow={(record) => ({
               onClick: () => handleRowSelect(record),
-              className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : '',
+              className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
             })}
           />
         </div>
