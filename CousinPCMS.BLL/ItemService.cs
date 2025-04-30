@@ -93,10 +93,9 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-
-        public APIResult<ItemResponseModel> AddItem(AddItemRequestModel objModel)
+        public APIResult<string> AddItem(AddItemRequestModel objModel)
         {
-            APIResult<ItemResponseModel> returnValue = new APIResult<ItemResponseModel>
+            APIResult<string> returnValue = new APIResult<string>
             {
                 IsError = false,
                 IsSuccess = true,
@@ -105,13 +104,12 @@ namespace CousinPCMS.BLL
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}items?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertItemSKUPart?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
 
-                if (!string.IsNullOrEmpty(response.Content))
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<ItemResponseModel>>(response.Content);
                     returnValue.IsSuccess = true;
-                    returnValue.Value = responseOfOrderLine.Value;
+                    returnValue.Value = "Success";
                 }
                 else
                 {
@@ -127,6 +125,7 @@ namespace CousinPCMS.BLL
                 returnValue.IsError = true;
                 returnValue.ExceptionInformation = exception;
             }
+
             return returnValue;
         }
 

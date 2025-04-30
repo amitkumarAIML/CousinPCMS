@@ -253,7 +253,7 @@ namespace CousinPCMS.API.Controllers
         /// <returns>
         /// Returns an <see cref="APIResult{ProductModel}"/> with the updated product details if successful; otherwise, returns null or an error message.
         /// </returns>
-        [HttpPatch("UpdateProduct")]
+        [HttpPost("UpdateProduct")]
         [ProducesResponseType(typeof(APIResult<ProductModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
@@ -287,7 +287,7 @@ namespace CousinPCMS.API.Controllers
         /// <returns>
         /// Returns an successs or an error message.
         /// </returns>
-        [HttpPatch("AddProduct")]
+        [HttpPost("AddProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
@@ -550,7 +550,7 @@ namespace CousinPCMS.API.Controllers
         /// <returns>
         /// Returns an <see cref="APIResult{CategoryModel}"/> with the updated associated product details, or null if no update occurs.
         /// </returns>
-        [HttpPatch("UpdateAssociatedProduct")]
+        [HttpPost("UpdateAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<CategoryModel>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]

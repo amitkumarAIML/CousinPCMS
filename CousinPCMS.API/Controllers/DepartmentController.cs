@@ -130,7 +130,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The department object with newly added details.</param>
         /// <returns>Returns success or error message.</returns>
-        [HttpPatch("AddDepartment")]
+        [HttpPost("AddDepartment")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
@@ -162,7 +162,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The department object with updated details.</param>
         /// <returns>Returns success or error message.</returns>
-        [HttpPatch("UpdateDepartment")]
+        [HttpPost("UpdateDepartment")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]

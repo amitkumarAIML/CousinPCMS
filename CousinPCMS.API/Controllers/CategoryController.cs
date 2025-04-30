@@ -252,7 +252,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The category object with updated details.</param>
         /// <returns>Returns success or error message.</returns>
-        [HttpPatch("UpdateCategory")]
+        [HttpPost("UpdateCategory")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
@@ -284,7 +284,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The category object with added details.</param>
         /// <returns>Returns success or error message.</returns>
-        [HttpPatch("AddCategory")]
+        [HttpPost("AddCategory")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
@@ -316,7 +316,7 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The object with updated details.</param>
         /// <returns>Returns success or error message.</returns>
-        [HttpPatch("UpdateAssociatedProduct")]
+        [HttpPost("UpdateAssociatedProduct")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]

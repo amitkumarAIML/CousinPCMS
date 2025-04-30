@@ -103,8 +103,8 @@ namespace CousinPCMS.API.Controllers
         /// </summary>
         /// <param name="objModel">The item object with added details.</param>
         /// <returns>Returns item object.</returns>
-        [HttpPatch("AddItem")]
-        [ProducesResponseType(typeof(APIResult<ItemResponseModel>), 200)]
+        [HttpPost("AddItem")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddItem(AddItemRequestModel objModel)

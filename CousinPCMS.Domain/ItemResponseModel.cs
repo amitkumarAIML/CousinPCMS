@@ -181,8 +181,6 @@ namespace CousinPCMS.Domain
     public class AddItemRequestModel
     {
         public string akiitemid { get; set; }
-        public string skuName { get; set; }
-        public int akiSKUID { get; set; }
         public string akiProductID { get; set; }
         public string akiCategoryID { get; set; }
         public string akiManufacturerRef { get; set; }
@@ -207,6 +205,7 @@ namespace CousinPCMS.Domain
         public string akiPricingFormula { get; set; }
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
+        public string skuName { get; set; }
     }
 
 }
