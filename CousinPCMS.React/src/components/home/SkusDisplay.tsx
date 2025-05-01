@@ -171,6 +171,11 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       width: 120,
     },
     {
+      title:'Web Active',dataIndex:'akiWebActive',align:'center',
+      render:(isWebActive)=><Checkbox checked={isWebActive} disabled />,
+      width:130
+    },
+    {
       title: 'Cat Active',
       dataIndex: 'akiSKUIsActive',
       align: 'center',
@@ -183,7 +188,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       align: 'center',
       width: 120,
     },
-    {title: 'AltSkuName', dataIndex: 'akiAltSKUName'},
+    { title: 'AltSku Name', dataIndex: 'akiAltSKUName' ,width:150},
+    { title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode',width:150 },
     {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150},
   ];
 
@@ -192,7 +198,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       <Spin spinning={loading}>
         <div className="">
           <Table
-            scroll={{x: 1000}}
+            scroll={{x: 1200}}
             columns={columns}
             tableLayout="auto"
             dataSource={filteredData}

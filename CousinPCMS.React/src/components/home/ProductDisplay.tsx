@@ -201,7 +201,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
 
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
-      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
+      <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-2 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Products & Attribute Sets</span>
           <Button type="link" size="small" onClick={handleAddProduct}>
