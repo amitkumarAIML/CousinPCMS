@@ -612,14 +612,7 @@ const Category = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 items-center">
-                  <Form.Item
-                    label={
-                      <a onClick={goToAdditionalImage} className="underline cursor-pointer">
-                        No of Additional Website Images
-                      </a>
-                    }
-                    name="additionalImages"
-                  >
+                  <Form.Item label="No of Additional Website Images" name="additionalImages">
                     <Input disabled />
                   </Form.Item>
                   <Form.Item label="Category Discount (%)" name="akiCategoryDiscount">
@@ -628,14 +621,7 @@ const Category = () => {
                   <span className="mt-6">(If empty, or 0, the Department default will be used)</span>
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 items-center">
-                  <Form.Item
-                    label={
-                      <a onClick={goToLinkMaintenance} className="underline cursor-pointer">
-                        No of URL Links
-                      </a>
-                    }
-                    name="urlLinks"
-                  >
+                  <Form.Item label="No of URL Links" name="urlLinks">
                     <Input disabled />
                   </Form.Item>
                   <Form.Item label="Image Height (px)" name="akiCategoryImageHeight">
