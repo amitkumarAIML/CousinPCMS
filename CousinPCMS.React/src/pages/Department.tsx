@@ -156,10 +156,10 @@ const Department: React.FC<DepartmentInfoProps> = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Department Form</span>
           <div className="flex gap-x-3">
-            <Button type="default" onClick={() => navigate('/home')}>
+            <Button size="small" type="default" onClick={() => navigate('/home')}>
               Close
             </Button>
-            <Button type="primary" onClick={handleFormSubmit}>
+            <Button size="small" type="primary" onClick={handleFormSubmit}>
               {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
@@ -232,7 +232,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       showUploadList={false}
                       accept=".png,.jpeg,.jpg"
                     >
-                      <Button type="primary" className="m-0 px-4">
+                      <Button size="small" type="primary" >
                         Upload
                       </Button>
                     </Upload>

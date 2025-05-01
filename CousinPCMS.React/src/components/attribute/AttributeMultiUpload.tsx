@@ -173,7 +173,7 @@ const AttributeMultiUpload = () => {
         <div className="flex flex-wrap justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Attribute Multi Upload Form</span>
           <div className="flex gap-x-3">
-            <Button type="default" onClick={handleCancel}>
+            <Button size="small" type="default" onClick={handleCancel}>
               Close
             </Button>
           </div>

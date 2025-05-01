@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Spin, Modal, Input} from 'antd';
+import {Spin, Modal, Input, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 
 import {Product} from '../../models/productModel';
@@ -204,16 +204,12 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Products & Attribute Sets</span>
-          <button className="text-primary-theme hover:underline text-xs cursor-pointer" onClick={handleAddProduct}>
+          <Button type="link" size="small" onClick={handleAddProduct}>
             Add
-          </button>
-          <button
-            className={`text-primary-theme hover:underline text-xs me-1  ${getSessionItem('productId') || getSessionItem('tempProductId') ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-            onClick={handleEditProduct}
-            disabled={getSessionItem('productId') || getSessionItem('tempProductId') ? false : true}
-          >
+          </Button>
+          <Button type="link" size="small" onClick={handleEditProduct} disabled={getSessionItem('productId') || getSessionItem('tempProductId') ? false : true}>
             Edit
-          </button>
+          </Button>
         </div>
         <div className="w-40">
           <Input placeholder="Search" value={searchValue} onChange={handleSearchChange} suffix={inputSuffix} className="rounded" />

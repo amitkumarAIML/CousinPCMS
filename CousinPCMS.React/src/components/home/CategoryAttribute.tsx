@@ -333,11 +333,11 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             </div>
             <div className="flex justify-end px-3 mt-2">
               {isEditable ? (
-                <Button type="primary" onClick={updateAttributeSets} className="text-white">
+                <Button size="small" type="primary" onClick={updateAttributeSets} className="text-white">
                   Update
                 </Button>
               ) : (
-                <Button type="primary" onClick={saveAttributeSets} className="text-white">
+                <Button size="small" type="primary" onClick={saveAttributeSets} className="text-white">
                   Save
                 </Button>
               )}

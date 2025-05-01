@@ -1,7 +1,8 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router';
-import {Button, Input, Spin, List, Popconfirm, Form, message} from 'antd';
-import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import {Button, Spin, List, Popconfirm, Form, message, Modal, Upload} from 'antd';
+import {DeleteOutlined, PaperClipOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import type {RcFile, UploadFile, UploadProps} from 'antd/es/upload/interface';
 import type {ApiResponse} from '../models/generalModel';
 import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../models/additionalImagesModel';
 import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl} from '../services/ProductService';
@@ -11,17 +12,14 @@ import {useNotification} from '../contexts.ts/useNotification';
 
 const AdditionalImages = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
-  const [showForm, setShowForm] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [avatarUrl, setAvatarUrl] = useState<string | ArrayBuffer | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentUploadFile, setCurrentUploadFile] = useState<UploadFile | null>(null);
+  const [loadingSave, setLoadingSave] = useState<boolean>(false);
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState<string>('');
-  const [isDuplicateUrl, setIsDuplicateUrl] = useState<boolean>(false);
+  const [isDuplicateFilename, setIsDuplicateFilename] = useState<boolean>(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
-
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
   const notify = useNotification();
@@ -53,7 +51,11 @@ const AdditionalImages = () => {
           }
         } else {
           setDisplayText('Failed to load images.');
-          if (response.exceptionInformation) notify.error(String(response.exceptionInformation));
+          const errorMsg =
+            Array.isArray(response.exceptionInformation) && response.exceptionInformation.length > 0
+              ? response.exceptionInformation[0].description
+              : response.exceptionInformation || 'Failed to load images.';
+          notify.error(errorMsg);
         }
       } catch (error) {
         console.error(`Error fetching images for ${type} ${id}:`, error);
@@ -96,61 +98,62 @@ const AdditionalImages = () => {
     }
   }, [location.pathname, fetchImages]);
 
-  const goBack = () => {
-    window.history.back();
-  };
-
   const handleAddClick = () => {
-    setImageUrl('');
-    setAvatarUrl(null);
-    setIsDuplicateUrl(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    setShowForm(true);
+    setCurrentUploadFile(null);
+    setIsDuplicateFilename(false);
+    setIsModalOpen(true);
   };
 
-  const checkDuplicateUrl = (url: string) => {
-    const inputValue = url?.trim().toLowerCase();
-    const isDuplicate = fileList.some((file) => file.imageURL?.trim().toLowerCase() === inputValue);
-    setIsDuplicateUrl(isDuplicate);
+  const checkDuplicateFilename = (filename: string) => {
+    const inputName = filename?.trim().toLowerCase();
+
+    const isDuplicate = fileList.some((file) => file.imageURL?.trim().toLowerCase() === inputName);
+    setIsDuplicateFilename(isDuplicate);
     return isDuplicate;
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const currentImageUrl = file.name;
-      setImageUrl(currentImageUrl);
-      checkDuplicateUrl(currentImageUrl);
+  const handleUploadChange: UploadProps['onChange'] = (info) => {
+    const currentFileList = info.fileList;
+    const latestFile = currentFileList.length > 0 ? currentFileList[currentFileList.length - 1] : null;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatarUrl(reader.result);
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
-        message.error('Error reading file for preview.');
-      };
-      reader.readAsDataURL(file);
+    if (latestFile) {
+      const fileToValidate = latestFile.originFileObj || latestFile;
+      setCurrentUploadFile(latestFile);
+      checkDuplicateFilename(fileToValidate.name);
     } else {
-      setImageUrl('');
-      setAvatarUrl(null);
-      setIsDuplicateUrl(false);
+      setCurrentUploadFile(null);
+      setIsDuplicateFilename(false);
     }
   };
 
-  const handleUpload = async () => {
-    if (!imageUrl || isDuplicateUrl || !contextId || !contextType) {
-      if (!imageUrl) message.error('Please select an image file.');
-      if (isDuplicateUrl) message.error('This image URL already exists.');
+  const beforeUpload = (file: RcFile) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const isAllowedType = allowedTypes.includes(file.type);
+    if (!isAllowedType) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Image must be smaller than 5MB!');
+    }
+
+    return isAllowedType && isLt5M ? false : Upload.LIST_IGNORE;
+  };
+
+  const handleSaveImage = async () => {
+    const fileToSave = currentUploadFile?.originFileObj || currentUploadFile;
+
+    if (!fileToSave || !fileToSave.name || isDuplicateFilename || !contextId || !contextType) {
+      if (!fileToSave || !fileToSave.name) message.error('Please select an image file.');
+      if (isDuplicateFilename) message.error('This image filename already exists in the list.');
       if (!contextId || !contextType) message.error('Context (Product/Category/SKU) is missing.');
       return;
     }
-    setLoading(true);
+    setLoadingSave(true);
+    const filename = fileToSave.name;
     const requestData: Partial<AdditionalImagesModel> = {
-      imageURL: imageUrl,
-      imagename: imageUrl.replace(/\.[^/.]+$/, ''),
+      imageURL: filename,
+      imagename: filename.substring(0, filename.lastIndexOf('.')) || filename,
     };
     try {
       let response: ApiResponse<string>;
@@ -173,10 +176,25 @@ const AdditionalImages = () => {
       }
       if (response.isSuccess) {
         notify.success('Image Added Successfully');
-        setFileList((prev) => [...prev, saveData]);
-        setShowForm(false);
+
+        const newImageEntry: AdditionalImagesModel = {
+          ...saveData,
+
+          productID: contextType === 'product' ? (contextId as number) : undefined,
+          categoryID: contextType === 'category' ? (contextId as string) : undefined,
+          skuItemID: contextType === 'sku' ? (contextId as string) : undefined,
+        };
+        setFileList((prev) => [...prev, newImageEntry]);
+        if (fileList.length === 0) {
+          setDisplayText('');
+        }
+        setIsModalOpen(false);
       } else {
-        notify.error('Failed to add image.');
+        const errorMsg =
+          Array.isArray(response.exceptionInformation) && response.exceptionInformation.length > 0
+            ? response.exceptionInformation[0].description
+            : response.exceptionInformation || 'Failed to add image.';
+        notify.error(errorMsg);
       }
     } catch (error) {
       console.error(`Error saving image for ${contextType} ${contextId}:`, error);
@@ -186,7 +204,7 @@ const AdditionalImages = () => {
         notify.error('Something went wrong while saving the image.');
       }
     } finally {
-      setLoading(false);
+      setLoadingSave(false);
     }
   };
 
@@ -198,28 +216,44 @@ const AdditionalImages = () => {
     setLoadingData(true);
     const reqBase: AdditionalImageDeleteRequestModel & {imagename?: string} = {
       imageURL: imageToDelete.imageURL,
-      imagename: imageToDelete.imagename || imageToDelete.imageURL.replace(/\.[^/.]+$/, ''),
+      imagename: imageToDelete.imagename || (imageToDelete.imageURL ? imageToDelete.imageURL.substring(0, imageToDelete.imageURL.lastIndexOf('.')) || imageToDelete.imageURL : undefined),
     };
+
+    if (contextType === 'product') reqBase.productID = imageToDelete.productID ?? (contextId as number);
+    if (contextType === 'category') reqBase.categoryID = imageToDelete.categoryID ?? (contextId as string);
+    if (contextType === 'sku') reqBase.skuItemID = imageToDelete.skuItemID ?? (contextId as string);
+
     try {
       let response: ApiResponse<string>;
       switch (contextType) {
         case 'product':
-          response = await deleteProductImagesUrl({...reqBase, productID: imageToDelete.productID});
+          if (!reqBase.productID || !reqBase.imageURL) throw new Error('Missing productID or imageURL for deletion');
+          response = await deleteProductImagesUrl(reqBase as Required<Pick<AdditionalImageDeleteRequestModel, 'productID' | 'imageURL'>>);
           break;
         case 'category':
-          response = await deleteCategoryImagesUrl({...reqBase, categoryID: imageToDelete.categoryID});
+          if (!reqBase.categoryID || !reqBase.imageURL) throw new Error('Missing categoryID or imageURL for deletion');
+          response = await deleteCategoryImagesUrl(reqBase as Required<Pick<AdditionalImageDeleteRequestModel, 'categoryID' | 'imageURL'>>);
           break;
         case 'sku':
-          response = await deleteSkuImagesUrl({...reqBase, skuItemID: imageToDelete.skuItemID});
+          if (!reqBase.skuItemID || !reqBase.imageURL) throw new Error('Missing skuItemID or imageURL for deletion');
+          response = await deleteSkuImagesUrl(reqBase as Required<Pick<AdditionalImageDeleteRequestModel, 'skuItemID' | 'imageURL'>>);
           break;
         default:
           throw new Error('Invalid context type for deleting image');
       }
       if (response.isSuccess) {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} image successfully deleted.`);
-        setFileList((prevList) => prevList.filter((_, i) => i !== index));
+        const newList = fileList.filter((_, i) => i !== index);
+        setFileList(newList);
+        if (newList.length === 0) {
+          setDisplayText('No additional images found.');
+        }
       } else {
-        notify.error('Failed to delete image.');
+        const errorMsg =
+          Array.isArray(response.exceptionInformation) && response.exceptionInformation.length > 0
+            ? response.exceptionInformation[0].description
+            : response.exceptionInformation || 'Failed to delete image.';
+        notify.error(errorMsg);
       }
     } catch (error) {
       console.error(`Error deleting image for ${contextType} ${contextId}:`, error);
@@ -233,33 +267,41 @@ const AdditionalImages = () => {
     }
   };
 
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{marginTop: 8}}>Upload</div>
+    </div>
+  );
+
   return (
-    <div className="main-container">
-      <div className="flex flex-wrap justify-between items-center p-4 pb-1">
-        <span className="text-sm font-medium">Additional Website Images</span>
-        <Button type="default" onClick={goBack}>
-          Close
-        </Button>
+    <div>
+      <div className="flex flex-wrap justify-between items-center mt-4 pb-1">
+        <span className="font-medium text-primary-font">Additional Website Images</span>
       </div>
-      <hr className="mt-2 mb-2 border-border" />
-      <div className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 border border-border rounded lg:col-span-1 md:col-span-1">
+      <div>
+        <div className="p-2 border border-border rounded-lg">
+          <div className="bg-white rounded">
             <div className="flex justify-between items-center mb-2">
-              <label className="font-medium">Additional Website Images</label>
-              <Button type="primary" onClick={handleAddClick} size="small">
+              <label className="font-medium">Current Images</label>
+              <Button type="primary" onClick={handleAddClick} size="small" disabled={!contextId || !contextType}>
                 Add
               </Button>
             </div>
+
             <Spin spinning={loadingData}>
-              <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
+              <div className="border border-border rounded-md">
                 {fileList.length > 0 ? (
                   <List
                     size="small"
                     dataSource={fileList}
                     renderItem={(image, index) => (
                       <List.Item
-                        key={`${image.imageURL}-${index}`}
+                        key={`${image.imageURL}-${index}-${image.productID || image.categoryID || image.skuItemID}`}
                         className="flex justify-between items-center px-2 py-1"
                         actions={[
                           <Popconfirm
@@ -270,12 +312,12 @@ const AdditionalImages = () => {
                             placement="left"
                             icon={<QuestionCircleOutlined style={{color: 'red'}} />}
                           >
-                            <Button type="text" danger size="small" icon={<DeleteOutlined />} />
+                            {image.imageURL && <Button type="text" danger size="small" icon={<DeleteOutlined />} />}
                           </Popconfirm>,
                         ]}
                       >
-                        <span className="text-sm  truncate" title={image.imageURL}>
-                          {image.imageURL}
+                        <span className="font-medium truncate" title={image.imageURL}>
+                          {image.imageURL || 'Invalid Image Entry'}
                         </span>
                       </List.Item>
                     )}
@@ -287,36 +329,56 @@ const AdditionalImages = () => {
             </Spin>
           </div>
 
-          {showForm && (
-            <div className="p-4 border border-border rounded lg:col-span-2 md:col-span-1">
-              <label className="block mb-2 font-medium">Upload New Website Image</label>
-              <div className="p-4 space-y-6">
-                <Form layout="vertical">
-                  <Form.Item label="Image URL / Filename" required validateStatus={isDuplicateUrl ? 'error' : ''} help={isDuplicateUrl ? 'This image URL already exists.' : ''}>
-                    <div className="flex items-end gap-x-2">
-                      <Input value={imageUrl} name="imageUrl" readOnly placeholder="Select a file using Browse" />
+          <Modal
+            width={400}
+            title="Add New Image"
+            rootClassName="additional-image-upload"
+            open={isModalOpen}
+            onCancel={handleModalCancel}
+            destroyOnClose
+            footer={[
+              <Button size="small" key="back" onClick={handleModalCancel}>
+                Cancel
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                size="small"
+                loading={loadingSave}
+                disabled={!currentUploadFile || isDuplicateFilename || currentUploadFile.status === 'error'}
+                onClick={handleSaveImage}
+              >
+                Save Image
+              </Button>,
+            ]}
+          >
+            <Form.Item
+              label=""
+              required
+              validateStatus={isDuplicateFilename ? 'error' : ''}
+              help={isDuplicateFilename && currentUploadFile?.status !== 'error' ? 'This image filename already exists in the list.' : ''}
+            >
+              <Upload
+                name="additionalImage"
+                listType="picture-card"
+                rootClassName="additional-image-upload"
+                showUploadList={currentUploadFile ? {showPreviewIcon: false, showRemoveIcon: true} : false}
+                fileList={currentUploadFile ? [currentUploadFile] : []}
+                beforeUpload={beforeUpload}
+                onChange={handleUploadChange}
+                accept="image/png, image/jpeg, image/jpg"
+                maxCount={1}
+              >
+                {!currentUploadFile && uploadButton}
+              </Upload>
+            </Form.Item>
 
-                      <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/png, image/jpeg, image/jpg" />
-
-                      <Button type="default" onClick={() => fileInputRef.current?.click()} icon={<UploadOutlined />}>
-                        Browse
-                      </Button>
-                    </div>
-                  </Form.Item>
-                </Form>
-
-                <div className="flex items-end gap-x-4">
-                  <div className="w-[102px] h-[102px] border border-dashed border-border flex justify-center items-center rounded overflow-hidden bg-gray-50">
-                    {avatarUrl ? <img src={avatarUrl as string} alt="Preview" className="max-w-full max-h-full object-contain" /> : <PlusOutlined style={{fontSize: '24px', color: '#999'}} />}
-                  </div>
-
-                  <Button type="primary" loading={loading} disabled={!imageUrl || isDuplicateUrl} onClick={handleUpload} className="self-end">
-                    Save Image Link
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
+            {currentUploadFile && currentUploadFile.name && (
+              <p style={{marginTop: '8px', textAlign: 'center', color: '#555', wordBreak: 'break-all'}}>
+                <PaperClipOutlined /> {currentUploadFile.name}
+              </p>
+            )}
+          </Modal>
         </div>
       </div>
     </div>

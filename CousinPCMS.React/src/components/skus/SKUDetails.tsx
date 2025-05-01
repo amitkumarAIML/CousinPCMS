@@ -305,7 +305,9 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                   showUploadList={false}
                   accept=".png,.jpeg,.jpg"
                 >
-                  <Button type="primary">Upload</Button>
+                  <Button size="small" type="primary">
+                    Upload
+                  </Button>
                 </Upload>
                 <span className=" whitespace-nowrap ">
                   {akiImageURL?.length || 0} / {charLimit.akiImageURL}
@@ -358,14 +360,14 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                           </div>
                         ))
                       ) : (
-                        <span className=" text-sm italic">{isLoadingAttributeNames ? 'Loading...' : 'No attributes found for this category.'}</span>
+                        <span className=" text-sm italic">{isLoadingAttributeNames ? '' : 'No attributes found for this category.'}</span>
                       )}
                     </div>
                   </Spin>
                 </Form.Item>
               </div>
               <div className="mt-auto mb-2 self-end">
-                <Button type="primary" onClick={goToUploadForm} disabled={isLoadingAttributeNames || savedAttributes.length === 0} block>
+                <Button size="small" type="primary" onClick={goToUploadForm} disabled={isLoadingAttributeNames || savedAttributes.length === 0} block>
                   Attribute Multi Upload
                 </Button>
               </div>
