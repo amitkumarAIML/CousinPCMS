@@ -8,6 +8,7 @@ import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl} from '../services/SkusServ
 import {useNotification} from '../contexts.ts/useNotification';
 import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel} from '../models/linkMaintenanaceModel';
 import type {ApiResponse} from '../models/generalModel';
+import {getSessionItem} from '../services/DataService';
 
 const {Option} = Select;
 
@@ -73,14 +74,14 @@ const LinkMaintenance = () => {
     let type: 'product' | 'category' | 'sku' | null = null;
 
     if (path.includes('/products')) {
-      const idStr = getSessionItem('productId');
+      const idStr = getSessionItem('productId') || getSessionItem('tempProductId');
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('categoryId') || undefined;
+      id = getSessionItem('categoryId') || getSessionItem('tempProductId');
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = getSessionItem('skuId') || getSessionItem('itemNumber') || undefined;
+      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
       type = 'sku';
     }
 

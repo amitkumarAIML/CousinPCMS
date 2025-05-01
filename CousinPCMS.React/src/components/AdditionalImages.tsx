@@ -9,6 +9,7 @@ import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl
 import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl} from '../services/CategoryService';
 import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
+import {getSessionItem} from '../services/DataService';
 
 const AdditionalImages = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
@@ -74,14 +75,14 @@ const AdditionalImages = () => {
     let type: 'product' | 'category' | 'sku' | null = null;
 
     if (path.includes('/products')) {
-      const idStr = getSessionItem('productId');
+      const idStr = getSessionItem('productId') || getSessionItem('tempProductId');
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('categoryId') || undefined;
+      id = getSessionItem('categoryId') || getSessionItem('tempProductId');
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = getSessionItem('skuId') || getSessionItem('itemNumber') || undefined;
+      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempProductId');
       type = 'sku';
     }
 
