@@ -456,15 +456,15 @@ const Category = () => {
         const editable = record.product === editingId;
         return editable ? (
           <span className="flex gap-x-2">
-            <Button onClick={handleUpdateAssociatedProduct} type="link" style={{padding: 0}}>
+            <Button size="small" onClick={handleUpdateAssociatedProduct} type="link">
               Save
             </Button>
-            <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
+            <Button size="small" onClick={handleCancelEdit} type="link" danger>
               Close
             </Button>
           </span>
         ) : (
-          <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
+          <Button size="small" icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
         );
       },
     },
@@ -494,8 +494,10 @@ const Category = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Category Form</span>
           <div className="flex gap-x-3">
-            <Button onClick={() => navigate('/home')}>Close</Button>
-            <Button type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
+            <Button size="small" onClick={() => navigate('/home')}>
+              Close
+            </Button>
+            <Button size="small" type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
               {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
@@ -599,7 +601,9 @@ const Category = () => {
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
                   >
-                    <Button type="primary">Upload</Button>
+                    <Button size="small" type="primary">
+                      Upload
+                    </Button>
                   </Upload>
                   <span className=" absolute -right-14 top-1/2">
                     {akiCategoryImageURL?.length || 0} / {charLimit.akiCategoryImageURL}
@@ -667,7 +671,7 @@ const Category = () => {
                   <label className="font-medium text-secondary-font block mb-1">Associated Products</label>
                   <div className="border border-border rounded-lg p-2">
                     <div className="flex justify-end mb-2">
-                      <Button type="primary" onClick={showAddProductModal}>
+                      <Button size="small" type="primary" onClick={showAddProductModal}>
                         Add
                       </Button>
                     </div>
@@ -757,8 +761,10 @@ const Category = () => {
               style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
-              <Button onClick={handleModalCancel}>Close</Button>
-              <Button type="primary" htmlType="submit">
+              <Button size="small" onClick={handleModalCancel}>
+                Close
+              </Button>
+              <Button size="small" type="primary" htmlType="submit">
                 Save
               </Button>
             </div>

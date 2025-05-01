@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Spin, Input, TableProps, Table, Checkbox} from 'antd';
+import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import {getSkuByProductId} from '../../services/HomeService';
 import {useNotification} from '../../contexts.ts/useNotification';
@@ -123,16 +123,16 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         <div className="flex gap-1 my-1">
           <div className="flex gap-x-2 items-center">
             <span>SKUs</span>
-            <button className="text-primary-theme hover:underline text-xs" onClick={() => navigate('/skus/add')}>
+            <Button type='link' size='small' onClick={() => navigate('/skus/add')}>
               Add
-            </button>
-            <button
-              className={`text-primary-theme hover:underline text-xs  ${getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+            </Button>
+            <Button
+            type='link' size='small'
               onClick={() => navigate('/skus/edit')}
               disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true}
             >
               Edit
-            </button>
+            </Button>
           </div>
           <div className="w-40 flex items-center">
             <Input

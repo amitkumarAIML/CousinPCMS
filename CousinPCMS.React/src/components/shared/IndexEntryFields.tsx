@@ -32,7 +32,7 @@ const IndexEntryFields: React.FC<IndexEntryFieldsProps> = ({form, fieldPrefix, l
           <Form.Item label={`${labelPrefix} ${i + 1}`} name={`${fieldPrefix}${i + 1}`} className="mb-1 flex-1" style={{marginBottom: 0, flex: 1}}>
             <Input />
           </Form.Item>
-          {i === count - 1 && count < max && <Button className="float-right mt-2" type="primary" icon={<PlusOutlined />} onClick={handleAdd} aria-label={`Add ${labelPrefix}`} />}
+          {i === count - 1 && count < max && <Button size="small" className="float-right mt-2" type="primary" icon={<PlusOutlined />} onClick={handleAdd} aria-label={`Add ${labelPrefix}`} />}
         </div>
       ))}
     </div>

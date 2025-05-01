@@ -206,7 +206,9 @@ const AttributesDetails = () => {
         <div className="flex justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Attribute Form</span>
           <div className="flex gap-x-3">
-            <Button onClick={handleCancel}>Close</Button>
+            <Button size="small" onClick={handleCancel}>
+              Close
+            </Button>
           </div>
         </div>
         <hr className="mt-2 mb-2 border-gray-200" />
@@ -264,10 +266,10 @@ const AttributesDetails = () => {
                   </Form.Item>
                 </Form>
                 <div className="md:col-span-2 flex justify-start md:justify-end gap-x-2">
-                  <Button type="primary" loading={btnLoading} onClick={handleSaveOrUpdateAttribute}>
+                  <Button size="small" type="primary" loading={btnLoading} onClick={handleSaveOrUpdateAttribute}>
                     {isEdit ? 'Update Attribute' : 'Save Attribute'}
                   </Button>
-                  <Button type="default" onClick={showAddValueModal} disabled={isNewValueBtnDisabled}>
+                  <Button size="small" type="default" onClick={showAddValueModal} disabled={isNewValueBtnDisabled}>
                     New Value
                   </Button>
                 </div>

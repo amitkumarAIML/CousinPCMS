@@ -54,19 +54,39 @@ body {
 .ant-tree .ant-tree-node-content-wrapper {
   padding-inline: 0 !important;
 }
+
 .bg-primary-theme-active .ant-table-cell-fix-left {
-  background: var(--color-primary-theme-active) !important ;
+  background: var(--color-primary-theme-active) !important;
 }
+
 .bg-primary-theme-active .ant-table-cell-fix-left:hover {
-  background: var(--color-primary-theme-active) !important ;
+  background: var(--color-primary-theme-active) !important;
 }
+
 .attribute-list .ant-list-header {
   padding: 0px !important;
 }
+
 .ant-list-items {
   height: 200px;
   overflow-y: scroll;
 }
 .ant-tabs-nav-wrap {
   padding: 0px 16px !important;
+}
+.additional-image-upload .ant-upload-wrapper.ant-upload-picture-card-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.additional-image-upload .ant-upload-list-item-container {
+  margin: auto;
+}
+
+.additional-image-upload .ant-form-item-explain-error {
+  justify-self: center !important;
+}
+
+.additional-image-upload , .additional-link .ant-modal-content {
+  padding: 10px 12px !important;
 }

@@ -78,8 +78,10 @@ const Attributes = () => {
             </div>
           </div>
           <div className="flex justify-start md:justify-end gap-x-3">
-            <Button onClick={() => navigate('/home')}>Close</Button>
-            <Button type="primary" onClick={() => navigate('/attributes/add')}>
+            <Button size="small" onClick={() => navigate('/home')}>
+              Close
+            </Button>
+            <Button size="small" type="primary" onClick={() => navigate('/attributes/add')}>
               Add
             </Button>
           </div>

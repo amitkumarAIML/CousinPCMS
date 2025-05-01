@@ -18,6 +18,8 @@ import {useLocation} from 'react-router';
 import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
+import AdditionalImages from '../AdditionalImages';
+import LinkMaintenance from '../LinkMaintenance';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -463,15 +465,15 @@ const ProductDetails = forwardRef((props, ref) => {
         const editable = record.additionalProduct === editingId;
         return editable ? (
           <span className="flex gap-x-2">
-            <Button onClick={handleUpdateAssociatedProduct} type="link" style={{padding: 0}}>
+            <Button size="small" onClick={handleUpdateAssociatedProduct} type="link">
               Save
             </Button>
-            <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
+            <Button size="small" onClick={handleCancelEdit} type="link" danger>
               Close
             </Button>
           </span>
         ) : (
-          <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
+          <Button size="small" icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
         );
       },
     },
@@ -497,33 +499,21 @@ const ProductDetails = forwardRef((props, ref) => {
     },
   ];
 
-  const goToLinkMaintenance = () => {
-    const productId = productForm.getFieldValue('akiProductID');
-    if (!productId) return;
-    window.location.href = '/products/link-maintenance';
-  };
-
-  const goToAdditionalImage = () => {
-    const productId = productForm.getFieldValue('akiProductID');
-    if (!productId) return;
-    window.location.href = '/products/additional-images';
-  };
-
   const goToSetAttribute = () => {
     setIsSetAttributeVisable(true);
   };
 
   return (
     <Spin spinning={loading || productLoading}>
-      <div className='px-4'>
+      <div className="px-4">
         <Form form={productForm} layout="vertical" initialValues={defaultValue}>
           {/* Hidden field for category_Name to ensure it is included in form values */}
           <Form.Item name="category_Name" style={{display: 'none'}}>
             <Input type="hidden" />
           </Form.Item>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
-            <div className="lg:col-span-6 md:col-span-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+          <div className="grid grid-cols-12 gap-x-20">
+            <div className="col-span-6">
+              <div className="grid grid-cols-3 gap-x-4">
                 <Form.Item label="Product Id" name="akiProductID">
                   <Input disabled />
                 </Form.Item>
@@ -531,7 +521,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   <Input
                     readOnly
                     placeholder="Click '...' to select"
-                    addonAfter={<Button icon={<EllipsisOutlined />} onClick={openCategoryModal} type="text" style={{border: 'none', height: 'auto', padding: '0 5px'}} />}
+                    addonAfter={<Button size="small" icon={<EllipsisOutlined />} onClick={openCategoryModal} type="text" style={{border: 'none', height: 'auto', padding: '0 5px'}} />}
                   />
                 </Form.Item>
               </div>
@@ -551,7 +541,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   {akiProductDescription?.length || 0} / {charLimit.akiProductDescription}
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-end">
+              <div className="grid grid-cols-3 gap-x-4 items-end">
                 <Form.Item label="Heading" name="akiProductHeading">
                   <Input />
                 </Form.Item>
@@ -562,7 +552,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   <Checkbox className="pb-2">Web Active</Checkbox>
                 </Form.Item>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+              <div className="grid grid-cols-3 gap-x-4">
                 <Form.Item label="List Order" name="akiProductListOrder">
                   <Input type="number" />
                 </Form.Item>
@@ -586,8 +576,8 @@ const ProductDetails = forwardRef((props, ref) => {
                   />
                 </Form.Item>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
-                <div className="flex items-end gap-x-2  md:col-span-2">
+              <div className="grid grid-cols-3 gap-x-4 items-center">
+                <div className="flex items-end gap-x-2  col-span-2">
                   <Form.Item label="Image URL" name="akiProductImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL'}]}>
                     <Input maxLength={charLimit.akiProductImageURL} className="flex-grow pr-16" />
                   </Form.Item>
@@ -598,63 +588,31 @@ const ProductDetails = forwardRef((props, ref) => {
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
                   >
-                    <Button type="primary">Upload</Button>
+                    <Button size="small" type="primary">
+                      Upload
+                    </Button>
                   </Upload>
                   <span className="whitespace-nowrap">
                     {akiProductImageURL?.length || 0} / {charLimit.akiProductImageURL}
                   </span>
                 </div>
-                <Form.Item
-                  label={
-                    <a onClick={goToAdditionalImage} className="underline cursor-pointer">
-                      No of Additional Website Images
-                    </a>
-                  }
-                  name="additionalImages"
-                >
+                <Form.Item label="No of Additional Website Images" name="additionalImages">
                   <Input disabled />
                 </Form.Item>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
+              <div className="grid grid-cols-3 gap-x-4 items-center">
                 <Form.Item label="Image Height (px)" name="akiProductImageHeight">
                   <Input type="number" />
                 </Form.Item>
                 <Form.Item label="Image Width (px)" name="akiProductImageWidth">
                   <Input type="number" />
                 </Form.Item>
-                <Form.Item
-                  label={
-                    <a onClick={goToLinkMaintenance} className="underline cursor-pointer">
-                      No of URL Links
-                    </a>
-                  }
-                  name="urlLinks"
-                >
+                <Form.Item label="No of URL Links" name="urlLinks">
                   <Input disabled />
                 </Form.Item>
               </div>
-              <div className="mt-4">
-                <label className="font-medium text-primary-font block mb-1">Associated Products</label>
-                <div className="border border-border rounded-lg p-2">
-                  <div className="flex justify-end mb-2">
-                    <Button type="primary" onClick={showAddProductModal}>
-                      Add
-                    </Button>
-                  </div>
-                  <Form form={editAssociatedProductForm} component={false}>
-                    <Table columns={associatedProductColumns} dataSource={additionalProductList} rowKey="additionalProduct" loading={isAdditionalPLoading} pagination={false} size="small" bordered />
-                  </Form>
-                </div>
-              </div>
-              {attributslist && (
-                <Form.Item label="Attribute Set" className="w-full mt-1">
-                  <a onClick={goToSetAttribute} className="underline">
-                    {attributslist.attributeSetName}
-                  </a>
-                </Form.Item>
-              )}
             </div>
-            <div className="lg:col-span-5 md:col-span-6 lg:pl-10">
+            <div className="col-span-6">
               <Form.Item name="akiProductIsActive" valuePropName="checked" className="mt-2">
                 <Checkbox>Cat Active</Checkbox>
               </Form.Item>
@@ -680,6 +638,45 @@ const ProductDetails = forwardRef((props, ref) => {
                 </div>
               </div>
             </div>
+            <div className="col-span-12 grid grid-cols-12 gap-x-6 ">
+              <div className="col-span-4 ">
+                <div className="mt-4">
+                  <div className="font-medium text-primary-font  mb-1">Associated Products</div>
+                  <div className="border border-border rounded-lg p-2">
+                    <div className="flex justify-end mb-2">
+                      <Button size="small" type="primary" onClick={showAddProductModal}>
+                        Add
+                      </Button>
+                    </div>
+                    <Form form={editAssociatedProductForm} component={false}>
+                      <Table
+                        className="h-[202px]"
+                        columns={associatedProductColumns}
+                        dataSource={additionalProductList}
+                        rowKey="additionalProduct"
+                        loading={isAdditionalPLoading}
+                        pagination={false}
+                        size="small"
+                        bordered
+                      />
+                    </Form>
+                  </div>
+                </div>
+                {attributslist && (
+                  <Form.Item label="Attribute Set" className="w-full mt-1">
+                    <a onClick={goToSetAttribute} className="underline">
+                      {attributslist.attributeSetName}
+                    </a>
+                  </Form.Item>
+                )}
+              </div>
+              <div className="col-span-4">
+                <AdditionalImages />
+              </div>
+              <div className="col-span-4">
+                <LinkMaintenance />
+              </div>
+            </div>
           </div>
         </Form>
       </div>
@@ -703,7 +700,7 @@ const ProductDetails = forwardRef((props, ref) => {
       </Modal>
       <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={600} destroyOnClose>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+          <div className="grid grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'Required'}]}>
               <Input type="number" />
             </Form.Item>
@@ -727,8 +724,10 @@ const ProductDetails = forwardRef((props, ref) => {
               style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
-              <Button onClick={handleAddModalCancel}>Close</Button>
-              <Button type="primary" htmlType="submit">
+              <Button size="small" onClick={handleAddModalCancel}>
+                Close
+              </Button>
+              <Button size="small" type="primary" htmlType="submit">
                 Save
               </Button>
             </div>

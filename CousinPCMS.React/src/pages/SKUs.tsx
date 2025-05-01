@@ -132,9 +132,11 @@ const SKUs = () => {
 
   const tabBarExtraContent = (
     <div className="flex gap-x-3 mb-2 mr-4">
-      <Button onClick={handleCancel}>Close</Button>
+      <Button size="small" onClick={handleCancel}>
+        Close
+      </Button>
       {activeTab === '1' && (
-        <Button type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={checkIdValue}>
+        <Button size="small" type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={checkIdValue}>
           {isEdit ? 'Update' : 'Save'}
         </Button>
       )}
