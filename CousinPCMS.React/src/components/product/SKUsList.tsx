@@ -4,6 +4,7 @@ import type {TableProps} from 'antd/es/table';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
 import {getSkuByProductId} from '../../services/HomeService';
+import { getSessionItem, setSessionItem } from '../../services/DataService';
 
 const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,9 +53,9 @@ const SKUsList = () => {
   };
 
   const columns: TableProps<SKuList>['columns'] = [
-    {title: 'SkuName', dataIndex: 'skuName', width: 200, ellipsis: true},
-    {title: 'ManufacturerRef', dataIndex: 'akiManufacturerRef', ellipsis: true},
-    {title: 'ITEM_NUMBER', dataIndex: 'akiitemid'},
+    {title: 'Sku Name', dataIndex: 'skuName', width: 200, ellipsis: true},
+    {title: 'MFR Ref No', dataIndex: 'akiManufacturerRef', ellipsis: true,width: 190,},
+    {title: 'Item No', dataIndex: 'akiitemid',width: 120},
     {title: 'ListOrder', dataIndex: 'akiListOrder', width: 100, align: 'right'},
     {
       title: 'Obsolete',
@@ -71,15 +72,20 @@ const SKUsList = () => {
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
     },
     {
-      title: 'CatActive',
+      title:'Web Active',dataIndex:'akiWebActive',align:'center',
+      render:(isWebActive)=><Checkbox checked={isWebActive} disabled />,
+      width:100
+    },
+    {
+      title: 'Cat Active',
       dataIndex: 'akiSKUIsActive',
       width: 90,
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,
     },
-    {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100},
-    {title: 'AltSkuName', dataIndex: 'akiAltSKUName', ellipsis: true},
-    {title: 'CommodityCode', dataIndex: 'akiCommodityCode', width: 120},
+    {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align:'center'},
+    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', ellipsis: true,width:180},
+    {title: 'Comm Code', dataIndex: 'akiCommodityCode', width: 120},
   ];
 
   return (
@@ -87,6 +93,7 @@ const SKUsList = () => {
       <Spin spinning={loading}>
         <Table
           columns={columns}
+          scroll={{x: 1100}}
           dataSource={skusList}
           rowKey="akiitemid"
           size="small"
