@@ -507,7 +507,6 @@ const ProductDetails = forwardRef((props, ref) => {
     <Spin spinning={loading || productLoading}>
       <div className="px-4">
         <Form form={productForm} layout="vertical" initialValues={defaultValue}>
-          {/* Hidden field for category_Name to ensure it is included in form values */}
           <Form.Item name="category_Name" style={{display: 'none'}}>
             <Input type="hidden" />
           </Form.Item>
@@ -638,9 +637,9 @@ const ProductDetails = forwardRef((props, ref) => {
                 </div>
               </div>
             </div>
-            <div className="col-span-12 grid grid-cols-12 gap-x-6 ">
+            <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-6">
               <div className="col-span-4 ">
-                <div className="mt-4">
+                <div>
                   <div className="font-medium text-primary-font  mb-1">Associated Products</div>
                   <div className="border border-border rounded-lg p-2">
                     <div className="flex justify-end mb-2">

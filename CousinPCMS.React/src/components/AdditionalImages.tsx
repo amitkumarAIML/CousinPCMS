@@ -79,10 +79,10 @@ const AdditionalImages = () => {
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('categoryId') || getSessionItem('tempProductId');
+      id = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempProductId');
+      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
       type = 'sku';
     }
 
@@ -281,7 +281,7 @@ const AdditionalImages = () => {
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-center mt-4 pb-1">
+      <div className="flex flex-wrap justify-between items-center pb-1">
         <span className="font-medium text-primary-font">Additional Website Images</span>
       </div>
       <div>

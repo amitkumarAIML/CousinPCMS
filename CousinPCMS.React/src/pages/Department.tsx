@@ -165,7 +165,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
           </div>
         </div>
         <hr className="mt-2 mb-1 border-light-border" />
-        <div className="p-4 pt-3">
+        <div className="p-2 pt-3">
           <Form
             form={form}
             layout="vertical"

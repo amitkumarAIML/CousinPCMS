@@ -78,7 +78,7 @@ const LinkMaintenance = () => {
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('categoryId') || getSessionItem('tempProductId');
+      id = getSessionItem('CategoryId') || getSessionItem('tempProductId');
       type = 'category';
     } else if (path.includes('/skus')) {
       id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
@@ -223,7 +223,7 @@ const LinkMaintenance = () => {
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-center p-4 pb-1">
+      <div className="flex flex-wrap justify-between items-center pb-1">
         <span className="font-medium text-primary-font">Video Links</span>
       </div>
       <div className="p-2 border border-border rounded-lg">

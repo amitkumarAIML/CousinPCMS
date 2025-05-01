@@ -17,6 +17,8 @@ import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/D
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../contexts.ts/useNotification';
+import AdditionalImages from '../components/AdditionalImages';
+import LinkMaintenance from '../components/LinkMaintenance';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -503,11 +505,11 @@ const Category = () => {
           </div>
         </div>
         <hr className="mt-2 mb-1 border-light-border" />
-        <div className="p-4 pt-3">
+        <div className="p-2 pt-3">
           <Form form={categoryForm} layout="vertical" onFinish={handleCategoryUpdateSubmit} initialValues={defaultValue}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
-              <div className="lg:col-span-6 md:col-span-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+            <div className="grid grid-cols-12 gap-x-20 gap-y-0">
+              <div className="col-span-6">
+                <div className="grid grid-cols-3 gap-x-4">
                   <Form.Item label="Category Id" name="akiCategoryID">
                     <Input disabled />
                   </Form.Item>
@@ -526,7 +528,7 @@ const Category = () => {
                     {akiCategoryName?.length || 0} / {charLimit.akiCategoryName}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+                <div className="grid grid-cols-3 gap-x-4">
                   <Form.Item label="Guide Price" name="akiCategoryGuidePrice">
                     <Input type="number" step="0.01" />
                   </Form.Item>
@@ -543,7 +545,7 @@ const Category = () => {
                     />
                   </Form.Item>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-end">
+                <div className="grid grid-cols-3 gap-x-4 items-end">
                   <Form.Item label="List Order" name="akiCategoryListOrder">
                     <Input type="number" />
                   </Form.Item>
@@ -561,7 +563,7 @@ const Category = () => {
                     <Checkbox className="pb-2">Prompt If Price Group Blank</Checkbox>
                   </Form.Item>
                 </div>
-                <Form.Item label="Flags" className="mb-2">
+                <Form.Item label="Flags">
                   <div className="flex flex-wrap gap-x-4 gap-y-1">
                     <Form.Item name="akiCategoryWebActive" valuePropName="checked" noStyle>
                       <Checkbox>Web Active</Checkbox>
@@ -582,7 +584,7 @@ const Category = () => {
                   <Form.Item label="Category Text" name="akiCategoryDescriptionText">
                     <Input.TextArea rows={3} maxLength={2000} />
                   </Form.Item>
-                  <span className=" absolute bottom-3 -right-16  text-xs">
+                  <span className=" absolute bottom-3 -right-16  ">
                     {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
                   </span>
                 </div>
@@ -609,7 +611,7 @@ const Category = () => {
                     {akiCategoryImageURL?.length || 0} / {charLimit.akiCategoryImageURL}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
+                <div className="grid grid-cols-3 gap-x-4 items-center">
                   <Form.Item
                     label={
                       <a onClick={goToAdditionalImage} className="underline cursor-pointer">
@@ -623,9 +625,9 @@ const Category = () => {
                   <Form.Item label="Category Discount (%)" name="akiCategoryDiscount">
                     <Input type="number" step="0.01" />
                   </Form.Item>
-                  <span className="mt-2 md:mt-6">(If empty, or 0, the Department default will be used)</span>
+                  <span className="mt-6">(If empty, or 0, the Department default will be used)</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
+                <div className="grid grid-cols-3 gap-x-4 items-center">
                   <Form.Item
                     label={
                       <a onClick={goToLinkMaintenance} className="underline cursor-pointer">
@@ -643,10 +645,10 @@ const Category = () => {
                     <Input type="number" />
                   </Form.Item>
                 </div>
-                <div className="mt-4">
-                  <label className="font-medium text-secondary-font block mb-1">Website Specific</label>
-                  <div className="border border-border rounded-lg p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 items-start">
+                <div className="mt-1">
+                  <label className="font-medium text-secondary-font block ">Website Specific</label>
+                  <div className="border border-border rounded-lg p-2">
+                    <div className="grid grid-cols-2 gap-x-4 items-start">
                       <div className="flex flex-col space-y-2">
                         <Form.Item name="akiCategoryIncludeInSearchByManufacture" valuePropName="checked" noStyle>
                           <Checkbox>Include Search by Manufacturer</Checkbox>
@@ -661,36 +663,14 @@ const Category = () => {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 mt-4 items-end">
+                <div className="grid grid-cols-2 gap-x-4 items-end">
                   <Form.Item label="Return Type" name="akiCategoryReturnType">
                     <Select allowClear showSearch placeholder="Select return type" options={returnOptions} />
                   </Form.Item>
                   <span className=" pb-2">This will roll down to sub-categories.</span>
                 </div>
-                <div className="mt-4">
-                  <label className="font-medium text-secondary-font block mb-1">Associated Products</label>
-                  <div className="border border-border rounded-lg p-2">
-                    <div className="flex justify-end mb-2">
-                      <Button size="small" type="primary" onClick={showAddProductModal}>
-                        Add
-                      </Button>
-                    </div>
-                    <Form form={editAssociatedProductForm} component={false}>
-                      <Table
-                        columns={associatedProductColumns}
-                        dataSource={additionalCategoryList}
-                        rowKey="product"
-                        loading={isAssociatePLoading}
-                        pagination={false}
-                        size="small"
-                        bordered
-                        className="no-header-scroll"
-                      />
-                    </Form>
-                  </div>
-                </div>
               </div>
-              <div className="lg:col-span-5 md:col-span-6 lg:pl-10">
+              <div className="col-span-6">
                 <Form.Item label="Print Catalogue Settings" className="mb-2">
                   <div className="flex flex-col items-start space-y-1">
                     <Form.Item name="akiCategoryPrintCatActive" valuePropName="checked" noStyle>
@@ -721,9 +701,40 @@ const Category = () => {
                 </Form.Item>
                 <div className="mt-1">
                   <label className="font-medium text-secondary-font block mb-1">Index Entry Text</label>
-                  <div className="border border-border rounded-lg p-4">
+                  <div className="border border-border rounded-lg p-2">
                     <IndexEntryFields form={categoryForm} fieldPrefix="akiCategoryIndex" labelPrefix="Index Entry" max={5} />
                   </div>
+                </div>
+              </div>
+              <div className="col-span-12 grid grid-cols-3 gap-x-6">
+                <div className="col-span-1">
+                  <div className="font-medium text-primary-font  mb-1">Associated Products</div>
+                  <div className="border border-border rounded-lg p-2">
+                    <div className="flex justify-end mb-2">
+                      <Button size="small" type="primary" onClick={showAddProductModal}>
+                        Add
+                      </Button>
+                    </div>
+                    <Form form={editAssociatedProductForm} component={false}>
+                      <Table
+                        columns={associatedProductColumns}
+                        dataSource={additionalCategoryList}
+                        rowKey="product"
+                        loading={isAssociatePLoading}
+                        pagination={false}
+                        size="small"
+                        bordered
+                        virtual
+                        scroll={{y: 180}}
+                      />
+                    </Form>
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <AdditionalImages />
+                </div>
+                <div className="col-span-1">
+                  <LinkMaintenance />
                 </div>
               </div>
             </div>
@@ -738,7 +749,7 @@ const Category = () => {
           className="px-3 py-1"
           initialValues={{listorder: additionalCategoryList.length > 0 ? Math.max(...additionalCategoryList.map((c) => Number(c.listOrder) || 0)) + 1 : 1}}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+          <div className="grid grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'List order is required'}]}>
               <Input type="number" />
             </Form.Item>
