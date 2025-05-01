@@ -5,7 +5,7 @@ import type {TableProps} from 'antd/es/table';
 import type {CheckboxChangeEvent} from 'antd/es/checkbox';
 
 import {getAttributeValuesByListofNames, addUpdateSKULinkedAttribute} from '../../services/SkusService';
-import {extractUserMessage} from '../../services/DataService';
+import {extractUserMessage, getSessionItem} from '../../services/DataService';
 import type {ApiResponse} from '../../models/generalModel';
 import type {AttributeValueModel} from '../../models/attributesModel';
 import type {LikedSkuModel} from '../../models/skusModel';

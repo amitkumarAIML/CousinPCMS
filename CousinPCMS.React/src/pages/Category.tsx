@@ -240,9 +240,9 @@ const Category = () => {
   }, [isVisibleAddProductModal, productSearchValue, productTableParams.pagination, fetchProductsForModal]);
 
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
-    // if (!categoryId) return;
+    if (!categoryId) return;
     setBtnLoading(true);
-    console.log('value', values);
+    console.log('value', values, categoryId);
     const payload: UpdateCategoryModel = {
       ...values,
       akiCategoryID: values.akiCategoryID || '',

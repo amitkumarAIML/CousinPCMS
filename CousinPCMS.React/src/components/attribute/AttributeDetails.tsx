@@ -8,6 +8,7 @@ import type {AttributeRequestModel, AttributeValueModel} from '../../models/attr
 
 import {notification} from 'antd';
 import AttributeValuesPopup from './AttributeValuesPopup';
+import {setSessionItem} from '../../services/DataService';
 
 interface AttributeDetailsFormData extends Omit<AttributeRequestModel, 'showAsCategory'> {
   showAsCategory?: boolean;

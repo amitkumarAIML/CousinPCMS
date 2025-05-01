@@ -44,7 +44,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   const [isLoadingAttributeNames, setIsLoadingAttributeNames] = useState<boolean>(false);
   const [isAttributeValueModalVisible, setIsAttributeValueModalVisible] = useState<boolean>(false);
   const [selectedAttributeForModal, setSelectedAttributeForModal] = useState<AttributeModel | null>(null);
-
   const charLimit = ItemCharLimit;
 
   const skuName = Form.useWatch('skuName', form);
@@ -102,6 +101,13 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   }, [form, onFormInstanceReady]);
 
   useEffect(() => {
+    // Check for both real and temp IDs
+    const hasRealIds = getSessionItem('CategoryId') && getSessionItem('productId');
+    const hasTempIds = getSessionItem('tempCategoryId') && getSessionItem('tempProductId');
+    if (!hasRealIds && !hasTempIds) {
+      return;
+    }
+
     const fetchDropdowns = async () => {
       try {
         const [countryRes, commRes, layoutRes, compRes, pgRes, pbRes, pfRes] = await Promise.all([
@@ -127,6 +133,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       }
     };
     fetchDropdowns();
+
     if (location.pathname === '/skus/add') {
       form.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId') || '0');
       form.setFieldValue('akiProductID', getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId') || '0');
@@ -136,6 +143,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       return;
     }
     if (skuData) {
+      console.log('SKU Edit page loaded', skuData);
       form.resetFields();
       form.setFieldsValue({
         ...skuData,
@@ -199,7 +207,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   };
 
   return (
-    <div className='px-4'>
+    <div className="px-4">
       <Form form={form} layout="vertical" initialValues={defaultValue}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
           <div className="lg:col-span-6 md:col-span-6">

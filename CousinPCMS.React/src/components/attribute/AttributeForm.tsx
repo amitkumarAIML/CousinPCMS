@@ -8,7 +8,7 @@ import type {AttributeRequestModel, AttributeValueModel} from '../../models/attr
 import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
 import {AttributeFormCharLimit} from '../../models/char.constant';
-import {setSessionItem} from '../../services/DataService';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 const AttributeForm = () => {
   const [form] = Form.useForm<AttributeRequestModel>();

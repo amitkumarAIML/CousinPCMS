@@ -18,6 +18,8 @@ const SKUs = () => {
   const [skuData, setSkuData] = useState<SKuList | null>(null);
   const [skuDetailsFormInstance, setSkuDetailsFormInstance] = useState<FormInstance | null>(null);
   const [isEdit, setIsEdit] = useState(false);
+  const [checkIdValue, setCheckIdValue] = useState<boolean>(false);
+  const [checkIdValueMsg, setCheckIdValueMsg] = useState<string>('');
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -52,6 +54,14 @@ const SKUs = () => {
   );
 
   useEffect(() => {
+    const hasRealIds = getSessionItem('CategoryId') && getSessionItem('productId');
+    const hasTempIds = getSessionItem('tempCategoryId') && getSessionItem('tempProductId');
+    if (!hasRealIds && !hasTempIds) {
+      setCheckIdValueMsg('Select respative category and product to view SKU.');
+      setCheckIdValue(true);
+      setLoading(false);
+      return;
+    }
     if (location.pathname === '/skus/add') {
       setLoading(false);
       return;
@@ -59,7 +69,8 @@ const SKUs = () => {
     if (location.pathname === '/skus/edit') {
       setIsEdit(true);
     }
-    const itemNumFromSession = getSessionItem('itemNumber') || '';
+
+    const itemNumFromSession = getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
     } else {
@@ -88,7 +99,6 @@ const SKUs = () => {
         ...skusData,
         akiPriceBreaksTBC,
       };
-      console.log('Product data:', req, skuData?.akiPriceBreak ?? 'No Price Break');
       try {
         setBtnSaveLoading(true);
         if (isEdit) {
@@ -124,43 +134,43 @@ const SKUs = () => {
     <div className="flex gap-x-3 mb-2 mr-4">
       <Button onClick={handleCancel}>Close</Button>
       {activeTab === '1' && (
-        <Button type="primary" loading={btnSaveLoading} onClick={handleSave}>
+        <Button type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={checkIdValue}>
           {isEdit ? 'Update' : 'Save'}
         </Button>
       )}
     </div>
   );
 
+  const tabItems = [
+    {
+      label: 'Sku',
+      key: '1',
+      children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />,
+    },
+  ];
+  if (location.pathname === '/skus/edit') {
+    tabItems.push(
+      {
+        label: 'Related Skus',
+        key: '2',
+        children: <RelatedSKUs skuData={skuData} />,
+      },
+      {
+        label: 'All Linked Attributes',
+        key: '3',
+        children: <AttributeSKU skuData={skuData} />,
+      }
+    );
+  }
+
   return (
     <>
       <Spin spinning={loading}>
         <div className="main-container pt-2">
-        <label className="px-4 text-sm font-medium">Sku Form</label>
+          <label className="px-4 text-sm font-medium">Sku Form</label>
+          <span>{checkIdValue && <div className="text-red-500 text-sm font-medium px-4 mb-2">{checkIdValueMsg}</div>}</span>
           <div className="pb-1">
-            <Tabs
-              activeKey={activeTab}
-              onChange={setActiveTab}
-              tabBarExtraContent={tabBarExtraContent}
-              className="product-tabs"
-              items={[
-                {
-                  label: 'Sku',
-                  key: '1',
-                  children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />,
-                },
-                {
-                  label: 'Related Skus',
-                  key: '2',
-                  children: <RelatedSKUs skuData={skuData} />,
-                },
-
-                {
-                  label: 'All Linked Attributes',
-                  key: '3',
-                  children: <AttributeSKU skuData={skuData} />,
-                },
-              ]}
-            />
+            <Tabs activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={tabBarExtraContent} className="product-tabs" items={tabItems} />
           </div>
         </div>
       </Spin>

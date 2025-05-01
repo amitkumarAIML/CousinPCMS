@@ -41,6 +41,6 @@ export const getSessionItem = (key: string) => {
 }
 
 export const setSessionItem = (key: string, value: any) => {
-  sessionStorage.setItem(key, value);
+  sessionStorage.setItem(key, JSON.stringify(value));
 } 
 
