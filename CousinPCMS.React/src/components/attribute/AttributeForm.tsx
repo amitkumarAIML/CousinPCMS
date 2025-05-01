@@ -213,7 +213,6 @@ const AttributeForm = () => {
   };
 
   const valueColumns = [
-    {title: 'Attribute Name', dataIndex: 'attributeName', ellipsis: true},
     {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true},
     {
       title: 'Action',
