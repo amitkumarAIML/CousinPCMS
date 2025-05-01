@@ -164,7 +164,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,width:120
     },
     {
-      title: 'CatActive',
+      title: 'Cat Active',
       dataIndex: 'akiSKUIsActive',
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,width:120

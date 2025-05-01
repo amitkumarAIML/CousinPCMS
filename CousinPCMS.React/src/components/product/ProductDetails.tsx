@@ -515,7 +515,7 @@ const ProductDetails = forwardRef((props, ref) => {
 
   return (
     <Spin spinning={loading || productLoading}>
-      <div>
+      <div className='px-4'>
         <Form form={productForm} layout="vertical" initialValues={defaultValue}>
           {/* Hidden field for category_Name to ensure it is included in form values */}
           <Form.Item name="category_Name" style={{display: 'none'}}>

@@ -141,9 +141,9 @@ const SKUs = () => {
   return (
     <>
       <Spin spinning={loading}>
-        <div className="main-container">
-          <div className="p-4 pb-1">
-            <span className="text-sm font-medium">Sku Form</span>
+        <div className="main-container pt-2">
+        <label className="px-4 text-sm font-medium">Sku Form</label>
+          <div className="pb-1">
             <Tabs
               activeKey={activeTab}
               onChange={setActiveTab}

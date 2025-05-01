@@ -67,3 +67,6 @@ body {
   height: 200px;
   overflow-y: scroll;
 }
+.ant-tabs-nav-wrap {
+  padding: 0px 16px !important;
+}

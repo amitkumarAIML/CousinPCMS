@@ -83,7 +83,7 @@ const SKUsList = () => {
   ];
 
   return (
-    <div>
+    <div className='px-4'>
       <Spin spinning={loading}>
         <Table
           columns={columns}

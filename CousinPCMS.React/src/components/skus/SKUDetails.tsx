@@ -193,7 +193,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   };
 
   return (
-    <div>
+    <div className='px-4'>
       <Form form={form} layout="vertical" initialValues={defaultValue}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
           <div className="lg:col-span-6 md:col-span-6">

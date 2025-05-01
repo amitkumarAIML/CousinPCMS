@@ -211,7 +211,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200},
     {title: 'Required', dataIndex: 'attributeRequired', width: 40, render: (val: boolean) => <Checkbox checked={val} disabled />},
     {title: 'Not Important', dataIndex: 'notImportant', width: 50, render: (val: boolean) => <Checkbox checked={val} disabled />},
-    {title: 'List Position', dataIndex: 'listPosition', width: 50},
+    {title: 'List Order', dataIndex: 'listPosition', width: 50},
     {
       title: 'Action',
       dataIndex: 'action',
@@ -276,7 +276,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
                   className="attribute-list"
                   header={
                     <div className="flex justify-between pl-2 items-center bg-border gap-2  m-0  text-primary-font sticky top-0 z-10 ">
-                      Attribute Details
+                     Unlinked Attributes
                       <Input
                         placeholder="Search"
                         value={searchValue}

@@ -92,7 +92,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   ];
 
   return (
-    <div>
+    <div className='px-4'>
       <Form layout="vertical" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <Form.Item label="Search" className="md:col-span-2 mb-0">
