@@ -29,7 +29,7 @@ namespace CousinPCMS.Domain
         public int akiDepartmentID { get; set; }
         public string akiDepartmentName { get; set; }
         public int akiDepartmentListOrder { get; set; }
-        public string akiDeptPromptUserifblank { get; set; }
+        public bool akiDeptPromptUserifblank { get; set; }
         public string akiDepartmentDescText { get; set; }
         public string akiDepartmentImageURL { get; set; }
         public int akiDepartmentImageHeight { get; set; }
