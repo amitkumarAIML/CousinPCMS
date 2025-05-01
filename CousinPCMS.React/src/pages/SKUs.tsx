@@ -7,8 +7,9 @@ import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 import {updateSkus, getSkuItemById, addSkus} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
-import type {SKuList, SkuRequestModel} from '../models/skusModel';
+import type {SKuList} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
+import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
 
 const SKUs = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
@@ -58,7 +59,7 @@ const SKUs = () => {
     if (location.pathname === '/skus/edit') {
       setIsEdit(true);
     }
-    const itemNumFromSession = sessionStorage.getItem('itemNumber') || '';
+    const itemNumFromSession = getSessionItem('itemNumber') || '';
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
     } else {
@@ -79,51 +80,43 @@ const SKUs = () => {
 
     try {
       const values = await skuDetailsFormInstance.validateFields();
-      const formData = values;
-      const cleanData = (obj: Record<string, unknown>): SkuRequestModel => {
-        const cleaned: Record<string, unknown> = {...obj};
-        if (skuData) {
-          cleaned.akiSKUID = skuData.akiSKUID;
-          cleaned.akiProductID = skuData.akiProductID;
-        }
-        return cleaned as unknown as SkuRequestModel;
+      const skusData = cleanEmptyNullToString(values);
+
+      skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
+      const akiPriceBreaksTBC = skuData?.akiPriceBreak ?? false;
+      const req = {
+        ...skusData,
+        akiPriceBreaksTBC,
       };
-      const cleanedPayload = cleanData(formData);
-      const isLayoutTemplateSet = !!cleanedPayload.akiLayoutTemplate;
-      cleanedPayload.akiPrintLayoutTemp = isLayoutTemplateSet;
-      setBtnSaveLoading(true);
-      if (isEdit) {
-        const response = await updateSkus(cleanedPayload);
-        if (response.isSuccess) {
-          notify.success('SKU Details Updated Successfully');
-          navigate('/home');
+      console.log('Product data:', req, skuData?.akiPriceBreak ?? 'No Price Break');
+      try {
+        setBtnSaveLoading(true);
+        if (isEdit) {
+          const response = await updateSkus(req);
+          if (response.isSuccess) {
+            notify.success('SKU Details Updated Successfully');
+            navigate('/home');
+          } else {
+            setBtnSaveLoading(false);
+            notify.error('SKU Details Update Failed');
+          }
         } else {
-          notify.error('SKU Details Update Failed');
+          const response = await addSkus(req);
+          if (response.isSuccess) {
+            notify.success('SKU Details Added Successfully');
+            navigate('/home');
+          } else {
+            setBtnSaveLoading(false);
+            notify.error('SKU Details Added Failed');
+          }
         }
-      } else {
-        const response = await addSkus(cleanedPayload);
-        if (response.isSuccess) {
-          notify.success('SKU Details Added Successfully');
-          navigate('/home');
-        } else {
-          notify.error('SKU Details Added Failed');
-        }
+      } catch (errorInfo: unknown) {
+        setBtnSaveLoading(false);
+        notify.error('Please fill in all required fields correctly.' + errorInfo);
       }
-    } catch (errorInfo: unknown) {
-      if (
-        errorInfo &&
-        typeof errorInfo === 'object' &&
-        'errorFields' in errorInfo &&
-        Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields) &&
-        ((errorInfo as {errorFields?: unknown[]}).errorFields?.length ?? 0) > 0
-      ) {
-        notify.error('Please fill in all required fields correctly.');
-        setActiveTab('1');
-      } else {
-        notify.error('An unexpected error occurred during save.');
-      }
-    } finally {
-      setBtnSaveLoading(false);
+    } catch (error: unknown) {
+      console.error('Error saving SKU:', error);
+      notify.error('An error occurred while saving SKU details.');
     }
   };
 

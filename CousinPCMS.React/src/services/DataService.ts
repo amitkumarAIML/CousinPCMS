@@ -31,3 +31,16 @@ export const cleanEmptyNullToString = (obj: any) => {
   }
   return result;
 };
+
+export const getSessionItem = (key: string) => {
+  const item = sessionStorage.getItem(key);
+  if (item) {
+    return JSON.parse(item);
+  }
+  return null;
+}
+
+export const setSessionItem = (key: string, value: any) => {
+  sessionStorage.setItem(key, value);
+} 
+

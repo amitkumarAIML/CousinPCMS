@@ -5,7 +5,7 @@ import type {FormInstance} from 'antd/es/form';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import {getLayoutTemplateList, getCompetitorDetails, getPriceGroupDetails, getPriceBreaksDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
-import {getCountryOrigin, getCommodityCodes} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem, setSessionItem} from '../../services/DataService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {Country} from '../../models/countryOriginModel';
 import type {CommodityCode} from '../../models/commodityCodeModel';
@@ -17,6 +17,7 @@ import type {AttributeModel} from '../../models/attributeModel';
 import type {ApiResponse} from '../../models/generalModel';
 import {ItemCharLimit} from '../../models/char.constant';
 import AttributeValuesPopup from '../../components/attribute/AttributeValuesPopup';
+
 interface SkuDetailsProps {
   skuData?: SKuList | null;
   onFormInstanceReady: (form: FormInstance<SKuList>) => void;
@@ -89,6 +90,11 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     akiCompetitors: '',
     akiCommodityCode: '',
     akiAlternativeTitle: '',
+    akiLayoutTemplate: '',
+    akiCountryofOrigin: '',
+    akiPriceBreaksTBC: true,
+    akiItemShippingWeight: 0,
+    akiItemPriceSiteSellPrice: 0,
   };
 
   useEffect(() => {
@@ -122,8 +128,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     };
     fetchDropdowns();
     if (location.pathname === '/skus/add') {
-      form.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId') || '0');
-      form.setFieldValue('akiProductID', sessionStorage.getItem('productId') || '0');
+      form.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId') || '0');
+      form.setFieldValue('akiProductID', getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId') || '0');
       form.setFieldValue('akiSKUID', '0');
       form.setFieldValue('akiitemid', '0');
       console.log('SKU Add page loaded', form.getFieldsValue());
@@ -188,7 +194,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   const goToUploadForm = () => {
     if (!savedAttributes || savedAttributes.length === 0) return;
     const attributeNames = savedAttributes.map((item) => item.attributeName);
-    sessionStorage.setItem('attributeNames', JSON.stringify(attributeNames));
+    setSessionItem('attributeNames', JSON.stringify(attributeNames));
     navigate(`/skus/attribute-multi-upload`);
   };
 
@@ -275,7 +281,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                   options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
                 />
               </Form.Item>
-              <Form.Item label="Country of Origin" name="akiCountryOfOrigin">
+              <Form.Item label="Country of Origin" name="akiCountryofOrigin">
                 <Select
                   allowClear
                   showSearch
@@ -289,7 +295,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2 items-center">
               <div className="flex items-end space-x-2 col-span-2 ">
-                <Form.Item label="Image URL" name="akiImageURL" className="w-full" rules={[{type: 'url', message: 'Please enter a valid URL'}]}>
+                <Form.Item label="Image URL" name="akiImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL'}]}>
                   <Input maxLength={charLimit.akiImageURL} />
                 </Form.Item>
                 <Upload

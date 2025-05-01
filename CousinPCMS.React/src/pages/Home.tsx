@@ -2,14 +2,15 @@ import {useState, useEffect} from 'react';
 import ProductDisplay from '../components/home/ProductDisplay';
 import TreeView from '../components/home/TreeView';
 import SkusDisplay from '../components/home/SkusDisplay';
+import {getSessionItem} from '../services/DataService';
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    const storedCategoryId = sessionStorage.getItem('CategoryId');
-    const storedProductId = sessionStorage.getItem('productId');
+    const storedCategoryId = getSessionItem('CategoryId');
+    const storedProductId = getSessionItem('productId');
     if (storedCategoryId) setSelectedCategory(storedCategoryId);
     if (storedProductId && !isNaN(Number(storedProductId))) setSelectedProductId(Number(storedProductId));
   }, []);

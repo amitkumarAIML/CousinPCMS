@@ -24,10 +24,6 @@ const routes = createBrowserRouter([
         path: 'departments',
         children: [
           {
-            path: '',
-            Component: Department,
-          },
-          {
             path: 'Add',
             Component: Department,
           },
@@ -40,8 +36,8 @@ const routes = createBrowserRouter([
       {
         path: 'category',
         children: [
-          {path: '', Component: Category},
           {path: 'add', Component: Category},
+          {path: 'edit', Component: Category},
           {
             path: 'additional-images',
             Component: AdditionalImages,
@@ -50,16 +46,11 @@ const routes = createBrowserRouter([
             path: 'link-maintenance',
             Component: LinkMaintenance,
           },
-          {path: 'edit', Component: Category},
         ],
       },
       {
         path: 'products',
         children: [
-          {
-            path: '',
-            Component: Product,
-          },
           {
             path: 'additional-images',
             Component: AdditionalImages,
@@ -75,10 +66,6 @@ const routes = createBrowserRouter([
       {
         path: 'SKUs',
         children: [
-          {
-            path: '',
-            Component: SKUs,
-          },
           {path: 'add', Component: SKUs},
           {path: 'edit', Component: SKUs},
           {

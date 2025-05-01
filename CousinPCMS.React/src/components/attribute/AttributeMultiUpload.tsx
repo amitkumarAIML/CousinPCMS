@@ -80,7 +80,7 @@ const AttributeMultiUpload = () => {
   }, []);
 
   useEffect(() => {
-    const storedNames = sessionStorage.getItem('attributeNames');
+    const storedNames = getSessionItem('attributeNames');
     const names = storedNames ? JSON.parse(storedNames) : [];
     if (names.length === 0) {
       extractUserMessage('No attribute names found in session storage.');
@@ -111,7 +111,7 @@ const AttributeMultiUpload = () => {
     };
     setTableDataSource(updatedDataSource);
     const req: LikedSkuModel = {
-      akiItemNo: sessionStorage.getItem('itemNumber') || '',
+      akiItemNo: getSessionItem('itemNumber') || '',
       akiAttributeName: item.attributeName,
       akiAttributeValue: item.attributeValue,
       akiLink: isChecked,

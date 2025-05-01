@@ -125,7 +125,7 @@ const AttributesDetails = () => {
           setAttributeName(currentAttributeName);
           setIsAttributeNameDisabled(true);
           setIsNewValueBtnDisabled(false);
-          sessionStorage.setItem('attributeName', currentAttributeName);
+          setSessionItem('attributeName', currentAttributeName);
 
           setAttributesValues([]);
           notification.info({message: '', description: 'You can now add values.'});

@@ -9,7 +9,7 @@ const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [skusList, setSkusList] = useState<SKuList[]>([]);
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
-  const [productId] = useState<string | null>(sessionStorage.getItem('productId') || '');
+  const [productId] = useState<string | null>(getSessionItem('productId') || '');
   const notify = useNotification();
 
   useEffect(() => {
@@ -43,8 +43,8 @@ const SKUsList = () => {
   const handleRowSelect = (record: SKuList) => {
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
     if (record.akiitemid !== selectedRow?.akiitemid) {
-      sessionStorage.setItem('itemNumber', record.akiitemid || '');
-      sessionStorage.setItem('skuId', String(record.akiSKUID || ''));
+      setSessionItem('itemNumber', record.akiitemid || '');
+      setSessionItem('skuId', String(record.akiSKUID || ''));
     } else {
       sessionStorage.removeItem('itemNumber');
       sessionStorage.removeItem('skuId');

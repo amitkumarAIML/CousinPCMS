@@ -10,16 +10,16 @@ const Header = () => {
         <li className={`cursor-pointer ${isActive('/home') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/home')}>
           Home
         </li>
-        <li className={`cursor-pointer ${isActive('/departments') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/departments')}>
+        <li className={`cursor-pointer ${isActive('/departments') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/departments/add')}>
           Departments
         </li>
-        <li className={`cursor-pointer ${isActive('/category') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/category')}>
+        <li className={`cursor-pointer ${isActive('/category') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/category/add')}>
           Category
         </li>
-        <li className={`cursor-pointer ${isActive('/products') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/products')}>
+        <li className={`cursor-pointer ${isActive('/products') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/products/add')}>
           Products
         </li>
-        <li className={`cursor-pointer ${isActive('/skus') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/skus')}>
+        <li className={`cursor-pointer ${isActive('/skus') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/skus/add')}>
           SKUs
         </li>
         <li className={`cursor-pointer ${isActive('/attributes') ? 'text-primary-theme' : ''}`} onClick={() => navigate('/attributes')}>

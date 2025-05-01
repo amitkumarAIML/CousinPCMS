@@ -198,6 +198,7 @@ export interface SkuRequestModel {
   akiPrintLayoutTemp: boolean;
   additionalImages?: string;
   urlLinks?: string;
+  akiPriceBreaksTBC: boolean;
 }
 
 export interface SkuListResponse {

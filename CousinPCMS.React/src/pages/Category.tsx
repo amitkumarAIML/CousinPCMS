@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation, useNavigate} from 'react-router';
-import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, Popconfirm, message} from 'antd';
+import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
 import {EditOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import IndexEntryFields from '../components/shared/IndexEntryFields';
 import type {UploadChangeParam} from 'antd/es/upload';
@@ -13,7 +13,7 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
 import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getCountryOrigin, getCommodityCodes} from '../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../contexts.ts/useNotification';
@@ -32,10 +32,10 @@ const Category = () => {
   const [addAssociatedProductForm] = Form.useForm<{listorder: number; product: number; productName: string}>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const [isAssociatePLoading, setIsAssociatePLoading] = useState<boolean>(false);
-  const [loadingProduct, setLoadingProduct] = useState<boolean>(false);
+  const [loadingProduct, setLoadingProduct] = useState<boolean>(true);
   const [categoryId, setCategoryId] = useState<string>('');
   const [categoryDetails, setCategoryDetails] = useState<CategoryResponseModel | null>(null);
   const [countries, setCountries] = useState<Country[]>([]);
@@ -110,13 +110,13 @@ const Category = () => {
     fetchInitialData();
 
     if (location.pathname === '/category/add') {
-      categoryForm.setFieldValue('akiDepartment', sessionStorage.getItem('departmentId'));
+      categoryForm.setFieldValue('akiDepartment', getSessionItem('departmentId') ? getSessionItem('departmentId') : getSessionItem('tempDepartmentId'));
       categoryForm.setFieldValue('akiCategoryID', '0');
-      categoryForm.setFieldValue('akiCategoryParentID', sessionStorage.getItem('CategoryId') ? sessionStorage.getItem('CategoryId') : '0');
+      categoryForm.setFieldValue('akiCategoryParentID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
       setLoading(false);
       return;
     }
-    const currentCategoryId = sessionStorage.getItem('CategoryId') || '';
+    const currentCategoryId = getSessionItem('CategoryId') || '';
     if (currentCategoryId) {
       setCategoryId(currentCategoryId);
       categoryForm.setFieldValue('akiCategoryID', currentCategoryId);
@@ -459,9 +459,9 @@ const Category = () => {
             <Button onClick={handleUpdateAssociatedProduct} type="link" style={{padding: 0}}>
               Save
             </Button>
-              <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
-                Close
-              </Button>
+            <Button onClick={handleCancelEdit} type="link" danger style={{padding: 0}}>
+              Close
+            </Button>
           </span>
         ) : (
           <Button icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{padding: '0 5px', color: '#1890ff'}} />
@@ -575,15 +575,14 @@ const Category = () => {
                     </Form.Item>
                   </div>
                 </Form.Item>
-                
 
-                 <div className="relative col-span-2">
-                 <Form.Item label="Category Text" name="akiCategoryDescriptionText">
-                  <Input.TextArea rows={3} maxLength={2000} />
-                </Form.Item>
-                    <span className=" absolute bottom-3 -right-16  text-xs">
-                      {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
-                    </span>
+                <div className="relative col-span-2">
+                  <Form.Item label="Category Text" name="akiCategoryDescriptionText">
+                    <Input.TextArea rows={3} maxLength={2000} />
+                  </Form.Item>
+                  <span className=" absolute bottom-3 -right-16  text-xs">
+                    {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
+                  </span>
                 </div>
                 <div className="flex items-end gap-x-3 relative">
                   <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL (or leave blank)'}]}>

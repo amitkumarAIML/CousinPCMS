@@ -1,13 +1,13 @@
 import React, {useState, useEffect, useCallback, forwardRef, useImperativeHandle} from 'react';
 import IndexEntryFields from '../shared/IndexEntryFields';
-import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin,  message} from 'antd';
+import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
 import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
 import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
-import {getCountryOrigin, getCommodityCodes, getAllCategory} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem} from '../../services/DataService';
 import {Country} from '../../models/countryOriginModel';
 import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
@@ -43,7 +43,7 @@ const ProductDetails = forwardRef((props, ref) => {
   const [editAssociatedProductForm] = Form.useForm<Omit<AdditionalProductModel, 'additionalProductName'>>();
   const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}>();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isAdditionalPLoading, setIsAdditionalPLoading] = useState<boolean>(false);
   const [loadingProductModal, setLoadingProductModal] = useState<boolean>(false);
 
@@ -93,7 +93,6 @@ const ProductDetails = forwardRef((props, ref) => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      setLoading(true);
       try {
         const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
         setCountries(countriesData || []);
@@ -111,7 +110,7 @@ const ProductDetails = forwardRef((props, ref) => {
 
     const attributeSet = async () => {
       try {
-        const cateId = sessionStorage.getItem('CategoryId') || '';
+        const cateId = getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId');
         const response = await getDistinctAttributeSetsByCategoryId(cateId);
         if (!response.isSuccess || !response.value || response.value.length === 0) {
           notify.error('Failed to load attribute set data.');
@@ -124,17 +123,18 @@ const ProductDetails = forwardRef((props, ref) => {
         setLoading(false);
       }
     };
+
     fetchInitialData();
     attributeSet();
 
-    if (location.pathname === '/products/add' || !sessionStorage.getItem('productId')) {
-      productForm.setFieldValue('akiCategoryID', sessionStorage.getItem('CategoryId'));
+    if (location.pathname === '/products/add' || !getSessionItem('productId')) {
+      productForm.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
       productForm.setFieldValue('akiProductID', '0');
       setAkiProductID(0);
       setLoading(false);
       return;
     }
-    const productIdFromSession = sessionStorage.getItem('productId');
+    const productIdFromSession = getSessionItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
       getProductById(productIdFromSession)

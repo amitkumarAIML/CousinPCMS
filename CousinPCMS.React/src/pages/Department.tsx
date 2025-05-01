@@ -6,7 +6,7 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {getCommodityCodes, cleanEmptyNullToString} from '../services/DataService';
+import {getCommodityCodes, cleanEmptyNullToString, getSessionItem} from '../services/DataService';
 import {useNotification} from '../contexts.ts/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
@@ -27,7 +27,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const akiDepartmentImageURL = Form.useWatch('akiDepartmentImageURL', form);
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
-  const departmentId = sessionStorage.getItem('departmentId') || '';
+  const departmentId = getSessionItem('departmentId') || '';
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
 

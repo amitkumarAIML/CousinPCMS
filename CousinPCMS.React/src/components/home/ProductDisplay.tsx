@@ -8,6 +8,7 @@ import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '
 import CategoryAttribute from './CategoryAttribute';
 import {useNavigate} from 'react-router';
 import {useNotification} from '../../contexts.ts/useNotification';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 interface ProductDisplayProps {
   selectedCategory: string;
@@ -31,6 +32,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (!selectedCategory) {
       setProducts([]);
       setAllProductAttributes([]);
+      setFilteredData([]);
       setFilteredData([]);
       onProductSelected(undefined);
       setDisplayText('Click a category to view the product');
@@ -75,7 +77,12 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
         else setDisplayText('');
       }
 
-      const persistedProductId = sessionStorage.getItem('productId');
+      if (getSessionItem('tempCategoryId') && currentProducts.length > 0) {
+        setSessionItem('tempProductId', currentProducts[0].akiProductID.toString());
+        onProductSelected(currentProducts[0].akiProductID);
+      }
+
+      const persistedProductId = getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId');
       if (persistedProductId) {
         const numProductId = Number(persistedProductId);
 
@@ -103,10 +110,11 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   useEffect(() => {
     fetchData();
 
-    if (selectedCategory) {
-      sessionStorage.setItem('CategoryId', selectedCategory);
+    if (selectedCategory && !getSessionItem('tempCategoryId')) {
+      setSessionItem('CategoryId', selectedCategory);
     } else {
       setProducts([]);
+      setFilteredData([]);
       setDisplayText('Click a category to view the product');
     }
   }, [selectedCategory, fetchData]);
@@ -145,7 +153,17 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
   const handleProductClick = (product: Product) => {
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
-    sessionStorage.setItem('productId', product.akiProductID.toString());
+
+    setSessionItem('productId', product.akiProductID.toString());
+    const dept = getSessionItem('tempDepartmentId');
+    setSessionItem('departmentId', dept);
+    const categoryId = getSessionItem('tempCategoryId');
+    setSessionItem('CategoryId', categoryId);
+
+    sessionStorage.removeItem('tempDepartmentId');
+    sessionStorage.removeItem('tempCategoryId');
+    sessionStorage.removeItem('tempProductId');
+    sessionStorage.removeItem('tempItemNumber');
     sessionStorage.removeItem('itemNumber');
     onProductSelected(product.akiProductID);
   };
@@ -155,6 +173,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     setSelectedProduct(attributeSet.akiCategoryID);
     setCategoryData(attributeSet);
     sessionStorage.removeItem('productId');
+    sessionStorage.removeItem('tempProductId');
     onProductSelected(undefined);
     setCategoryAttriIsVisible(true);
   };
@@ -185,10 +204,14 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-4 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Products & Attribute Sets</span>
-          <button className="text-primary-theme hover:underline text-xs" onClick={handleAddProduct}>
+          <button className="text-primary-theme hover:underline text-xs cursor-pointer" onClick={handleAddProduct}>
             Add
           </button>
-          <button className={`text-primary-theme hover:underline text-xs me-1 ${!selectedProduct ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleEditProduct} disabled={!selectedProduct}>
+          <button
+            className={`text-primary-theme hover:underline text-xs me-1  ${getSessionItem('productId') || getSessionItem('tempProductId') ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+            onClick={handleEditProduct}
+            disabled={getSessionItem('productId') || getSessionItem('tempProductId') ? false : true}
+          >
             Edit
           </button>
         </div>

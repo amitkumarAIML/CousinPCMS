@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Spin, Input, TableProps, Table, Checkbox } from 'antd';
-import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
-import { getSkuByProductId } from '../../services/HomeService';
-import { useNotification } from '../../contexts.ts/useNotification';
-import type { SKuList } from '../../models/skusModel';
-import { useNavigate } from 'react-router';
+import {useEffect, useState} from 'react';
+import {Spin, Input, TableProps, Table, Checkbox} from 'antd';
+import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
+import {getSkuByProductId} from '../../services/HomeService';
+import {useNotification} from '../../contexts.ts/useNotification';
+import type {SKuList} from '../../models/skusModel';
+import {useNavigate} from 'react-router';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
 }
 
-const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCategory }) => {
+const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCategory}) => {
   const [skus, setSkus] = useState<SKuList[]>([]);
   const [filteredData, setFilteredData] = useState<SKuList[]>([]);
   const [displayText, setDisplayText] = useState('Click on a product to view the SKU');
@@ -23,7 +24,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!selectedProductId || !selectedCategory || !sessionStorage.getItem('productId')) {
+    const id = getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId');
+    if (!selectedProductId || !selectedCategory || !id) {
       setDisplayText('Click on a product to view the SKU');
       setSkus([]);
       setFilteredData([]);
@@ -44,8 +46,12 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
           setSkus(activeSkus);
           setFilteredData(activeSkus);
           setDisplayText(activeSkus.length > 0 ? '' : 'No SKU Found');
-          // Set selected row based on itemNumber in sessionStorage
-          const persistedItemNumber = sessionStorage.getItem('itemNumber');
+
+          if (getSessionItem('tempProductId') && activeSkus.length > 0) {
+            setSessionItem('tempItemNumber', activeSkus[0].akiitemid.toString());
+          }
+
+          const persistedItemNumber = getSessionItem('itemNumber') ? getSessionItem('itemNumber') : getSessionItem('tempItemNumber');
           if (persistedItemNumber) {
             const found = activeSkus.find((p) => String(p.akiitemid) === String(persistedItemNumber));
             setSelectedRow(found || null);
@@ -92,36 +98,39 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     setFilteredData([...skus]);
   };
 
-  const editSku = () => {
-    navigate('/skus/edit');
-  };
-
-  const addSKU = () => {
-    navigate('/skus/add');
-  };
-
   const handleRowSelect = (record: SKuList) => {
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
     if (record.akiitemid !== selectedRow?.akiitemid) {
-      sessionStorage.setItem('itemNumber', record.akiitemid || '');
-      sessionStorage.setItem('skuId', String(record.akiSKUID || ''));
+      setSessionItem('itemNumber', record.akiitemid || '');
+      const dept = getSessionItem('tempDepartmentId');
+      setSessionItem('departmentId', dept);
+      const categoryId = getSessionItem('tempCategoryId');
+      setSessionItem('CategoryId', categoryId);
+      const productId = getSessionItem('tempProductId');
+      setSessionItem('productId', productId);
+      sessionStorage.removeItem('tempDepartmentId');
+      sessionStorage.removeItem('tempCategoryId');
+      sessionStorage.removeItem('tempProductId');
+      sessionStorage.removeItem('tempItemNumber');
     } else {
       sessionStorage.removeItem('itemNumber');
-      sessionStorage.removeItem('skuId');
     }
   };
 
   const columns: TableProps<SKuList>['columns'] = [
-
     {
       title: (
         <div className="flex gap-1 my-1">
           <div className="flex gap-x-2 items-center">
             <span>SKUs</span>
-            <button className="text-primary-theme hover:underline text-xs" onClick={addSKU}>
+            <button className="text-primary-theme hover:underline text-xs" onClick={() => navigate('/skus/add')}>
               Add
             </button>
-            <button className="text-primary-theme hover:underline text-xs" onClick={editSku}>
+            <button
+              className={`text-primary-theme hover:underline text-xs  ${getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+              onClick={() => navigate('/skus/edit')}
+              disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true}
+            >
               Edit
             </button>
           </div>
@@ -130,13 +139,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
               placeholder="Search"
               value={searchValue}
               onChange={onSearch}
-              suffix={
-                searchValue ? (
-                  <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" />
-                ) : (
-                  <SearchOutlined />
-                )
-              }
+              suffix={searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />}
             />
           </div>
         </div>
@@ -147,33 +150,41 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     },
 
     {
-      title: 'MFR Ref No', dataIndex: 'akiManufacturerRef',width:160
+      title: 'MFR Ref No',
+      dataIndex: 'akiManufacturerRef',
+      width: 160,
     },
-    { title: 'Item No', dataIndex: 'akiitemid' ,width:130},
-    { title: 'List Order', dataIndex: 'akiListOrder' ,width:130},
+    {title: 'Item No', dataIndex: 'akiitemid', width: 130},
+    {title: 'List Order', dataIndex: 'akiListOrder', width: 130},
     {
       title: 'Obsolete',
       dataIndex: 'akiObsolete',
       align: 'center',
-      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,width:120
+      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
+      width: 120,
     },
     {
       title: 'Unavailable',
       dataIndex: 'salesBlocked',
       align: 'center',
-      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,width:120
+      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
+      width: 120,
     },
     {
       title: 'Cat Active',
       dataIndex: 'akiSKUIsActive',
       align: 'center',
-      render: (isActive) => <Checkbox checked={isActive} disabled />,width:120
+      render: (isActive) => <Checkbox checked={isActive} disabled />,
+      width: 120,
     },
     {
-      title: 'Temp ID', dataIndex: 'akiTemplateID', align: 'center', width:120,
+      title: 'Temp ID',
+      dataIndex: 'akiTemplateID',
+      align: 'center',
+      width: 120,
     },
-    { title: 'AltSkuName', dataIndex: 'akiAltSKUName' },
-    { title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center',width:150 },
+    {title: 'AltSkuName', dataIndex: 'akiAltSKUName'},
+    {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150},
   ];
 
   return (
@@ -181,15 +192,15 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       <Spin spinning={loading}>
         <div className="">
           <Table
-            scroll={{ x: 1000 }}
+            scroll={{x: 1000}}
             columns={columns}
-            tableLayout='auto'
+            tableLayout="auto"
             dataSource={filteredData}
             rowKey="akiitemid"
             size="small"
             bordered
             pagination={false}
-            locale={{ emptyText: displayText }}
+            locale={{emptyText: displayText}}
             onRow={(record) => ({
               onClick: () => handleRowSelect(record),
               className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',

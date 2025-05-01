@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
-import { Input, Button, Spin } from 'antd';
-import { CloseCircleFilled, SearchOutlined } from '@ant-design/icons';
-import { useNotification } from '../contexts.ts/useNotification';
-import type { AttributeModel } from '../models/attributeModel';
-import { getAttributesList } from '../services/AttributesService';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import {useNavigate} from 'react-router';
+import {Input, Button, Spin} from 'antd';
+import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
+import {useNotification} from '../contexts.ts/useNotification';
+import type {AttributeModel} from '../models/attributeModel';
+import {getAttributesList} from '../services/AttributesService';
+import {setSessionItem} from '../services/DataService';
 
 const Attributes = () => {
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ const Attributes = () => {
   }, [fetchAllAttributes]);
 
   const handleEdit = (attr: AttributeModel) => {
-    sessionStorage.setItem('attributeName', attr.attributeName);
+    setSessionItem('attributeName', attr.attributeName);
     navigate('/attributes/edit');
   };
 
@@ -71,14 +72,7 @@ const Attributes = () => {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 suffix={
-                  searchValue ? (
-                    <CloseCircleFilled
-                      onClick={() => setSearchValue('')}
-                      style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }}
-                    />
-                  ) : (
-                    <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                  )
+                  searchValue ? <CloseCircleFilled onClick={() => setSearchValue('')} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />
                 }
               />
             </div>
@@ -93,22 +87,15 @@ const Attributes = () => {
 
         <hr className="border-light-border mt-2" />
         <div className="p-4">
-
           <div className="overflow-x-auto border rounded-lg border-light-border">
             {filteredData.length === 0 ? (
               <div className="h-64 flex items-center justify-center text-sm text-secondary-font">No data found.</div>
             ) : (
               <div className="min-w-max flex space-x-2 px-2 py-1">
                 {chunkedData.map((chunk, chunkIndex) => (
-                  <div
-                    key={chunkIndex}
-                    className="flex flex-col space-y-2 w-[200px]"
-                  >
+                  <div key={chunkIndex} className="flex flex-col space-y-2 w-[200px]">
                     {chunk.map((attr, index) => (
-                      <div
-                        key={index}
-                        className="cursor-pointer text-secondary-font hover:text-primary-theme-hover p-0 m-0 text-xs"
-                      >
+                      <div key={index} className="cursor-pointer text-secondary-font hover:text-primary-theme-hover p-0 m-0 text-xs">
                         <span onClick={() => handleEdit(attr)}>{attr.attributeName}</span>
                       </div>
                     ))}
@@ -118,11 +105,9 @@ const Attributes = () => {
             )}
           </div>
         </div>
-
-
       </Spin>
     </div>
   );
 };
 
-export default Attributes;  
+export default Attributes;

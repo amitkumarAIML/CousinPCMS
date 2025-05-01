@@ -10,6 +10,7 @@ import {getCategoriesByDepartment, getDistinctAttributeSetsByCategoryId} from '.
 import {useNavigate} from 'react-router';
 import CategoryAttribute from './CategoryAttribute';
 import {useNotification} from '../../contexts.ts/useNotification';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 interface CustomTreeDataNode extends TreeDataNode {
   dataType: 'department' | 'category';
@@ -91,7 +92,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [categoryAttriisVisible, setCategoryAttriisVisible] = useState(false);
-  const [categoryData, setCategoryData] = useState(null);
+  const [categoryData, setCategoryData] = useState<CustomTreeDataNode | undefined>(undefined);
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -120,6 +121,25 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     onSelect([info.node.key], info);
   }, []);
 
+  const attributeSet = useCallback(
+    async (node: CustomTreeDataNode) => {
+      try {
+        const response = await getDistinctAttributeSetsByCategoryId(String(node.id));
+        if (response.value === null) {
+          setCategoryAttriisVisible(true);
+          setCategoryData(node);
+        } else {
+          notify.warning(`Attribute Set For ${getNodeTitleText(node)} is already added.`);
+        }
+      } catch (error) {
+        console.error('Error in API call:', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [notify]
+  );
+
   const handleMenuClick = useCallback(
     (e: {key: string}) => {
       if (!contextMenu.node) return;
@@ -138,7 +158,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       }
       setContextMenu((cm) => ({...cm, visible: false}));
     },
-    [contextMenu.node, navigate]
+    [contextMenu.node, navigate, attributeSet]
   );
 
   const getMenuItems = () => {
@@ -157,22 +177,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       ];
     }
     return [];
-  };
-
-  const attributeSet = async (node: any) => {
-    try {
-      const response = await getDistinctAttributeSetsByCategoryId(node.id);
-      if (response.value === null) {
-        setCategoryAttriisVisible(true);
-        setCategoryData(node);
-      } else {
-        notify.warning(`Attribute Set For ${getNodeTitleText(node)} is already added.`);
-      }
-    } catch (error) {
-      console.error('Error in API call:', error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleAttributeModalCancel = () => {
@@ -199,14 +203,18 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
       const node = info.node as unknown as CustomTreeDataNode;
       if (node.dataType === 'category') {
-        sessionStorage.setItem('departmentId', String((node.data as CategoryModel)?.akiDepartment ?? ''));
-        sessionStorage.setItem('CategoryId', String(node.id));
+        setSessionItem('departmentId', String((node.data as CategoryModel)?.akiDepartment ?? ''));
+        setSessionItem('CategoryId', String(node.id));
+        sessionStorage.removeItem('tempCategoryId');
+        sessionStorage.removeItem('tempDepartmentId');
         sessionStorage.removeItem('productId');
+        sessionStorage.removeItem('tempProductId');
         sessionStorage.removeItem('itemNumber');
+        sessionStorage.removeItem('tempItemNumber');
         onCategorySelected(node.id as number);
         const deptId = findDepartmentIdForCategoryKey(node.key, treeData);
         if (deptId !== undefined) {
-          sessionStorage.setItem('departmentId', String(deptId));
+          setSessionItem('departmentId', String(deptId));
           const getPath = (key: React.Key, nodes: CustomTreeDataNode[], path: React.Key[] = []): React.Key[] | null => {
             for (const n of nodes) {
               if (n.key === key) return [...path, n.key];
@@ -221,10 +229,8 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
           if (path) setExpandedKeys((prev) => [...prev, ...path.slice(0, -1)]);
         }
       } else if (node.dataType === 'department') {
-        sessionStorage.setItem('departmentId', String(node.id));
-        sessionStorage.removeItem('CategoryId');
-        sessionStorage.removeItem('productId');
-        sessionStorage.removeItem('itemNumber');
+        sessionStorage.clear();
+        setSessionItem('departmentId', String(node.id));
         onCategorySelected(undefined);
       }
     },
@@ -253,6 +259,12 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
             data: dept,
           }));
           setTreeData(deptNodes);
+          if (!getSessionItem('departmentId') && deptNodes.length > 0) {
+            setSessionItem('tempDepartmentId', String(deptNodes[0].id));
+            setExpandedKeys((prev) => Array.from(new Set([...prev, deptNodes[0].key])));
+          } else {
+            sessionStorage.removeItem('tempDepartmentId');
+          }
         } else {
           setError('Failed to load departments.');
           message.error('Failed to load departments.');
@@ -310,13 +322,20 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
             message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
           }
           setTreeData((current) => updateTreeData(current, key, categoryNodes));
+          if (!getSessionItem('CategoryId') && categoryNodes.length > 0) {
+            setSessionItem('tempCategoryId', String(categoryNodes[3].id));
+            setSelectedKeys((prev) => [...prev, categoryNodes[3].key]);
+            onCategorySelected(categoryNodes[3].id as number);
+          } else {
+            sessionStorage.removeItem('tempCategoryId');
+          }
         })
         .catch(() => {
           message.error(`Error loading categories for department ${getNodeTitleText(customNode)}.`);
           setTreeData((current) => updateTreeData(current, key, []));
         });
     },
-    [updateTreeData, selectedKeys]
+    [updateTreeData, selectedKeys, onCategorySelected]
   );
 
   const onDrop: TreeProps['onDrop'] = useCallback(
@@ -478,8 +497,8 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
   useEffect(() => {
     if (loading || treeData.length === 0) return;
 
-    const savedDeptId = sessionStorage.getItem('departmentId');
-    const savedCatId = sessionStorage.getItem('CategoryId');
+    const savedDeptId = getSessionItem('departmentId');
+    const savedCatId = getSessionItem('CategoryId');
     let initialSelectedKey: React.Key | null = null;
     let keysToExpand: React.Key[] = [];
 
@@ -566,7 +585,9 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
   return (
     <div style={{position: 'relative'}}>
-      <div className='text-[11px] bg-light-border rounded-md p-2 text-primary-font'><span>Departments & Categories</span></div>
+      <div className="text-[11px] bg-light-border rounded-md p-2 text-primary-font">
+        <span>Departments & Categories</span>
+      </div>
       <Tree {...treeProps} />
       {contextMenu.visible && (
         <div

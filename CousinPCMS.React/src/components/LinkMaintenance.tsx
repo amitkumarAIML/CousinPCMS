@@ -73,14 +73,14 @@ const LinkMaintenance = () => {
     let type: 'product' | 'category' | 'sku' | null = null;
 
     if (path.includes('/products')) {
-      const idStr = sessionStorage.getItem('productId');
+      const idStr = getSessionItem('productId');
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = sessionStorage.getItem('categoryId') || undefined;
+      id = getSessionItem('categoryId') || undefined;
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = sessionStorage.getItem('skuId') || sessionStorage.getItem('itemNumber') || undefined;
+      id = getSessionItem('skuId') || getSessionItem('itemNumber') || undefined;
       type = 'sku';
     }
 

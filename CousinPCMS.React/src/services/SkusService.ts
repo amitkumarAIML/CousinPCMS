@@ -9,13 +9,13 @@ import {LikedSkuModel, SKuList, SkuRequestModel} from '../models/skusModel';
 import {AttributeModel} from '../models/attributeModel';
 import {AttributeValueByName, AttributeValueModel} from '../models/attributesModel';
 
-export const updateSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<SKuList>> => {
-  const response = await http.post<ApiResponse<SKuList>>('Skus/UpdateItemSKU', skusData);
+export const updateSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Skus/UpdateItemSKU', skusData);
   return response;
 };
 
-export const addSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<SKuList>> => {
-  const response = await http.post<ApiResponse<SKuList>>('Item/AddItem', skusData);
+export const addSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Item/AddItem', skusData);
   return response;
 };
 

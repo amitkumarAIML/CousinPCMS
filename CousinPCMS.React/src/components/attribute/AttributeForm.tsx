@@ -8,6 +8,7 @@ import type {AttributeRequestModel, AttributeValueModel} from '../../models/attr
 import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
 import {AttributeFormCharLimit} from '../../models/char.constant';
+import {setSessionItem} from '../../services/DataService';
 
 const AttributeForm = () => {
   const [form] = Form.useForm<AttributeRequestModel>();
@@ -86,7 +87,7 @@ const AttributeForm = () => {
           notify.error('Failed to load search types.');
         }
 
-        const nameFromSession = sessionStorage.getItem('attributeName');
+        const nameFromSession = getSessionItem('attributeName');
         if (nameFromSession) {
           setIsEdit(true);
           setAttributeName(nameFromSession);
@@ -175,7 +176,7 @@ const AttributeForm = () => {
           setAttributeName(currentAttributeName);
           setIsAttributeNameDisabled(true);
           setIsNewValueBtnDisabled(false);
-          sessionStorage.setItem('attributeName', currentAttributeName);
+          setSessionItem('attributeName', currentAttributeName);
           notify.error('You can now add values for this attribute.');
         }
       } else {
