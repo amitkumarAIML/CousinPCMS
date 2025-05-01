@@ -52,6 +52,7 @@ const Category = () => {
   });
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
+  const akiCategoryDescriptionText = Form.useWatch('akiCategoryDescriptionText', categoryForm);
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
   const defaultValue = {
@@ -574,9 +575,16 @@ const Category = () => {
                     </Form.Item>
                   </div>
                 </Form.Item>
-                <Form.Item label="Category Text" name="akiCategoryDescriptionText">
+                
+
+                 <div className="relative col-span-2">
+                 <Form.Item label="Category Text" name="akiCategoryDescriptionText">
                   <Input.TextArea rows={3} maxLength={2000} />
                 </Form.Item>
+                    <span className=" absolute bottom-3 -right-16  text-xs">
+                      {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
+                    </span>
+                </div>
                 <div className="flex items-end gap-x-3 relative">
                   <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL (or leave blank)'}]}>
                     <Input maxLength={charLimit.akiCategoryImageURL} />

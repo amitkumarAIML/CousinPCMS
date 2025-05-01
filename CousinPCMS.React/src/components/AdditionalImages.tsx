@@ -246,7 +246,7 @@ const AdditionalImages = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4">
           <div className="bg-white p-4 border border-border rounded lg:col-span-1 md:col-span-1">
             <div className="flex justify-between items-center mb-2">
-              <label className="font-medium">Current Images</label>
+              <label className="font-medium">Additional Website Images</label>
               <Button type="primary" onClick={handleAddClick} size="small">
                 Add
               </Button>
@@ -289,7 +289,7 @@ const AdditionalImages = () => {
 
           {showForm && (
             <div className="p-4 border border-border rounded lg:col-span-2 md:col-span-1">
-              <label className="block mb-2 font-medium">Add New Image</label>
+              <label className="block mb-2 font-medium">Upload New Website Image</label>
               <div className="p-4 space-y-6">
                 <Form layout="vertical">
                   <Form.Item label="Image URL / Filename" required validateStatus={isDuplicateUrl ? 'error' : ''} help={isDuplicateUrl ? 'This image URL already exists.' : ''}>
