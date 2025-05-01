@@ -4,13 +4,13 @@ import type {TableProps} from 'antd/es/table';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
 import {getSkuByProductId} from '../../services/HomeService';
-import { getSessionItem, setSessionItem } from '../../services/DataService';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [skusList, setSkusList] = useState<SKuList[]>([]);
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
-  const [productId] = useState<string | null>(getSessionItem('productId') || '');
+  const [productId] = useState<string | null>(getSessionItem('productId') || getSessionItem('tempProductId'));
   const notify = useNotification();
 
   useEffect(() => {
@@ -54,8 +54,8 @@ const SKUsList = () => {
 
   const columns: TableProps<SKuList>['columns'] = [
     {title: 'Sku Name', dataIndex: 'skuName', width: 200, ellipsis: true},
-    {title: 'MFR Ref No', dataIndex: 'akiManufacturerRef', ellipsis: true,width: 190,},
-    {title: 'Item No', dataIndex: 'akiitemid',width: 120},
+    {title: 'MFR Ref No', dataIndex: 'akiManufacturerRef', ellipsis: true, width: 190},
+    {title: 'Item No', dataIndex: 'akiitemid', width: 120},
     {title: 'ListOrder', dataIndex: 'akiListOrder', width: 100, align: 'right'},
     {
       title: 'Obsolete',
@@ -72,9 +72,11 @@ const SKUsList = () => {
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
     },
     {
-      title:'Web Active',dataIndex:'akiWebActive',align:'center',
-      render:(isWebActive)=><Checkbox checked={isWebActive} disabled />,
-      width:100
+      title: 'Web Active',
+      dataIndex: 'akiWebActive',
+      align: 'center',
+      render: (isWebActive) => <Checkbox checked={isWebActive} disabled />,
+      width: 100,
     },
     {
       title: 'Cat Active',
@@ -83,13 +85,13 @@ const SKUsList = () => {
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,
     },
-    {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align:'center'},
-    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', ellipsis: true,width:180},
+    {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align: 'center'},
+    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', ellipsis: true, width: 180},
     {title: 'Comm Code', dataIndex: 'akiCommodityCode', width: 120},
   ];
 
   return (
-    <div className='px-4'>
+    <div className="px-4">
       <Spin spinning={loading}>
         <Table
           columns={columns}

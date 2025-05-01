@@ -57,7 +57,7 @@ const SKUs = () => {
     const hasRealIds = getSessionItem('CategoryId') && getSessionItem('productId');
     const hasTempIds = getSessionItem('tempCategoryId') && getSessionItem('tempProductId');
     if (!hasRealIds && !hasTempIds) {
-      setCheckIdValueMsg('Select respative category and product to view SKU.');
+      setCheckIdValueMsg('Select respative category and product to view SKUs');
       setCheckIdValue(true);
       setLoading(false);
       return;
@@ -169,8 +169,8 @@ const SKUs = () => {
     <>
       <Spin spinning={loading}>
         <div className="main-container pt-2">
-          <label className="px-4 text-sm font-medium">Sku Form</label>
-          <span>{checkIdValue && <div className="text-red-500 text-sm font-medium px-4 mb-2">{checkIdValueMsg}</div>}</span>
+          <div className="px-4 text-sm font-medium flex gap-x-3">Sku Form {checkIdValue && <span>{checkIdValue && <div className="text-red-500">( {checkIdValueMsg} )</div>}</span>}</div>
+
           <div className="pb-1">
             <Tabs activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={tabBarExtraContent} className="product-tabs" items={tabItems} />
           </div>

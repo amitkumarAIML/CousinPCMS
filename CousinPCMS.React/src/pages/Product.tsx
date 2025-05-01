@@ -4,22 +4,27 @@ import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
 import {addProduct, updateProduct} from '../services/ProductService';
-import {cleanEmptyNullToString} from '../services/DataService';
+import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {useNotification} from '../contexts.ts/useNotification';
 
 const Product = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
-  const [loading] = useState<boolean>(false);
   const navigate = useNavigate();
   const notify = useNotification();
   const [isEdit, setIsEdit] = useState(false);
+  const [checkIdValue, setCheckIdValue] = useState<boolean>(false);
 
   const productFormRef = useRef<{getFormData: () => {validateFields: () => Promise<Product>}} | null>(null);
 
   useEffect(() => {
     if (location.pathname === '/products/edit') {
       setIsEdit(true);
+    }
+    const hasRealIds = getSessionItem('CategoryId');
+    const hasTempIds = getSessionItem('tempCategoryId');
+    if (!hasRealIds && !hasTempIds) {
+      setCheckIdValue(true);
     }
   }, []);
 
@@ -88,9 +93,11 @@ const Product = () => {
       <Button size="small" onClick={handleCancel}>
         Close
       </Button>
-      <Button size="small" type="primary" loading={loading} onClick={handleSave}>
-        {isEdit ? 'Update' : 'Save'}
-      </Button>
+      {activeTab === '1' && (
+        <Button size="small" type="primary" onClick={handleSave} disabled={checkIdValue}>
+          {isEdit ? 'Update' : 'Save'}
+        </Button>
+      )}
     </div>
   );
 

@@ -109,6 +109,14 @@ const ProductDetails = forwardRef((props, ref) => {
         setLoading(false);
       }
     };
+    fetchInitialData();
+
+    if (location.pathname === '/products/add' || !getSessionItem('productId') || !getSessionItem('tempProductId')) {
+      productForm.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
+      productForm.setFieldValue('akiProductID', '0');
+      setLoading(false);
+      return;
+    }
 
     const attributeSet = async () => {
       try {
@@ -126,16 +134,8 @@ const ProductDetails = forwardRef((props, ref) => {
       }
     };
 
-    fetchInitialData();
     attributeSet();
 
-    if (location.pathname === '/products/add' || !getSessionItem('productId')) {
-      productForm.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
-      productForm.setFieldValue('akiProductID', '0');
-      setAkiProductID(0);
-      setLoading(false);
-      return;
-    }
     const productIdFromSession = getSessionItem('productId');
     if (productIdFromSession) {
       setProductLoading(true);
