@@ -423,6 +423,8 @@ const ProductDetails = forwardRef((props, ref) => {
     setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
 
+  const handleDataChange = () => {};
+
   const categoryModalColumns: TableProps<CategorySelectItem>['columns'] = [
     {
       title: '',
@@ -764,7 +766,7 @@ const ProductDetails = forwardRef((props, ref) => {
         </div>
       </Modal>
       <Modal title="Attribute Set Form" open={isSetAttributeVisable} onCancel={() => setIsSetAttributeVisable(false)} footer={null} width={1100} destroyOnClose>
-        {attributslist && <CategoryAttribute categoryData={attributslist} />}
+        {attributslist && <CategoryAttribute categoryData={attributslist} onDataChange={handleDataChange} />}
       </Modal>
     </Spin>
   );

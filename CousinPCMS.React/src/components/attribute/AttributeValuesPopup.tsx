@@ -3,6 +3,7 @@ import {Form, Input, Button} from 'antd';
 import {addAttributesValues, updateAttributeValues} from '../../services/AttributesService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {AttributeValuesRequestModel} from '../../models/attributesModel';
+import {PlusOutlined} from '@ant-design/icons';
 
 const {TextArea} = Input;
 
@@ -17,11 +18,13 @@ interface AttributeValueFormData {
   attributeName: string;
   alternateValues?: string;
   newAlternateValue?: string;
+  exitingAttributeValue?: string;
 }
 
 const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, onClose, valueData}) => {
   const [form] = Form.useForm<AttributeValueFormData>();
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
+  const [alternateList, setAlternateList] = useState<string[]>([]);
   const notify = useNotification();
 
   useEffect(() => {
@@ -31,24 +34,51 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
         attributeValue: valueData.attributeValue,
         alternateValues: valueData.alternateValues,
         newAlternateValue: valueData.newAlternateValue,
+        exitingAttributeValue: valueData.attributeValue,
       });
+      if (valueData.alternateValues) {
+        const arr = valueData.alternateValues
+          .split(/,|\n/)
+          .map((v) => v.trim())
+          .filter(Boolean);
+        setAlternateList(arr);
+      }
     } else if (attributeName !== undefined && attributeName !== null) {
       form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
       form.setFieldsValue({
         attributeName: attributeName,
       });
+      setAlternateList([]);
     } else {
       form.resetFields();
+      setAlternateList([]);
     }
   }, [attributeName, valueData, form]);
+
+  useEffect(() => {
+    // Keep alternateValues field in sync with alternateList
+    form.setFieldsValue({alternateValues: alternateList.join(', ')});
+  }, [alternateList, form]);
 
   const cleanData = (rawData: Partial<AttributeValueFormData>): AttributeValuesRequestModel => {
     const cleaned: Partial<AttributeValuesRequestModel> = {};
     cleaned.attributeName = attributeName || '';
     cleaned.attributeValue = rawData.attributeValue ?? '';
-    cleaned.alternateValues = rawData.alternateValues ?? '';
+    cleaned.alternateValues = alternateList.join(', ');
     cleaned.newAlternateValue = rawData.newAlternateValue ?? '';
     return cleaned as AttributeValuesRequestModel;
+  };
+
+  const handleAddAlternate = () => {
+    const value = form.getFieldValue('newAlternateValue');
+    if (value && !alternateList.includes(value.trim())) {
+      setAlternateList([...alternateList, value.trim()]);
+      form.setFieldsValue({newAlternateValue: ''});
+    }
+  };
+
+  const handleRemoveAlternate = (val: string) => {
+    setAlternateList(alternateList.filter((item) => item !== val));
   };
 
   const handleSave = async () => {
@@ -62,6 +92,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       if (response.isSuccess) {
         notify.success('Attribute Value added successfully.');
         form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
+        setAlternateList([]);
         onClose('save');
       } else {
         notify.error('Attribute Value Failed To Add');
@@ -96,6 +127,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       if (response.isSuccess) {
         notify.success('Attribute Value added successfully.');
         form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
+        setAlternateList([]);
         onClose('save');
       } else {
         notify.error('Attribute Value Failed To Add');
@@ -121,6 +153,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
 
   const handleCancel = () => {
     form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
+    setAlternateList([]);
     onClose('cancel');
   };
 
@@ -130,15 +163,38 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
         <Form.Item label="Attribute Name" name="attributeName" rules={[{required: true}]}>
           <Input readOnly disabled />
         </Form.Item>
+        {valueData && valueData.attributeValue && (
+          <Form.Item label="Existing Attribute Value" name="exitingAttributeValue">
+            <Input disabled />
+          </Form.Item>
+        )}
         <Form.Item label="Attribute Value" name="attributeValue" rules={[{required: true, message: 'Attribute Value is required.'}]}>
           <Input placeholder="Enter the attribute value" />
         </Form.Item>
         <Form.Item label="New Alternate Value" name="newAlternateValue" tooltip="Enter a new alternate value to potentially add to the list below.">
-          <Input placeholder="Enter a single new alternate value (optional)" />
+          <Input
+            placeholder="Enter a single new alternate value (optional)"
+            onPressEnter={handleAddAlternate}
+            suffix={<PlusOutlined style={{color: '#1890ff', cursor: 'pointer'}} onClick={handleAddAlternate} title="Add alternate value" />}
+          />
         </Form.Item>
-        <Form.Item label="Alternate Values (Existing)" name="alternateValues" tooltip="List of existing alternate values, separated by commas or new lines (optional).">
-          <TextArea rows={3} placeholder="Existing alternate values..." />
-        </Form.Item>
+        {alternateList.length > 0 && (
+          <Form.Item label="Alternate Values (Existing)" name="alternateValues" tooltip="List of existing alternate values, separated by commas or new lines (optional).">
+            {/* {alternateList.length > 0 && ( */}
+            <div className="mb-2 flex flex-wrap gap-2 px-1">
+              {alternateList.map((val) => (
+                <span key={val} className="bg-gray-200 rounded px-2 py-1 flex items-center text-xs">
+                  {val}
+                  <span style={{marginLeft: 6, color: '#ff4d4f', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => handleRemoveAlternate(val)} title="Remove">
+                    ×
+                  </span>
+                </span>
+              ))}
+            </div>
+            {/* )} */}
+            <TextArea rows={3} placeholder="Existing alternate values..." value={alternateList.join(', ')} hidden />
+          </Form.Item>
+        )}
         <div className="flex justify-end gap-x-3 mt-5">
           <Button size="small" onClick={handleCancel}>
             Close

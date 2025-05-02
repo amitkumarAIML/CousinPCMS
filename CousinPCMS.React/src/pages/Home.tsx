@@ -12,6 +12,7 @@ const Home = () => {
     const storedCategoryId = getSessionItem('CategoryId');
     const storedProductId = getSessionItem('productId');
     if (storedCategoryId) setSelectedCategory(storedCategoryId);
+    console.log('storedCategoryId', storedCategoryId);
     if (storedProductId && !isNaN(Number(storedProductId))) setSelectedProductId(Number(storedProductId));
   }, []);
 

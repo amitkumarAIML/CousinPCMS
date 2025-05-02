@@ -296,7 +296,7 @@ const AttributeForm = () => {
         footer={null}
         destroyOnClose
         maskClosable={false}
-        width={500}
+        width={1000}
       >
         {attributeName && (
           <AttributesValues

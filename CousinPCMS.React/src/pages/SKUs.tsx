@@ -20,7 +20,6 @@ const SKUs = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [checkIdValue, setCheckIdValue] = useState<boolean>(false);
   const [checkIdValueMsg, setCheckIdValueMsg] = useState<string>('');
-  const [tabDisabled, setTabDisabled] = useState<boolean>(false);
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -71,9 +70,7 @@ const SKUs = () => {
     if (itemNumFromSession) {
       setIsEdit(true);
       fetchSkuByItemNumber(itemNumFromSession);
-      setTabDisabled(true);
     } else {
-      setTabDisabled(false);
       setLoading(false);
     }
   }, [navigate, notify, fetchSkuByItemNumber]);
@@ -148,21 +145,17 @@ const SKUs = () => {
       key: '1',
       children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />,
     },
+    {
+      label: 'Related Skus',
+      key: '2',
+      children: <RelatedSKUs skuData={skuData} />,
+    },
+    {
+      label: 'All Linked Attributes',
+      key: '3',
+      children: <AttributeSKU skuData={skuData} />,
+    },
   ];
-  if (tabDisabled) {
-    tabItems.push(
-      {
-        label: 'Related Skus',
-        key: '2',
-        children: <RelatedSKUs skuData={skuData} />,
-      },
-      {
-        label: 'All Linked Attributes',
-        key: '3',
-        children: <AttributeSKU skuData={skuData} />,
-      }
-    );
-  }
 
   return (
     <>

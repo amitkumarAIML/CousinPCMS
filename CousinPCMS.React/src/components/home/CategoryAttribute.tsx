@@ -9,10 +9,10 @@ import {ApiResponse} from '../../models/generalModel';
 
 interface CategoryAttributeProps {
   categoryData: any;
-  eventComplete?: (event: 'ok' | 'cancel') => void;
+  onDataChange: () => void;
 }
 
-const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, eventComplete}) => {
+const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDataChange}) => {
   const [form] = Form.useForm();
   const [attributeList, setAttributeList] = useState<AttributeModel[]>([]);
   const [lstAllAttributeSets, setLstAllAttributeSets] = useState<AttributeSetModel[]>([]);
@@ -26,29 +26,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
   const [currentRowIndex, setCurrentRowIndex] = useState<number>();
 
   const notify = useNotification();
-
-  useEffect(() => {
-    if (categoryData) {
-      let attributeSetName = '';
-      let categoryID = '';
-      if (categoryData.data) {
-        attributeSetName = `Attribute Set For - ${categoryData.data.akiCategoryName}`;
-        categoryID = categoryData.id;
-      } else {
-        attributeSetName = categoryData.attributeSetName || '';
-        categoryID = categoryData.akiCategoryID || '';
-      }
-      setCurrentAttributeSetName(attributeSetName);
-      form.resetFields();
-      setTimeout(() => {
-        form.setFieldsValue({
-          attributeSetName,
-          categoryID,
-        });
-      }, 100);
-      fetchAttributeSetsByAttributeSetName(attributeSetName);
-    }
-  }, [categoryData]);
 
   const fetchAllAttributes = useCallback(
     (attributeSets?: AttributeSetModel[]) => {
@@ -81,7 +58,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             setLstAllAttributeSets(response.value);
             fetchAllAttributes(response.value);
           } else {
-            notify.error('Failed to load attribute sets');
+            // notify.error('Failed to load attribute sets');
             setLstAllAttributeSets([]);
             fetchAllAttributes([]);
           }
@@ -97,6 +74,29 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
     },
     [fetchAllAttributes, notify]
   );
+
+  useEffect(() => {
+    if (categoryData) {
+      let attributeSetName = '';
+      let categoryID = '';
+      if (categoryData.data) {
+        attributeSetName = `Attribute Set For - ${categoryData.data.akiCategoryName}`;
+        categoryID = categoryData.id;
+      } else {
+        attributeSetName = categoryData.attributeSetName || '';
+        categoryID = categoryData.akiCategoryID || '';
+      }
+      setCurrentAttributeSetName(attributeSetName);
+      form.resetFields();
+      setTimeout(() => {
+        form.setFieldsValue({
+          attributeSetName,
+          categoryID,
+        });
+      }, 100);
+      fetchAttributeSetsByAttributeSetName(attributeSetName);
+    }
+  }, [categoryData, form]);
 
   const addAttributeData = (data: AttributeModel) => {
     setCategoryAttriIsVisible(true);
@@ -139,7 +139,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
             fetchAttributeSetsByAttributeSetName(values.attributeSetName);
-            if (eventComplete) eventComplete('ok');
           } else {
             const raw = response?.value || 'Unknown error';
             const userMsg = extractUserMessage(raw);
@@ -152,7 +151,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
 
   const handleCancel = () => {
     setCategoryAttriIsVisible(false);
-    if (eventComplete) eventComplete('cancel');
   };
 
   const editAttributeSet = (row: AttributeSetModel, index: number) => {
@@ -196,7 +194,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
             notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
             fetchAttributeSetsByAttributeSetName(values.attributeSetName);
-            if (eventComplete) eventComplete('ok');
           } else {
             const raw = response?.value || 'Unknown error';
             const userMsg = extractUserMessage(raw);

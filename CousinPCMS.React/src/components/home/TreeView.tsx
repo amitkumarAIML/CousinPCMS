@@ -181,6 +181,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
   const handleAttributeModalCancel = () => {
     setCategoryAttriisVisible(false);
+    handleDataChange();
   };
 
   const findDepartmentIdForCategoryKey = useCallback((key: React.Key, nodes: CustomTreeDataNode[], parentDeptId?: string | number): string | number | undefined => {
@@ -550,6 +551,11 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     }
   }, [loading, treeData, findDepartmentIdForCategoryKey, onCategorySelected]);
 
+  const handleDataChange = () => {
+    console.log('Category data:', categoryData, Number(categoryData?.id));
+    onCategorySelected(Number(categoryData?.id));
+  };
+
   const treeProps = useMemo<TreeProps>(
     () => ({
       showIcon: true,
@@ -607,7 +613,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
         </div>
       )}
       <Modal title="Attribute Set Form" open={categoryAttriisVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
-        {categoryData && <CategoryAttribute categoryData={categoryData} />}
+        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleDataChange} />}
       </Modal>
     </div>
   );

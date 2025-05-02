@@ -292,7 +292,7 @@ const AttributesDetails = () => {
         footer={null}
         destroyOnClose
         maskClosable={false}
-        width={500}
+        width={1000}
       >
         {attributeName && <AttributeValuesPopup attributeName={attributeName} onClose={handleValueModalClose} />}
       </Modal>

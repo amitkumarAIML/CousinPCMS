@@ -107,9 +107,14 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     }
   }, [selectedCategory, searchValue, notify, onProductSelected]);
 
+  const handleDataChange = () => {
+    fetchData();
+    onProductSelected(selectedProduct);
+  };
+
   useEffect(() => {
     fetchData();
-
+    console.log('Selected Category:', selectedCategory);
     if (selectedCategory && !getSessionItem('tempCategoryId')) {
       setSessionItem('CategoryId', selectedCategory);
     } else {
@@ -176,6 +181,8 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     setCategoryData(attributeSet);
     sessionStorage.removeItem('productId');
     sessionStorage.removeItem('tempProductId');
+    sessionStorage.removeItem('itemNumber');
+    sessionStorage.removeItem('tempItemNumber');
     onProductSelected(undefined);
     setCategoryAttriIsVisible(true);
   };
@@ -197,6 +204,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
 
   const handleAttributeModalCancel = () => {
     setCategoryAttriIsVisible(false);
+    handleDataChange();
   };
 
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
@@ -255,7 +263,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       </Spin>
 
       <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
-        {categoryData && <CategoryAttribute categoryData={categoryData} />}
+        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleDataChange} />}
       </Modal>
     </div>
   );
