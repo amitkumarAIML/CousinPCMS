@@ -27,11 +27,12 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const akiDepartmentImageURL = Form.useWatch('akiDepartmentImageURL', form);
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
-  const departmentId = getSessionItem('departmentId') || '';
+  // const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartment');
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
 
   useEffect(() => {
+    const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartmentId');
     const fetchData = async () => {
       try {
         const [commodities, layouts] = await Promise.all([getCommodityCodes(), getLayoutTemplateList()]);
@@ -43,7 +44,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchData();
-
+    console.log('Department ID:', departmentId);
     if (location.pathname === '/departments/add' || !departmentId) {
       form.setFieldValue('akiDepartmentID', 0);
       setLoading(false);
@@ -74,7 +75,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchDepartment();
-  }, [form, departmentId, navigate, notify, location.pathname]);
+  }, [form, navigate, notify, location.pathname]);
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Department) => {
     const {value} = event.target;
@@ -232,7 +233,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       showUploadList={false}
                       accept=".png,.jpeg,.jpg"
                     >
-                      <Button size="small" type="primary" >
+                      <Button size="small" type="primary">
                         Upload
                       </Button>
                     </Upload>

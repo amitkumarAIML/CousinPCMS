@@ -154,11 +154,13 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
 
-    setSessionItem('productId', product.akiProductID.toString());
-    const dept = getSessionItem('tempDepartmentId');
-    setSessionItem('departmentId', dept);
-    const categoryId = getSessionItem('tempCategoryId');
-    setSessionItem('CategoryId', categoryId);
+    setSessionItem('productId', product.akiProductID);
+    if (getSessionItem('tempDepartmentId') && getSessionItem('tempCategoryId')) {
+      const dept = getSessionItem('tempDepartmentId');
+      setSessionItem('departmentId', dept);
+      const categoryId = getSessionItem('tempCategoryId');
+      setSessionItem('CategoryId', categoryId);
+    }
 
     sessionStorage.removeItem('tempDepartmentId');
     sessionStorage.removeItem('tempCategoryId');

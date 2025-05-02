@@ -39,7 +39,6 @@ const SKUs = () => {
           setSkuData(null);
         }
       } catch (err: unknown) {
-        console.error('Error fetching SKU:', err);
         if (err && typeof err === 'object' && 'error' in err && (err as {error?: {title?: string}}).error?.title) {
           notify.error((err as {error?: {title?: string}}).error?.title || '');
         } else {
@@ -54,10 +53,10 @@ const SKUs = () => {
   );
 
   useEffect(() => {
-    const hasRealIds = getSessionItem('CategoryId') && getSessionItem('productId');
-    const hasTempIds = getSessionItem('tempCategoryId') && getSessionItem('tempProductId');
-    if (!hasRealIds && !hasTempIds) {
-      setCheckIdValueMsg('Select respative category and product to view SKUs');
+    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
+    const hasTempIds = getSessionItem('productId') || getSessionItem('tempProductId');
+    if (!hasRealIds || !hasTempIds) {
+      setCheckIdValueMsg('Select respective category and product to view SKUs');
       setCheckIdValue(true);
       setLoading(false);
       return;
@@ -66,11 +65,14 @@ const SKUs = () => {
       setLoading(false);
       return;
     }
-    if (location.pathname === '/skus/edit') {
-      setIsEdit(true);
-    }
 
     const itemNumFromSession = getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
+    if (itemNumFromSession !== null) {
+      setIsEdit(true);
+    } else {
+      setLoading(false);
+      return;
+    }
     if (itemNumFromSession) {
       fetchSkuByItemNumber(itemNumFromSession);
     } else {
@@ -169,7 +171,9 @@ const SKUs = () => {
     <>
       <Spin spinning={loading}>
         <div className="main-container pt-2">
-          <div className="px-4 text-sm font-medium flex gap-x-3">Sku Form {checkIdValue && <span>{checkIdValue && <div className="text-red-500">( {checkIdValueMsg} )</div>}</span>}</div>
+          <div className="px-4 text-sm font-medium flex gap-x-3">
+            Sku Form <span>{checkIdValue && <div className="text-red-500">{checkIdValueMsg !== '' && <span>({checkIdValueMsg})</span>}</div>}</span>
+          </div>
 
           <div className="pb-1">
             <Tabs activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={tabBarExtraContent} className="product-tabs" items={tabItems} />
