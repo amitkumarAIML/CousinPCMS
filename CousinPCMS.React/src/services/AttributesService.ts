@@ -18,6 +18,12 @@ export const addAttributesValues = async (attributesData: AttributeValuesRequest
   return response;
 };
 
+export const updateAttributeValues = async (attributesData: AttributeValuesRequestModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Attributes/UpdateAttributeValue', attributesData);
+  return response;
+};
+
+
 export const deleteAttributesValues = async (attributeName: string, attributeValue: string): Promise<ApiResponse<string>> => {
   const response = await http.get<ApiResponse<string>>('Attributes/DeleteAttributeValue', {params: {attributeName, attributeValue}});
   return response;

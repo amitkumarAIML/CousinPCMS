@@ -46,7 +46,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           categoryID,
         });
       }, 100);
-      fetchAttributeSetsByAttributeSetName(encodeURIComponent(attributeSetName));
+      fetchAttributeSetsByAttributeSetName(attributeSetName);
     }
   }, [categoryData]);
 
@@ -75,7 +75,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
   const fetchAttributeSetsByAttributeSetName = useCallback(
     (attributeSetName: string) => {
       setIsAttributeSetloading(true);
-      getAttributeSetsByAttributeSetName(attributeSetName)
+      getAttributeSetsByAttributeSetName(encodeURIComponent(attributeSetName))
         .then((response: ApiResponse<AttributeSetModel[]>) => {
           if (response.isSuccess && Array.isArray(response.value)) {
             setLstAllAttributeSets(response.value);
@@ -138,7 +138,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
           if (response.isSuccess) {
             notify.success('Attribute added successfully');
             setCategoryAttriIsVisible(false);
-            fetchAttributeSetsByAttributeSetName(encodeURIComponent(values.attributeSetName));
+            fetchAttributeSetsByAttributeSetName(values.attributeSetName);
             if (eventComplete) eventComplete('ok');
           } else {
             const raw = response?.value || 'Unknown error';
@@ -276,7 +276,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, even
                   className="attribute-list"
                   header={
                     <div className="flex justify-between pl-2 items-center bg-border gap-2  m-0  text-primary-font sticky top-0 z-10 ">
-                     Unlinked Attributes
+                      Unlinked Attributes
                       <Input
                         placeholder="Search"
                         value={searchValue}

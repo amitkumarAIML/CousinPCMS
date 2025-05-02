@@ -154,7 +154,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     if (!product || !product.akiProductID) return;
     setSelectedProduct(product.akiProductID);
 
-    setSessionItem('productId', product.akiProductID);
+    setSessionItem('productId', product.akiProductID.toString());
     if (getSessionItem('tempDepartmentId') && getSessionItem('tempCategoryId')) {
       const dept = getSessionItem('tempDepartmentId');
       setSessionItem('departmentId', dept);

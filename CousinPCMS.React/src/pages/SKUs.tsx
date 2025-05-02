@@ -96,7 +96,7 @@ const SKUs = () => {
       const skusData = cleanEmptyNullToString(values);
 
       skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
-      const akiPriceBreaksTBC = skuData?.akiPriceBreak ?? false;
+      const akiPriceBreaksTBC = values?.akiPriceBreak ? true : false;
       const req = {
         ...skusData,
         akiPriceBreaksTBC,

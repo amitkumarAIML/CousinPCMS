@@ -44,7 +44,6 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       }
     };
     fetchData();
-    console.log('Department ID:', departmentId);
     if (location.pathname === '/departments/add' || !departmentId) {
       form.setFieldValue('akiDepartmentID', 0);
       setLoading(false);
@@ -175,8 +174,8 @@ const Department: React.FC<DepartmentInfoProps> = () => {
               akiDepartmentWebActive: false,
               akiDeptPromptUserifblank: false,
               akiDepartmentIsActive: true,
-              akiColor: '#F7941D',
-              akiFeaturedProdBGColor: '#FFFF80',
+              // akiColor: '#F7941D', // Default valid hex color
+              // akiFeaturedProdBGColor: '#FFFF80', // Default valid hex color
               akiDepartmentImageWidth: 0,
               akiDepartmentImageHeight: 0,
             }}

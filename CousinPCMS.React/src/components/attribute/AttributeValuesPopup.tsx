@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Input, Button} from 'antd';
-import {addAttributesValues} from '../../services/AttributesService';
+import {addAttributesValues, updateAttributeValues} from '../../services/AttributesService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {AttributeValuesRequestModel} from '../../models/attributesModel';
 
@@ -8,8 +8,6 @@ const {TextArea} = Input;
 
 interface AttributesValuesProps {
   attributeName: string | null | undefined;
-  skuId: number;
-  itemNumber: string;
   onClose: (reason: 'save' | 'cancel') => void;
   valueData?: AttributeValueFormData | null;
 }
@@ -87,6 +85,40 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
     }
   };
 
+  const handleEdit = async () => {
+    setBtnLoading(true);
+    try {
+      const values = await form.validateFields();
+      const payload = cleanData(values);
+      payload.attributeName = attributeName || '';
+      const response = await updateAttributeValues(payload);
+
+      if (response.isSuccess) {
+        notify.success('Attribute Value added successfully.');
+        form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
+        onClose('save');
+      } else {
+        notify.error('Attribute Value Failed To Add');
+      }
+    } catch (errorInfo) {
+      if (typeof errorInfo === 'object' && errorInfo !== null && 'errorFields' in errorInfo && Array.isArray((errorInfo as {errorFields?: unknown[]}).errorFields)) {
+        notify.error('Please fill in all required fields.');
+      } else if (
+        typeof errorInfo === 'object' &&
+        errorInfo !== null &&
+        'error' in errorInfo &&
+        (errorInfo as {error?: {title?: string}}).error !== undefined &&
+        (errorInfo as {error?: {title?: string}}).error?.title
+      ) {
+        notify.error((errorInfo as {error?: {title?: string}}).error?.title || '');
+      } else {
+        notify.error('Failed to submit attribute value.');
+      }
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     form.resetFields(['attributeValue', 'alternateValues', 'newAlternateValue']);
     onClose('cancel');
@@ -111,9 +143,15 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
           <Button size="small" onClick={handleCancel}>
             Close
           </Button>
-          <Button size="small" type="primary" loading={btnLoading} onClick={handleSave}>
-            Save
-          </Button>
+          {valueData && valueData.attributeValue ? (
+            <Button size="small" type="primary" loading={btnLoading} onClick={handleEdit}>
+              Update
+            </Button>
+          ) : (
+            <Button size="small" type="primary" loading={btnLoading} onClick={handleSave}>
+              Save
+            </Button>
+          )}
         </div>
       </div>
     </Form>

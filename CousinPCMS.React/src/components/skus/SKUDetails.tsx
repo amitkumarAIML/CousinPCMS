@@ -451,9 +451,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
         destroyOnClose
         maskClosable={false}
       >
-        {selectedAttributeForModal && skuData && (
-          <AttributeValuesPopup attributeName={selectedAttributeForModal.attributeName} skuId={skuData.akiSKUID} itemNumber={skuData.akiitemid} onClose={handleAttributeValueModalClose} />
-        )}
+        {selectedAttributeForModal && skuData && <AttributeValuesPopup attributeName={selectedAttributeForModal.attributeName} onClose={handleAttributeValueModalClose} />}
       </Modal>
     </div>
   );
