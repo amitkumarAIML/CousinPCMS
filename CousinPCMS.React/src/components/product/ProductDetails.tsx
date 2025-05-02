@@ -20,6 +20,7 @@ import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
 import AdditionalImages from '../AdditionalImages';
 import LinkMaintenance from '../LinkMaintenance';
+import {ApiResponse} from '../../models/generalModel';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -110,8 +111,8 @@ const ProductDetails = forwardRef((props, ref) => {
       }
     };
     fetchInitialData();
-
-    if (location.pathname === '/products/add' || !getSessionItem('productId') || !getSessionItem('tempProductId')) {
+    // || !getSessionItem('productId') || !getSessionItem('tempProductId')
+    if (location.pathname === '/products/add') {
       productForm.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
       productForm.setFieldValue('akiProductID', '0');
       setLoading(false);
@@ -120,13 +121,11 @@ const ProductDetails = forwardRef((props, ref) => {
 
     const attributeSet = async () => {
       try {
-        const cateId = getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId');
-        const response = await getDistinctAttributeSetsByCategoryId(cateId);
-        if (!response.isSuccess || !response.value || response.value.length === 0) {
-          notify.error('Failed to load attribute set data.');
-          return;
+        const cateId = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
+        const response: ApiResponse<AttributeSetModel[]> = await getDistinctAttributeSetsByCategoryId(cateId);
+        if (response.isSuccess || (Array.isArray(response.value) && response.value.length > 0)) {
+          setAttributslist(response.value[0]);
         }
-        setAttributslist(response.value[0]);
       } catch (error) {
         console.error('Error in API call:', error);
       } finally {
@@ -136,7 +135,8 @@ const ProductDetails = forwardRef((props, ref) => {
 
     attributeSet();
 
-    const productIdFromSession = getSessionItem('productId');
+    const productIdFromSession = getSessionItem('productId') || getSessionItem('tempProductId');
+    console.log('Product ID from session:', productIdFromSession);
     if (productIdFromSession) {
       setProductLoading(true);
       getProductById(productIdFromSession)
@@ -153,7 +153,7 @@ const ProductDetails = forwardRef((props, ref) => {
               akiProductIsActive: !!product.akiProductIsActive,
             });
           } else {
-            notify.error('Failed To Load Product Data');
+            // notify.error('Failed To Load Product Data');
           }
         })
         .catch(() => {

@@ -118,7 +118,7 @@ const Category = () => {
       setLoading(false);
       return;
     }
-    const currentCategoryId = getSessionItem('CategoryId') || '';
+    const currentCategoryId = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
     if (currentCategoryId) {
       setCategoryId(currentCategoryId);
       categoryForm.setFieldValue('akiCategoryID', currentCategoryId);
@@ -242,7 +242,6 @@ const Category = () => {
   }, [isVisibleAddProductModal, productSearchValue, productTableParams.pagination, fetchProductsForModal]);
 
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
-    if (!categoryId) return;
     setBtnLoading(true);
     console.log('value', values, categoryId);
     const payload: UpdateCategoryModel = {
@@ -422,14 +421,7 @@ const Category = () => {
     setProductSearchValue('');
     setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
-  const goToLinkMaintenance = () => {
-    if (!categoryId) return;
-    navigate(`/category/link-maintenance`);
-  };
-  const goToAdditionalImage = () => {
-    if (!categoryId) return;
-    navigate(`/category/additional-images`);
-  };
+
   const associatedProductColumns: TableProps<AdditionalCategoryModel>['columns'] = [
     {
       title: 'List Order',

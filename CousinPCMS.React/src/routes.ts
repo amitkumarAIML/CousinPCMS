@@ -22,7 +22,9 @@ const routes = createBrowserRouter([
       },
       {
         path: 'departments',
+        
         children: [
+          {path: '', Component: Department},
           {
             path: 'Add',
             Component: Department,
@@ -36,6 +38,7 @@ const routes = createBrowserRouter([
       {
         path: 'category',
         children: [
+          {path: '', Component: Category},
           {path: 'add', Component: Category},
           {path: 'edit', Component: Category},
           {
@@ -51,6 +54,7 @@ const routes = createBrowserRouter([
       {
         path: 'products',
         children: [
+          {path: '', Component: Product},
           {path: 'add', Component: Product},
           {path: 'edit', Component: Product},
         ],
@@ -58,6 +62,7 @@ const routes = createBrowserRouter([
       {
         path: 'SKUs',
         children: [
+          {path: '', Component: SKUs},
           {path: 'add', Component: SKUs},
           {path: 'edit', Component: SKUs},
           {

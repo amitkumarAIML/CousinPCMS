@@ -18,14 +18,16 @@ const Product = () => {
   const productFormRef = useRef<{getFormData: () => {validateFields: () => Promise<Product>}} | null>(null);
 
   useEffect(() => {
-    if (location.pathname === '/products/edit') {
-      setIsEdit(true);
-    }
     const hasRealIds = getSessionItem('CategoryId');
     const hasTempIds = getSessionItem('tempCategoryId');
     if (!hasRealIds && !hasTempIds) {
       setCheckIdValue(true);
     }
+    if (location.pathname === '/products/add') {
+      setIsEdit(false);
+      return;
+    }
+    setIsEdit(true);
   }, []);
 
   const handleCancel = () => {

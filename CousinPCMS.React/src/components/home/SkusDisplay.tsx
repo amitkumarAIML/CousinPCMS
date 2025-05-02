@@ -102,12 +102,13 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
     if (record.akiitemid !== selectedRow?.akiitemid) {
       setSessionItem('itemNumber', record.akiitemid || '');
-      const dept = getSessionItem('tempDepartmentId');
-      setSessionItem('departmentId', dept);
-      const categoryId = getSessionItem('tempCategoryId');
-      setSessionItem('CategoryId', categoryId);
-      const productId = getSessionItem('tempProductId');
-      setSessionItem('productId', productId);
+      if (getSessionItem('tempDepartmentId') && getSessionItem('tempCategoryId')) {
+        const dept = getSessionItem('tempDepartmentId');
+        setSessionItem('departmentId', dept);
+        const categoryId = getSessionItem('tempCategoryId');
+        setSessionItem('CategoryId', categoryId);
+      }
+
       sessionStorage.removeItem('tempDepartmentId');
       sessionStorage.removeItem('tempCategoryId');
       sessionStorage.removeItem('tempProductId');
@@ -123,14 +124,10 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         <div className="flex gap-1 my-1">
           <div className="flex gap-x-2 items-center">
             <span>SKUs</span>
-            <Button type='link' size='small' onClick={() => navigate('/skus/add')}>
+            <Button type="link" size="small" onClick={() => navigate('/skus/add')}>
               Add
             </Button>
-            <Button
-            type='link' size='small'
-              onClick={() => navigate('/skus/edit')}
-              disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true}
-            >
+            <Button type="link" size="small" onClick={() => navigate('/skus/edit')} disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true}>
               Edit
             </Button>
           </div>
@@ -171,9 +168,11 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       width: 120,
     },
     {
-      title:'Web Active',dataIndex:'akiWebActive',align:'center',
-      render:(isWebActive)=><Checkbox checked={isWebActive} disabled />,
-      width:130
+      title: 'Web Active',
+      dataIndex: 'akiWebActive',
+      align: 'center',
+      render: (isWebActive) => <Checkbox checked={isWebActive} disabled />,
+      width: 130,
     },
     {
       title: 'Cat Active',
@@ -188,8 +187,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       align: 'center',
       width: 120,
     },
-    { title: 'AltSku Name', dataIndex: 'akiAltSKUName' ,width:150},
-    { title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode',width:150 },
+    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150},
+    {title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150},
     {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150},
   ];
 

@@ -101,9 +101,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   }, [form, onFormInstanceReady]);
 
   useEffect(() => {
-    // Check for both real and temp IDs
-    const hasRealIds = getSessionItem('CategoryId') && getSessionItem('productId');
-    const hasTempIds = getSessionItem('tempCategoryId') && getSessionItem('tempProductId');
+    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
+    const hasTempIds = getSessionItem('productId') || getSessionItem('tempProductId');
     if (!hasRealIds && !hasTempIds) {
       return;
     }
@@ -134,14 +133,14 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     };
     fetchDropdowns();
 
-    if (location.pathname === '/skus/add') {
+    if (location.pathname === '/skus/add' || !getSessionItem('itemNumber') || !getSessionItem('tempItemNumber')) {
       form.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId') || '0');
       form.setFieldValue('akiProductID', getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId') || '0');
       form.setFieldValue('akiSKUID', '0');
       form.setFieldValue('akiitemid', '0');
-      console.log('SKU Add page loaded', form.getFieldsValue());
       return;
     }
+
     if (skuData) {
       console.log('SKU Edit page loaded', skuData);
       form.resetFields();
