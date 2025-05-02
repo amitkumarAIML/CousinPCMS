@@ -23,7 +23,8 @@ const Product = () => {
     if (!hasRealIds && !hasTempIds) {
       setCheckIdValue(true);
     }
-    if (location.pathname === '/products/add') {
+
+    if (location.pathname === '/products/add' || (!getSessionItem('productId') && !getSessionItem('tempProductId'))) {
       setIsEdit(false);
       return;
     }

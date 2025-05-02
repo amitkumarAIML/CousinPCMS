@@ -132,8 +132,10 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
       }
     };
     fetchDropdowns();
+    const itemNumber = getSessionItem('itemNumber');
+    const tempItemNumber = getSessionItem('tempItemNumber');
 
-    if (location.pathname === '/skus/add' || !getSessionItem('itemNumber') || !getSessionItem('tempItemNumber')) {
+    if (location.pathname === '/skus/add' || (!tempItemNumber && !itemNumber)) {
       form.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId') || '0');
       form.setFieldValue('akiProductID', getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId') || '0');
       form.setFieldValue('akiSKUID', '0');
@@ -142,7 +144,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     }
 
     if (skuData) {
-      console.log('SKU Edit page loaded', skuData);
       form.resetFields();
       form.setFieldsValue({
         ...skuData,

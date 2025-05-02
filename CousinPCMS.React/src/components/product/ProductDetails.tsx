@@ -18,8 +18,6 @@ import {useLocation} from 'react-router';
 import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
-import AdditionalImages from '../AdditionalImages';
-import LinkMaintenance from '../LinkMaintenance';
 import {ApiResponse} from '../../models/generalModel';
 
 interface CategorySelectItem {
@@ -97,6 +95,7 @@ const ProductDetails = forwardRef((props, ref) => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        setLoading(true);
         const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
         setCountries(countriesData || []);
         setCommodityCode(commoditiesData || []);
@@ -111,8 +110,8 @@ const ProductDetails = forwardRef((props, ref) => {
       }
     };
     fetchInitialData();
-    // || !getSessionItem('productId') || !getSessionItem('tempProductId')
-    if (location.pathname === '/products/add') {
+
+    if (location.pathname === '/products/add' || (!getSessionItem('productId') && !getSessionItem('tempProductId'))) {
       productForm.setFieldValue('akiCategoryID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
       productForm.setFieldValue('akiProductID', '0');
       setLoading(false);
@@ -134,9 +133,8 @@ const ProductDetails = forwardRef((props, ref) => {
     };
 
     attributeSet();
-
     const productIdFromSession = getSessionItem('productId') || getSessionItem('tempProductId');
-    console.log('Product ID from session:', productIdFromSession);
+
     if (productIdFromSession) {
       setProductLoading(true);
       getProductById(productIdFromSession)
@@ -646,6 +644,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   showSearch
                   placeholder="Select layout"
                   optionFilterProp="label"
+                  loading={loading}
                   options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                 />
               </Form.Item>

@@ -17,8 +17,6 @@ import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/D
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../contexts.ts/useNotification';
-import AdditionalImages from '../components/AdditionalImages';
-import LinkMaintenance from '../components/LinkMaintenance';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -111,10 +109,10 @@ const Category = () => {
 
     fetchInitialData();
 
-    if (location.pathname === '/category/add') {
+    if (location.pathname === '/category/add' || (!getSessionItem('CategoryId') && !getSessionItem('tempCategoryId'))) {
       categoryForm.setFieldValue('akiDepartment', getSessionItem('departmentId') ? getSessionItem('departmentId') : getSessionItem('tempDepartmentId'));
       categoryForm.setFieldValue('akiCategoryID', '0');
-      categoryForm.setFieldValue('akiCategoryParentID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId'));
+      categoryForm.setFieldValue('akiCategoryParentID', getSessionItem('CategoryId') ? getSessionItem('CategoryId') : getSessionItem('tempCategoryId') || '0');
       setLoading(false);
       return;
     }
@@ -153,7 +151,7 @@ const Category = () => {
             akiCategoryPrintCatActive: !!details.akiCategoryPrintCatActive,
             additionalImages: String((details as Record<string, unknown>).additionalImagesCount || 0),
             urlLinks: String((details as Record<string, unknown>).urlLinksCount || 0),
-            aki_Layout_Template:!!details.akI_Layout_Template,
+            aki_Layout_Template: !!details.akI_Layout_Template,
           });
         } else {
           notify.error('Failed to load category details.');
@@ -423,7 +421,6 @@ const Category = () => {
     setProductSearchValue('');
     setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
-
 
   const goToLinkMaintenance = () => {
     const productId = categoryForm.getFieldValue('akiCategoryID');
