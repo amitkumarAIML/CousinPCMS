@@ -7,8 +7,8 @@ namespace CousinPCMS.Domain
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
         public string attributeName { get; set; }
-        public string attributeDescription { get; set; }
-        public string searchType { get; set; }
+        public string attributeDescription { get; set; } = string.Empty;
+        public string searchType { get; set; } = string.Empty;
         public bool showAsCategory { get; set; }
         public bool attributesIsActive { get; set; }
     }
@@ -19,8 +19,8 @@ namespace CousinPCMS.Domain
         public string odataetag { get; set; }
         public string attributeValue { get; set; }
         public string attributeName { get; set; }
-        public string newAlternateValue { get; set; }
-        public string alternateValues { get; set; }
+        public string newAlternateValue { get; set; } = string.Empty;
+        public string alternateValues { get; set; } = string.Empty;
         public bool attributevalueIsActive { get; set; }
         public bool attributeValueLinkedToSKU { get; set; }
     }
@@ -41,16 +41,16 @@ namespace CousinPCMS.Domain
     public class AddAttributeRequestModel
     {
         public string attributeName { get; set; }
-        public string attributeDescription { get; set; }
-        public string searchType { get; set; }
+        public string attributeDescription { get; set; } = string.Empty;
+        public string searchType { get; set; } = string.Empty;
         public bool showAsCategory { get; set; }
     }
     public class AddAttributeValueRequestModel
     {
         public string attributeValue { get; set; }
         public string attributeName { get; set; }
-        public string newAlternateValue { get; set; }
-        public string alternateValues { get; set; }
+        public string newAlternateValue { get; set; } = string.Empty;
+        public string alternateValues { get; set; } = string.Empty;
     }
     public class AddAttributeSetRequestModel
     {

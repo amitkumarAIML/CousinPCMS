@@ -126,25 +126,25 @@ namespace CousinPCMS.Domain
         public int akiProductID { get; set; }
         public string akiCategoryID { get; set; }
         public string akiProductName { get; set; }
-        public string akiProductHeading { get; set; }
+        public string akiProductHeading { get; set; } = string.Empty;
         public int akiProductListOrder { get; set; }
-        public string akiProductCommodityCode { get; set; }
-        public string akiProductCountryOfOrigin { get; set; }
-        public string akiProductImageURL { get; set; }
+        public string akiProductCommodityCode { get; set; } = string.Empty;
+        public string akiProductCountryOfOrigin { get; set; } = string.Empty;
+        public string akiProductImageURL { get; set; } = string.Empty;
         public int akiProductImageHeight { get; set; }
         public int akiProductImageWidth { get; set; }
-        public string akiProductAlternativeTitle { get; set; }
-        public string aki_Layout_Template { get; set; }
+        public string akiProductAlternativeTitle { get; set; } = string.Empty;
+        public string aki_Layout_Template { get; set; } = string.Empty;
         public bool akiProductShowPriceBreaks { get; set; }
         public bool akiProductPrintLayoutTemp { get; set; }
-        public string akiProductIndexText1 { get; set; }
-        public string akiProductIndexText2 { get; set; }
-        public string akiProductIndexText3 { get; set; }
-        public string akiProductIndexText4 { get; set; }
-        public string akiProductIndexText5 { get; set; }
+        public string? akiProductIndexText1 { get; set; } = string.Empty;
+        public string akiProductIndexText2 { get; set; } = string.Empty;
+        public string akiProductIndexText3 { get; set; } = string.Empty;
+        public string akiProductIndexText4 { get; set; } = string.Empty;
+        public string akiProductIndexText5 { get; set; } = string.Empty;
         public string categoryName { get; set; }
-        public string akiProductDescription { get; set; }
-        public string akiProductText { get; set; }
+        public string akiProductDescription { get; set; } = string.Empty;
+        public string akiProductText { get; set; } = string.Empty;
     }
 
     public class UpdateProductModel
@@ -152,26 +152,26 @@ namespace CousinPCMS.Domain
         public int akiProductID { get; set; }
         public string akiCategoryID { get; set; }
         public string akiProductName { get; set; }
-        public string akiProductHeading { get; set; }
+        public string akiProductHeading { get; set; } = string.Empty;
         public int akiProductListOrder { get; set; }
         public bool akiProductWebActive { get; set; }
-        public string akiProductCommodityCode { get; set; }
-        public string akiProductCountryOfOrigin { get; set; }
-        public string akiProductImageURL { get; set; }
+        public string akiProductCommodityCode { get; set; } = string.Empty;
+        public string akiProductCountryOfOrigin { get; set; } = string.Empty;
+        public string akiProductImageURL { get; set; } = string.Empty;
         public int akiProductImageHeight { get; set; }
         public int akiProductImageWidth { get; set; }
-        public string akiProductAlternativeTitle { get; set; }
-        public string aki_Layout_Template { get; set; }
+        public string akiProductAlternativeTitle { get; set; } = string.Empty;
+        public string aki_Layout_Template { get; set; } = string.Empty;
         public bool akiProductShowPriceBreaks { get; set; }
         public bool akiProductPrintLayoutTemp { get; set; }
-        public string akiProductIndexText1 { get; set; }
-        public string akiProductIndexText2 { get; set; }
-        public string akiProductIndexText3 { get; set; }
-        public string akiProductIndexText4 { get; set; }
-        public string akiProductIndexText5 { get; set; }
+        public string akiProductIndexText1 { get; set; } = string.Empty;
+        public string akiProductIndexText2 { get; set; } = string.Empty;
+        public string akiProductIndexText3 { get; set; } = string.Empty;
+        public string akiProductIndexText4 { get; set; } = string.Empty;
+        public string akiProductIndexText5 { get; set; } = string.Empty;
         public string categoryName { get; set; }
-        public string akiProductDescription { get; set; }
-        public string akiProductText { get; set; }
+        public string akiProductDescription { get; set; } = string.Empty;
+        public string akiProductText { get; set; } = string.Empty;
     }
 
     public class DeleteProductRequestModel
