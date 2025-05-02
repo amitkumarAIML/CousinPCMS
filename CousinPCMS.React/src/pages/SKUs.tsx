@@ -20,6 +20,7 @@ const SKUs = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [checkIdValue, setCheckIdValue] = useState<boolean>(false);
   const [checkIdValueMsg, setCheckIdValueMsg] = useState<string>('');
+  const [tabDisabled, setTabDisabled] = useState<boolean>(false);
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -67,16 +68,12 @@ const SKUs = () => {
     }
 
     const itemNumFromSession = getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
-    if (itemNumFromSession !== null) {
-      setIsEdit(true);
-    } else {
-      setLoading(false);
-      return;
-    }
     if (itemNumFromSession) {
+      setIsEdit(true);
       fetchSkuByItemNumber(itemNumFromSession);
+      setTabDisabled(true);
     } else {
-      notify.error('SKU Item Number not found. Please select an SKU.');
+      setTabDisabled(false);
       setLoading(false);
     }
   }, [navigate, notify, fetchSkuByItemNumber]);
@@ -152,7 +149,7 @@ const SKUs = () => {
       children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />,
     },
   ];
-  if (location.pathname === '/skus/edit') {
+  if (tabDisabled) {
     tabItems.push(
       {
         label: 'Related Skus',
