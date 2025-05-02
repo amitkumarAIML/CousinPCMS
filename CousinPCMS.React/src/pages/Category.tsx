@@ -147,12 +147,13 @@ const Category = () => {
             akiCategoryUseComplexSearch: !!details.akiCategoryUseComplexSearch,
             akiCategoryLogInAndGreenTickOnly: !!details.akiCategoryLogInAndGreenTickOnly,
             akiCategoryPrintCatTemp: !!details.akiCategoryPrintCatTemp,
-            akI_Show_Category_Text: !!details.akI_Show_Category_Text,
-            akI_Show_Category_Image: !!details.akI_Show_Category_Image,
+            aki_Show_Category_Text: !!details.akI_Show_Category_Text,
+            aki_Show_Category_Image: !!details.akI_Show_Category_Image,
             akiCategoryWebActive: !!details.akiCategoryWebActive,
             akiCategoryPrintCatActive: !!details.akiCategoryPrintCatActive,
             additionalImages: String((details as Record<string, unknown>).additionalImagesCount || 0),
             urlLinks: String((details as Record<string, unknown>).urlLinksCount || 0),
+            aki_Layout_Template:!!details.akI_Layout_Template,
           });
         } else {
           notify.error('Failed to load category details.');
@@ -262,7 +263,7 @@ const Category = () => {
       aki_Indentation: Number((values as UpdateCategoryModel).aki_Indentation) || 0,
       akiCategoryCommodityCode: values.akiCategoryCommodityCode || '',
       akiCategoryCountryOfOrigin: values.akiCategoryCountryOfOrigin || '',
-      aki_Layout_Template: (values as UpdateCategoryModel).aki_Layout_Template || '',
+      aki_Layout_Template: values.akI_Layout_Template || '',
       akiCategoryReturnType: values.akiCategoryReturnType || '',
       akiCategoryPrintCatImage: '',
       akiCategoryPrintCatTemp: true,
@@ -270,6 +271,7 @@ const Category = () => {
       aki_Show_Category_Text: (values as UpdateCategoryModel).aki_Show_Category_Text || false,
       aki_Show_Category_Image: (values as UpdateCategoryModel).aki_Show_Category_Image || false,
     };
+    delete payload.akI_Layout_Template;
     try {
       if (isEdit) {
         const response = await updateCategory(payload);
@@ -662,10 +664,10 @@ const Category = () => {
                     <Form.Item name="akiCategoryPrintCatActive" valuePropName="checked" noStyle>
                       <Checkbox>Cat Active</Checkbox>
                     </Form.Item>
-                    <Form.Item name="akI_Show_Category_Text" valuePropName="checked" noStyle>
+                    <Form.Item name="aki_Show_Category_Text" valuePropName="checked" noStyle>
                       <Checkbox>Show Category Text</Checkbox>
                     </Form.Item>
-                    <Form.Item name="akI_Show_Category_Image" valuePropName="checked" noStyle>
+                    <Form.Item name="aki_Show_Category_Image" valuePropName="checked" noStyle>
                       <Checkbox>Show Category Image</Checkbox>
                     </Form.Item>
                   </div>
