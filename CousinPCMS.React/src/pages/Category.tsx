@@ -422,6 +422,19 @@ const Category = () => {
     setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
 
+
+  const goToLinkMaintenance = () => {
+    const productId = categoryForm.getFieldValue('akiCategoryID');
+    if (!productId) return;
+    window.location.href = '/category/link-maintenance';
+  };
+
+  const goToAdditionalImage = () => {
+    const productId = categoryForm.getFieldValue('akiCategoryID');
+    if (!productId) return;
+    window.location.href = '/category/additional-images';
+  };
+
   const associatedProductColumns: TableProps<AdditionalCategoryModel>['columns'] = [
     {
       title: 'List Order',
