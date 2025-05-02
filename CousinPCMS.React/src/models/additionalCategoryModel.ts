@@ -52,6 +52,7 @@ export interface UpdateCategoryModel{
     aki_Layout_Template: string;
     akiCategoryWebActive: boolean;
     akiCategoryDescriptionText:string;
+    akI_Layout_Template?: string
 }
  
 export interface CategoryResponseModel {
