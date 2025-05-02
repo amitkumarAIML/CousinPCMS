@@ -101,10 +101,6 @@ const LinkMaintenance = () => {
     window.history.back();
   };
 
-  const handleCancelForm = () => {
-    form.resetFields();
-    setIsDuplicateUrl(false);
-  };
 
   const checkDuplicateUrl = (url: string | undefined | null) => {
     const inputValue = url?.trim().toLowerCase();
@@ -306,7 +302,6 @@ const LinkMaintenance = () => {
 
               <Form.Item wrapperCol={{offset: 6, span: 18}}>
                 <div className="flex justify-end gap-x-2">
-                  <Button onClick={handleCancelForm}>Close</Button>
                   <Button type="primary" onClick={handleSave} loading={loading} disabled={form.getFieldsError().some(({errors}) => errors.length > 0) || isDuplicateUrl}>
                     Save Link
                   </Button>
