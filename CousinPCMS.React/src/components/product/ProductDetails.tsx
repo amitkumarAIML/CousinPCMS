@@ -498,6 +498,17 @@ const ProductDetails = forwardRef((props, ref) => {
       render: (isActive) => (isActive ? <CheckCircleOutlined className="text-primary-theme" /> : <StopOutlined className="text-danger" />),
     },
   ];
+  const goToLinkMaintenance = () => {
+    const productId = productForm.getFieldValue('akiProductID');
+    if (!productId) return;
+    window.location.href = '/products/link-maintenance';
+  };
+
+  const goToAdditionalImage = () => {
+    const productId = productForm.getFieldValue('akiProductID');
+    if (!productId) return;
+    window.location.href = '/products/additional-images';
+  };
 
   const goToSetAttribute = () => {
     setIsSetAttributeVisable(true);
@@ -595,7 +606,14 @@ const ProductDetails = forwardRef((props, ref) => {
                     {akiProductImageURL?.length || 0} / {charLimit.akiProductImageURL}
                   </span>
                 </div>
-                <Form.Item label="No of Additional Website Images" name="additionalImages">
+                <Form.Item
+                  label={
+                    <a onClick={goToAdditionalImage} className="underline cursor-pointer">
+                      No of Additional Website Images
+                    </a>
+                  }
+                  name="additionalImages"
+                >
                   <Input disabled />
                 </Form.Item>
               </div>
@@ -606,7 +624,14 @@ const ProductDetails = forwardRef((props, ref) => {
                 <Form.Item label="Image Width (px)" name="akiProductImageWidth">
                   <Input type="number" />
                 </Form.Item>
-                <Form.Item label="No of URL Links" name="urlLinks">
+                <Form.Item
+                  label={
+                    <a onClick={goToLinkMaintenance} className="underline cursor-pointer">
+                      No of URL Links
+                    </a>
+                  }
+                  name="urlLinks"
+                >
                   <Input disabled />
                 </Form.Item>
               </div>
@@ -638,7 +663,7 @@ const ProductDetails = forwardRef((props, ref) => {
               </div>
             </div>
             <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-6">
-              <div className="col-span-4 ">
+              <div className="col-span-6 ">
                 <div>
                   <div className="font-medium text-primary-font  mb-1">Associated Products</div>
                   <div className="border border-border rounded-lg p-2">
@@ -668,12 +693,6 @@ const ProductDetails = forwardRef((props, ref) => {
                     </a>
                   </Form.Item>
                 )}
-              </div>
-              <div className="col-span-4">
-                <AdditionalImages />
-              </div>
-              <div className="col-span-4">
-                <LinkMaintenance />
               </div>
             </div>
           </div>

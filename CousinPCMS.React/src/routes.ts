@@ -55,6 +55,14 @@ const routes = createBrowserRouter([
         path: 'products',
         children: [
           {path: '', Component: Product},
+          {
+            path: 'additional-images',
+            Component: AdditionalImages,
+          },
+          {
+            path: 'link-maintenance',
+            Component: LinkMaintenance,
+          },
           {path: 'add', Component: Product},
           {path: 'edit', Component: Product},
         ],
@@ -65,6 +73,14 @@ const routes = createBrowserRouter([
           {path: '', Component: SKUs},
           {path: 'add', Component: SKUs},
           {path: 'edit', Component: SKUs},
+          {
+            path: 'additional-images',
+            Component: AdditionalImages,
+          },
+          {
+            path: 'link-maintenance',
+            Component: LinkMaintenance,
+          },
           {
             path: 'attribute-multi-upload',
             Component: AttributeMultiUpload,

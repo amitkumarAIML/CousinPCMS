@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router';
-import {Button, Input, Select, Form, Spin, List, Popconfirm, Modal} from 'antd';
+import {Button, Input, Select, Form, Spin, List, Popconfirm} from 'antd';
 import {DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl} from '../services/ProductService';
 import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl} from '../services/CategoryService';
@@ -19,7 +19,6 @@ const LinkMaintenance = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState<string>('');
   const [isDuplicateUrl, setIsDuplicateUrl] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
@@ -98,16 +97,13 @@ const LinkMaintenance = () => {
     }
   }, [location.pathname, fetchLinks]);
 
-  const handleModalCancel = () => {
-    form.resetFields();
-    setIsDuplicateUrl(false);
-    setIsModalOpen(false);
+  const goBack = () => {
+    window.history.back();
   };
 
-  const handleAddClick = () => {
+  const handleCancelForm = () => {
     form.resetFields();
     setIsDuplicateUrl(false);
-    setIsModalOpen(true);
   };
 
   const checkDuplicateUrl = (url: string | undefined | null) => {
@@ -121,13 +117,15 @@ const LinkMaintenance = () => {
     checkDuplicateUrl(e.target.value);
   };
 
-  const handleSave = async (values: any) => {
+  const handleSave = async () => {
     if (!contextId || !contextType) {
       notify.error('Context ID or Type is missing.');
       return;
     }
     setLoading(true);
     try {
+      const values = await form.validateFields();
+
       if (checkDuplicateUrl(values.linkURL)) {
         notify.error('This URL already exists.');
         setLoading(false);
@@ -157,18 +155,17 @@ const LinkMaintenance = () => {
       }
 
       if (response.isSuccess) {
-        notify.success('Link Added Successfully');
-        setLinks((prev) => [...prev, values]);
-        setIsModalOpen(false);
+        notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} Video link added successfully`);
         form.resetFields();
+        setLinks((prev) => [...prev, values]);
       } else {
         notify.error('Failed to add link.');
       }
     } catch (errorInfo: any) {
-      // Do not close modal on validation error
       if (Array.isArray(errorInfo?.errorFields)) {
         notify.error('Please fill in all required fields correctly.');
       } else {
+        console.error('An unexpected error occurred during save:', errorInfo);
         notify.error('Something went wrong during save.');
       }
     } finally {
@@ -209,7 +206,7 @@ const LinkMaintenance = () => {
       }
 
       if (response.isSuccess) {
-        notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} video link successfully deleted.`);
+        notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} Video link successfully deleted.`);
         setLinks((prevList) => prevList.filter((_, i) => i !== index));
       } else {
         notify.error('Failed to delete link.');
@@ -222,18 +219,19 @@ const LinkMaintenance = () => {
   };
 
   return (
-    <div>
-      <div className="flex flex-wrap justify-between items-center pb-1">
-        <span className="font-medium text-primary-font">Video Links</span>
+    <div className="main-container">
+      <div className="flex flex-wrap justify-between items-center p-4 pb-1">
+        <span className="text-sm font-medium">Video Links</span>
+        <Button type="default" onClick={goBack}>
+          Close
+        </Button>
       </div>
-      <div className="p-2 border border-border rounded-lg">
-        <div>
-          <div>
+      <hr className="mt-2 mb-2 border-border" />
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-4 border border-border rounded md:col-span-1">
             <div className="flex justify-between items-center mb-2">
               <label>Existing Links</label>
-              <Button type="primary" onClick={handleAddClick} size="small">
-                Add
-              </Button>
             </div>
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[70vh] overflow-y-auto">
@@ -258,7 +256,7 @@ const LinkMaintenance = () => {
                           </Popconfirm>,
                         ]}
                       >
-                        <span className="font-medium truncate" title={link.linkURL}>
+                        <span className="text-sm  truncate" title={link.linkURL}>
                           {link.linkURL}
                         </span>
                       </List.Item>
@@ -271,35 +269,26 @@ const LinkMaintenance = () => {
             </Spin>
           </div>
 
-          <Modal
-            width={400}
-            title="Add New Video Links"
-            rootClassName="additional-link"
-            open={isModalOpen}
-            onCancel={handleModalCancel}
-            destroyOnClose
-            footer={[
-              <Button size="small" key="back" onClick={handleModalCancel}>
-                Cancel
-              </Button>,
-              <Button key="submit" type="primary" size="small" loading={loading} disabled={isDuplicateUrl} onClick={() => form.submit()}>
-                Save Link
-              </Button>,
-            ]}
-          >
-            <Form form={form} layout="vertical" className="space-y-2" autoComplete="off" onFinish={handleSave}>
+          <div className="border border-border rounded p-4 md:col-span-2 w-1/2">
+            <label className="text-sm">Add New Video Links</label>
+            <Form form={form} layout="vertical" className="space-y-2">
               <Form.Item label="Link Text" name="linkText" rules={[{required: true, message: 'Link Text is required.'}]}>
                 <Input placeholder="e.g., View Datasheet" />
               </Form.Item>
               <Form.Item
                 label="Link URL"
                 name="linkURL"
+                validateFirst
                 rules={[
                   {required: true, message: 'Link URL is required.'},
                   {type: 'url', message: 'Please enter a valid URL.'},
+                  {
+                    validator: (_, value) => {
+                      if (!value) return Promise.resolve();
+                      return checkDuplicateUrl(value) ? Promise.reject('This URL already exists.') : Promise.resolve();
+                    },
+                  },
                 ]}
-                validateStatus={isDuplicateUrl ? 'error' : ''}
-                help={isDuplicateUrl ? 'This URL already exists.' : ''}
               >
                 <Input placeholder="https://example.com/datasheet.pdf" onChange={handleUrlInputChange} />
               </Form.Item>
@@ -314,8 +303,17 @@ const LinkMaintenance = () => {
                   <Option value="Web site">Web site</Option>
                 </Select>
               </Form.Item>
+
+              <Form.Item wrapperCol={{offset: 6, span: 18}}>
+                <div className="flex justify-end gap-x-2">
+                  <Button onClick={handleCancelForm}>Close</Button>
+                  <Button type="primary" onClick={handleSave} loading={loading} disabled={form.getFieldsError().some(({errors}) => errors.length > 0) || isDuplicateUrl}>
+                    Save Link
+                  </Button>
+                </div>
+              </Form.Item>
             </Form>
-          </Modal>
+          </div>
         </div>
       </div>
     </div>

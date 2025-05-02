@@ -604,7 +604,14 @@ const Category = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 items-center">
-                  <Form.Item label="No of Additional Website Images" name="additionalImages">
+                  <Form.Item
+                    label={
+                      <a onClick={goToAdditionalImage} className="underline cursor-pointer">
+                        No of Additional Website Images
+                      </a>
+                    }
+                    name="additionalImages"
+                  >
                     <Input disabled />
                   </Form.Item>
                   <Form.Item label="Category Discount (%)" name="akiCategoryDiscount">
@@ -613,7 +620,14 @@ const Category = () => {
                   <span className="mt-6">(If empty, or 0, the Department default will be used)</span>
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 items-center">
-                  <Form.Item label="No of URL Links" name="urlLinks">
+                  <Form.Item
+                    label={
+                      <a onClick={goToLinkMaintenance} className="underline cursor-pointer">
+                        No of URL Links
+                      </a>
+                    }
+                    name="urlLinks"
+                  >
                     <Input disabled />
                   </Form.Item>
                   <Form.Item label="Image Height (px)" name="akiCategoryImageHeight">
@@ -684,8 +698,8 @@ const Category = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-12 grid grid-cols-3 gap-x-6">
-                <div className="col-span-1">
+              <div className="col-span-12 grid grid-cols-4 gap-x-6">
+                <div className="col-span-2">
                   <div className="font-medium text-primary-font  mb-1">Associated Products</div>
                   <div className="border border-border rounded-lg p-2">
                     <div className="flex justify-end mb-2">
@@ -707,12 +721,6 @@ const Category = () => {
                       />
                     </Form>
                   </div>
-                </div>
-                <div className="col-span-1">
-                  <AdditionalImages />
-                </div>
-                <div className="col-span-1">
-                  <LinkMaintenance />
                 </div>
               </div>
             </div>
