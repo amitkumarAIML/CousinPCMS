@@ -43,7 +43,9 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       if (data.isSuccess) {
         if (data.value && data.value.length > 0) {
           const activeSkus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
+          activeSkus.sort((a, b) => a.akiListOrder - b.akiListOrder);
           setSkus(activeSkus);
+          
           setFilteredData(activeSkus);
           setDisplayText(activeSkus.length > 0 ? '' : 'No SKU Found');
 
@@ -87,7 +89,14 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     }
     const filtered = skus.filter((item) => {
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
-      return normalize(item.akiitemid).includes(searchText);
+      return normalize(item.skuName).includes(searchText) ||
+      normalize(item.akiitemid).includes(searchText)||
+      normalize(item.akiListOrder.toString()).includes(searchText)||
+      normalize(item.akiAltSKUName.toString()).includes(searchText)||
+      normalize(item.akiTemplateID.toString()).includes(searchText)||
+      normalize(item.countryRegionOfOriginCode.toString()).includes(searchText)||
+      normalize(item.akiManufacturerRef).includes(searchText) ||
+      normalize(item.akiCommodityCode.toString()).includes(searchText);      
     });
     setFilteredData(filtered);
     if (filtered.length === 0) setDisplayText('No SKU Found');
@@ -142,17 +151,23 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         </div>
       ),
       dataIndex: 'skuName',
-
       width: 250,
+      sorter:(a,b)=>a.skuName.localeCompare(b.skuName)
     },
 
     {
       title: 'MFR Ref No',
       dataIndex: 'akiManufacturerRef',
       width: 160,
+      ellipsis:true,
+      sorter:(a,b)=>a.akiManufacturerRef.localeCompare(b.akiManufacturerRef)
     },
-    {title: 'Item No', dataIndex: 'akiitemid', width: 130},
-    {title: 'List Order', dataIndex: 'akiListOrder', width: 130},
+    {title: 'Item No', dataIndex: 'akiitemid', width: 130,
+      sorter:(a,b)=>(Number(a.akiitemid)||0)-(Number(b.akiitemid)|| 0)
+    },
+    {title: 'List Order', dataIndex: 'akiListOrder', width: 130,
+      sorter:(a,b)=>(Number(a.akiListOrder)||0)-(Number(b.akiListOrder)|| 0)
+    },
     {
       title: 'Obsolete',
       dataIndex: 'akiObsolete',
@@ -187,9 +202,13 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       align: 'center',
       width: 120,
     },
-    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150},
+    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150,
+      sorter:(a,b)=>a.akiAltSKUName.localeCompare(b.akiAltSKUName)
+    },
     {title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150},
-    {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150},
+    {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150,
+      sorter:(a,b)=>(Number(a.akiCommodityCode)||0)-(Number(b.akiCommodityCode)|| 0)
+    },
   ];
 
   return (
@@ -210,6 +229,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
               onClick: () => handleRowSelect(record),
               className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
             })}
+            showSorterTooltip={false}
           />
         </div>
       </Spin>

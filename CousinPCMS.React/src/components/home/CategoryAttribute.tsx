@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Modal, Form, Input, Checkbox, Button, Table, Spin, List} from 'antd';
+import {Modal, Form, Input, Checkbox, Button, Table, Spin, List, TableProps} from 'antd';
 import {getAllAttributes, getAttributeSetsByAttributeSetName, addAttributeSets, deleteAttributeSets, updateAttributeSets1} from '../../services/HomeService';
 import {extractUserMessage} from '../../services/DataService';
 import {useNotification} from '../../contexts.ts/useNotification';
@@ -32,7 +32,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
       setIsAttributeloading(true);
       getAllAttributes().then((response: AttributeModelResponse) => {
         if (response.isSuccess) {
-          let filtered = response.value;
+          let filtered = response.value;          
           const sets = attributeSets !== undefined ? attributeSets : lstAllAttributeSets;
           if (sets.length > 0) {
             const existingIds = sets.map((a) => a.attributeName);
@@ -55,8 +55,10 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
       getAttributeSetsByAttributeSetName(encodeURIComponent(attributeSetName))
         .then((response: ApiResponse<AttributeSetModel[]>) => {
           if (response.isSuccess && Array.isArray(response.value)) {
-            setLstAllAttributeSets(response.value);
-            fetchAllAttributes(response.value);
+            const sortedList = response.value.sort((a, b) => (a.listPosition ?? 0) - (b.listPosition ?? 0));
+            setLstAllAttributeSets(sortedList);
+            fetchAllAttributes(sortedList);
+            
           } else {
             // notify.error('Failed to load attribute sets');
             setLstAllAttributeSets([]);
@@ -204,11 +206,15 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
       .catch(() => {});
   };
 
-  const columns = [
-    {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200},
+  const columns: TableProps<AttributeSetModel>['columns'] = [
+    {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200,
+      sorter:(a,b)=>a.attributeName.localeCompare(b.attributeName)
+    },
     {title: 'Required', dataIndex: 'attributeRequired', width: 40, render: (val: boolean) => <Checkbox checked={val} disabled />},
     {title: 'Not Important', dataIndex: 'notImportant', width: 50, render: (val: boolean) => <Checkbox checked={val} disabled />},
-    {title: 'List Order', dataIndex: 'listPosition', width: 50},
+    {title: 'List Order', dataIndex: 'listPosition', width: 50,
+      sorter:(a,b)=>(Number(a.listPosition)||0)-(Number(b.listPosition)|| 0)
+    },
     {
       title: 'Action',
       dataIndex: 'action',
@@ -262,7 +268,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
               </Form.Item>
             </div>
             <div className="col-span-12">
-              <Table columns={columns} dataSource={lstAllAttributeSets} rowKey="attributeName" bordered size="small" loading={isAttributeSetloading} pagination={false} />
+              <Table columns={columns} dataSource={lstAllAttributeSets} rowKey="attributeName" bordered size="small" loading={isAttributeSetloading} pagination={false} showSorterTooltip={false} />
             </div>
           </div>
           <div className="col-span-4">

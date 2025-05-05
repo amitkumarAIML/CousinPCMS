@@ -76,11 +76,13 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
       title: 'Attribute Name',
       dataIndex: 'akiAttributeName',
       ellipsis: true,
+      sorter:(a,b)=>a.akiAttributeName.localeCompare(b.akiAttributeName)
     },
     {
       title: 'Attribute Value',
       dataIndex: 'akiAttributeValue',
       ellipsis: true,
+      sorter:(a,b)=>a.akiAttributeValue.localeCompare(b.akiAttributeValue)
     },
     {
       title: 'Link',
@@ -107,7 +109,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
       </Form>
 
       <Spin spinning={loading}>
-        <Table columns={columns} dataSource={filteredAttributeList} rowKey="key" size="small" bordered pagination={false} className="linked-attributes-table" />
+        <Table columns={columns} dataSource={filteredAttributeList} rowKey="key" size="small" bordered pagination={false} className="linked-attributes-table" showSorterTooltip={false}/>
       </Spin>
     </div>
   );

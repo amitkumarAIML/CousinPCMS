@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {useNavigate} from 'react-router';
-import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin} from 'antd';
+import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin, TableProps} from 'antd';
 import {CloseCircleFilled, EditOutlined, SearchOutlined} from '@ant-design/icons';
 import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes} from '../../services/AttributesService';
 import {useNotification} from '../../contexts.ts/useNotification';
@@ -63,7 +63,12 @@ const AttributeForm = () => {
       try {
         const response = await getAttributeValuesByAttributesName(name);
         if (response.isSuccess && response.value) {
-          setAttributesValues(response.value);
+          const dataWithKeys = response.value.map((item, index) => ({
+            ...item,
+            key: item.id || item.id || index,
+          }));
+          setAttributesValues(dataWithKeys);
+          
         } else {
           setAttributesValues([]);
           notify.error('Failed to load attribute values.');
@@ -212,8 +217,10 @@ const AttributeForm = () => {
     setIsValueModalVisible(true);
   };
 
-  const valueColumns = [
-    {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true},
+  const valueColumns:TableProps<AttributeValueModel>['columns'] = [
+    {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true,
+     sorter:(a,b)=>a.attributeValue.localeCompare(b.attributeValue)
+    },
     {
       title: 'Action',
       key: 'action',
@@ -280,7 +287,7 @@ const AttributeForm = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 mt-2">
-              <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} />
+              <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} showSorterTooltip={false}/>
             </div>
           </div>
         </div>

@@ -107,11 +107,21 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
   };
 
   const columns: TableProps<RelatedSkuItem>['columns'] = [
-    {title: 'Related', dataIndex: 'relatedItemNo', width: 200},
-    {title: 'RelationType', dataIndex: 'relationType', ellipsis: true},
-    {title: 'RelatedSkuName', dataIndex: 'relatedSKUName', ellipsis: true},
-    {title: 'ManufacturerRef', dataIndex: 'itemManufactureRef', ellipsis: true},
-    {title: 'ITEM_NUMBER', dataIndex: 'itemNo'},
+    {title: 'Related', dataIndex: 'relatedItemNo', width: 200,
+      sorter:(a,b)=>(Number(a.relatedItemNo)|| 0)-(Number(b.relatedItemNo) ||0)
+    },
+    {title: 'Relation Type', dataIndex: 'relationType', ellipsis: true,
+      sorter:(a,b)=>a.relationType.localeCompare(b.relationType)
+    },
+    {title: 'RelatedSku Name', dataIndex: 'relatedSKUName', ellipsis: true,
+      sorter:(a,b)=>a.relatedSKUName.localeCompare(b.relatedSKUName)
+    },
+    {title: 'MFR Ref No', dataIndex: 'itemManufactureRef', ellipsis: true,
+      sorter:(a,b)=>a.itemManufactureRef.localeCompare(b.itemManufactureRef)
+    },
+    {title: 'Item No', dataIndex: 'itemNo',
+      sorter:(a,b)=>(Number(a.itemNo)|| 0)-(Number(b.itemNo) ||0)
+    },
     {
       title: 'Obsolete',
       dataIndex: 'itemObsolte',
@@ -151,7 +161,7 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
       </Form>
 
       <Spin spinning={loading}>
-        <Table columns={columns} dataSource={filteredSkusList} rowKey="key" size="small" bordered pagination={false} className="related-skus-table" />
+        <Table columns={columns} dataSource={filteredSkusList} rowKey="key" size="small" bordered pagination={false} className="related-skus-table" showSorterTooltip={false} />
       </Spin>
     </div>
   );

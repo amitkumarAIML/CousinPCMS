@@ -47,7 +47,10 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
 
       let currentProducts: Product[] = [];
       if (productListResponse.isSuccess && productListResponse.value) {
-        currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive);
+         currentProducts = productListResponse.value
+        .filter((p: Product) => p?.akiProductIsActive)
+        .sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+       // currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive);
         setProducts(currentProducts);
       } else {
         setProducts([]);
