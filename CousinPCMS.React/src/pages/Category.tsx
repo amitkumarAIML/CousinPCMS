@@ -472,26 +472,6 @@ const Category = () => {
         </span>
       ),
     },
-    // {
-    //   title: 'Action',
-    //   key: 'action',
-    //   width: 120,
-    //   render: (_, record) => {
-    //     const editable = record.product === editingId;
-    //     return editable ? (
-    //       <span className="flex gap-x-2">
-    //         <Button size="small" onClick={handleUpdateAssociatedProduct} type="link">
-    //           Save
-    //         </Button>
-    //         <Button size="small" onClick={handleCancelEdit} type="link" danger>
-    //           Close
-    //         </Button>
-    //       </span>
-    //     ) : (
-    //       <Button size="small" icon={<EditOutlined />} onClick={() => handleStartEdit(record)} type="text" disabled={editingId !== null} style={{ padding: '0 5px', color: '#1890ff' }} />
-    //     );
-    //   },
-    // },
   ];
   const productSearchColumns: TableProps<ProductSearchResult>['columns'] = [
     { title: 'Product Id', dataIndex: 'akiProductID', width: 100 },
