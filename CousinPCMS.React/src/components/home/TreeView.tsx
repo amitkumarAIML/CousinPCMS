@@ -22,6 +22,7 @@ interface CustomTreeDataNode extends TreeDataNode {
 
 interface TreeViewProps {
   onCategorySelected: (categoryId: number | undefined) => void;
+  onAttributeSetChange: () => void;
 }
 
 const getNodeTitleText = (node: CustomTreeDataNode): string => {
@@ -85,7 +86,7 @@ const buildCategoryTree = (categories: CategoryModel[], selectedKeys: React.Key[
 
   return rootCategories;
 };
-const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
+const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetChange}) => {
   const [treeData, setTreeData] = useState<CustomTreeDataNode[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -181,7 +182,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
 
   const handleAttributeModalCancel = () => {
     setCategoryAttriisVisible(false);
-    handleDataChange();
+    onAttributeSetChange();
   };
 
   const findDepartmentIdForCategoryKey = useCallback((key: React.Key, nodes: CustomTreeDataNode[], parentDeptId?: string | number): string | number | undefined => {
@@ -402,19 +403,15 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
       } else {
         let ar: CustomTreeDataNode[] = [];
         let i: number = -1;
-        let targetNodeParentChildren: CustomTreeDataNode[] | null = null;
-
         const findDropLocation = (nodes: CustomTreeDataNode[], key: React.Key): boolean => {
           for (let index = 0; index < nodes.length; index++) {
             if (nodes[index].key === key) {
               ar = nodes;
               i = index;
-              targetNodeParentChildren = nodes;
               return true;
             }
             if (nodes[index].children) {
               if (findDropLocation(nodes[index].children!, key)) {
-                targetNodeParentChildren = nodes[index].children!;
                 return true;
               }
             }
@@ -430,7 +427,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
             ar.splice(i + 1, 0, dragObj);
           }
         } else {
-          console.error('Drop target key not found in loop');
           data.push(dragObj);
         }
       }
@@ -553,11 +549,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
     }
   }, [loading, treeData, findDepartmentIdForCategoryKey, onCategorySelected]);
 
-  const handleDataChange = () => {
-    console.log('Category data:', categoryData, Number(categoryData?.id));
-    onCategorySelected(Number(categoryData?.id));
-  };
-
   const treeProps = useMemo<TreeProps>(
     () => ({
       showIcon: true,
@@ -615,7 +606,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected}) => {
         </div>
       )}
       <Modal title="Attribute Set Form" open={categoryAttriisVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
-        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleDataChange} />}
+        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleAttributeModalCancel} />}
       </Modal>
     </div>
   );

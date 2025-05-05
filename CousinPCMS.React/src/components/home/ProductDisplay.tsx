@@ -13,9 +13,10 @@ import {getSessionItem, setSessionItem} from '../../services/DataService';
 interface ProductDisplayProps {
   selectedCategory: string;
   onProductSelected: (productId: number | undefined) => void;
+  refreshKey?: number;
 }
 
-function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayProps) {
+function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: ProductDisplayProps) {
   const [selectedProduct, setSelectedProduct] = useState<number | undefined>(undefined);
   const [products, setProducts] = useState<Product[]>([]);
   const [allProductAttributes, setAllProductAttributes] = useState<(Product | AttributeSetModel)[]>([]);
@@ -110,14 +111,12 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
     }
   }, [selectedCategory, searchValue, notify, onProductSelected]);
 
-  const handleDataChange = () => {
+  useEffect(() => {
     fetchData();
-    onProductSelected(selectedProduct);
-  };
+  }, [selectedCategory, refreshKey, fetchData]);
 
   useEffect(() => {
     fetchData();
-    console.log('Selected Category:', selectedCategory);
     if (selectedCategory && !getSessionItem('tempCategoryId')) {
       setSessionItem('CategoryId', selectedCategory);
     } else {
@@ -207,7 +206,8 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
 
   const handleAttributeModalCancel = () => {
     setCategoryAttriIsVisible(false);
-    handleDataChange();
+    setCategoryData({});
+    fetchData();
   };
 
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
@@ -266,7 +266,7 @@ function ProductDisplay({selectedCategory, onProductSelected}: ProductDisplayPro
       </Spin>
 
       <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
-        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleDataChange} />}
+        {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleAttributeModalCancel} />}
       </Modal>
     </div>
   );

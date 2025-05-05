@@ -93,3 +93,9 @@ export const getAllProducts = async (pageIndex: number, pageSize: number, produc
   const response = await http.get<ApiResponse<Product>>('Product/GetAllProducts', {params: {pageSize, pageNumber: pageIndex, productName}});
   return response;
 };
+
+export const updateProductImagesOrder = async (productData: ProductRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Product/UpdateProduct', productData);
+  return response;
+};
+

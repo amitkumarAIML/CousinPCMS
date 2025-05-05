@@ -127,19 +127,19 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
       dataIndex: 'itemObsolte',
       width: 90,
       align: 'center',
-      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
+      render: (isObsolete) => <Checkbox checked={isObsolete} disabled={!skuData?.akiitemid} />,
     },
     {
       title: 'Unavailable',
       dataIndex: 'itemIsUnavailable',
       width: 100,
       align: 'center',
-      render: (isUnavailable) => <Checkbox checked={isUnavailable} disabled />,
+      render: (isUnavailable) => <Checkbox checked={isUnavailable} disabled={!skuData?.akiitemid} />,
     },
   ];
 
   return (
-    <div className='px-4'>
+    <div className="px-4">
       <Form layout="vertical" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-x-3 items-end">
           <Form.Item label="Search" className="md:col-span-2 mb-0">

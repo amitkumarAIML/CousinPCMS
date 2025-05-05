@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message } from 'antd';
-import { EditOutlined, CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
+
+import {useState, useEffect, useCallback} from 'react';
+import {useLocation, useNavigate} from 'react-router';
+import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
+import {CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
 import IndexEntryFields from '../components/shared/IndexEntryFields';
 import type { UploadChangeParam } from 'antd/es/upload';
 import type { UploadFile } from 'antd/es/upload/interface';

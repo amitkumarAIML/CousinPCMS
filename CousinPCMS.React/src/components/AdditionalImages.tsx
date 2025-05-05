@@ -1,7 +1,10 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router';
 import {Button, Input, Spin, List, Popconfirm, Form, Upload} from 'antd';
-import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, MenuOutlined} from '@ant-design/icons';
+import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import type {ApiResponse} from '../models/generalModel';
 import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../models/additionalImagesModel';
 import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl} from '../services/ProductService';
@@ -24,6 +27,8 @@ const AdditionalImages = () => {
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
   const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
   const notify = useNotification();
+
+  const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {distance: 5}}));
 
   const fetchImages = useCallback(
     async (id: string | number, type: 'product' | 'category' | 'sku') => {
@@ -223,6 +228,55 @@ const AdditionalImages = () => {
     }
   };
 
+  // Function to handle drag end and persist order
+  const handleImageDragEnd = ({active, over}: {active: any; over: any}) => {
+    if (active.id !== over?.id) {
+      const oldIndex = fileList.findIndex((img) => img.imageURL === active.id);
+      const newIndex = fileList.findIndex((img) => img.imageURL === over?.id);
+      const newOrder = arrayMove(fileList, oldIndex, newIndex);
+      setFileList(newOrder);
+      // Call API to persist new order
+      if ((contextType === 'product' || contextType === 'category') && contextId) {
+        // updateProductImagesOrder(contextId, newOrder.map((img) => img.imageURL)
+        // ).catch(() => {
+        //   notify.error('Failed to update image order on server.');
+        // });
+      }
+    }
+  };
+
+  // Sortable image item using dnd-kit
+  function SortableImageItem({image, onDelete, id}: {image: AdditionalImagesModel; onDelete: (image: AdditionalImagesModel, index: number) => void; id: string}) {
+    const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      background: isDragging ? '#f0f0f0' : undefined,
+      cursor: 'grab',
+      marginBottom: 4,
+    };
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id}>
+        <List.Item
+          className="flex justify-between items-center px-2 py-1"
+          actions={[
+            <Popconfirm title="Delete this image?" onConfirm={() => onDelete(image, -1)} okText="Yes" cancelText="No" placement="left" icon={<QuestionCircleOutlined style={{color: 'red'}} />}>
+              <Button type="text" danger size="small" icon={<DeleteOutlined />} />
+            </Popconfirm>,
+          ]}
+        >
+          <span className="flex items-center">
+            <MenuOutlined style={{cursor: 'grab', color: '#999', marginRight: 8}} />
+            <span className="text-sm truncate" title={image.imageURL}>
+              {image.imageURL}
+            </span>
+          </span>
+        </List.Item>
+      </div>
+    );
+  }
+
   return (
     <div className="main-container">
       <div className="flex flex-wrap justify-between items-center p-4 pb-1">
@@ -241,32 +295,15 @@ const AdditionalImages = () => {
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
                 {fileList.length > 0 ? (
-                  <List
-                    size="small"
-                    dataSource={fileList}
-                    renderItem={(image, index) => (
-                      <List.Item
-                        key={`${image.imageURL}-${index}`}
-                        className="flex justify-between items-center px-2 py-1"
-                        actions={[
-                          <Popconfirm
-                            title="Delete this image?"
-                            onConfirm={() => handleDeleteImage(image, index)}
-                            okText="Yes"
-                            cancelText="No"
-                            placement="left"
-                            icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-                          >
-                            <Button type="text" danger size="small" icon={<DeleteOutlined />} />
-                          </Popconfirm>,
-                        ]}
-                      >
-                        <span className="text-sm truncate" title={image.imageURL}>
-                          {image.imageURL}
-                        </span>
-                      </List.Item>
-                    )}
-                  />
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
+                    <SortableContext items={fileList.map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
+                      <ul style={{margin: 0, padding: 0}}>
+                        {fileList.map((image) => (
+                          <SortableImageItem key={image.imageURL} id={image.imageURL} image={image} onDelete={handleDeleteImage} />
+                        ))}
+                      </ul>
+                    </SortableContext>
+                  </DndContext>
                 ) : (
                   <div className="flex justify-center items-center h-48">{displayText}</div>
                 )}

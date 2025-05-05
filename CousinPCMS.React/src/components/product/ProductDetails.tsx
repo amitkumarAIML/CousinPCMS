@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import IndexEntryFields from '../shared/IndexEntryFields';
-import { Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message } from 'antd';
-import { EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
-import type { UploadChangeParam } from 'antd/es/upload';
-import type { UploadFile } from 'antd/es/upload/interface';
-import type { TableProps, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue } from 'antd/es/table/interface';
-import { getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct } from '../../services/ProductService';
-import { getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem } from '../../services/DataService';
-import { Country } from '../../models/countryOriginModel';
-import { CommodityCode } from '../../models/commodityCodeModel';
-import { layoutProduct } from '../../models/layoutTemplateModel';
-import { AdditionalProductModel, AssociatedProductRequestModelForProduct, Product } from '../../models/productModel';
-import { ProductCharLimit } from '../../models/char.constant';
-import { useNotification } from '../../contexts.ts/useNotification';
-import { useLocation } from 'react-router';
-import { getDistinctAttributeSetsByCategoryId } from '../../services/HomeService';
-import { AttributeSetModel } from '../../models/attributeModel';
+import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
+import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import type {UploadChangeParam} from 'antd/es/upload';
+import type {UploadFile} from 'antd/es/upload/interface';
+import type {TableProps, TablePaginationConfig} from 'antd/es/table';
+import type {FilterValue} from 'antd/es/table/interface';
+import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem, setSessionItem} from '../../services/DataService';
+import {Country} from '../../models/countryOriginModel';
+import {CommodityCode} from '../../models/commodityCodeModel';
+import {layoutProduct} from '../../models/layoutTemplateModel';
+import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
+import {ProductCharLimit} from '../../models/char.constant';
+import {useNotification} from '../../contexts.ts/useNotification';
+import {useLocation} from 'react-router';
+import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
+import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
 import { ApiResponse } from '../../models/generalModel';
 
@@ -142,6 +142,8 @@ const ProductDetails = forwardRef((props, ref) => {
           if (response.isSuccess && response.value && response.value.length > 0) {
             const product = response.value[0];
             setAkiProductID(product.akiProductID);
+            setSessionItem('originalCommodityCode', product.akiProductCommodityCode);
+            setSessionItem('originalCountryOfOrigin', product.akiProductCountryOfOrigin);
             productForm.setFieldsValue({
               ...product,
               category_Name: product.category_Name,
@@ -795,4 +797,5 @@ const ProductDetails = forwardRef((props, ref) => {
   );
 });
 
+// Remove the export from this file to avoid Fast Refresh issues
 export default ProductDetails;
