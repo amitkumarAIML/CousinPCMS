@@ -245,7 +245,6 @@ const Category = () => {
 
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
     setBtnLoading(true);
-    console.log('value', values, categoryId);
     const payload: UpdateCategoryModel = {
       ...values,
       akiCategoryID: values.akiCategoryID || '',
