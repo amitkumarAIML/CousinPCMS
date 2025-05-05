@@ -7,7 +7,7 @@ import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
 import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
-import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem, setSessionItem} from '../../services/DataService';
 import {Country} from '../../models/countryOriginModel';
 import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
@@ -142,6 +142,8 @@ const ProductDetails = forwardRef((props, ref) => {
           if (response.isSuccess && response.value && response.value.length > 0) {
             const product = response.value[0];
             setAkiProductID(product.akiProductID);
+            setSessionItem('originalCommodityCode', product.akiProductCommodityCode);
+            setSessionItem('originalCountryOfOrigin', product.akiProductCountryOfOrigin);
             productForm.setFieldsValue({
               ...product,
               category_Name: product.category_Name,
@@ -772,4 +774,5 @@ const ProductDetails = forwardRef((props, ref) => {
   );
 });
 
+// Remove the export from this file to avoid Fast Refresh issues
 export default ProductDetails;

@@ -87,12 +87,12 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
       dataIndex: 'akiLink',
       width: 100,
       align: 'center',
-      render: (isLinked) => <Checkbox checked={isLinked} disabled />,
+      render: (isLinked) => <Checkbox checked={isLinked} disabled={!skuData?.akiitemid} />,
     },
   ];
 
   return (
-    <div className='px-4'>
+    <div className="px-4">
       <Form layout="vertical" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <Form.Item label="Search" className="md:col-span-2 mb-0">
