@@ -1,11 +1,11 @@
-import {useEffect, useState} from 'react';
-import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
-import {getSkuByProductId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/useNotification';
-import type {SKuList} from '../../models/skusModel';
-import {useNavigate} from 'react-router';
-import {getSessionItem, setSessionItem} from '../../services/DataService';
+import { useEffect, useState } from 'react';
+import { Spin, Input, TableProps, Table, Checkbox, Button } from 'antd';
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { getSkuByProductId } from '../../services/HomeService';
+import { useNotification } from '../../contexts.ts/useNotification';
+import type { SKuList } from '../../models/skusModel';
+import { useNavigate } from 'react-router';
+import { getSessionItem, setSessionItem } from '../../services/DataService';
 import {
   DndContext,
   closestCenter,
@@ -233,14 +233,14 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
       id: props['data-row-key'],
     });
-  
+
     const style = {
       ...props.style,
       transform: CSS.Transform.toString(transform),
       transition,
       cursor: 'move',
     };
-  
+
     return (
       <tr
         {...props}
@@ -259,14 +259,14 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       },
     })
   );
-  
+
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-  
+
     if (active.id !== over.id) {
       const oldIndex = filteredData.findIndex((item) => item.akiitemid === active.id);
       const newIndex = filteredData.findIndex((item) => item.akiitemid === over.id);
-  
+
       const newData = arrayMove(filteredData, oldIndex, newIndex);
       setFilteredData(newData);
       setSkus(newData);
@@ -276,55 +276,38 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     <div className="">
       <Spin spinning={loading}>
         <div className="">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={filteredData.map(item => item.akiitemid)}
-            strategy={verticalListSortingStrategy}
-          >
-            <Spin spinning={loading}>
-              <Table
-                scroll={{ x: 1200 }}
-                columns={columns}
-                dataSource={filteredData}
-                rowKey="akiitemid"
-                size="small"
-                bordered
-                pagination={false}
-                locale={{ emptyText: displayText }}
-                onRow={(record, index) => ({
-                  index,
-                  'data-row-key': record.akiitemid,
-                  onClick: () => handleRowSelect(record),
-                  className: selectedRow?.akiitemid === record.akiitemid
-                    ? 'bg-primary-theme-active'
-                    : 'cursor-pointer',
-                })}
-                components={{
-                  body: {
-                    row: SortableRow,
-                  },
-                }}
-              />
-            </Spin>
-          </SortableContext>
-        </DndContext>
-
-          {/* <Table
-            scroll={{x: 1200}}
-            columns={columns}
-            tableLayout="auto"
-            dataSource={filteredData}
-            rowKey="akiitemid"
-            size="small"
-            bordered
-            pagination={false}
-            locale={{emptyText: displayText}}
-            onRow={(record) => ({
-              onClick: () => handleRowSelect(record),
-              className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
-            })}
-            showSorterTooltip={false}
-          /> */}
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={filteredData.map(item => item.akiitemid)}
+              strategy={verticalListSortingStrategy}
+            >
+              <Spin spinning={loading}>
+                <Table
+                  scroll={{ x: 1200 }}
+                  columns={columns}
+                  dataSource={filteredData}
+                  rowKey="akiitemid"
+                  size="small"
+                  bordered
+                  pagination={false}
+                  locale={{ emptyText: displayText }}
+                  onRow={(record, index) => ({
+                    index,
+                    'data-row-key': record.akiitemid,
+                    onClick: () => handleRowSelect(record),
+                    className: selectedRow?.akiitemid === record.akiitemid
+                      ? 'bg-primary-theme-active'
+                      : 'cursor-pointer',
+                  })}
+                  components={{
+                    body: {
+                      row: SortableRow,
+                    },
+                  }}
+                />
+              </Spin>
+            </SortableContext>
+          </DndContext>
         </div>
       </Spin>
     </div>
