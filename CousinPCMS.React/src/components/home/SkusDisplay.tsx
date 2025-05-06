@@ -1,13 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { Spin, Input, TableProps, Table, Checkbox, Button } from 'antd';
-import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
-import { getSkuByProductId } from '../../services/HomeService';
-import { useNotification } from '../../contexts.ts/useNotification';
-import type { SKuList } from '../../models/skusModel';
-import { useNavigate } from 'react-router';
-import { getSessionItem, setSessionItem } from '../../services/DataService';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import {useEffect, useState} from 'react';
+import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
+import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
+import {getSkuByProductId} from '../../services/HomeService';
+import {useNotification} from '../../contexts.ts/useNotification';
+import type {SKuList} from '../../models/skusModel';
+import {useNavigate} from 'react-router';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import React from 'react';
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
@@ -216,92 +229,102 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     },
   ];
 
-  const DraggableBodyRow = ({ index, moveRow, className, style, ...restProps }: any) => {
-    const ref = useRef<HTMLTableRowElement>(null);
-    const [{ isOver, dropClassName }, drop] = useDrop({
-      accept: type,
-      collect: (monitor) => {
-        const { index: dragIndex } = monitor.getItem() || {};
-        if (dragIndex === index) {
-          return {};
-        }
-        return {
-          isOver: monitor.isOver(),
-          dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
-        };
-      },
-      drop: (item: any) => {
-        moveRow(item.index, index);
-      },
+  const SortableRow = (props: any) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+      id: props['data-row-key'],
     });
-    const [, drag] = useDrag({
-      type,
-      item: { index },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-    });
-    drop(drag(ref));
-
+  
+    const style = {
+      ...props.style,
+      transform: CSS.Transform.toString(transform),
+      transition,
+      cursor: 'move',
+    };
+  
     return (
       <tr
-        ref={ref}
-        className={`${className}${isOver ? dropClassName : ''}`}
-        style={{ cursor: 'move', ...style }}
-        {...restProps}
+        {...props}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
       />
     );
   };
-  const moveRow = (dragIndex: number, hoverIndex: number) => {
-    const dragRow = filteredData[dragIndex];
-    const newData = [...filteredData];
-    newData.splice(dragIndex, 1);
-    newData.splice(hoverIndex, 0, dragRow);
 
-    setFilteredData(newData);
-    setSkus(newData); // Update the source data as well if needed
-
-    // Here you would typically call an API to persist the new order
-    // await updateSkuOrder(newData);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+  
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+  
+    if (active.id !== over.id) {
+      const oldIndex = filteredData.findIndex((item) => item.akiitemid === active.id);
+      const newIndex = filteredData.findIndex((item) => item.akiitemid === over.id);
+  
+      const newData = arrayMove(filteredData, oldIndex, newIndex);
+      setFilteredData(newData);
+      setSkus(newData);
+    }
   };
   return (
     <div className="">
       <Spin spinning={loading}>
         <div className="">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={filteredData.map(item => item.akiitemid)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Spin spinning={loading}>
+              <Table
+                scroll={{ x: 1200 }}
+                columns={columns}
+                dataSource={filteredData}
+                rowKey="akiitemid"
+                size="small"
+                bordered
+                pagination={false}
+                locale={{ emptyText: displayText }}
+                onRow={(record, index) => ({
+                  index,
+                  'data-row-key': record.akiitemid,
+                  onClick: () => handleRowSelect(record),
+                  className: selectedRow?.akiitemid === record.akiitemid
+                    ? 'bg-primary-theme-active'
+                    : 'cursor-pointer',
+                })}
+                components={{
+                  body: {
+                    row: SortableRow,
+                  },
+                }}
+              />
+            </Spin>
+          </SortableContext>
+        </DndContext>
 
-          <DndProvider backend={HTML5Backend}>
-            <div className="">
-              <Spin spinning={loading}>
-                <div className="">
-                  <Table
-                    scroll={{ x: 1200 }}
-                    columns={columns}
-                    tableLayout="auto"
-                    dataSource={filteredData}
-                    rowKey="akiitemid"
-                    size="small"
-                    bordered
-                    pagination={false}
-                    locale={{ emptyText: displayText }}
-                    onRow={(record, index) => ({
-                      index,
-                      moveRow,
-                      onClick: () => handleRowSelect(record),
-                      className: selectedRow?.akiitemid === record.akiitemid
-                        ? 'bg-primary-theme-active'
-                        : 'cursor-pointer',
-                    })}
-                    components={{
-                      body: {
-                        row: DraggableBodyRow,
-                      },
-                    }}
-                    showSorterTooltip={false}
-                  />
-                </div>
-              </Spin>
-            </div>
-          </DndProvider>
+          {/* <Table
+            scroll={{x: 1200}}
+            columns={columns}
+            tableLayout="auto"
+            dataSource={filteredData}
+            rowKey="akiitemid"
+            size="small"
+            bordered
+            pagination={false}
+            locale={{emptyText: displayText}}
+            onRow={(record) => ({
+              onClick: () => handleRowSelect(record),
+              className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
+            })}
+            showSorterTooltip={false}
+          /> */}
         </div>
       </Spin>
     </div>
