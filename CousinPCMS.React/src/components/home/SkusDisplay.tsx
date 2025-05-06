@@ -275,7 +275,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
   return (
     <div className="">
       <Spin spinning={loading}>
-        <div className="">
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={filteredData.map(item => item.akiitemid)}
@@ -285,6 +284,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
                   scroll={{ x: 1200 }}
                   columns={columns}
                   dataSource={filteredData}
+                  tableLayout="auto"
                   rowKey="akiitemid"
                   size="small"
                   bordered
@@ -306,7 +306,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
                 />
             </SortableContext>
           </DndContext>
-        </div>
       </Spin>
     </div>
   );
