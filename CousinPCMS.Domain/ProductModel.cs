@@ -74,9 +74,11 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int productImageID { get; set; }
         public int productID { get; set; }
         public string imageURL { get; set; }
         public string imageName { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AdditionalProductRequestModel
@@ -91,7 +93,18 @@ namespace CousinPCMS.Domain
         public int productID { get; set; }
         public string imageURL { get; set; }
         public string imagename { get; set; }
+        public int listorder { get; set; }
     }
+
+    public class UpdateProductAdditionalImageRequestModel
+    {
+        public int productImageID { get; set; }
+        public int productID { get; set; }
+        public string imageURL { get; set; }
+        public string imagename { get; set; }
+        public int listorder { get; set; }
+    }
+
 
     public class AddProductAdditionalLinkUrlRequestModel
     {
@@ -172,6 +185,8 @@ namespace CousinPCMS.Domain
         public string categoryName { get; set; }
         public string akiProductDescription { get; set; } = string.Empty;
         public string akiProductText { get; set; } = string.Empty;
+        public bool iscommoditychange { get; set; }
+        public bool iscountrychange { get; set; }
     }
 
     public class DeleteProductRequestModel

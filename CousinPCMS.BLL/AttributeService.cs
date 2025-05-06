@@ -450,7 +450,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateAttributeValue(AddAttributeValueRequestModel objModel)
+        public APIResult<string> UpdateAttributeValue(UpdateAttributeValueRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {

@@ -506,6 +506,38 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// updates additional images for the Sku
+        /// </summary>
+        /// <param name="objModel">The object with add image details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateSkuAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateSkuAdditionalImage(UpdateSkuAdditionalImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateSkuAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateSkuAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateSkuAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateSkuAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// add linked urls for the Sku
         /// </summary>
         /// <param name="objModel">The object with add url details.</param>
@@ -538,36 +570,130 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Adds or updates SKU linked attribute details.
+        /// Adds SKU linked attribute details for respective item.
         /// </summary>
         /// <param name="objModel">The request model containing SKU and attribute information to be added or updated.</param>
         /// <returns>
         /// Returns an <see cref="APIResult{T}"/> with a success or error message depending on the outcome.
         /// </returns>
-        [HttpPost("AddUpdateSKULinkedAttribute")]
+        [HttpPost("AddSKULinkedAttribute")]
         [ProducesResponseType(typeof(APIResult<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AddUpdateSKULinkedAttribute([FromBody] AddUpdateSKULinkedAttributeRequestModel objModel)
+        public async Task<IActionResult> AddSKULinkedAttribute([FromBody] AddSKULinkedAttributeRequestModel objModel)
         {
-            log.Info($"Request received for {nameof(AddUpdateSKULinkedAttribute)} method.");
+            log.Info($"Request received for {nameof(AddSKULinkedAttribute)} method.");
 
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _skusService.AddUpdateSKULinkedAttribute(objModel);
+            var responseValue = _skusService.AddSKULinkedAttribute(objModel);
 
             if (responseValue.IsError)
             {
-                log.Error($"Response from {nameof(AddUpdateSKULinkedAttribute)} failed. Exception: {responseValue.ExceptionInformation}");
+                log.Error($"Response from {nameof(AddSKULinkedAttribute)} failed. Exception: {responseValue.ExceptionInformation}");
             }
             else
             {
-                log.Info($"Response from {nameof(AddUpdateSKULinkedAttribute)} succeeded.");
+                log.Info($"Response from {nameof(AddSKULinkedAttribute)} succeeded.");
             }
 
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// updates SKU linked attribute details for respective item.
+        /// </summary>
+        /// <param name="objModel">The request model containing SKU and attribute information to be added or updated.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{T}"/> with a success or error message depending on the outcome.
+        /// </returns>
+        [HttpPost("UpdateSKULinkedAttribute")]
+        [ProducesResponseType(typeof(APIResult<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateSKULinkedAttribute([FromBody] UpdateSKULinkedAttributeRequestModel objModel)
+        {
+            log.Info($"Request received for {nameof(UpdateSKULinkedAttribute)} method.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateSKULinkedAttribute(objModel);
+
+            if (responseValue.IsError)
+            {
+                log.Error($"Response from {nameof(UpdateSKULinkedAttribute)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+            else
+            {
+                log.Info($"Response from {nameof(UpdateSKULinkedAttribute)} succeeded.");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Updates the related item's status to obsolete for the specified SKU.
+        /// </summary>
+        /// <param name="objModel">The request model containing SKU details to be updated.</param>
+        /// <returns>Returns an API result with success or error information.</returns>
+        [HttpPost("UpdateRelatedSKUObsolete")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateRelatedSKUObsolete([FromBody] UpdateSKUObsoleteRequestModel objModel)
+        {
+            log.Info($"[{nameof(UpdateRelatedSKUObsolete)}] request received.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateRelatedSKUObsolete(objModel);
+
+            if (responseValue.IsError)
+            {
+                log.Error($"[{nameof(UpdateRelatedSKUObsolete)}] failed. Exception: {responseValue.ExceptionInformation}");
+                return StatusCode(StatusCodes.Status500InternalServerError, responseValue);
+            }
+
+            log.Info($"[{nameof(UpdateRelatedSKUObsolete)}] executed successfully.");
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Updates the related item's status to unavailable for the specified SKU.
+        /// </summary>
+        /// <param name="objModel">The request model containing SKU details to be updated.</param>
+        /// <returns>Returns an API result with success or error information.</returns>
+        [HttpPost("UpdateRelatedSKUUnavailable")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateRelatedSKUUnavailable([FromBody] UpdateSKUUnavailableRequestModel objModel)
+        {
+            log.Info($"[{nameof(UpdateRelatedSKUUnavailable)}] request received.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateRelatedSKUUnavailable(objModel);
+
+            if (responseValue.IsError)
+            {
+                log.Error($"[{nameof(UpdateRelatedSKUUnavailable)}] failed. Exception: {responseValue.ExceptionInformation}");
+                return StatusCode(StatusCodes.Status500InternalServerError, responseValue);
+            }
+
+            log.Info($"[{nameof(UpdateRelatedSKUUnavailable)}] executed successfully.");
             return Ok(responseValue);
         }
     }

@@ -38,6 +38,8 @@ namespace CousinPCMS.Domain
 
         [JsonProperty("isrelatedSKU")]
         public bool IsrelatedSKU { get; set; }
+
+        public int skuID { get; set; }
     }
 
     public class DeleteSkusRequestModel
@@ -79,6 +81,7 @@ namespace CousinPCMS.Domain
         public string akiPricingFormula { get; set; }
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
+        public bool akiSKUIsActive { get; set; }
     }
 
     public class SkusRelationTypeModel
@@ -123,10 +126,14 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int skuImageID { get; set; }
+
         [JsonProperty("skuitemID")]
         public string skuItemID { get; set; }
-        public string imageURL { get; set; }
+
         public string imageName { get; set; }
+        public string imageURL { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AddSkuAdditionalImageRequestModel
@@ -134,6 +141,16 @@ namespace CousinPCMS.Domain
         public string skuItemID { get; set; }
         public string imageURL { get; set; }
         public string imagename { get; set; }
+        public int listorder { get; set; }
+    }
+
+    public class UpdateSkuAdditionalImageRequestModel
+    {
+        public int skuImageID { get; set; }
+        public string skuItemID { get; set; }
+        public string imageURL { get; set; }
+        public string imagename { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AddSkuAdditionalLinkUrlRequestModel
@@ -161,18 +178,40 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int linkedId { get; set; }
         public string akiItemNo { get; set; }
         public string akiAttributeName { get; set; }
         public string akiAttributeValue { get; set; }
         public bool akiLink { get; set; }
     }
 
-    public class AddUpdateSKULinkedAttributeRequestModel
+    public class AddSKULinkedAttributeRequestModel
     {
         public string akiItemNo { get; set; }
         public string akiAttributeName { get; set; }
         public string akiAttributeValue { get; set; }
         public bool akiLink { get; set; }
+    }
+
+    public class UpdateSKULinkedAttributeRequestModel
+    {
+        public int linkedid { get; set; }
+        public string akiItemNo { get; set; }
+        public string akiAttributeName { get; set; }
+        public string akiAttributeValue { get; set; }
+        public bool akiLink { get; set; }
+    }
+
+    public class UpdateSKUObsoleteRequestModel
+    {
+        public string akiitemid { get; set; }
+        public bool akiObsolete { get; set; }
+    }
+
+    public class UpdateSKUUnavailableRequestModel
+    {
+        public string akiitemid { get; set; }
+        public bool akiCurrentlyPartRestricted { get; set; }
     }
 
 }

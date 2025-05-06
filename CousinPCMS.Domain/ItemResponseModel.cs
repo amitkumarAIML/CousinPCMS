@@ -53,7 +53,6 @@ namespace CousinPCMS.Domain
         public string vatBusPostingGrPrice { get; set; }
         public string genProdPostingGroup { get; set; }
         public string picture { get; set; }
-        public string countryRegionOfOriginCode { get; set; }
         public bool automaticExtTexts { get; set; }
         public string noSeries { get; set; }
         public string taxGroupCode { get; set; }
@@ -206,6 +205,7 @@ namespace CousinPCMS.Domain
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
         public string skuName { get; set; }
+        public bool akiSKUIsActive { get; set; }
     }
 
 }

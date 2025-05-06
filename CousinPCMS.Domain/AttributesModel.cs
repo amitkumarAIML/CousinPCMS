@@ -20,7 +20,6 @@ namespace CousinPCMS.Domain
         public string attributeValue { get; set; }
         public string attributeName { get; set; }
         public string newAlternateValue { get; set; } = string.Empty;
-        public string alternateValues { get; set; } = string.Empty;
         public bool attributevalueIsActive { get; set; }
         public bool attributeValueLinkedToSKU { get; set; }
     }
@@ -50,8 +49,16 @@ namespace CousinPCMS.Domain
         public string attributeValue { get; set; }
         public string attributeName { get; set; }
         public string newAlternateValue { get; set; } = string.Empty;
-        public string alternateValues { get; set; } = string.Empty;
     }
+
+    public class UpdateAttributeValueRequestModel
+    {
+        public string oldattributeValue { get; set; }
+        public string attributeName { get; set; }
+        public string attributeValue { get; set; }
+        public string newAlternateValue { get; set; } = string.Empty;
+    }
+
     public class AddAttributeSetRequestModel
     {
         public string attributeSetName { get; set; }

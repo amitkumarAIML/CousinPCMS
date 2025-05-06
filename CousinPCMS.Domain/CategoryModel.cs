@@ -149,9 +149,11 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int catimageid { get; set; }
         public string categoryID { get; set; }
         public string imageURL { get; set; }
         public string imageName { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AddCategoryAdditionalImageRequestModel
@@ -159,6 +161,16 @@ namespace CousinPCMS.Domain
         public string categoryID { get; set; }
         public string imageURL { get; set; }
         public string imagename { get; set; }
+        public int listorder { get; set; }
+    }
+
+    public class UpdateCategoryAdditionalImageRequestModel
+    {
+        public int catimageid { get; set; }
+        public string categoryID { get; set; }
+        public string imageURL { get; set; }
+        public string imagename { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AddCategoryAdditionalLinkUrlRequestModel

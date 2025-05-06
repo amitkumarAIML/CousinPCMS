@@ -553,6 +553,38 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// updates additional images for the category
+        /// </summary>
+        /// <param name="objModel">The object with add image details.</param>
+        /// <returns>Returns success or not.</returns>
+        [HttpPost("UpdateCategoryAdditionalImage")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateCategoryAdditionalImage(UpdateCategoryAdditionalImageRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateCategoryAdditionalImage)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.UpdateCategoryAdditionalImage(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateCategoryAdditionalImage)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateCategoryAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// add linked urls for the category
         /// </summary>
         /// <param name="objModel">The object with add url details.</param>
