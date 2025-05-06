@@ -100,8 +100,6 @@ namespace CousinPCMS.Domain
     {
         public int productImageID { get; set; }
         public int productID { get; set; }
-        public string imageURL { get; set; }
-        public string imagename { get; set; }
         public int listorder { get; set; }
     }
 

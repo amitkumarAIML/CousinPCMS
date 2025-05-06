@@ -587,28 +587,33 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateProductAdditionalImage(UpdateProductAdditionalImageRequestModel objModel)
+        public APIResult<string> UpdateProductAdditionalImages(UpdateProductAdditionalImageRequestModel imageList)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
                 IsError = false,
                 IsSuccess = true,
             };
+
             try
             {
-                var postData = JsonConvert.SerializeObject(objModel);
+                var postData = JsonConvert.SerializeObject(imageList);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateProductAdditionalImages?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Post,
+                    $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateProductAdditionalImages?company={HardcodedValues.CompanyName}",
+                    ParameterType.RequestBody,
+                    Oauth.Token,
+                    postData
+                );
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    returnValue.IsSuccess = true;
                     returnValue.Value = "Success";
                 }
                 else
                 {
                     returnValue.IsSuccess = false;
-                    // Extract "message" field from JSON response if available
                     var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
                     returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
                 }

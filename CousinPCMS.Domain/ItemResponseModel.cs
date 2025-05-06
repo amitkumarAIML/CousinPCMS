@@ -151,7 +151,7 @@ namespace CousinPCMS.Domain
         public int akiGuideWeightTBC { get; set; }
         public bool akiSKUIsActive { get; set; }
         public bool akiCurrentlyPartRestricted { get; set; }
-        public string akiCountryOfOrigin { get; set; }
+        public string akiCountryofOrigin { get; set; }
         public bool akiPrintLayoutTemp { get; set; }
         public string akiAlternativeTitle { get; set; }
         public string akiCompetitors { get; set; }

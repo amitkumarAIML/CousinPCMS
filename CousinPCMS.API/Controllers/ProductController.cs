@@ -479,34 +479,34 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// updates additional images for the specified product.
+        /// Updates list order of additional images for a specified product.
         /// </summary>
-        /// <param name="objModel">An object containing the details of the images to be added to the product.</param>
+        /// <param name="imageList">List of image details to update.</param>
         /// <returns>
         /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
         /// </returns>
-        [HttpPost("UpdateProductAdditionalImage")]
+        [HttpPost("UpdateProductAdditionalImages")]
         [ProducesResponseType(typeof(APIResult<string>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> UpdateProductAdditionalImage(UpdateProductAdditionalImageRequestModel objModel)
+        public async Task<IActionResult> UpdateProductAdditionalImages(UpdateProductAdditionalImageRequestModel imageList)
         {
-            log.Info($"Request of {nameof(UpdateProductAdditionalImage)} method called.");
+            log.Info($"Request of {nameof(UpdateProductAdditionalImages)} method called.");
 
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _productService.UpdateProductAdditionalImage(objModel);
+            var responseValue = _productService.UpdateProductAdditionalImages(imageList);
 
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(UpdateProductAdditionalImage)} is success.");
+                log.Info($"Response of {nameof(UpdateProductAdditionalImages)} is success.");
             }
             else
             {
-                log.Error($"Response of {nameof(UpdateProductAdditionalImage)} failed. Exception: {responseValue.ExceptionInformation}");
+                log.Error($"Response of {nameof(UpdateProductAdditionalImages)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
             return Ok(responseValue);
