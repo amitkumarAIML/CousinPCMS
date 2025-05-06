@@ -305,7 +305,7 @@ const ProductDetails = forwardRef((props, ref) => {
   const handleProductSelectInModal = (product: AssociatedProductSearchResult) => {
     setSelectedProductIdModal(product.akiProductID);
     addAssociatedProductForm.setFieldsValue({ product: product.akiProductName });
-    message.success(`Selected: ${product.akiProductName}`);
+    notify.success(`Selected: ${product.akiProductName}`);
   };
 
   const handleAddAssociatedProductSubmit = async (values: Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & { product: string }) => {
@@ -317,7 +317,6 @@ const ProductDetails = forwardRef((props, ref) => {
       notify.error('Current product context is missing.');
       return;
     }
-
     const listOrder = Number(values.listorder);
 
     const isListOrderExist = additionalProductList.some((p) => Number(p.listOrder) === listOrder);
