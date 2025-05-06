@@ -1,22 +1,23 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import {Spin, Modal, Input, Button} from 'antd';
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Spin, Modal, Input, Button } from 'antd';
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
 
-import {Product} from '../../models/productModel';
-import {AttributeSetModel} from '../../models/attributeModel';
-import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
+import { Product } from '../../models/productModel';
+import { AttributeSetModel } from '../../models/attributeModel';
+import { getDistinctAttributeSetsByCategoryId, getProductListByCategoryId } from '../../services/HomeService';
 import CategoryAttribute from './CategoryAttribute';
-import {useNavigate} from 'react-router';
-import {useNotification} from '../../contexts.ts/useNotification';
-import {getSessionItem, setSessionItem} from '../../services/DataService';
-
+import { useNavigate } from 'react-router';
+import { useNotification } from '../../contexts.ts/useNotification';
+import { getSessionItem, setSessionItem } from '../../services/DataService';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 interface ProductDisplayProps {
   selectedCategory: string;
   onProductSelected: (productId: number | undefined) => void;
   refreshKey?: number;
 }
 
-function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: ProductDisplayProps) {
+function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: ProductDisplayProps) {
   const [selectedProduct, setSelectedProduct] = useState<number | undefined>(undefined);
   const [products, setProducts] = useState<Product[]>([]);
   const [allProductAttributes, setAllProductAttributes] = useState<(Product | AttributeSetModel)[]>([]);
@@ -48,10 +49,10 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
 
       let currentProducts: Product[] = [];
       if (productListResponse.isSuccess && productListResponse.value) {
-         currentProducts = productListResponse.value
-        .filter((p: Product) => p?.akiProductIsActive)
-        .sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
-       // currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive);
+        currentProducts = productListResponse.value
+          .filter((p: Product) => p?.akiProductIsActive)
+          .sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+        // currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive);
         setProducts(currentProducts);
       } else {
         setProducts([]);
@@ -212,6 +213,86 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
 
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
 
+  //drag and drop 
+  const DraggableItem = ({
+    item,
+    index,
+    moveItem,
+    handleProductClick,
+    handleAttributeSetClick,
+    selectedProduct,
+  }: {
+    item: Product | AttributeSetModel;
+    index: number;
+    moveItem: (dragIndex: number, hoverIndex: number) => void;
+    handleProductClick: (item: Product) => void;
+    handleAttributeSetClick: (item: AttributeSetModel) => void;
+    selectedProduct: number | undefined;
+  }) => {
+    const ref = React.useRef<HTMLLIElement>(null);
+
+    const [{ isDragging }, drag] = useDrag({
+      type: 'ITEM',
+      item: { index },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+
+    const [, drop] = useDrop({
+      accept: 'ITEM',
+      hover: (draggedItem: { index: number }, monitor) => {
+        if (!ref.current) return;
+        const dragIndex = draggedItem.index;
+        const hoverIndex = index;
+
+        if (dragIndex === hoverIndex) return;
+
+        moveItem(dragIndex, hoverIndex);
+        draggedItem.index = hoverIndex;
+      },
+    });
+
+    drag(drop(ref));
+
+    if ('akiProductID' in item) {
+      const isSelected = selectedProduct === item.akiProductID;
+      return (
+        <li
+          ref={ref}
+          key={`prod-${item.akiProductID}`}
+          className={`px-4 py-1 cursor-pointer text-[10px] transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100 text-secondary-font'
+            }`}
+          onClick={() => handleProductClick(item)}
+          style={{ opacity: isDragging ? 0.5 : 1 }}
+        >
+          {item.akiProductName}
+        </li>
+      );
+    } else if ('attributeSetName' in item) {
+      return (
+        <li
+          ref={ref}
+          key={`attr-${item.akiCategoryID}`}
+          className="px-4 py-1 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
+          onClick={() => handleAttributeSetClick(item)}
+          style={{ opacity: isDragging ? 0.5 : 1 }}
+        >
+          <span className="text-primary-theme italic">{item.attributeSetName}</span>
+        </li>
+      );
+    }
+    return null;
+  };
+  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
+    setFilteredData((prevData) => {
+      const newData = [...prevData];
+      const [removed] = newData.splice(dragIndex, 1);
+      newData.splice(hoverIndex, 0, removed);
+      return newData;
+    });
+  }, []);
+
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-2 py-[5px] border-b border-border flex justify-between items-center">
@@ -230,39 +311,29 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       </div>
 
       <Spin spinning={loading}>
-        <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
-          {filteredData && filteredData.length > 0 ? (
-            <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
-              {filteredData.map((item: Product | AttributeSetModel) => {
-                if ('akiProductID' in item) {
-                  const isSelected = selectedProduct === item.akiProductID;
-                  return (
-                    <li
-                      key={`prod-${item.akiProductID}`}
-                      className={` px-4 py-1 cursor-pointer text-[10px]  transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100  text-secondary-font'}`}
-                      onClick={() => handleProductClick(item)}
-                    >
-                      {item.akiProductName}
-                    </li>
-                  );
-                } else if ('attributeSetName' in item) {
-                  return (
-                    <li
-                      key={`attr-${item.akiCategoryID}`}
-                      className=" px-4 py-1 cursor-pointer text-[10px] text-secondary-font transition-colors duration-300 hover:bg-gray-100"
-                      onClick={() => handleAttributeSetClick(item)}
-                    >
-                      <span className="text-primary-theme italic">{item.attributeSetName}</span>
-                    </li>
-                  );
-                }
-                return null;
-              })}
-            </ul>
-          ) : (
-            <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>
-          )}
-        </div>
+        <DndProvider backend={HTML5Backend}>
+          <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
+            {filteredData && filteredData.length > 0 ? (
+              <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
+                {filteredData.map((item, index) => (
+                  <DraggableItem
+                    key={'akiProductID' in item ? `prod-${item.akiProductID}` : `attr-${item.akiCategoryID}`}
+                    item={item}
+                    index={index}
+                    moveItem={moveItem}
+                    handleProductClick={handleProductClick}
+                    handleAttributeSetClick={handleAttributeSetClick}
+                    selectedProduct={selectedProduct}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">
+                {displayText}
+              </div>
+            )}
+          </div>
+        </DndProvider>
       </Spin>
 
       <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>

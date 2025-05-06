@@ -1,25 +1,26 @@
-import {useEffect, useState} from 'react';
-import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
-import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
-import {getSkuByProductId} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/useNotification';
-import type {SKuList} from '../../models/skusModel';
-import {useNavigate} from 'react-router';
-import {getSessionItem, setSessionItem} from '../../services/DataService';
-
+import { useEffect, useRef, useState } from 'react';
+import { Spin, Input, TableProps, Table, Checkbox, Button } from 'antd';
+import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { getSkuByProductId } from '../../services/HomeService';
+import { useNotification } from '../../contexts.ts/useNotification';
+import type { SKuList } from '../../models/skusModel';
+import { useNavigate } from 'react-router';
+import { getSessionItem, setSessionItem } from '../../services/DataService';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
 }
 
-const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCategory}) => {
+const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCategory }) => {
   const [skus, setSkus] = useState<SKuList[]>([]);
   const [filteredData, setFilteredData] = useState<SKuList[]>([]);
   const [displayText, setDisplayText] = useState('Click on a product to view the SKU');
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
-
+  const type = 'DraggableBodyRow';
   const notify = useNotification();
   const navigate = useNavigate();
 
@@ -45,7 +46,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
           const activeSkus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
           activeSkus.sort((a, b) => a.akiListOrder - b.akiListOrder);
           setSkus(activeSkus);
-          
+
           setFilteredData(activeSkus);
           setDisplayText(activeSkus.length > 0 ? '' : 'No SKU Found');
 
@@ -90,13 +91,13 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     const filtered = skus.filter((item) => {
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
       return normalize(item.skuName).includes(searchText) ||
-      normalize(item.akiitemid).includes(searchText)||
-      normalize(item.akiListOrder.toString()).includes(searchText)||
-      normalize(item.akiAltSKUName.toString()).includes(searchText)||
-      normalize(item.akiTemplateID.toString()).includes(searchText)||
-      normalize(item.countryRegionOfOriginCode.toString()).includes(searchText)||
-      normalize(item.akiManufacturerRef).includes(searchText) ||
-      normalize(item.akiCommodityCode.toString()).includes(searchText);      
+        normalize(item.akiitemid).includes(searchText) ||
+        normalize(item.akiListOrder.toString()).includes(searchText) ||
+        normalize(item.akiAltSKUName.toString()).includes(searchText) ||
+        normalize(item.akiTemplateID.toString()).includes(searchText) ||
+        normalize(item.countryRegionOfOriginCode.toString()).includes(searchText) ||
+        normalize(item.akiManufacturerRef).includes(searchText) ||
+        normalize(item.akiCommodityCode.toString()).includes(searchText);
     });
     setFilteredData(filtered);
     if (filtered.length === 0) setDisplayText('No SKU Found');
@@ -152,21 +153,23 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       ),
       dataIndex: 'skuName',
       width: 250,
-      sorter:(a,b)=>a.skuName.localeCompare(b.skuName)
+      sorter: (a, b) => a.skuName.localeCompare(b.skuName)
     },
 
     {
       title: 'MFR Ref No',
       dataIndex: 'akiManufacturerRef',
       width: 160,
-      ellipsis:true,
-      sorter:(a,b)=>a.akiManufacturerRef.localeCompare(b.akiManufacturerRef)
+      ellipsis: true,
+      sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef)
     },
-    {title: 'Item No', dataIndex: 'akiitemid', width: 130,
-      sorter:(a,b)=>(Number(a.akiitemid)||0)-(Number(b.akiitemid)|| 0)
+    {
+      title: 'Item No', dataIndex: 'akiitemid', width: 130,
+      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0)
     },
-    {title: 'List Order', dataIndex: 'akiListOrder', width: 130,
-      sorter:(a,b)=>(Number(a.akiListOrder)||0)-(Number(b.akiListOrder)|| 0)
+    {
+      title: 'List Order', dataIndex: 'akiListOrder', width: 130,
+      sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0)
     },
     {
       title: 'Obsolete',
@@ -202,35 +205,103 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       align: 'center',
       width: 120,
     },
-    {title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150,
-      sorter:(a,b)=>a.akiAltSKUName.localeCompare(b.akiAltSKUName)
+    {
+      title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150,
+      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName)
     },
-    {title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150},
-    {title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150,
-      sorter:(a,b)=>(Number(a.akiCommodityCode)||0)-(Number(b.akiCommodityCode)|| 0)
+    { title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150 },
+    {
+      title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150,
+      sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0)
     },
   ];
 
+  const DraggableBodyRow = ({ index, moveRow, className, style, ...restProps }: any) => {
+    const ref = useRef<HTMLTableRowElement>(null);
+    const [{ isOver, dropClassName }, drop] = useDrop({
+      accept: type,
+      collect: (monitor) => {
+        const { index: dragIndex } = monitor.getItem() || {};
+        if (dragIndex === index) {
+          return {};
+        }
+        return {
+          isOver: monitor.isOver(),
+          dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+        };
+      },
+      drop: (item: any) => {
+        moveRow(item.index, index);
+      },
+    });
+    const [, drag] = useDrag({
+      type,
+      item: { index },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+    drop(drag(ref));
+
+    return (
+      <tr
+        ref={ref}
+        className={`${className}${isOver ? dropClassName : ''}`}
+        style={{ cursor: 'move', ...style }}
+        {...restProps}
+      />
+    );
+  };
+  const moveRow = (dragIndex: number, hoverIndex: number) => {
+    const dragRow = filteredData[dragIndex];
+    const newData = [...filteredData];
+    newData.splice(dragIndex, 1);
+    newData.splice(hoverIndex, 0, dragRow);
+
+    setFilteredData(newData);
+    setSkus(newData); // Update the source data as well if needed
+
+    // Here you would typically call an API to persist the new order
+    // await updateSkuOrder(newData);
+  };
   return (
     <div className="">
       <Spin spinning={loading}>
         <div className="">
-          <Table
-            scroll={{x: 1200}}
-            columns={columns}
-            tableLayout="auto"
-            dataSource={filteredData}
-            rowKey="akiitemid"
-            size="small"
-            bordered
-            pagination={false}
-            locale={{emptyText: displayText}}
-            onRow={(record) => ({
-              onClick: () => handleRowSelect(record),
-              className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
-            })}
-            showSorterTooltip={false}
-          />
+
+          <DndProvider backend={HTML5Backend}>
+            <div className="">
+              <Spin spinning={loading}>
+                <div className="">
+                  <Table
+                    scroll={{ x: 1200 }}
+                    columns={columns}
+                    tableLayout="auto"
+                    dataSource={filteredData}
+                    rowKey="akiitemid"
+                    size="small"
+                    bordered
+                    pagination={false}
+                    locale={{ emptyText: displayText }}
+                    onRow={(record, index) => ({
+                      index,
+                      moveRow,
+                      onClick: () => handleRowSelect(record),
+                      className: selectedRow?.akiitemid === record.akiitemid
+                        ? 'bg-primary-theme-active'
+                        : 'cursor-pointer',
+                    })}
+                    components={{
+                      body: {
+                        row: DraggableBodyRow,
+                      },
+                    }}
+                    showSorterTooltip={false}
+                  />
+                </div>
+              </Spin>
+            </div>
+          </DndProvider>
         </div>
       </Spin>
     </div>

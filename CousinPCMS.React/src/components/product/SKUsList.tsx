@@ -28,8 +28,6 @@ const SKUsList = () => {
           const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive)
             .sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
           setSkusList(activeSkus);
-          console.log('activeSkus', activeSkus);
-
         } else {
           notify.info(data.exceptionInformation || 'No SKU data found or request failed.');
           setSkusList([]);
