@@ -767,6 +767,7 @@ const ProductDetails = forwardRef((props, ref) => {
                         pagination={false}
                         size="small"
                         bordered
+                        showSorterTooltip={false}
                       />
                     </Form>
                   </div>
@@ -783,7 +784,7 @@ const ProductDetails = forwardRef((props, ref) => {
           </div>
         </Form>
       </div>
-      <Modal title="Select Category" open={isCategoryModalVisible} onOk={confirmCategorySelection} onCancel={closeCategoryModal} width={600}>
+      <Modal title="Select Category" open={isCategoryModalVisible} onOk={confirmCategorySelection} onCancel={closeCategoryModal} width={1000}>
         <Input
           placeholder="Search Category Name"
           value={categorySearchValue}

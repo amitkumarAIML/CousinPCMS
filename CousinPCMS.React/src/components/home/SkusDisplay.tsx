@@ -303,6 +303,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
                       row: SortableRow,
                     },
                   }}
+                  showSorterTooltip={false}
                 />
             </SortableContext>
           </DndContext>
