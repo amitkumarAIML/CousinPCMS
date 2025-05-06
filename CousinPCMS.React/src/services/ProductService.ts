@@ -9,7 +9,7 @@ import {
   DeleteAssociatedProductModelForProduct,
   Product,
 } from '../models/productModel';
-import {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../models/additionalImagesModel';
+import {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
 import {ApiResponse} from '../models/generalModel';
 
@@ -46,6 +46,11 @@ export const getProductAdditionalImages = async (productId: string): Promise<Api
 
 export const deleteProductImagesUrl = async (productData: AdditionalImageDeleteRequestModel): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Product/DeleteProductAdditionalImage', productData);
+  return response;
+};
+
+export const updateProductAdditionalImage = async (productData: UpdateAdditionalImagesModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Product/UpdateProductAdditionalImage', productData);
   return response;
 };
 

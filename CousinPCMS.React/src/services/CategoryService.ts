@@ -11,7 +11,7 @@ import {
 } from '../models/additionalCategoryModel';
 import {ApiResponse} from '../models/generalModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
-import {AdditionalImageDeleteRequestModel, AdditionalImagesModel} from '../models/additionalImagesModel';
+import {AdditionalImageDeleteRequestModel, AdditionalImagesModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 
 export const getAdditionalCategory = async (categoryId: string): Promise<AdditionalCategoryModel[]> => {
   const response = await http.get<AdditionalCategoryResponse>('Category/GetAdditionalCategory', {params: {categoryId}});
@@ -75,6 +75,11 @@ export const deleteCategoryLinkUrl = async (CategoryData: LinkDeleteRequestModel
 
 export const saveCategoryImagesUrl = async (CategoryData: AdditionalImagesModel): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Category/AddCategoryAdditionalImage', CategoryData);
+  return response;
+};
+
+export const updateCategoryAdditionalImage = async (CategoryData: UpdateAdditionalImagesModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Category/UpdateCategoryAdditionalImage', CategoryData);
   return response;
 };
 

@@ -3,25 +3,19 @@ import {Input, Table, Checkbox, Spin, Form} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 
-import {getSkuLinkedAttributes} from '../../services/SkusService';
+import {getSkuLinkedAttributes, updateSKULinkedAttribute} from '../../services/SkusService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {ApiResponse} from '../../models/generalModel';
-import type {LikedSkuModel} from '../../models/skusModel';
+import type {LikedSkuModel, SKuList, UpdateSKULinkedAttribute} from '../../models/skusModel';
 
 interface AttributeSkuProps {
-  skuData: {
-    akiitemid: number | string | null | undefined;
-  } | null;
-}
-
-interface LinkedAttributeItem extends LikedSkuModel {
-  key: string;
+  skuData: SKuList;
 }
 
 const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [linkedAttributeList, setLinkedAttributeList] = useState<LinkedAttributeItem[]>([]);
+  const [linkedAttributeList, setLinkedAttributeList] = useState<LikedSkuModel[]>([]);
 
   const notify = useNotification();
   const getSkuLinkedAttributesHandler = async (itemId: number | string) => {
@@ -30,11 +24,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
     try {
       const response: ApiResponse<LikedSkuModel[]> = await getSkuLinkedAttributes(String(itemId));
       if (response.isSuccess && response.value) {
-        const dataWithKeys = response.value.map((item, index) => ({
-          ...item,
-          key: `${item.akiAttributeName}-${item.akiAttributeValue}-${index}`,
-        }));
-        setLinkedAttributeList(dataWithKeys);
+        setLinkedAttributeList(response.value);
       } else {
         notify.info('No linked attributes found.');
       }
@@ -71,25 +61,49 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
     setSearchValue('');
   };
 
-  const columns: TableProps<LinkedAttributeItem>['columns'] = [
+  const updateLinkStatus = async (data: LikedSkuModel, isLinked: boolean) => {
+    setLoading(true);
+    try {
+      const req: UpdateSKULinkedAttribute = {
+        linkedid: data.linkedId,
+        akiItemNo: data.akiItemNo,
+        akiAttributeName: data.akiAttributeName,
+        akiAttributeValue: data.akiAttributeValue,
+        akiLink: isLinked,
+      };
+      const response = await updateSKULinkedAttribute(req);
+      if (response.isSuccess) {
+        setLinkedAttributeList((prev) => prev.map((item) => (item.linkedId === data.linkedId ? {...item, akiLink: isLinked} : item)));
+        notify.success(`Attribute ${isLinked ? 'linked' : 'unlinked'} successfully.`);
+      } else {
+        notify.error('Failed to update link status.');
+      }
+    } catch {
+      notify.error('An error occurred while updating link status.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns: TableProps<LikedSkuModel>['columns'] = [
     {
       title: 'Attribute Name',
       dataIndex: 'akiAttributeName',
       ellipsis: true,
-      sorter:(a,b)=>a.akiAttributeName.localeCompare(b.akiAttributeName)
+      sorter: (a, b) => a.akiAttributeName.localeCompare(b.akiAttributeName),
     },
     {
       title: 'Attribute Value',
       dataIndex: 'akiAttributeValue',
       ellipsis: true,
-      sorter:(a,b)=>a.akiAttributeValue.localeCompare(b.akiAttributeValue)
+      sorter: (a, b) => a.akiAttributeValue.localeCompare(b.akiAttributeValue),
     },
     {
       title: 'Link',
       dataIndex: 'akiLink',
       width: 100,
       align: 'center',
-      render: (isLinked) => <Checkbox checked={isLinked} disabled={!skuData?.akiitemid} />,
+      render: (isLinked, record) => <Checkbox checked={isLinked} disabled={!skuData?.akiitemid} onChange={(e) => updateLinkStatus(record, e.target.checked)} />,
     },
   ];
 
@@ -109,7 +123,7 @@ const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {
       </Form>
 
       <Spin spinning={loading}>
-        <Table columns={columns} dataSource={filteredAttributeList} rowKey="key" size="small" bordered pagination={false} className="linked-attributes-table" showSorterTooltip={false}/>
+        <Table columns={columns} dataSource={filteredAttributeList} rowKey="key" size="small" bordered pagination={false} className="linked-attributes-table" showSorterTooltip={false} />
       </Spin>
     </div>
   );

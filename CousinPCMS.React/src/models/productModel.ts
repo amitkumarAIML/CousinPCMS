@@ -23,6 +23,8 @@ export interface Product {
     akiProductText: string;
     akiProductWebActive: boolean;
     category_Name: string;
+    iscommoditychange: boolean,
+    iscountrychange: boolean
     odataetag: string;
 }
 
@@ -49,6 +51,8 @@ export interface ProductRequest {
     akiProductIndexText5: string;
     categoryName: string;
     akiProductText: string;
+    iscommoditychange: boolean,
+    iscountrychange: boolean
 
 }
 

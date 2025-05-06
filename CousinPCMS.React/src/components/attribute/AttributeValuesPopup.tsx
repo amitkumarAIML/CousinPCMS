@@ -18,7 +18,7 @@ interface AttributeValueFormData {
   attributeName: string;
   alternateValues?: string;
   newAlternateValue?: string;
-  exitingAttributeValue?: string;
+  oldattributeValue?: string;
 }
 
 const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, onClose, valueData}) => {
@@ -32,12 +32,11 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       form.setFieldsValue({
         attributeName: valueData.attributeName,
         attributeValue: valueData.attributeValue,
-        alternateValues: valueData.alternateValues,
-        newAlternateValue: valueData.newAlternateValue,
-        exitingAttributeValue: valueData.attributeValue,
+        alternateValues: valueData.newAlternateValue,
+        oldattributeValue: valueData.attributeValue,
       });
-      if (valueData.alternateValues) {
-        const arr = valueData.alternateValues
+      if (valueData.newAlternateValue) {
+        const arr = valueData.newAlternateValue
           .split(/,|\n/)
           .map((v) => v.trim())
           .filter(Boolean);
@@ -64,8 +63,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
     const cleaned: Partial<AttributeValuesRequestModel> = {};
     cleaned.attributeName = attributeName || '';
     cleaned.attributeValue = rawData.attributeValue ?? '';
-    cleaned.alternateValues = alternateList.join(', ');
-    cleaned.newAlternateValue = rawData.newAlternateValue ?? '';
+    cleaned.newAlternateValue = alternateList.join(', ');
     return cleaned as AttributeValuesRequestModel;
   };
 
@@ -122,6 +120,8 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
       const values = await form.validateFields();
       const payload = cleanData(values);
       payload.attributeName = attributeName || '';
+      payload.oldattributeValue = valueData?.attributeValue || '';
+
       const response = await updateAttributeValues(payload);
 
       if (response.isSuccess) {
@@ -164,7 +164,7 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
           <Input readOnly disabled />
         </Form.Item>
         {valueData && valueData.attributeValue && (
-          <Form.Item label="Existing Attribute Value" name="exitingAttributeValue">
+          <Form.Item label="Existing Attribute Value" name="oldattributeValue">
             <Input disabled />
           </Form.Item>
         )}
@@ -178,23 +178,23 @@ const AttributeValuesPopup: React.FC<AttributesValuesProps> = ({attributeName, o
             suffix={<PlusOutlined style={{color: '#1890ff', cursor: 'pointer'}} onClick={handleAddAlternate} title="Add alternate value" />}
           />
         </Form.Item>
-        {alternateList.length > 0 && (
-          <Form.Item label="Alternate Values (Existing)" name="alternateValues" tooltip="List of existing alternate values, separated by commas or new lines (optional).">
-            {/* {alternateList.length > 0 && ( */}
-            <div className="mb-2 flex flex-wrap gap-2 px-1">
-              {alternateList.map((val) => (
+        <Form.Item label="Alternate Values (Existing)" name="alternateValues" tooltip="List of existing alternate values, separated by commas or new lines (optional).">
+          <div className="mb-2 flex flex-wrap gap-2 px-1">
+            {alternateList.length > 0 ? (
+              alternateList.map((val) => (
                 <span key={val} className="bg-gray-200 rounded px-2 py-1 flex items-center text-xs">
                   {val}
                   <span style={{marginLeft: 6, color: '#ff4d4f', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => handleRemoveAlternate(val)} title="Remove">
                     ×
                   </span>
                 </span>
-              ))}
-            </div>
-            {/* )} */}
-            <TextArea rows={3} placeholder="Existing alternate values..." value={alternateList.join(', ')} hidden />
-          </Form.Item>
-        )}
+              ))
+            ) : (
+              <span>No Data</span>
+            )}
+          </div>
+          <TextArea rows={3} placeholder="Existing alternate values..." value={alternateList.join(', ')} hidden />
+        </Form.Item>
         <div className="flex justify-end gap-x-3 mt-5">
           <Button size="small" onClick={handleCancel}>
             Close

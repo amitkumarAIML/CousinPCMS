@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, {useState, useEffect, useCallback, forwardRef, useImperativeHandle} from 'react';
 import IndexEntryFields from '../shared/IndexEntryFields';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
 import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
@@ -18,7 +18,7 @@ import {useLocation} from 'react-router';
 import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
-import { ApiResponse } from '../../models/generalModel';
+import {ApiResponse} from '../../models/generalModel';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -42,9 +42,10 @@ interface TableParams {
 const ProductDetails = forwardRef((props, ref) => {
   const [productForm] = Form.useForm<Product>();
   const [editAssociatedProductForm] = Form.useForm<Omit<AdditionalProductModel, 'additionalProductName'>>();
-  const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & { product: string }>();
+  const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}>();
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [categoryLoading, setCategoryLoading] = useState<boolean>(true);
   const [isAdditionalPLoading, setIsAdditionalPLoading] = useState<boolean>(false);
   const [loadingProductModal, setLoadingProductModal] = useState<boolean>(false);
 
@@ -68,7 +69,7 @@ const ProductDetails = forwardRef((props, ref) => {
   const [selectedProductIdModal, setSelectedProductIdModal] = useState<number | null>(null);
   const [productSearchValueModal, setProductSearchValueModal] = useState<string>('');
   const [productModalTableParams, setProductModalTableParams] = useState<TableParams>({
-    pagination: { current: 1, pageSize: 10, total: 0 },
+    pagination: {current: 1, pageSize: 10, total: 0},
   });
 
   const [attributslist, setAttributslist] = useState<AttributeSetModel>();
@@ -76,6 +77,11 @@ const ProductDetails = forwardRef((props, ref) => {
   const charLimit = ProductCharLimit;
 
   const [isSetAttributeVisable, setIsSetAttributeVisable] = useState<boolean>(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [changeType, setChangeType] = useState<'commodity' | 'origin' | null>(null);
+
+  const [commityCodeChange, setCommityCodeChange] = useState(false);
+  const [countryOriginChange, setCountryOriginChange] = useState(false);
 
   const akiProductName = Form.useWatch('akiProductName', productForm);
   const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
@@ -90,16 +96,20 @@ const ProductDetails = forwardRef((props, ref) => {
     akiProductShowPriceBreaks: false,
     akiProductWebActive: false,
     akiProductIsActive: false,
+    iscommoditychange: false,
+    iscountrychange: false,
   };
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const [countriesData, commoditiesData, layoutsData, categoriesData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList(), getAllCategory()]);
+        setCategoryLoading(true);
+        const [countriesData, commoditiesData, layoutsData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList()]);
         setCountries(countriesData || []);
         setCommodityCode(commoditiesData || []);
         setLayoutOptions(layoutsData || []);
+        const categoriesData = await getAllCategory();
         setCategoryList(categoriesData || []);
         setFilteredCategories(categoriesData || []);
       } catch (e) {
@@ -107,8 +117,10 @@ const ProductDetails = forwardRef((props, ref) => {
         notify.error('Could not load necessary form options.');
       } finally {
         setLoading(false);
+        setCategoryLoading(false);
       }
     };
+
     fetchInitialData();
 
     if (location.pathname === '/products/add' || (!getSessionItem('productId') && !getSessionItem('tempProductId'))) {
@@ -151,6 +163,8 @@ const ProductDetails = forwardRef((props, ref) => {
               akiProductShowPriceBreaks: !!product.akiProductShowPriceBreaks,
               akiProductWebActive: !!product.akiProductWebActive,
               akiProductIsActive: !!product.akiProductIsActive,
+              iscommoditychange: !!product.iscommoditychange,
+              iscountrychange: !!product.iscountrychange,
             });
           } else {
             // notify.error('Failed To Load Product Data');
@@ -169,6 +183,8 @@ const ProductDetails = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: () => productForm,
+    getCommityCodeChange: () => commityCodeChange,
+    getCountryOriginChange: () => countryOriginChange,
   }));
 
   const fetchAdditionalProduct = useCallback(
@@ -177,14 +193,9 @@ const ProductDetails = forwardRef((props, ref) => {
       try {
         const response = await getAdditionalProduct(productId);
         const data = response || [];
-        const sortedData = data.sort(
-          (a: AdditionalProductModel, b: AdditionalProductModel) =>
-            (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0)
-        );
-
-        setAdditionalProductList(sortedData);
-        const maxListOrder = sortedData.length > 0 ? Math.max(...sortedData.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
-        addAssociatedProductForm.setFieldsValue({ listorder: maxListOrder + 1 });
+        setAdditionalProductList(data);
+        const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
+        addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } catch {
         notify.error('Error fetching associated products list.');
         setAdditionalProductList([]);
@@ -215,9 +226,9 @@ const ProductDetails = forwardRef((props, ref) => {
         response.value &&
         typeof response.value === 'object' &&
         'products' in response.value &&
-        Array.isArray((response.value as unknown as { products: AssociatedProductSearchResult[] }).products)
+        Array.isArray((response.value as unknown as {products: AssociatedProductSearchResult[]}).products)
       ) {
-        const apiResp = response.value as unknown as { products: AssociatedProductSearchResult[]; totalRecords: number };
+        const apiResp = response.value as unknown as {products: AssociatedProductSearchResult[]; totalRecords: number};
         fetchedProducts = apiResp.products;
         totalRecords = apiResp.totalRecords || 0;
       }
@@ -238,7 +249,7 @@ const ProductDetails = forwardRef((props, ref) => {
     } catch {
       notify.error('Could not load products.');
       setProductListModal([]);
-      setProductModalTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, total: 0 } }));
+      setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, total: 0}}));
     } finally {
       setLoadingProductModal(false);
     }
@@ -292,7 +303,7 @@ const ProductDetails = forwardRef((props, ref) => {
     setSelectedProductIdModal(null);
     addAssociatedProductForm.resetFields(['product']);
     setProductSearchValueModal('');
-    setProductModalTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
     setIsVisibleAddProductModal(true);
   };
 
@@ -304,11 +315,11 @@ const ProductDetails = forwardRef((props, ref) => {
 
   const handleProductSelectInModal = (product: AssociatedProductSearchResult) => {
     setSelectedProductIdModal(product.akiProductID);
-    addAssociatedProductForm.setFieldsValue({ product: product.akiProductName });
-    notify.success(`Selected: ${product.akiProductName}`);
+    addAssociatedProductForm.setFieldsValue({product: product.akiProductName});
+    message.success(`Selected: ${product.akiProductName}`);
   };
 
-  const handleAddAssociatedProductSubmit = async (values: Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & { product: string }) => {
+  const handleAddAssociatedProductSubmit = async (values: Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}) => {
     if (!selectedProductIdModal) {
       notify.error('Please select a product from the grid below.');
       return;
@@ -317,6 +328,7 @@ const ProductDetails = forwardRef((props, ref) => {
       notify.error('Current product context is missing.');
       return;
     }
+
     const listOrder = Number(values.listorder);
 
     const isListOrderExist = additionalProductList.some((p) => Number(p.listOrder) === listOrder);
@@ -342,7 +354,7 @@ const ProductDetails = forwardRef((props, ref) => {
         const updatedList = await getAdditionalProduct(akiProductID);
         const data = updatedList || [];
         const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
-        addAssociatedProductForm.setFieldsValue({ listorder: maxListOrder + 1 });
+        addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } else {
         notify.error('Associated product not added');
       }
@@ -401,19 +413,19 @@ const ProductDetails = forwardRef((props, ref) => {
   const handleFileChange = (info: UploadChangeParam<UploadFile>) => {
     const file = info.file?.originFileObj;
     if (file) {
-      productForm.setFieldsValue({ akiProductImageURL: file.name });
+      productForm.setFieldsValue({akiProductImageURL: file.name});
       if (info.file.status === 'done') {
         message.success(`${info.file.name} file uploaded successfully`);
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
     } else if (info.file.status === 'removed') {
-      productForm.setFieldsValue({ akiProductImageURL: '' });
+      productForm.setFieldsValue({akiProductImageURL: ''});
     }
   };
 
   const handleProductModalTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>) => {
-    setProductModalTableParams({ pagination, filters });
+    setProductModalTableParams({pagination, filters});
   };
 
   const handleProductModalSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -421,15 +433,13 @@ const ProductDetails = forwardRef((props, ref) => {
   };
 
   const handleProductModalSearchEnter = () => {
-    setProductModalTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
 
   const clearProductModalSearch = () => {
     setProductSearchValueModal('');
-    setProductModalTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductModalTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
-
-  const handleDataChange = () => { };
 
   const categoryModalColumns: TableProps<CategorySelectItem>['columns'] = [
     {
@@ -438,19 +448,18 @@ const ProductDetails = forwardRef((props, ref) => {
       width: 50,
       render: (_, record) => <Checkbox checked={selectedCategoryInModal?.akiCategoryID === record.akiCategoryID} onChange={() => handleCategorySelectInModal(record)} />,
     },
-    { title: 'ID', dataIndex: 'akiCategoryID', width: 80 },
-    { title: 'Category Name', dataIndex: 'akiCategoryName' },
+    {title: 'ID', dataIndex: 'akiCategoryID', width: 80},
+    {title: 'Category Name', dataIndex: 'akiCategoryName'},
   ];
 
   const associatedProductColumns: TableProps<AdditionalProductModel>['columns'] = [
-    
     {
       title: 'Product Name',
       dataIndex: 'additionalProductName',
       sorter: (a, b) => a.additionalProductName.localeCompare(b.additionalProductName),
       render: (text, record) => (
         <span
-          style={{ cursor: 'pointer', color: '#1890ff' }}
+          style={{cursor: 'pointer', color: '#1890ff'}}
           onClick={() => {
             if (!editingId) {
               handleStartEdit(record);
@@ -469,21 +478,23 @@ const ProductDetails = forwardRef((props, ref) => {
       render: (text, record) => {
         if (editingId === record.additionalProduct) {
           return (
-            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
-              <Input type="number" className='py-0'
+            <Form.Item name="listOrder" style={{margin: 0}} rules={[{required: true, message: 'Required'}]}>
+              <Input
+                type="number"
+                className="py-0"
                 onPressEnter={handleUpdateAssociatedProduct}
                 onBlur={handleUpdateAssociatedProduct}
-               style={{ width: '80px' }}
-               suffix={
-                <CloseOutlined
-                  onMouseDown={(e) => {
-                    e.preventDefault(); // Prevent blur from firing
-                    handleCancelEdit();
-                  }}
-                  className='text-danger cursor-pointer'
-                />
-              }
-               />
+                style={{width: '80px'}}
+                suffix={
+                  <CloseOutlined
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevent blur from firing
+                      handleCancelEdit();
+                    }}
+                    className="text-danger cursor-pointer"
+                  />
+                }
+              />
             </Form.Item>
           );
         }
@@ -493,7 +504,7 @@ const ProductDetails = forwardRef((props, ref) => {
   ];
 
   const productSearchModalColumns: TableProps<AssociatedProductSearchResult>['columns'] = [
-    { title: 'Product Id', dataIndex: 'akiProductID', width: 70 },
+    {title: 'Product Id', dataIndex: 'akiProductID', width: 70},
     {
       title: 'Product Name',
       dataIndex: 'akiProductName',
@@ -527,11 +538,61 @@ const ProductDetails = forwardRef((props, ref) => {
     setIsSetAttributeVisable(true);
   };
 
+  const commodityFieldChanges = async () => {
+    const values = productForm.getFieldValue('akiProductCommodityCode');
+    const originalCode = getSessionItem('originalCommodityCode');
+    if (originalCode && values?.akiProductCommodityCode !== originalCode) {
+      setIsConfirmModalVisible(true);
+      setChangeType('commodity');
+      return true;
+    }
+    return false;
+  };
+
+  const originFieldChanges = async () => {
+    const values = productForm.getFieldValue('akiProductCountryOfOrigin');
+    const originalOrigin = getSessionItem('originalCountryOfOrigin');
+    if (originalOrigin && values?.akiProductCountryOfOrigin !== originalOrigin) {
+      setIsConfirmModalVisible(true);
+      setChangeType('origin');
+      return true;
+    }
+
+    return false;
+  };
+
+  const handleConfirmOk = async () => {
+    if (changeType === 'commodity') {
+      setCommityCodeChange(true);
+      notify.success('Commodity Code updated for all SKUs.');
+    } else if (changeType === 'origin') {
+      setCountryOriginChange(true);
+      notify.success('Country of Origin updated for all SKUs.');
+    }
+
+    setIsConfirmModalVisible(false);
+    setChangeType(null);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (changeType === 'commodity') {
+      setCommityCodeChange(false);
+    } else if (changeType === 'origin') {
+      setCountryOriginChange(false);
+    }
+    setIsConfirmModalVisible(false);
+    setChangeType(null);
+  };
+
+  const handleDataChange = () => {
+    notify.success('Attribute data updated successfully.');
+  };
+
   return (
     <Spin spinning={loading || productLoading}>
       <div className="px-4">
         <Form form={productForm} layout="vertical" initialValues={defaultValue}>
-          <Form.Item name="category_Name" style={{ display: 'none' }}>
+          <Form.Item name="category_Name" style={{display: 'none'}}>
             <Input type="hidden" />
           </Form.Item>
           <div className="grid grid-cols-12 gap-x-20">
@@ -540,16 +601,22 @@ const ProductDetails = forwardRef((props, ref) => {
                 <Form.Item label="Product Id" name="akiProductID">
                   <Input disabled />
                 </Form.Item>
-                <Form.Item label="Category Id" name="akiCategoryID" rules={[{ required: true, message: 'Category is required' }]}>
+                <Form.Item label="Category Id" name="akiCategoryID" rules={[{required: true, message: 'Category is required'}]}>
                   <Input
                     readOnly
                     placeholder="Click '...' to select"
-                    addonAfter={<Button size="small" icon={<EllipsisOutlined />} onClick={openCategoryModal} type="text" style={{ border: 'none', height: 'auto', padding: '0 5px' }} />}
+                    addonAfter={
+                      categoryLoading ? (
+                        <Spin size="small" />
+                      ) : (
+                        <Button size="small" icon={<EllipsisOutlined />} onClick={openCategoryModal} type="text" style={{border: 'none', height: 'auto', padding: '0 5px'}} />
+                      )
+                    }
                   />
                 </Form.Item>
               </div>
               <div className="relative">
-                <Form.Item label="Product Name" name="akiProductName" rules={[{ required: true, message: 'Product name is required' }]}>
+                <Form.Item label="Product Name" name="akiProductName" rules={[{required: true, message: 'Product name is required'}]}>
                   <Input maxLength={charLimit.akiProductName} className="pr-12" />
                 </Form.Item>
                 <span className="absolute -right-14 top-7 transform ">
@@ -585,7 +652,9 @@ const ProductDetails = forwardRef((props, ref) => {
                     showSearch
                     placeholder="Select code"
                     optionFilterProp="label"
-                    options={commodityCode.map((c) => ({ value: c.commodityCode, label: c.commodityCode, key: c.commodityCode }))}
+                    loading={loading}
+                    options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
+                    onChange={commodityFieldChanges}
                   />
                 </Form.Item>
                 <Form.Item label="Country of Origin" name="akiProductCountryOfOrigin">
@@ -595,18 +664,20 @@ const ProductDetails = forwardRef((props, ref) => {
                     placeholder="Select country"
                     optionFilterProp="label"
                     filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                    options={countries.map((c) => ({ value: c.code, label: c.name, key: c.code }))}
+                    options={countries.map((c) => ({value: c.code, label: c.name, key: c.code}))}
+                    onChange={originFieldChanges}
+                    loading={loading}
                   />
                 </Form.Item>
               </div>
               <div className="grid grid-cols-3 gap-x-4 items-center">
                 <div className="flex items-end gap-x-2  col-span-2">
-                  <Form.Item label="Image URL" name="akiProductImageURL" className="w-full" rules={[{ type: 'string', message: 'Please enter a valid URL' }]}>
+                  <Form.Item label="Image URL" name="akiProductImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL'}]}>
                     <Input maxLength={charLimit.akiProductImageURL} className="flex-grow pr-16" />
                   </Form.Item>
                   <Upload
-                    customRequest={({ file, onSuccess }) => setTimeout(() => onSuccess?.({}, file as File), 500)}
-                    headers={{ authorization: 'your-auth-token' }}
+                    customRequest={({file, onSuccess}) => setTimeout(() => onSuccess?.({}, file as File), 500)}
+                    headers={{authorization: 'your-auth-token'}}
                     onChange={handleFileChange}
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
@@ -660,7 +731,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   placeholder="Select layout"
                   optionFilterProp="label"
                   loading={loading}
-                  options={layoutOptions.map((opt) => ({ value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode }))}
+                  options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                 />
               </Form.Item>
               <Form.Item label="Alternative Title" name="akiProductAlternativeTitle">
@@ -696,7 +767,6 @@ const ProductDetails = forwardRef((props, ref) => {
                         pagination={false}
                         size="small"
                         bordered
-                        showSorterTooltip={false}
                       />
                     </Form>
                   </div>
@@ -720,24 +790,24 @@ const ProductDetails = forwardRef((props, ref) => {
           onChange={handleCategorySearch}
           suffix={
             categorySearchValue ? (
-              <CloseCircleFilled onClick={() => setCategorySearchValue('')} style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
+              <CloseCircleFilled onClick={() => setCategorySearchValue('')} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} />
             ) : (
-              <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+              <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />
             )
           }
           className="mb-4"
         />
         <Spin spinning={loadingProductModal}>
-          <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered pagination={{ pageSize: 10 }} />
+          <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered pagination={{pageSize: 10}} />
         </Spin>
       </Modal>
       <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={1000} destroyOnClose>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
           <div className="grid grid-cols-2 gap-x-4">
-            <Form.Item label="List Order" name="listorder" rules={[{ required: true, message: 'Required' }]}>
+            <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'Required'}]}>
               <Input type="number" />
             </Form.Item>
-            <Form.Item label="Product Name" name="product" rules={[{ required: true, message: 'Select product below' }]}>
+            <Form.Item label="Product Name" name="product" rules={[{required: true, message: 'Select product below'}]}>
               <Input disabled placeholder="Select product from table..." />
             </Form.Item>
           </div>
@@ -749,12 +819,12 @@ const ProductDetails = forwardRef((props, ref) => {
               onPressEnter={handleProductModalSearchEnter}
               suffix={
                 productSearchValueModal ? (
-                  <CloseCircleFilled onClick={clearProductModalSearch} style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} />
+                  <CloseCircleFilled onClick={clearProductModalSearch} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} />
                 ) : (
-                  <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                  <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />
                 )
               }
-              style={{ flexGrow: 1, maxWidth: '300px' }}
+              style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
               <Button size="small" onClick={handleAddModalCancel}>
@@ -781,6 +851,28 @@ const ProductDetails = forwardRef((props, ref) => {
       </Modal>
       <Modal title="Attribute Set Form" open={isSetAttributeVisable} onCancel={() => setIsSetAttributeVisable(false)} footer={null} width={1100} destroyOnClose>
         {attributslist && <CategoryAttribute categoryData={attributslist} onDataChange={handleDataChange} />}
+      </Modal>
+      <Modal
+        title={changeType === 'commodity' ? 'Apply Commodity Code to all SKUs?' : 'Apply Country of Origin to all SKUs?'}
+        open={isConfirmModalVisible}
+        onCancel={() => {
+          setIsConfirmModalVisible(false);
+          setChangeType(null);
+        }}
+        footer={[
+          <Button key="cancel" onClick={handleConfirmCancel}>
+            No
+          </Button>,
+          <Button key="ok" type="primary" onClick={handleConfirmOk}>
+            Yes
+          </Button>,
+        ]}
+      >
+        <p>
+          {changeType === 'commodity'
+            ? 'Do you want to apply the new Commodity Code to all SKUs under this product?'
+            : 'Do you want to apply the new Country of Origin to all SKUs under this product?'}
+        </p>
       </Modal>
     </Spin>
   );

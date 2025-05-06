@@ -1,10 +1,10 @@
 import {useEffect, useState, useRef} from 'react';
 import {useNavigate} from 'react-router';
-import {Tabs, Button, Modal} from 'antd';
+import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
 import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
-import type {Product} from '../models/productModel';
+import type {Product, ProductRequest} from '../models/productModel';
 import {useNotification} from '../contexts.ts/useNotification';
 import {addProduct, updateProduct} from '../services/ProductService';
 
@@ -14,13 +14,12 @@ const Product = () => {
   const notify = useNotification();
   const [isEdit, setIsEdit] = useState(false);
   const [checkIdValue, setCheckIdValue] = useState<boolean>(false);
-  // const [originalCommodityCode, setOriginalCommodityCode] = useState<string | null>(null);
 
-  const productFormRef = useRef<{getFormData: () => {validateFields: () => Promise<Product>}} | null>(null);
-
-  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
-  const [pendingSaveData, setPendingSaveData] = useState<any>(null);
-  const [changeType, setChangeType] = useState<'commodity' | 'origin' | null>(null);
+  const productFormRef = useRef<{
+    getFormData: () => {validateFields: () => Promise<Product>};
+    getCommityCodeChange: () => boolean;
+    getCountryOriginChange: () => boolean;
+  } | null>(null);
 
   useEffect(() => {
     const hasRealIds = getSessionItem('CategoryId');
@@ -40,24 +39,7 @@ const Product = () => {
     navigate('/home');
   };
 
-  const checkFieldChanges = async () => {
-    const values = await productFormRef.current?.getFormData().validateFields();
-    const originalCode = getSessionItem('originalCommodityCode');
-    const originalOrigin = getSessionItem('originalCountryOfOrigin');
-
-    if (originalCode && values?.akiProductCommodityCode !== originalCode) {
-      setChangeType('commodity');
-      return true;
-    }
-    if (originalOrigin && values?.akiProductCountryOfOrigin !== originalOrigin) {
-      setChangeType('origin');
-      return true;
-    }
-
-    return false;
-  };
-
-  const saveProduct = async (req: any) => {
+  const saveProduct = async (req: ProductRequest) => {
     const action = isEdit ? updateProduct : addProduct;
 
     try {
@@ -69,40 +51,11 @@ const Product = () => {
         notify.error(`Product Details Failed to ${isEdit ? 'Update' : 'Add'}`);
       }
       sessionStorage.removeItem('originalCommodityCode');
+      sessionStorage.removeItem('originalCountryOfOrigin');
     } catch (err) {
       console.error('Error saving product:', err);
       notify.error('Failed to save product details.');
     }
-  };
-
-  const handleConfirmOk = async () => {
-    const {req} = pendingSaveData;
-
-    if (changeType === 'commodity') {
-      req.commityCodeChange = true;
-      await saveProduct(req);
-      notify.success('Commodity Code updated for all SKUs.');
-    } else if (changeType === 'origin') {
-      req.countryOriginChange = true;
-      await saveProduct(req);
-      notify.success('Country of Origin updated for all SKUs.');
-    }
-
-    setIsConfirmModalVisible(false);
-    setPendingSaveData(null);
-    setChangeType(null);
-    navigate('/home');
-  };
-
-  const handleConfirmCancel = async () => {
-    const {req} = pendingSaveData;
-    await saveProduct(req);
-    notify.success('Product Details Saved');
-
-    setIsConfirmModalVisible(false);
-    setPendingSaveData(null);
-    setChangeType(null);
-    navigate('/home');
   };
 
   const handleSave = async () => {
@@ -115,21 +68,13 @@ const Product = () => {
         if (productData.aki_Layout_Template) {
           productData.akiProductPrintLayoutTemp = true;
         }
-
         const req = {
           ...productData,
           categoryName: productData.category_Name,
-          commityCodeChange: false,
-          countryOriginChange: false,
+          iscommoditychange: productFormRef.current.getCommityCodeChange(),
+          iscountrychange: productFormRef.current.getCountryOriginChange(),
         };
         delete req.category_Name;
-
-        const hasImportantChanges = await checkFieldChanges();
-        if (hasImportantChanges) {
-          setPendingSaveData({req, productData});
-          setIsConfirmModalVisible(true);
-          return;
-        }
 
         await saveProduct(req);
       } catch (errorInfo) {
@@ -139,60 +84,6 @@ const Product = () => {
       console.error('Product form reference is null.');
     }
   };
-
-  // Save handler to be called from ProductDetails
-  // const handleSave = async () => {
-  //   if (productFormRef.current) {
-  //     const formData = productFormRef.current.getFormData();
-  //     try {
-  //       const values = await formData.validateFields();
-  //       const productData = cleanEmptyNullToString(values);
-  //       if (productData.aki_Layout_Template) {
-  //         productData.akiProductPrintLayoutTemp = true;
-  //       }
-  //       const req = {
-  //         ...productData,
-  //         categoryName: productData.category_Name,
-  //       };
-  //       delete req.category_Name;
-
-  //       // No change, normal save
-  //       if (isEdit) {
-  //         updateProduct(req)
-  //           .then((response: {isSuccess: boolean}) => {
-  //             if (response.isSuccess) {
-  //               notify.success('Product Details Updated Successfully');
-  //               navigate('/home');
-  //             } else {
-  //               notify.error('Product Details Failed to Update');
-  //             }
-  //           })
-  //           .catch((err: Error) => {
-  //             console.error('Error updating product:', err);
-  //             notify.error('Failed to update product details.');
-  //           });
-  //       } else {
-  //         addProduct(req)
-  //           .then((response: {isSuccess: boolean}) => {
-  //             if (response.isSuccess) {
-  //               notify.success('Product Details Added Successfully');
-  //               navigate('/home');
-  //             } else {
-  //               notify.error('Product Details Failed to Add');
-  //             }
-  //           })
-  //           .catch((err: Error) => {
-  //             console.error('Error updating product:', err);
-  //             notify.error('Failed to update product details.');
-  //           });
-  //       }
-  //     } catch (errorInfo) {
-  //       notify.error('Please fill in all required fields correctly.' + errorInfo);
-  //     }
-  //   } else {
-  //     console.error('Product form reference is null.');
-  //   }
-  // };
 
   const tabBarExtraContent = (
     <div className="flex gap-x-3 mb-2 mr-4">
@@ -231,29 +122,6 @@ const Product = () => {
         />
       </div>
       {/* Confirm Modal */}
-      <Modal
-        title={changeType === 'commodity' ? 'Apply Commodity Code to all SKUs?' : 'Apply Country of Origin to all SKUs?'}
-        open={isConfirmModalVisible}
-        onCancel={() => {
-          setIsConfirmModalVisible(false);
-          setPendingSaveData(null);
-          setChangeType(null);
-        }}
-        footer={[
-          <Button key="cancel" onClick={handleConfirmCancel}>
-            No
-          </Button>,
-          <Button key="ok" type="primary" onClick={handleConfirmOk}>
-            Yes
-          </Button>,
-        ]}
-      >
-        <p>
-          {changeType === 'commodity'
-            ? 'Do you want to apply the new Commodity Code to all SKUs under this product?'
-            : 'Do you want to apply the new Country of Origin to all SKUs under this product?'}
-        </p>
-      </Modal>
     </div>
   );
 };

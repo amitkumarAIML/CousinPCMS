@@ -4,8 +4,8 @@ import {ItemModelResponse} from '../models/itemModel';
 import {CompetitorItem, CompetitorItemResponse} from '../models/competitorModel';
 import {ApiResponse} from '../models/generalModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
-import {AdditionalImageDeleteRequestModel, AdditionalImagesModel} from '../models/additionalImagesModel';
-import {LikedSkuModel, SKuList, SkuRequestModel} from '../models/skusModel';
+import {AdditionalImageDeleteRequestModel, AdditionalImagesModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
+import {LikedSkuModel, RelatedSkuItem, RelatedSkuModel, SKuList, SkuRequestModel, UpdateSKULinkedAttribute} from '../models/skusModel';
 import {AttributeModel} from '../models/attributeModel';
 import {AttributeValueByName, AttributeValueModel} from '../models/attributesModel';
 
@@ -50,8 +50,8 @@ export const getPricingFormulasDetails = async (): Promise<ItemModelResponse> =>
   return response;
 };
 
-export const getRelatedSkuItem = async (itemNumber: string): Promise<ItemModelResponse> => {
-  const response = await http.get<ItemModelResponse>('Skus/GetRelatedSkusByItemNumber', {params: {itemNumber}});
+export const getRelatedSkuItem = async (itemNumber: string): Promise<ApiResponse<RelatedSkuItem[]>> => {
+  const response = await http.get<ApiResponse<RelatedSkuItem[]>>('Skus/GetRelatedSkusByItemNumber', {params: {itemNumber}});
   return response;
 };
 
@@ -85,6 +85,11 @@ export const saveSkuImagesUrl = async (SkuData: AdditionalImagesModel): Promise<
   return response;
 };
 
+export const updateSkuAdditionalImage = async (SkuData: UpdateAdditionalImagesModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Skus/UpdateSkuAdditionalImage', SkuData);
+  return response;
+};
+
 export const saveSkuLinkUrl = async (SkuData: LinkRequestModel): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Skus/AddSkuLinkUrls', SkuData);
   return response;
@@ -106,6 +111,22 @@ export const getAttributeValuesByListofNames = async (skusData: AttributeValueBy
 };
 
 export const addUpdateSKULinkedAttribute = async (skusData: LikedSkuModel): Promise<ApiResponse<LikedSkuModel>> => {
-  const response = await http.post<ApiResponse<LikedSkuModel>>('Skus/AddUpdateSKULinkedAttribute', skusData);
+  const response = await http.post<ApiResponse<LikedSkuModel>>('Skus/AddSKULinkedAttribute', skusData);
   return response;
 };
+
+export const updateRelatedSkuItemUnavailable = async (skusData: RelatedSkuModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Skus/UpdateRelatedSKUUnavailable', skusData);
+  return response;
+};
+
+export const updateRelatedSkuItemObsolete = async (skusData: RelatedSkuModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Skus/UpdateRelatedSKUObsolete', skusData);
+  return response;
+};
+
+export const updateSKULinkedAttribute = async (skusData: UpdateSKULinkedAttribute): Promise<ApiResponse<LikedSkuModel>> => {
+  const response = await http.post<ApiResponse<LikedSkuModel>>('Skus/UpdateSKULinkedAttribute', skusData);
+  return response;
+};
+

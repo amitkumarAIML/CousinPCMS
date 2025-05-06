@@ -231,7 +231,14 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           if (path) setExpandedKeys((prev) => [...prev, ...path.slice(0, -1)]);
         }
       } else if (node.dataType === 'department') {
-        sessionStorage.clear();
+        sessionStorage.removeItem('tempCategoryId');
+        sessionStorage.removeItem('CategoryId');
+        sessionStorage.removeItem('tempDepartmentId');
+        sessionStorage.removeItem('departmentId');
+        sessionStorage.removeItem('productId');
+        sessionStorage.removeItem('tempProductId');
+        sessionStorage.removeItem('itemNumber');
+        sessionStorage.removeItem('tempItemNumber');
         setSessionItem('departmentId', String(node.id));
         onCategorySelected(undefined);
       }
@@ -246,8 +253,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       try {
         const response = await getDepartments();
         if (response?.isSuccess && Array.isArray(response.value)) {
-          const departments = response.value.filter((res: Department) => res.akiDepartmentIsActive)
-          .sort((a,b)=>(Number(a.akiDepartmentListOrder)||0)-(Number(b.akiDepartmentListOrder)||0));
+          const departments = response.value.filter((res: Department) => res.akiDepartmentIsActive).sort((a, b) => (Number(a.akiDepartmentListOrder) || 0) - (Number(b.akiDepartmentListOrder) || 0));
           const deptNodes: CustomTreeDataNode[] = departments.map((dept: Department) => ({
             key: `dept-${dept.akiDepartmentID}`,
             title: (
@@ -300,6 +306,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           isLeaf: children.length === 0,
         };
       }
+
       if (node.children) {
         return {...node, children: updateTreeData(node.children, key, children)};
       }
@@ -319,17 +326,17 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
         .then((response) => {
           let categoryNodes: CustomTreeDataNode[] = [];
           if (response?.isSuccess && Array.isArray(response.value)) {
-            const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive)
-           .sort((a,b)=>(Number(a.akiCategoryListOrder)||0)-(Number(b.akiCategoryListOrder)||0));
+            const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive).sort((a, b) => (Number(a.akiCategoryListOrder) || 0) - (Number(b.akiCategoryListOrder) || 0));
             categoryNodes = buildCategoryTree(categories, selectedKeys);
           } else {
             message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
           }
+
           setTreeData((current) => updateTreeData(current, key, categoryNodes));
-          if (!getSessionItem('CategoryId') && categoryNodes.length > 0) {
-            setSessionItem('tempCategoryId', String(categoryNodes[3].id));
-            setSelectedKeys((prev) => [...prev, categoryNodes[3].key]);
-            onCategorySelected(categoryNodes[3].id as number);
+          if (getSessionItem('tempDepartmentId') && categoryNodes.length > 0) {
+            setSessionItem('tempCategoryId', String(categoryNodes[0].id));
+            setSelectedKeys((prev) => [...prev, categoryNodes[0].key]);
+            onCategorySelected(categoryNodes[0].id as number);
           } else {
             sessionStorage.removeItem('tempCategoryId');
           }

@@ -9,10 +9,10 @@ import {ApiResponse} from '../../models/generalModel';
 
 interface CategoryAttributeProps {
   categoryData: any;
-  onDataChange: () => void;
+  onDataChange?: () => void;
 }
 
-const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDataChange}) => {
+const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData}) => {
   const [form] = Form.useForm();
   const [attributeList, setAttributeList] = useState<AttributeModel[]>([]);
   const [lstAllAttributeSets, setLstAllAttributeSets] = useState<AttributeSetModel[]>([]);
@@ -32,7 +32,7 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
       setIsAttributeloading(true);
       getAllAttributes().then((response: AttributeModelResponse) => {
         if (response.isSuccess) {
-          let filtered = response.value;          
+          let filtered = response.value;
           const sets = attributeSets !== undefined ? attributeSets : lstAllAttributeSets;
           if (sets.length > 0) {
             const existingIds = sets.map((a) => a.attributeName);
@@ -58,7 +58,6 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
             const sortedList = response.value.sort((a, b) => (a.listPosition ?? 0) - (b.listPosition ?? 0));
             setLstAllAttributeSets(sortedList);
             fetchAllAttributes(sortedList);
-            
           } else {
             // notify.error('Failed to load attribute sets');
             setLstAllAttributeSets([]);
@@ -207,14 +206,10 @@ const CategoryAttribute: React.FC<CategoryAttributeProps> = ({categoryData, onDa
   };
 
   const columns: TableProps<AttributeSetModel>['columns'] = [
-    {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200,
-      sorter:(a,b)=>a.attributeName.localeCompare(b.attributeName)
-    },
+    {title: 'Linked Attributes', dataIndex: 'attributeName', width: 200, sorter: (a, b) => a.attributeName.localeCompare(b.attributeName)},
     {title: 'Required', dataIndex: 'attributeRequired', width: 40, render: (val: boolean) => <Checkbox checked={val} disabled />},
     {title: 'Not Important', dataIndex: 'notImportant', width: 50, render: (val: boolean) => <Checkbox checked={val} disabled />},
-    {title: 'List Order', dataIndex: 'listPosition', width: 50,
-      sorter:(a,b)=>(Number(a.listPosition)||0)-(Number(b.listPosition)|| 0)
-    },
+    {title: 'List Order', dataIndex: 'listPosition', width: 50, sorter: (a, b) => (Number(a.listPosition) || 0) - (Number(b.listPosition) || 0)},
     {
       title: 'Action',
       dataIndex: 'action',

@@ -30,7 +30,7 @@ export interface AttributeValuesRequestModel {
     attributeValue: string;
     attributeName: string;
     newAlternateValue: string;
-    alternateValues: string;
+    oldattributeValue: string;
     attributevalueIsActive: boolean;
 }
 

@@ -6,10 +6,10 @@ import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import type {ApiResponse} from '../models/generalModel';
-import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel} from '../models/additionalImagesModel';
-import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl} from '../services/ProductService';
-import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl} from '../services/CategoryService';
-import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl} from '../services/SkusService';
+import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
+import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl, updateProductAdditionalImage} from '../services/ProductService';
+import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl, updateCategoryAdditionalImage} from '../services/CategoryService';
+import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl, updateSkuAdditionalImage} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
 import {getSessionItem} from '../services/DataService';
 
@@ -32,7 +32,6 @@ const AdditionalImages = () => {
 
   const fetchImages = useCallback(
     async (id: string | number, type: 'product' | 'category' | 'sku') => {
-      setLoadingData(true);
       setFileList([]);
       setDisplayText('');
       try {
@@ -73,7 +72,8 @@ const AdditionalImages = () => {
     [notify]
   );
 
-  useEffect(() => {
+  // Function to handle context and image fetching logic
+  const handleContextAndFetchImages = useCallback(() => {
     const path = location.pathname.toLowerCase();
     let id: string | number | undefined;
     let type: 'product' | 'category' | 'sku' | null = null;
@@ -89,6 +89,7 @@ const AdditionalImages = () => {
       id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber') || undefined;
       type = 'sku';
     }
+    setLoadingData(true);
 
     setContextId(id);
     setContextType(type);
@@ -102,6 +103,10 @@ const AdditionalImages = () => {
       setDisplayText('Context ID not found.');
     }
   }, [location.pathname, fetchImages]);
+
+  useEffect(() => {
+    handleContextAndFetchImages();
+  }, [handleContextAndFetchImages]);
 
   const goBack = () => {
     window.history.back();
@@ -140,9 +145,13 @@ const AdditionalImages = () => {
       return;
     }
     setLoading(true);
+    // Find the max listOrder in the current list and add 1
+    const maxListOrder = fileList.length > 0 ? Math.max(...fileList.map((img) => img.listorder || 0)) : 0;
+    const nextListOrder = maxListOrder + 1;
     const requestData: Partial<AdditionalImagesModel> = {
       imageURL: imageUrl,
       imagename: imageUrl.replace(/\.[^/.]+$/, ''),
+      listorder: nextListOrder,
     };
     try {
       let response: ApiResponse<string>;
@@ -185,7 +194,7 @@ const AdditionalImages = () => {
     }
   };
 
-  const handleDeleteImage = async (imageToDelete: AdditionalImagesModel, index: number) => {
+  const handleDeleteImage = async (imageToDelete: AdditionalImagesModel) => {
     if (!contextId || !contextType) {
       notify.error('Context (Product/Category/SKU) is missing.');
       return;
@@ -212,7 +221,7 @@ const AdditionalImages = () => {
       }
       if (response.isSuccess) {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} image successfully deleted.`);
-        setFileList((prevList) => prevList.filter((_, i) => i !== index));
+        await handleContextAndFetchImages();
       } else {
         notify.error('Failed to delete image.');
       }
@@ -229,18 +238,62 @@ const AdditionalImages = () => {
   };
 
   // Function to handle drag end and persist order
-  const handleImageDragEnd = ({active, over}: {active: any; over: any}) => {
+  const handleImageDragEnd = async ({active, over}: {active: any; over: any}) => {
     if (active.id !== over?.id) {
       const oldIndex = fileList.findIndex((img) => img.imageURL === active.id);
       const newIndex = fileList.findIndex((img) => img.imageURL === over?.id);
       const newOrder = arrayMove(fileList, oldIndex, newIndex);
-      setFileList(newOrder);
+
       // Call API to persist new order
-      if ((contextType === 'product' || contextType === 'category') && contextId) {
-        // updateProductImagesOrder(contextId, newOrder.map((img) => img.imageURL)
-        // ).catch(() => {
-        //   notify.error('Failed to update image order on server.');
-        // });
+      setLoadingData(true);
+      try {
+        const image = fileList.find((img) => img.imageURL === active.id);
+        if (!image) {
+          notify.error('Image not found.');
+          setLoadingData(false);
+          return;
+        }
+
+        const oldListOrder = image.listorder || 0;
+        const newListOrder = fileList[newIndex]?.listorder || 0;
+
+        const updateRequest: UpdateAdditionalImagesModel = {
+          imageURL: image.imageURL,
+          imagename: image.imagename || image.imageURL.replace(/\.[^/.]+$/, ''),
+          // listorder: oldListOrder,
+          newListOrder: newListOrder,
+          oldListOrder: oldListOrder,
+          ...(contextType === 'product' && {productID: image.productID, catimageid: image.catimageid}),
+          ...(contextType === 'category' && {categoryID: image.categoryID, productImageID: image.productImageID}),
+          ...(contextType === 'sku' && {skuItemID: image.skuItemID, skuImageID: image.skuImageID}),
+        };
+
+        let response: ApiResponse<string>;
+        switch (contextType) {
+          case 'product':
+            response = await updateProductAdditionalImage(updateRequest);
+            break;
+          case 'category':
+            response = await updateCategoryAdditionalImage(updateRequest);
+            break;
+          case 'sku':
+            response = await updateSkuAdditionalImage(updateRequest);
+            break;
+          default:
+            throw new Error('Invalid context type for updating image order');
+        }
+
+        if (response.isSuccess) {
+          setFileList(newOrder);
+          notify.success('Image order updated successfully.');
+        } else {
+          notify.error('Failed to update image order.');
+        }
+      } catch (error) {
+        console.error('Error updating image order:', error);
+        notify.error('Failed to update image order.');
+      } finally {
+        setLoadingData(false);
       }
     }
   };
@@ -261,7 +314,19 @@ const AdditionalImages = () => {
         <List.Item
           className="flex justify-between items-center px-2 py-1"
           actions={[
-            <Popconfirm title="Delete this image?" onConfirm={() => onDelete(image, -1)} okText="Yes" cancelText="No" placement="left" icon={<QuestionCircleOutlined style={{color: 'red'}} />}>
+            <Popconfirm
+              title="Delete this image?"
+              onConfirm={() =>
+                onDelete(
+                  image,
+                  fileList.findIndex((img) => img.imageURL === image.imageURL)
+                )
+              }
+              okText="Yes"
+              cancelText="No"
+              placement="left"
+              icon={<QuestionCircleOutlined style={{color: 'red'}} />}
+            >
               <Button type="text" danger size="small" icon={<DeleteOutlined />} />
             </Popconfirm>,
           ]}
@@ -296,11 +361,13 @@ const AdditionalImages = () => {
               <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
                 {fileList.length > 0 ? (
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
-                    <SortableContext items={fileList.map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
+                    <SortableContext items={[...fileList].sort((a, b) => (a.listorder || 0) - (b.listorder || 0)).map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
                       <ul style={{margin: 0, padding: 0}}>
-                        {fileList.map((image) => (
-                          <SortableImageItem key={image.imageURL} id={image.imageURL} image={image} onDelete={handleDeleteImage} />
-                        ))}
+                        {[...fileList]
+                          .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
+                          .map((image) => (
+                            <SortableImageItem key={image.imageURL} id={image.imageURL} image={image} onDelete={handleDeleteImage} />
+                          ))}
                       </ul>
                     </SortableContext>
                   </DndContext>

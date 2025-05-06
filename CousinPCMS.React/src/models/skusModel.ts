@@ -214,6 +214,34 @@ export interface LikedSkuModel {
   akiItemNo: string;
   akiLink: boolean;
   odataetag?: string;
+  linkedId?: number,
+}
+
+
+export interface RelatedSkuModel {
+  akiitemid: string;
+  akiObsolete?: boolean;
+  akiCurrentlyPartRestricted?: boolean
+}
+
+export interface UpdateSKULinkedAttribute {
+  linkedid: number,
+  akiItemNo: string,
+  akiAttributeName: string,
+  akiAttributeValue: string,
+  akiLink: boolean
+}
+
+export interface RelatedSkuItem {
+  relatedItemNo: string;
+  relationType: string;
+  relatedSKUName: string;
+  itemManufactureRef: string;
+  itemNo: string;
+  itemObsolte: boolean;
+  itemIsUnavailable: boolean;
+  oDataEtag?: string;
+  isrelatedSKU?: boolean;
 }
 
 

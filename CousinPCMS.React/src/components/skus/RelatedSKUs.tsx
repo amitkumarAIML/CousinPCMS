@@ -3,29 +3,12 @@ import {Input, Table, Checkbox, Spin, Form} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 
-import {getRelatedSkuItem} from '../../services/SkusService';
+import {getRelatedSkuItem, updateRelatedSkuItemObsolete, updateRelatedSkuItemUnavailable} from '../../services/SkusService';
 import {useNotification} from '../../contexts.ts/useNotification';
-
-interface MainSkuData {
-  skuName: string;
-  akiSKUID: number | string;
-  akiitemid: string;
-}
-
-interface RelatedSkuItem {
-  relatedItemNo: string;
-  relationType: string;
-  relatedSKUName: string;
-  itemManufactureRef: string;
-  itemNo: string;
-  itemObsolte: boolean;
-  itemIsUnavailable: boolean;
-
-  key?: string | number;
-}
+import {RelatedSkuItem, RelatedSkuModel, SKuList} from '../../models/skusModel';
 
 interface RelatedSkuProps {
-  skuData: MainSkuData | null;
+  skuData: SKuList;
 }
 
 const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
@@ -63,13 +46,13 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
     try {
       const response = await getRelatedSkuItem(itemNumber);
       if (response.isSuccess && response.value) {
-        const dataWithKeys = (response.value as unknown as RelatedSkuItem[]).map((item: RelatedSkuItem) => ({
-          ...item,
-          key: item.itemNo || item.relatedItemNo,
-        }));
-        setRelatedSkusList(dataWithKeys);
+        // const dataWithKeys = (response.value as unknown as RelatedSkuItem[]).map((item: RelatedSkuItem) => ({
+        //   ...item,
+        //   key: item.relatedItemNo,
+        // }));
+        setRelatedSkusList(response.value);
       } else {
-        notify.info(response.exceptionInformation || 'No related SKUs found.');
+        notify.info(response.exceptionInformation?.toString() || 'No related SKUs found.');
         setRelatedSkusList([]);
       }
     } catch {
@@ -106,35 +89,54 @@ const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {
     setSearchValue('');
   };
 
+  const handleCheckboxChange = async (relatedItemNo: string, field: 'itemObsolte' | 'itemIsUnavailable', checked: boolean) => {
+    setLoading(true);
+    try {
+      let response;
+      const req: RelatedSkuModel = {
+        akiitemid: relatedItemNo,
+      };
+      if (field === 'itemIsUnavailable') {
+        response = await updateRelatedSkuItemUnavailable({...req, akiCurrentlyPartRestricted: checked});
+      } else if (field === 'itemObsolte') {
+        response = await updateRelatedSkuItemObsolete({...req, akiObsolete: checked});
+      } else {
+        throw new Error('Invalid field type');
+      }
+      if (response.isSuccess) {
+        notify.success('Updated successfully.');
+        setRelatedSkusList((prevList) => prevList.map((item) => (item.relatedItemNo === relatedItemNo ? {...item, [field]: checked} : item)));
+      } else {
+        // notify.error(response.exceptionInformation || 'Failed to update.');
+      }
+    } catch {
+      notify.error('Something went wrong while updating.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns: TableProps<RelatedSkuItem>['columns'] = [
-    {title: 'Related', dataIndex: 'relatedItemNo', width: 200,
-      sorter:(a,b)=>(Number(a.relatedItemNo)|| 0)-(Number(b.relatedItemNo) ||0)
-    },
-    {title: 'Relation Type', dataIndex: 'relationType', ellipsis: true,
-      sorter:(a,b)=>a.relationType.localeCompare(b.relationType)
-    },
-    {title: 'RelatedSku Name', dataIndex: 'relatedSKUName', ellipsis: true,
-      sorter:(a,b)=>a.relatedSKUName.localeCompare(b.relatedSKUName)
-    },
-    {title: 'MFR Ref No', dataIndex: 'itemManufactureRef', ellipsis: true,
-      sorter:(a,b)=>a.itemManufactureRef.localeCompare(b.itemManufactureRef)
-    },
-    {title: 'Item No', dataIndex: 'itemNo',
-      sorter:(a,b)=>(Number(a.itemNo)|| 0)-(Number(b.itemNo) ||0)
-    },
+    {title: 'Related', dataIndex: 'relatedItemNo', width: 200, sorter: (a, b) => (Number(a.relatedItemNo) || 0) - (Number(b.relatedItemNo) || 0)},
+    {title: 'Relation Type', dataIndex: 'relationType', ellipsis: true, sorter: (a, b) => a.relationType.localeCompare(b.relationType)},
+    {title: 'RelatedSku Name', dataIndex: 'relatedSKUName', ellipsis: true, sorter: (a, b) => a.relatedSKUName.localeCompare(b.relatedSKUName)},
+    {title: 'MFR Ref No', dataIndex: 'itemManufactureRef', ellipsis: true, sorter: (a, b) => a.itemManufactureRef.localeCompare(b.itemManufactureRef)},
+    {title: 'Item No', dataIndex: 'itemNo', sorter: (a, b) => (Number(a.itemNo) || 0) - (Number(b.itemNo) || 0)},
     {
       title: 'Obsolete',
       dataIndex: 'itemObsolte',
       width: 90,
       align: 'center',
-      render: (isObsolete) => <Checkbox checked={isObsolete} disabled={!skuData?.akiitemid} />,
+      render: (isObsolete, record) => <Checkbox checked={isObsolete} disabled={!skuData?.akiitemid} onChange={(e) => handleCheckboxChange(record.relatedItemNo, 'itemObsolte', e.target.checked)} />,
     },
     {
       title: 'Unavailable',
       dataIndex: 'itemIsUnavailable',
       width: 100,
       align: 'center',
-      render: (isUnavailable) => <Checkbox checked={isUnavailable} disabled={!skuData?.akiitemid} />,
+      render: (isUnavailable, record) => (
+        <Checkbox checked={isUnavailable} disabled={!skuData?.akiitemid} onChange={(e) => handleCheckboxChange(record.relatedItemNo, 'itemIsUnavailable', e.target.checked)} />
+      ),
     },
   ];
 
