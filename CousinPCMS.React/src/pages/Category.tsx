@@ -2,7 +2,7 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useLocation, useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
-import {CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import {CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
 import IndexEntryFields from '../components/shared/IndexEntryFields';
 import type { UploadChangeParam } from 'antd/es/upload';
 import type { UploadFile } from 'antd/es/upload/interface';
@@ -437,24 +437,7 @@ const Category = () => {
   };
 
   const associatedProductColumns: TableProps<AdditionalCategoryModel>['columns'] = [
-    {
-      title: 'List Order',
-      dataIndex: 'listOrder',
-      sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
-      width: 100,
-      render: (text, record) => {
-        if (editingId === record.product) {
-          return (
-            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
-              <Input type="number" className='py-0'
-              onPressEnter={handleUpdateAssociatedProduct}
-              onBlur={handleUpdateAssociatedProduct} style={{ width: '80px' }} />
-            </Form.Item>
-          );
-        }
-        return text;
-      },
-    },
+   
     {
       title: 'Product Name',
       dataIndex: 'productName',
@@ -472,9 +455,36 @@ const Category = () => {
         </span>
       ),
     },
+    {
+      title: 'List Order',
+      dataIndex: 'listOrder',
+      sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
+      width: 100,
+      render: (text, record) => {
+        if (editingId === record.product) {
+          return (
+            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
+              <Input type="number" className='py-0'
+              onPressEnter={handleUpdateAssociatedProduct}
+              onBlur={handleUpdateAssociatedProduct} style={{ width: '80px' }} 
+              suffix={
+                <CloseOutlined
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Prevent blur from firing
+                    handleCancelEdit();
+                  }}
+                 className='text-danger cursor-pointer'
+                />
+              }/>
+            </Form.Item>
+          );
+        }
+        return text;
+      },
+    },
   ];
   const productSearchColumns: TableProps<ProductSearchResult>['columns'] = [
-    { title: 'Product Id', dataIndex: 'akiProductID', width: 100 },
+    { title: 'Product Id', dataIndex: 'akiProductID', width: 70 },
     {
       title: 'Product Name',
       dataIndex: 'akiProductName',
@@ -487,7 +497,7 @@ const Category = () => {
     {
       title: 'Active',
       dataIndex: 'akiProductIsActive',
-      width: 80,
+      width: 50,
       align: 'center',
       render: (isActive) => (isActive ? <CheckCircleOutlined className="text-primary-theme" /> : <StopOutlined className="text-danger" />),
     },
@@ -738,7 +748,7 @@ const Category = () => {
           </Form>
         </div>
       </Spin>
-      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={600} destroyOnClose>
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={1000} destroyOnClose>
         <Form
           form={addAssociatedProductForm}
           layout="vertical"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import IndexEntryFields from '../shared/IndexEntryFields';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
-import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined} from '@ant-design/icons';
+import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
@@ -443,25 +443,7 @@ const ProductDetails = forwardRef((props, ref) => {
   ];
 
   const associatedProductColumns: TableProps<AdditionalProductModel>['columns'] = [
-    {
-      title: 'List Order',
-      dataIndex: 'listOrder',
-      sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
-      width: 100,
-      render: (text, record) => {
-        if (editingId === record.additionalProduct) {
-          return (
-            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
-              <Input type="number" className='py-0'
-                onPressEnter={handleUpdateAssociatedProduct}
-                onBlur={handleUpdateAssociatedProduct}
-               style={{ width: '80px' }} />
-            </Form.Item>
-          );
-        }
-        return text;
-      },
-    },
+    
     {
       title: 'Product Name',
       dataIndex: 'additionalProductName',
@@ -479,10 +461,39 @@ const ProductDetails = forwardRef((props, ref) => {
         </span>
       ),
     },
+    {
+      title: 'List Order',
+      dataIndex: 'listOrder',
+      sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
+      width: 100,
+      render: (text, record) => {
+        if (editingId === record.additionalProduct) {
+          return (
+            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
+              <Input type="number" className='py-0'
+                onPressEnter={handleUpdateAssociatedProduct}
+                onBlur={handleUpdateAssociatedProduct}
+               style={{ width: '80px' }}
+               suffix={
+                <CloseOutlined
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Prevent blur from firing
+                    handleCancelEdit();
+                  }}
+                  className='text-danger cursor-pointer'
+                />
+              }
+               />
+            </Form.Item>
+          );
+        }
+        return text;
+      },
+    },
   ];
 
   const productSearchModalColumns: TableProps<AssociatedProductSearchResult>['columns'] = [
-    { title: 'Product Id', dataIndex: 'akiProductID', width: 100 },
+    { title: 'Product Id', dataIndex: 'akiProductID', width: 70 },
     {
       title: 'Product Name',
       dataIndex: 'akiProductName',
@@ -495,7 +506,7 @@ const ProductDetails = forwardRef((props, ref) => {
     {
       title: 'Active',
       dataIndex: 'akiProductIsActive',
-      width: 80,
+      width: 50,
       align: 'center',
       render: (isActive) => (isActive ? <CheckCircleOutlined className="text-primary-theme" /> : <StopOutlined className="text-danger" />),
     },
@@ -720,7 +731,7 @@ const ProductDetails = forwardRef((props, ref) => {
           <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered pagination={{ pageSize: 10 }} />
         </Spin>
       </Modal>
-      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={600} destroyOnClose>
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={1000} destroyOnClose>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
           <div className="grid grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{ required: true, message: 'Required' }]}>
