@@ -281,7 +281,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
               items={filteredData.map(item => item.akiitemid)}
               strategy={verticalListSortingStrategy}
             >
-              <Spin spinning={loading}>
                 <Table
                   scroll={{ x: 1200 }}
                   columns={columns}
@@ -305,7 +304,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
                     },
                   }}
                 />
-              </Spin>
             </SortableContext>
           </DndContext>
         </div>

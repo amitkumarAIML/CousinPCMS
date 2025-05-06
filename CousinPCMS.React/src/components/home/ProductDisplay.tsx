@@ -334,7 +334,7 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
           >
             <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
               {filteredData && filteredData.length > 0 ? (
-                <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] w-full">
+                <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
                   {filteredData.map((item) => (
                     <SortableItem
                       key={'akiProductID' in item ? `prod-${item.akiProductID}` : `attr-${item.akiCategoryID}`}
