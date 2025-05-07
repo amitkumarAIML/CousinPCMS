@@ -51,11 +51,13 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int producturlID { get; set; }
         public int productID { get; set; }
         public string linkURL { get; set; }
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class AdditionalProductModel
@@ -103,6 +105,13 @@ namespace CousinPCMS.Domain
         public int newlistorder { get; set; }
     }
 
+    public class UpdateProductUrlsRequestModel
+    {
+        public int producturlID { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
+    }
+
 
     public class AddProductAdditionalLinkUrlRequestModel
     {
@@ -111,6 +120,7 @@ namespace CousinPCMS.Domain
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class DeleteProductURLRequestModel

@@ -547,6 +547,40 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Update linked URLs for the specified product.
+        /// </summary>
+        /// <param name="objModel">An object containing the details of the URLs to be added to the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
+        [HttpPost("UpdateProductLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateProductLinkUrls(UpdateProductUrlsRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateProductLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.UpdateProductLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateProductLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateProductLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// Retrieves the associated product details for the specified product ID.
         /// </summary>
         /// <param name="productId">The unique identifier of the product for which associated details are to be fetched.</param>

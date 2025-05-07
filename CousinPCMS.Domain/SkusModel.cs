@@ -115,11 +115,14 @@ namespace CousinPCMS.Domain
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
         [JsonProperty("skuitemID")]
+
+        public int skuitemURLID { get; set; }
         public string skuItemID { get; set; }
         public string linkURL { get; set; }
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class SkusAdditionalImageModel
@@ -151,6 +154,13 @@ namespace CousinPCMS.Domain
         public int newlistorder { get; set; }
     }
 
+    public class UpdateSkuLinkUrlRequestModel
+    {
+        public int skuitemURLID { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
+    }
+
     public class AddSkuAdditionalLinkUrlRequestModel
     {
         public string skuItemID { get; set; }
@@ -158,6 +168,7 @@ namespace CousinPCMS.Domain
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class DeleteSkuURLRequestModel

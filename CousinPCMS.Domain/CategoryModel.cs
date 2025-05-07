@@ -138,11 +138,13 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
+        public int categoryurlID { get; set; }
         public string categoryID { get; set; }
         public string linkURL { get; set; }
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class CategoryAdditionalImageModel
@@ -171,6 +173,13 @@ namespace CousinPCMS.Domain
         public int newlistorder { get; set; }
     }
 
+    public class UpdateCategoryLinkUrlRequestModel
+    {
+        public int catimageid { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
+    }
+
     public class AddCategoryAdditionalLinkUrlRequestModel
     {
         public string categoryID { get; set; }
@@ -178,6 +187,7 @@ namespace CousinPCMS.Domain
         public string linkText { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
+        public int listorder { get; set; }
     }
 
     public class DeleteCategoryURLRequestModel

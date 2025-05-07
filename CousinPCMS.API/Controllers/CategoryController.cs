@@ -617,6 +617,40 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Update linked URLs for the specified category.
+        /// </summary>
+        /// <param name="objModel">An object containing the details of the URLs to be added to the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
+        [HttpPost("UpdateCategoryLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateCategoryLinkUrls(UpdateCategoryLinkUrlRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateCategoryLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _categoryService.UpdateCategoryLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateCategoryLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateCategoryLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// deletes the associated product
         /// </summary>
         /// <param name="objModel">The object with delete details.</param>
