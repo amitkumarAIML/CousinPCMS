@@ -7,19 +7,16 @@ interface IndexEntryFieldsProps {
   fieldPrefix: string; // e.g., 'akiProductIndexText' or 'akiCategoryIndex'
   labelPrefix?: string; // e.g., 'Index Entry'
   max?: number;
+  patchValue?: any;
 }
 
-const IndexEntryFields: React.FC<IndexEntryFieldsProps> = ({form, fieldPrefix, labelPrefix = 'Index Entry', max = 5}) => {
+const IndexEntryFields: React.FC<IndexEntryFieldsProps> = ({form, fieldPrefix, labelPrefix = 'Index Entry', max = 5, patchValue}) => {
   const [count, setCount] = useState(1);
 
   useEffect(() => {
-    for (let i = max; i > 1; i--) {
-      if (form.getFieldValue(`${fieldPrefix}${i}`)) {
-        setCount(i);
-        break;
-      }
-    }
-  }, [form, fieldPrefix, max]);
+    const initialCount = patchValue;
+    setCount(initialCount > 0 ? initialCount : 1);
+  }, [form, fieldPrefix, max, patchValue]);
 
   const handleAdd = () => {
     if (count < max) setCount(count + 1);

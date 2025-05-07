@@ -1,23 +1,22 @@
-
 import {useState, useEffect, useCallback} from 'react';
 import {useLocation, useNavigate} from 'react-router';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
 import {CloseCircleFilled, SearchOutlined, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
 import IndexEntryFields from '../components/shared/IndexEntryFields';
-import type { UploadChangeParam } from 'antd/es/upload';
-import type { UploadFile } from 'antd/es/upload/interface';
-import type { TableProps, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
-import { AdditionalCategoryModel, AssociatedProductRequestModel, UpdateCategoryModel, CategoryResponseModel } from '../models/additionalCategoryModel';
-import { layoutDepartment } from '../models/layoutTemplateModel';
-import { CommodityCode } from '../models/commodityCodeModel';
-import { Country } from '../models/countryOriginModel';
-import { CategoryCharLimit as charLimit } from '../models/char.constant';
-import { getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory } from '../services/CategoryService';
-import { getCountryOrigin, getCommodityCodes, getSessionItem } from '../services/DataService';
-import type { Product } from '../models/productModel';
-import { getAllProducts } from '../services/ProductService';
-import { useNotification } from '../contexts.ts/useNotification';
+import type {UploadChangeParam} from 'antd/es/upload';
+import type {UploadFile} from 'antd/es/upload/interface';
+import type {TableProps, TablePaginationConfig} from 'antd/es/table';
+import type {FilterValue, SorterResult} from 'antd/es/table/interface';
+import {AdditionalCategoryModel, AssociatedProductRequestModel, UpdateCategoryModel, CategoryResponseModel} from '../models/additionalCategoryModel';
+import {layoutDepartment} from '../models/layoutTemplateModel';
+import {CommodityCode} from '../models/commodityCodeModel';
+import {Country} from '../models/countryOriginModel';
+import {CategoryCharLimit as charLimit} from '../models/char.constant';
+import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/DataService';
+import type {Product} from '../models/productModel';
+import {getAllProducts} from '../services/ProductService';
+import {useNotification} from '../contexts.ts/useNotification';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -28,9 +27,9 @@ interface TableParams {
 }
 
 const Category = () => {
-  const [categoryForm] = Form.useForm<UpdateCategoryModel & { additionalImages?: string; urlLinks?: string }>();
+  const [categoryForm] = Form.useForm<UpdateCategoryModel & {additionalImages?: string; urlLinks?: string}>();
   const [editAssociatedProductForm] = Form.useForm<AdditionalCategoryModel>();
-  const [addAssociatedProductForm] = Form.useForm<{ listorder: number; product: number; productName: string }>();
+  const [addAssociatedProductForm] = Form.useForm<{listorder: number; product: number; productName: string}>();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState<boolean>(true);
@@ -42,20 +41,21 @@ const Category = () => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
   const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
-  const [returnOptions] = useState<{ value: string; label: string }[]>([]);
+  const [returnOptions] = useState<{value: string; label: string}[]>([]);
   const [additionalCategoryList, setAdditionalCategoryList] = useState<AdditionalCategoryModel[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isVisibleAddProductModal, setIsVisibleAddProductModal] = useState<boolean>(false);
   const [productNameList, setProductNameList] = useState<Product[]>([]);
   const [productSearchValue, setProductSearchValue] = useState<string>('');
   const [productTableParams, setProductTableParams] = useState<TableParams>({
-    pagination: { current: 1, pageSize: 10, total: 0 },
+    pagination: {current: 1, pageSize: 10, total: 0},
   });
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
   const akiCategoryDescriptionText = Form.useWatch('akiCategoryDescriptionText', categoryForm);
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
+  const [indexEntryCount, setIndexEntryCount] = useState<number>();
   const defaultValue = {
     akiCategoryGuidePrice: 0,
     akiCategoryGuideWeight: 0,
@@ -136,6 +136,8 @@ const Category = () => {
         if (response.isSuccess && response.value && Array.isArray(response.value)) {
           const details = response.value[0];
           setCategoryDetails(details);
+          const initialCount = Object.keys(details).filter((key) => key.startsWith('akiProductIndexText') && (details as Record<string, any>)[key] !== '').length;
+          setIndexEntryCount(initialCount);
           categoryForm.setFieldsValue({
             ...details,
             akiCategoryPopular: !!details.akiCategoryPopular,
@@ -175,7 +177,7 @@ const Category = () => {
         const sortedData = data.sort((a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0));
         setAdditionalCategoryList(sortedData);
         const maxListOrder = sortedData.length > 0 ? Math.max(...sortedData.map((cat) => Number(cat.listOrder) || 0)) : 0;
-        addAssociatedProductForm.setFieldsValue({ listorder: maxListOrder + 1 });
+        addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
       } catch {
         notify.error('Error fetching associated products list.');
         setAdditionalCategoryList([]);
@@ -295,7 +297,7 @@ const Category = () => {
       setBtnLoading(false);
     }
   };
-  const handleAddAssociatedProductSubmit = async (values: { listorder: number; product: number; productName: string }) => {
+  const handleAddAssociatedProductSubmit = async (values: {listorder: number; product: number; productName: string}) => {
     if (!values.product) {
       message.error('Please select a product from the grid below.');
       return;
@@ -332,7 +334,7 @@ const Category = () => {
   };
 
   const handleStartEdit = (record: AdditionalCategoryModel) => {
-    editAssociatedProductForm.setFieldsValue({ ...record });
+    editAssociatedProductForm.setFieldsValue({...record});
     setEditingId(record.product);
   };
   const handleCancelEdit = () => {
@@ -364,7 +366,7 @@ const Category = () => {
         notify.error('Associated product not updated');
       }
     } catch (error) {
-      if ((error as { errorFields?: unknown }).errorFields) return;
+      if ((error as {errorFields?: unknown}).errorFields) return;
       else {
         notify.error('Something went wrong');
       }
@@ -373,7 +375,7 @@ const Category = () => {
   const showAddProductModal = () => {
     addAssociatedProductForm.resetFields();
     setProductSearchValue('');
-    setProductTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
     setIsVisibleAddProductModal(true);
   };
   const handleModalCancel = () => {
@@ -391,14 +393,14 @@ const Category = () => {
   const handleFileChange = (info: UploadChangeParam<UploadFile>, formInstance: typeof categoryForm, fieldName: string) => {
     const file = info.file?.originFileObj;
     if (file) {
-      formInstance.setFieldsValue({ [fieldName]: file.name });
+      formInstance.setFieldsValue({[fieldName]: file.name});
       if (info.file.status === 'done') {
         notify.success(`${info.file.name} uploaded successfully.`);
       } else if (info.file.status === 'error') {
         notify.error(`${info.file.name} upload failed.`);
       }
     } else if (info.file.status === 'removed') {
-      formInstance.setFieldsValue({ [fieldName]: '' });
+      formInstance.setFieldsValue({[fieldName]: ''});
     }
   };
   const handleProductTableChange = (
@@ -417,11 +419,11 @@ const Category = () => {
     setProductSearchValue(e.target.value);
   };
   const handleSearchEnter = () => {
-    setProductTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
   const clearProductSearch = () => {
     setProductSearchValue('');
-    setProductTableParams((prev) => ({ ...prev, pagination: { ...prev.pagination, current: 1 } }));
+    setProductTableParams((prev) => ({...prev, pagination: {...prev.pagination, current: 1}}));
   };
 
   const goToLinkMaintenance = () => {
@@ -437,14 +439,13 @@ const Category = () => {
   };
 
   const associatedProductColumns: TableProps<AdditionalCategoryModel>['columns'] = [
-   
     {
       title: 'Product Name',
       dataIndex: 'productName',
       sorter: (a, b) => a.productName.localeCompare(b.productName),
       render: (text, record) => (
         <span
-          style={{ cursor: 'pointer', color: '#1890ff' }}
+          style={{cursor: 'pointer', color: '#1890ff'}}
           onClick={() => {
             if (!editingId) {
               handleStartEdit(record);
@@ -463,19 +464,23 @@ const Category = () => {
       render: (text, record) => {
         if (editingId === record.product) {
           return (
-            <Form.Item name="listOrder" style={{ margin: 0 }} rules={[{ required: true, message: 'Required' }]}>
-              <Input type="number" className='py-0'
-              onPressEnter={handleUpdateAssociatedProduct}
-              onBlur={handleUpdateAssociatedProduct} style={{ width: '80px' }} 
-              suffix={
-                <CloseOutlined
-                  onMouseDown={(e) => {
-                    e.preventDefault(); // Prevent blur from firing
-                    handleCancelEdit();
-                  }}
-                 className='text-danger cursor-pointer'
-                />
-              }/>
+            <Form.Item name="listOrder" style={{margin: 0}} rules={[{required: true, message: 'Required'}]}>
+              <Input
+                type="number"
+                className="py-0"
+                onPressEnter={handleUpdateAssociatedProduct}
+                onBlur={handleUpdateAssociatedProduct}
+                style={{width: '80px'}}
+                suffix={
+                  <CloseOutlined
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevent blur from firing
+                      handleCancelEdit();
+                    }}
+                    className="text-danger cursor-pointer"
+                  />
+                }
+              />
             </Form.Item>
           );
         }
@@ -484,7 +489,7 @@ const Category = () => {
     },
   ];
   const productSearchColumns: TableProps<ProductSearchResult>['columns'] = [
-    { title: 'Product Id', dataIndex: 'akiProductID', width: 70 },
+    {title: 'Product Id', dataIndex: 'akiProductID', width: 70},
     {
       title: 'Product Name',
       dataIndex: 'akiProductName',
@@ -533,7 +538,7 @@ const Category = () => {
                   </Form.Item>
                 </div>
                 <div className="relative">
-                  <Form.Item label="Category Name" name="akiCategoryName" rules={[{ required: true, message: 'Category name is required' }]}>
+                  <Form.Item label="Category Name" name="akiCategoryName" rules={[{required: true, message: 'Category name is required'}]}>
                     <Input maxLength={charLimit.akiCategoryName} className="pr-12" />
                   </Form.Item>
                   <span className="absolute -right-13 top-5">
@@ -553,7 +558,7 @@ const Category = () => {
                       showSearch
                       placeholder="Select code"
                       optionFilterProp="label"
-                      options={commodityCode.map((c) => ({ value: c.commodityCode, label: c.commodityCode, key: c.commodityCode }))}
+                      options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
                     />
                   </Form.Item>
                 </div>
@@ -568,7 +573,7 @@ const Category = () => {
                       placeholder="Select country"
                       optionFilterProp="label"
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                      options={countries.map((c) => ({ value: c.code, label: c.name, key: c.code }))}
+                      options={countries.map((c) => ({value: c.code, label: c.name, key: c.code}))}
                     />
                   </Form.Item>
                   <Form.Item name="akiCategoryPromptUserIfPriceGroupIsBlank" valuePropName="checked" noStyle>
@@ -601,16 +606,16 @@ const Category = () => {
                   </span>
                 </div>
                 <div className="flex items-end gap-x-3 relative">
-                  <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{ type: 'string', message: 'Please enter a valid URL (or leave blank)' }]}>
+                  <Form.Item label="Image URL" name="akiCategoryImageURL" className="w-full" rules={[{type: 'string', message: 'Please enter a valid URL (or leave blank)'}]}>
                     <Input maxLength={charLimit.akiCategoryImageURL} />
                   </Form.Item>
                   <Upload
-                    customRequest={({ file, onSuccess }) => {
+                    customRequest={({file, onSuccess}) => {
                       setTimeout(() => {
                         if (onSuccess) onSuccess({}, file);
                       }, 500);
                     }}
-                    headers={{ authorization: 'your-auth-token' }}
+                    headers={{authorization: 'your-auth-token'}}
                     onChange={(info) => handleFileChange(info, categoryForm, 'akiCategoryImageURL')}
                     showUploadList={false}
                     accept=".png,.jpeg,.jpg"
@@ -702,7 +707,7 @@ const Category = () => {
                     showSearch
                     placeholder="Select layout"
                     optionFilterProp="label"
-                    options={layoutOptions.map((opt) => ({ value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode }))}
+                    options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                   />
                 </Form.Item>
                 <Form.Item label="Alternative Title" name="akiCategoryAlternativeTitle">
@@ -714,7 +719,11 @@ const Category = () => {
                 <div className="mt-1">
                   <label className="font-medium text-secondary-font block mb-1">Index Entry Text</label>
                   <div className="border border-border rounded-lg p-2">
-                    <IndexEntryFields form={categoryForm} fieldPrefix="akiCategoryIndex" labelPrefix="Index Entry" max={5} />
+                    {indexEntryCount !== undefined ? (
+                      <IndexEntryFields form={categoryForm} fieldPrefix="akiCategoryIndex" labelPrefix="Index Entry" max={5} patchValue={indexEntryCount} />
+                    ) : (
+                      <IndexEntryFields form={categoryForm} fieldPrefix="akiCategoryIndex" labelPrefix="Index Entry" max={5} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -737,7 +746,7 @@ const Category = () => {
                         size="small"
                         bordered
                         virtual
-                        scroll={{ y: 180 }}
+                        scroll={{y: 180}}
                         showSorterTooltip={false}
                       />
                     </Form>
@@ -754,16 +763,16 @@ const Category = () => {
           layout="vertical"
           onFinish={handleAddAssociatedProductSubmit}
           className="px-3 py-1"
-          initialValues={{ listorder: additionalCategoryList.length > 0 ? Math.max(...additionalCategoryList.map((c) => Number(c.listOrder) || 0)) + 1 : 1 }}
+          initialValues={{listorder: additionalCategoryList.length > 0 ? Math.max(...additionalCategoryList.map((c) => Number(c.listOrder) || 0)) + 1 : 1}}
         >
           <div className="grid grid-cols-2 gap-x-4">
-            <Form.Item label="List Order" name="listorder" rules={[{ required: true, message: 'List order is required' }]}>
+            <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'List order is required'}]}>
               <Input type="number" />
             </Form.Item>
-            <Form.Item name="product" style={{ display: 'none' }}>
+            <Form.Item name="product" style={{display: 'none'}}>
               <Input type="hidden" />
             </Form.Item>
-            <Form.Item label="Product Name" name="productName" rules={[{ required: true, message: 'Please select a product from the list below' }]}>
+            <Form.Item label="Product Name" name="productName" rules={[{required: true, message: 'Please select a product from the list below'}]}>
               <Input disabled placeholder="Select product from table..." />
             </Form.Item>
           </div>
@@ -774,9 +783,9 @@ const Category = () => {
               onChange={handleSearchChange}
               onPressEnter={handleSearchEnter}
               suffix={
-                productSearchValue ? <CloseCircleFilled onClick={clearProductSearch} style={{ color: 'rgba(0,0,0,.45)', cursor: 'pointer' }} /> : <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                productSearchValue ? <CloseCircleFilled onClick={clearProductSearch} style={{color: 'rgba(0,0,0,.45)', cursor: 'pointer'}} /> : <SearchOutlined style={{color: 'rgba(0,0,0,.45)'}} />
               }
-              style={{ flexGrow: 1, maxWidth: '300px' }}
+              style={{flexGrow: 1, maxWidth: '300px'}}
             />
             <div className="flex gap-x-3">
               <Button size="small" onClick={handleModalCancel}>

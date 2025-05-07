@@ -595,6 +595,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
         <span>Departments & Categories</span>
       </div>
       <Tree {...treeProps} />
+      {displayTreeData && displayTreeData.length === 0 && <span className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{'No Data'}</span>}
       {contextMenu.visible && (
         <div
           style={{

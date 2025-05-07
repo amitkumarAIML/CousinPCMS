@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback, forwardRef, useImperativeHandle} from 'react';
 import IndexEntryFields from '../shared/IndexEntryFields';
 import {Form, Input, Select, Checkbox, Button, Upload, Table, Modal, Spin, message} from 'antd';
-import {EditOutlined, EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
+import {EllipsisOutlined, SearchOutlined, CloseCircleFilled, CheckCircleOutlined, StopOutlined, CloseOutlined} from '@ant-design/icons';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
@@ -51,6 +51,7 @@ const ProductDetails = forwardRef((props, ref) => {
 
   const [productLoading, setProductLoading] = useState<boolean>(false);
   const [akiProductID, setAkiProductID] = useState<number | undefined>(undefined);
+  const [indexEntryCount, setIndexEntryCount] = useState<number>();
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [layoutOptions, setLayoutOptions] = useState<layoutProduct[]>([]);
@@ -134,7 +135,7 @@ const ProductDetails = forwardRef((props, ref) => {
       try {
         const cateId = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
         const response: ApiResponse<AttributeSetModel[]> = await getDistinctAttributeSetsByCategoryId(cateId);
-        if (response.isSuccess || (Array.isArray(response.value) && response.value.length > 0)) {
+        if (response.isSuccess && response.value && response.value.length > 0) {
           setAttributslist(response.value[0]);
         }
       } catch (error) {
@@ -154,6 +155,8 @@ const ProductDetails = forwardRef((props, ref) => {
           if (response.isSuccess && response.value && response.value.length > 0) {
             const product = response.value[0];
             setAkiProductID(product.akiProductID);
+            const initialCount = Object.keys(product).filter((key) => key.startsWith('akiProductIndexText') && (product as Record<string, any>)[key] !== '').length;
+            setIndexEntryCount(initialCount);
             setSessionItem('originalCommodityCode', product.akiProductCommodityCode);
             setSessionItem('originalCountryOfOrigin', product.akiProductCountryOfOrigin);
             productForm.setFieldsValue({
@@ -626,6 +629,7 @@ const ProductDetails = forwardRef((props, ref) => {
               <div className="relative">
                 <Form.Item label="Product Description" name="akiProductDescription">
                   <Input.TextArea rows={3} maxLength={charLimit.akiProductDescription} className="pr-12" />
+                  {/* <RichTextEditor value={productForm.getFieldValue('akiProductDescription')} onChange={(val) => productForm.setFieldValue('akiProductDescription', val)} /> */}
                 </Form.Item>
                 <span className="absolute bottom-2 -right-14 ">
                   {akiProductDescription?.length || 0} / {charLimit.akiProductDescription}
@@ -743,7 +747,11 @@ const ProductDetails = forwardRef((props, ref) => {
               <div className="mt-1">
                 <label className="font-medium text-primary-font block mb-1">Index Entry Text</label>
                 <div className="border border-border rounded-lg p-4">
-                  <IndexEntryFields form={productForm} fieldPrefix="akiProductIndexText" labelPrefix="Index Entry" max={5} />
+                  {indexEntryCount !== undefined ? (
+                    <IndexEntryFields form={productForm} fieldPrefix="akiProductIndexText" labelPrefix="Index Entry" max={5} patchValue={indexEntryCount} />
+                  ) : (
+                    <IndexEntryFields form={productForm} fieldPrefix="akiProductIndexText" labelPrefix="Index Entry" max={5} />
+                  )}
                 </div>
               </div>
             </div>
@@ -798,9 +806,7 @@ const ProductDetails = forwardRef((props, ref) => {
           }
           className="mb-4"
         />
-        <Spin spinning={loadingProductModal}>
-          <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered pagination={{pageSize: 10}} />
-        </Spin>
+        <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered loading={loadingProductModal} />
       </Modal>
       <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={1000} destroyOnClose>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
