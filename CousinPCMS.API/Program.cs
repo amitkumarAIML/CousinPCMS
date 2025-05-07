@@ -10,7 +10,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string corsDomains = "http://localhost:4200";
+string corsDomains = "http://localhost:4200,http://localhost:5173";
 string[] domains = corsDomains.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
 
