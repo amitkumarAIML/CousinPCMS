@@ -98,9 +98,9 @@ namespace CousinPCMS.Domain
 
     public class UpdateProductAdditionalImageRequestModel
     {
-        public int productImageID { get; set; }
-        public int productID { get; set; }
-        public int listorder { get; set; }
+        public int productimageid { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
     }
 
 

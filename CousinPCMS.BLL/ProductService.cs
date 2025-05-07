@@ -601,7 +601,7 @@ namespace CousinPCMS.BLL
 
                 var response = ServiceClient.PerformAPICallWithToken(
                     Method.Post,
-                    $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateProductAdditionalImages?company={HardcodedValues.CompanyName}",
+                    $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_UpdateProductAdditionalImagesListorder?company={HardcodedValues.CompanyName}",
                     ParameterType.RequestBody,
                     Oauth.Token,
                     postData

@@ -147,10 +147,8 @@ namespace CousinPCMS.Domain
     public class UpdateSkuAdditionalImageRequestModel
     {
         public int skuImageID { get; set; }
-        public string skuItemID { get; set; }
-        public string imageURL { get; set; }
-        public string imagename { get; set; }
-        public int listorder { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
     }
 
     public class AddSkuAdditionalLinkUrlRequestModel
