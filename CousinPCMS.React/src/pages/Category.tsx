@@ -466,10 +466,9 @@ const Category = () => {
       render: (text, record) => {
         if (editingId === record.product) {
           return (
-            <Form.Item name="listOrder" style={{margin: 0}} rules={[{required: true, message: 'Required'}]}>
+            <Form.Item name="listOrder" style={{margin: 2}} rules={[{required: true, message: 'Required'}]}>
               <Input
                 type="number"
-                className="py-0"
                 onPressEnter={handleUpdateAssociatedProduct}
                 onBlur={handleUpdateAssociatedProduct}
                 style={{width: '80px'}}
@@ -737,11 +736,11 @@ const Category = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-12 grid grid-cols-4 gap-x-6">
+              <div className="col-span-12 grid grid-cols-4 gap-x-6 mt-2">
                 <div className="col-span-2">
-                  <div className="font-medium text-primary-font  mb-1">Associated Products</div>
                   <div className="border border-border rounded-lg p-2">
-                    <div className="flex justify-end mb-2">
+                    <div className="flex justify-between mb-2">
+                      <span className="flex font-medium text-secondary-font">Associated Products</span>
                       <Button size="small" type="primary" onClick={showAddProductModal}>
                         Add
                       </Button>
@@ -756,7 +755,6 @@ const Category = () => {
                         size="small"
                         bordered
                         virtual
-                        scroll={{y: 180}}
                         showSorterTooltip={false}
                       />
                     </Form>

@@ -288,10 +288,10 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-2 py-[5px] border-b border-border flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <span>Products & Attribute Sets</span>
-          <Button type="link" size="small" onClick={handleAddProduct}>
+          <Button type="link" size="small" onClick={handleAddProduct} className="p-0">
             Add
           </Button>
-          <Button type="link" size="small" onClick={handleEditProduct} disabled={getSessionItem('productId') || getSessionItem('tempProductId') ? false : true}>
+          <Button type="link" size="small" onClick={handleEditProduct} disabled={getSessionItem('productId') || getSessionItem('tempProductId') ? false : true} className="p-0">
             Edit
           </Button>
         </div>

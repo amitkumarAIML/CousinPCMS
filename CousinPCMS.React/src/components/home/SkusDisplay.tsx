@@ -1,32 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Spin, Input, TableProps, Table, Checkbox, Button } from 'antd';
-import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
-import { getSkuByProductId } from '../../services/HomeService';
-import { useNotification } from '../../contexts.ts/useNotification';
-import type { SKuList } from '../../models/skusModel';
-import { useNavigate } from 'react-router';
-import { getSessionItem, setSessionItem } from '../../services/DataService';
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import {useEffect, useState} from 'react';
+import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
+import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
+import {getSkuByProductId} from '../../services/HomeService';
+import {useNotification} from '../../contexts.ts/useNotification';
+import type {SKuList} from '../../models/skusModel';
+import {useNavigate} from 'react-router';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
+import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 import React from 'react';
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
 }
 
-const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCategory }) => {
+const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCategory}) => {
   const [skus, setSkus] = useState<SKuList[]>([]);
   const [filteredData, setFilteredData] = useState<SKuList[]>([]);
   const [displayText, setDisplayText] = useState('Click on a product to view the SKU');
@@ -103,14 +92,16 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
     }
     const filtered = skus.filter((item) => {
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
-      return normalize(item.skuName).includes(searchText) ||
+      return (
+        normalize(item.skuName).includes(searchText) ||
         normalize(item.akiitemid).includes(searchText) ||
         normalize(item.akiListOrder.toString()).includes(searchText) ||
         normalize(item.akiAltSKUName.toString()).includes(searchText) ||
         normalize(item.akiTemplateID.toString()).includes(searchText) ||
         normalize(item.countryRegionOfOriginCode.toString()).includes(searchText) ||
         normalize(item.akiManufacturerRef).includes(searchText) ||
-        normalize(item.akiCommodityCode.toString()).includes(searchText);
+        normalize(item.akiCommodityCode.toString()).includes(searchText)
+      );
     });
     setFilteredData(filtered);
     if (filtered.length === 0) setDisplayText('No SKU Found');
@@ -147,10 +138,10 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
         <div className="flex gap-1 my-1">
           <div className="flex gap-x-2 items-center">
             <span>SKUs</span>
-            <Button type="link" size="small" onClick={() => navigate('/skus/add')}>
+            <Button type="link" size="small" onClick={() => navigate('/skus/add')} className="p-0">
               Add
             </Button>
-            <Button type="link" size="small" onClick={() => navigate('/skus/edit')} disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true}>
+            <Button type="link" size="small" onClick={() => navigate('/skus/edit')} disabled={getSessionItem('itemNumber') || getSessionItem('tempItemNumber') ? false : true} className="p-0">
               Edit
             </Button>
           </div>
@@ -166,7 +157,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       ),
       dataIndex: 'skuName',
       width: 250,
-      sorter: (a, b) => a.skuName.localeCompare(b.skuName)
+      sorter: (a, b) => a.skuName.localeCompare(b.skuName),
     },
 
     {
@@ -174,15 +165,19 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       dataIndex: 'akiManufacturerRef',
       width: 160,
       ellipsis: true,
-      sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef)
+      sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef),
     },
     {
-      title: 'Item No', dataIndex: 'akiitemid', width: 130,
-      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0)
+      title: 'Item No',
+      dataIndex: 'akiitemid',
+      width: 130,
+      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0),
     },
     {
-      title: 'List Order', dataIndex: 'akiListOrder', width: 130,
-      sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0)
+      title: 'List Order',
+      dataIndex: 'akiListOrder',
+      width: 130,
+      sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0),
     },
     {
       title: 'Obsolete',
@@ -219,18 +214,23 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       width: 120,
     },
     {
-      title: 'AltSku Name', dataIndex: 'akiAltSKUName', width: 150,
-      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName)
+      title: 'AltSku Name',
+      dataIndex: 'akiAltSKUName',
+      width: 150,
+      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
     },
-    { title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150 },
+    {title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150},
     {
-      title: 'Comm Code', dataIndex: 'akiCommodityCode', align: 'center', width: 150,
-      sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0)
+      title: 'Comm Code',
+      dataIndex: 'akiCommodityCode',
+      align: 'center',
+      width: 150,
+      sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0),
     },
   ];
 
   const SortableRow = (props: any) => {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({
       id: props['data-row-key'],
     });
 
@@ -241,15 +241,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
       cursor: 'move',
     };
 
-    return (
-      <tr
-        {...props}
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-      />
-    );
+    return <tr {...props} ref={setNodeRef} style={style} {...attributes} {...listeners} />;
   };
 
   const sensors = useSensors(
@@ -261,7 +253,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
   );
 
   const handleDragEnd = (event: any) => {
-    const { active, over } = event;
+    const {active, over} = event;
 
     if (active.id !== over.id) {
       const oldIndex = filteredData.findIndex((item) => item.akiitemid === active.id);
@@ -275,38 +267,33 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({ selectedProductId, selectedCa
   return (
     <div className="">
       <Spin spinning={loading}>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={filteredData.map(item => item.akiitemid)}
-              strategy={verticalListSortingStrategy}
-            >
-                <Table
-                  scroll={{ x: 1200 }}
-                  columns={columns}
-                  dataSource={filteredData}
-                  tableLayout="auto"
-                  rowKey="akiitemid"
-                  size="small"
-                  bordered
-                  pagination={false}
-                  locale={{ emptyText: displayText }}
-                  onRow={(record, index) => ({
-                    index,
-                    'data-row-key': record.akiitemid,
-                    onClick: () => handleRowSelect(record),
-                    className: selectedRow?.akiitemid === record.akiitemid
-                      ? 'bg-primary-theme-active'
-                      : 'cursor-pointer',
-                  })}
-                  components={{
-                    body: {
-                      row: SortableRow,
-                    },
-                  }}
-                  showSorterTooltip={false}
-                />
-            </SortableContext>
-          </DndContext>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={filteredData.map((item) => item.akiitemid)} strategy={verticalListSortingStrategy}>
+            <Table
+              // scroll={{ x: 1200 }}
+              columns={columns}
+              dataSource={filteredData}
+              tableLayout="auto"
+              rowKey="akiitemid"
+              size="small"
+              bordered
+              pagination={false}
+              locale={{emptyText: displayText}}
+              onRow={(record, index) => ({
+                index,
+                'data-row-key': record.akiitemid,
+                onClick: () => handleRowSelect(record),
+                className: selectedRow?.akiitemid === record.akiitemid ? 'bg-primary-theme-active' : 'cursor-pointer',
+              })}
+              components={{
+                body: {
+                  row: SortableRow,
+                },
+              }}
+              showSorterTooltip={false}
+            />
+          </SortableContext>
+        </DndContext>
       </Spin>
     </div>
   );

@@ -766,37 +766,38 @@ const ProductDetails = forwardRef((props, ref) => {
                 </div>
               </div>
             </div>
-            <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-6">
+            <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-2">
               <div className="col-span-6 ">
-                <div>
-                  <div className="font-medium text-primary-font  mb-1">Associated Products</div>
-                  <div className="border border-border rounded-lg p-2">
-                    <div className="flex justify-end mb-2">
-                      <Button size="small" type="primary" onClick={showAddProductModal}>
-                        Add
-                      </Button>
-                    </div>
-                    <Form form={editAssociatedProductForm} component={false}>
-                      <Table
-                        className="h-[202px]"
-                        columns={associatedProductColumns}
-                        dataSource={additionalProductList}
-                        rowKey="additionalProduct"
-                        loading={isAdditionalPLoading}
-                        pagination={false}
-                        size="small"
-                        bordered
-                        showSorterTooltip={false}
-                      />
-                    </Form>
+                <div className="border border-border rounded-lg p-2">
+                  <div className="flex justify-between mb-2">
+                    <span className="flex font-medium text-secondary-font">Associated Products</span>
+
+                    <Button size="small" type="primary" onClick={showAddProductModal}>
+                      Add
+                    </Button>
                   </div>
+                  <Form form={editAssociatedProductForm} component={false}>
+                    <Table
+                      className="h-[150px]"
+                      columns={associatedProductColumns}
+                      dataSource={additionalProductList}
+                      rowKey="additionalProduct"
+                      loading={isAdditionalPLoading}
+                      pagination={false}
+                      size="small"
+                      bordered
+                      showSorterTooltip={false}
+                    />
+                  </Form>
                 </div>
                 {attributslist && (
-                  <Form.Item label="Attribute Set" className="w-full mt-1">
-                    <a onClick={goToSetAttribute} className="underline">
-                      {attributslist.attributeSetName}
-                    </a>
-                  </Form.Item>
+                  <div className="border border-border rounded-lg p-2 mt-2">
+                    <Form.Item label="Attribute Set" className="w-full mt-1">
+                      <a onClick={goToSetAttribute} className="underline">
+                        {attributslist.attributeSetName}
+                      </a>
+                    </Form.Item>
+                  </div>
                 )}
               </div>
             </div>
