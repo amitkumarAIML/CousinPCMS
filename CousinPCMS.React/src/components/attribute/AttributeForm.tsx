@@ -1,11 +1,10 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {useNavigate} from 'react-router';
-import {Form, Input, Select, Checkbox, Button, Table, Modal, Spin, TableProps} from 'antd';
+import {Form, Input, Checkbox, Button, Modal, Spin, TableProps} from 'antd';
 import {CloseCircleFilled, EditOutlined, SearchOutlined} from '@ant-design/icons';
 import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes} from '../../services/AttributesService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {AttributeRequestModel, AttributeValueModel} from '../../models/attributesModel';
-import type {ItemModel} from '../../models/itemModel';
 import AttributesValues from './AttributeValuesPopup';
 import {AttributeFormCharLimit} from '../../models/char.constant';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
@@ -17,7 +16,7 @@ const AttributeForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [searchType, setSearchType] = useState<ItemModel[]>([]);
+  // const [searchType, setSearchType] = useState<ItemModel[]>([]);
   const [attributesValues, setAttributesValues] = useState<AttributeValueModel[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [attributeName, setAttributeName] = useState<string>('');
@@ -26,7 +25,7 @@ const AttributeForm = () => {
   const [isNewValueBtnDisabled, setIsNewValueBtnDisabled] = useState<boolean>(true);
   const [editValueData, setEditValueData] = useState<AttributeValueModel | null>(null);
   const attributeNametxt = Form.useWatch('attributeName', form);
-  const attributeDescriptionetxt = Form.useWatch('attributeDescription', form);
+  // const attributeDescriptionetxt = Form.useWatch('attributeDescription', form);
 
   const notify = useNotification();
 
@@ -68,7 +67,6 @@ const AttributeForm = () => {
             key: item.id || item.id || index,
           }));
           setAttributesValues(dataWithKeys);
-          
         } else {
           setAttributesValues([]);
           notify.error('Failed to load attribute values.');
@@ -81,13 +79,14 @@ const AttributeForm = () => {
     },
     [notify]
   );
+
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
         const searchTypeRes = await getAttributeSearchTypes();
         if (searchTypeRes.isSuccess) {
-          setSearchType(searchTypeRes.value || []);
+          // setSearchType(searchTypeRes.value || []);
         } else {
           notify.error('Failed to load search types.');
         }
@@ -217,20 +216,29 @@ const AttributeForm = () => {
     setIsValueModalVisible(true);
   };
 
-  const valueColumns:TableProps<AttributeValueModel>['columns'] = [
-    {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true,
-     sorter:(a,b)=>a.attributeValue.localeCompare(b.attributeValue)
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 60,
-      align: 'center' as const,
-      render: (_: unknown, record: AttributeValueModel) => (
-        <Button type="link" icon={<EditOutlined />} onClick={() => handleEditAttribute(record)} size="small" style={{padding: '0 5px', color: '#1890ff'}} aria-label={`Edit ${record.attributeName}`} />
-      ),
-    },
-  ];
+  // const valueColumns: TableProps<AttributeValueModel>['columns'] = [
+  //   {title: 'Attribute Value', dataIndex: 'attributeValue', ellipsis: true, sorter: (a, b) => a.attributeValue.localeCompare(b.attributeValue)},
+  //   {
+  //     title: 'Action',
+  //     key: 'action',
+  //     width: 60,
+  //     align: 'center' as const,
+  //     render: (_: unknown, record: AttributeValueModel) => (
+  //       <Button type="link" icon={<EditOutlined />} onClick={() => handleEditAttribute(record)} size="small" style={{padding: '0 5px', color: '#1890ff'}} aria-label={`Edit ${record.attributeName}`} />
+  //     ),
+  //   },
+  // ];
+
+  // Function to chunk data into columns
+  const chunkData = (data: any[], chunkSize: number) => {
+    const result: any[][] = [];
+    for (let i = 0; i < data.length; i += chunkSize) {
+      result.push(data.slice(i, i + chunkSize));
+    }
+    return result;
+  };
+  const pageSize = 50;
+  const chunkedData = chunkData(filteredData, pageSize);
 
   return (
     <div className="main-container">
@@ -287,7 +295,25 @@ const AttributeForm = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 mt-2">
-              <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} showSorterTooltip={false}/>
+              <div className="overflow-x-auto border rounded-lg border-light-border">
+                {filteredData.length === 0 ? (
+                  <div className="h-64 flex items-center justify-center text-sm text-secondary-font">No data found.</div>
+                ) : (
+                  <div className="min-w-max flex space-x-2 px-2 py-1">
+                    {chunkedData.map((chunk, chunkIndex) => (
+                      <div key={chunkIndex} className="flex flex-col space-y-2 w-[200px]">
+                        {chunk.map((attr, index) => (
+                          <div key={index} className="cursor-pointer text-secondary-font hover:text-primary-theme-hover p-0 m-0 text-xs">
+                            <span onClick={() => handleEditAttribute(attr)}>{attr.attributeValue}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* <Table columns={valueColumns} dataSource={filteredData as AttributeValueModel[]} rowKey="key" size="small" bordered pagination={false} showSorterTooltip={false} /> */}
             </div>
           </div>
         </div>
@@ -304,6 +330,7 @@ const AttributeForm = () => {
         destroyOnClose
         maskClosable={false}
         width={1000}
+        closable={false}
       >
         {attributeName && (
           <AttributesValues

@@ -1,28 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Spin, Modal, Input, Button } from 'antd';
-import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons';
+import React, {useState, useEffect, useCallback} from 'react';
+import {Spin, Modal, Input, Button} from 'antd';
+import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 
-import { Product } from '../../models/productModel';
-import { AttributeSetModel } from '../../models/attributeModel';
-import { getDistinctAttributeSetsByCategoryId, getProductListByCategoryId } from '../../services/HomeService';
+import {Product} from '../../models/productModel';
+import {AttributeSetModel} from '../../models/attributeModel';
+import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
 import CategoryAttribute from './CategoryAttribute';
-import { useNavigate } from 'react-router';
-import { useNotification } from '../../contexts.ts/useNotification';
-import { getSessionItem, setSessionItem } from '../../services/DataService';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import {useNavigate} from 'react-router';
+import {useNotification} from '../../contexts.ts/useNotification';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {arrayMove, SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
 
 interface ProductDisplayProps {
   selectedCategory: string;
@@ -30,7 +20,7 @@ interface ProductDisplayProps {
   refreshKey?: number;
 }
 
-function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: ProductDisplayProps) {
+function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: ProductDisplayProps) {
   const [selectedProduct, setSelectedProduct] = useState<number | undefined>(undefined);
   const [products, setProducts] = useState<Product[]>([]);
   const [allProductAttributes, setAllProductAttributes] = useState<(Product | AttributeSetModel)[]>([]);
@@ -62,9 +52,7 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
 
       let currentProducts: Product[] = [];
       if (productListResponse.isSuccess && productListResponse.value) {
-        currentProducts = productListResponse.value
-          .filter((p: Product) => p?.akiProductIsActive)
-          .sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+        currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive).sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
         setProducts(currentProducts);
       } else {
         setProducts([]);
@@ -238,14 +226,7 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
   }) => {
     const id = 'akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`;
 
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging,
-    } = useSortable({ id });
+    const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
 
     const style = {
       transform: CSS.Transform.toString(transform),
@@ -263,8 +244,7 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
           {...attributes}
           {...listeners}
           key={`prod-${item.akiProductID}`}
-          className={`px-2 py-1 cursor-pointer text-[10px] transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100 text-secondary-font'
-            }`}
+          className={`px-2 py-1 cursor-pointer text-[10px] transition-colors duration-300 ${isSelected ? 'bg-primary-theme-active' : 'hover:bg-gray-100 text-secondary-font'}`}
           onClick={() => handleProductClick(item)}
         >
           {item.akiProductName}
@@ -289,20 +269,16 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
   };
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
+      activationConstraint: {distance: 5},
     })
   );
 
   const handleDragEnd = (event: any) => {
-    const { active, over } = event;
+    const {active, over} = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = filteredData.findIndex(item =>
-      ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === active.id
-    );
-    const newIndex = filteredData.findIndex(item =>
-      ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === over.id
-    );
+    const oldIndex = filteredData.findIndex((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === active.id);
+    const newIndex = filteredData.findIndex((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === over.id);
 
     const newData = arrayMove(filteredData, oldIndex, newIndex);
     setFilteredData(newData);
@@ -326,12 +302,7 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
 
       <Spin spinning={loading}>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={filteredData.map(item =>
-              'akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`
-            )}
-            strategy={verticalListSortingStrategy}
-          >
+          <SortableContext items={filteredData.map((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`))} strategy={verticalListSortingStrategy}>
             <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
               {filteredData && filteredData.length > 0 ? (
                 <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
@@ -346,16 +317,29 @@ function ProductDisplay({ selectedCategory, onProductSelected, refreshKey }: Pro
                   ))}
                 </ul>
               ) : (
-                <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">
-                  {displayText}
-                </div>
+                <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>
               )}
             </div>
           </SortableContext>
         </DndContext>
       </Spin>
 
-      <Modal title="Attribute Set Form" open={categoryAttriIsVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
+      <Modal
+        title={
+          <div className="flex justify-between items-center">
+            <span>Attribute Set Form</span>
+            <Button type="default" onClick={handleAttributeModalCancel}>
+              Close
+            </Button>
+          </div>
+        }
+        open={categoryAttriIsVisible}
+        onCancel={handleAttributeModalCancel}
+        footer={null}
+        width={1100}
+        destroyOnClose
+        closable={false}
+      >
         {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleAttributeModalCancel} />}
       </Modal>
     </div>

@@ -10,6 +10,7 @@ import {getCommodityCodes, cleanEmptyNullToString, getSessionItem} from '../serv
 import {useNotification} from '../contexts.ts/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
+import RichTextEditor from '../components/RichTextEditor';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -30,6 +31,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   // const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartment');
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
+  const description = form.getFieldValue('akiDepartmentDescText');
 
   useEffect(() => {
     const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartmentId');
@@ -210,7 +212,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
 
                   <div className="relative col-span-2">
                     <Form.Item label="Department Text" name="akiDepartmentDescText" colon={false}>
-                      <Input.TextArea rows={3} maxLength={charLimit.akiDepartmentDescText} className="w-full " />
+                      <RichTextEditor
+                        value={description}
+                        maxLength={charLimit.akiDepartmentDescText}
+                        onChange={(val) => {
+                          if (val !== form.getFieldValue('akiDepartmentDescText')) {
+                            form.setFieldValue('akiDepartmentDescText', val);
+                          }
+                        }}
+                      />
                     </Form.Item>
                     <span className=" absolute bottom-3 -right-16  text-xs">
                       {akiDepartmentDescText?.length || 0} / {charLimit.akiDepartmentDescText}

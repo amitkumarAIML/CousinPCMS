@@ -21,8 +21,6 @@
   --color-bg-light: #c9fbff;
 }
 
-
-
 body {
   font-size: 14px;
   font-weight: 500 !important;
@@ -89,4 +87,37 @@ body {
 
 .additional-image-upload , .additional-link .ant-modal-content {
   padding: 10px 12px !important;
+}
+
+.tiptap-wrapper ul,
+.tiptap-wrapper ol {
+  list-style: disc;  /* Use disc (bullet) style for unordered lists */
+}
+
+.tiptap-wrapper ol {
+  list-style: decimal;  /* Use decimal (numbering) style for ordered lists */
+}
+
+/* Optionally style the list items as well */
+.tiptap-wrapper li {
+  margin-left: 1.25rem;  /* Adjust left margin to add spacing */
+  padding-left: 0.5rem;  /* Optional, add padding if needed */
+}
+
+.tiptap-wrapper h1 {
+  font-size: 2rem; /* Example: Tailwind's text-2xl */
+  font-weight: 700;
+  margin: 1rem 0;
+}
+
+.tiptap-wrapper h2 {
+  font-size: 1.5rem; /* Example: Tailwind's text-xl */
+  font-weight: 600;
+  margin: 0.75rem 0;
+}
+
+.tiptap-wrapper h3 {
+  font-size: 1.25rem; /* Example: Tailwind's text-lg */
+  font-weight: 600;
+  margin: 0.5rem 0;
 }

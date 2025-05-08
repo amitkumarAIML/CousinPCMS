@@ -17,6 +17,7 @@ import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/D
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../contexts.ts/useNotification';
+import RichTextEditor from '../components/RichTextEditor';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -91,6 +92,7 @@ const Category = () => {
     akI_Layout_Template: '',
     akiCategoryDescriptionText: '',
   };
+  const description = categoryForm.getFieldValue('akiCategoryDescriptionText');
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -573,7 +575,7 @@ const Category = () => {
                       placeholder="Select country"
                       optionFilterProp="label"
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                      options={countries.map((c) => ({value: c.code, label: c.name, key: c.code}))}
+                      options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
                     />
                   </Form.Item>
                   <Form.Item name="akiCategoryPromptUserIfPriceGroupIsBlank" valuePropName="checked" noStyle>
@@ -599,7 +601,15 @@ const Category = () => {
 
                 <div className="relative col-span-2">
                   <Form.Item label="Category Text" name="akiCategoryDescriptionText">
-                    <Input.TextArea rows={3} maxLength={2000} />
+                    <RichTextEditor
+                      value={description}
+                      maxLength={charLimit.akiCategoryDescriptionText}
+                      onChange={(val) => {
+                        if (val !== categoryForm.getFieldValue('akiCategoryDescriptionText')) {
+                          categoryForm.setFieldValue('akiCategoryDescriptionText', val);
+                        }
+                      }}
+                    />
                   </Form.Item>
                   <span className=" absolute bottom-3 -right-16  ">
                     {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
@@ -757,7 +767,7 @@ const Category = () => {
           </Form>
         </div>
       </Spin>
-      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={1000} destroyOnClose>
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleModalCancel} footer={null} width={1000} destroyOnClose closable={false}>
         <Form
           form={addAssociatedProductForm}
           layout="vertical"

@@ -17,6 +17,7 @@ import type {AttributeModel} from '../../models/attributeModel';
 import type {ApiResponse} from '../../models/generalModel';
 import {ItemCharLimit} from '../../models/char.constant';
 import AttributeValuesPopup from '../../components/attribute/AttributeValuesPopup';
+import RichTextEditor from '../RichTextEditor';
 
 interface SkuDetailsProps {
   skuData?: SKuList | null;
@@ -72,6 +73,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     },
     [notify]
   );
+  const description = form.getFieldValue('akiSKUDescription');
   const defaultValue = {
     akiGuidePriceTBC: 0,
     akiGuideWeightTBC: 0,
@@ -234,7 +236,15 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
             <div className="relative">
               <Form.Item label="SKu Description" name="akiSKUDescription">
-                <Input.TextArea rows={3} maxLength={charLimit.akiSKUDescription} />
+                <RichTextEditor
+                  value={description}
+                  maxLength={charLimit.akiSKUDescription}
+                  onChange={(val) => {
+                    if (val !== form.getFieldValue('akiSKUDescription')) {
+                      form.setFieldValue('akiSKUDescription', val);
+                    }
+                  }}
+                />
               </Form.Item>
               <span className="absolute bottom-2 -right-12">
                 {akiSKUDescription?.length || 0} / {charLimit.akiSKUDescription}
@@ -296,7 +306,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                   placeholder="Select country"
                   optionFilterProp="label"
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                  options={countries.map((c) => ({value: c.code, label: c.name, key: c.code}))}
+                  options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
                 />
               </Form.Item>
             </div>

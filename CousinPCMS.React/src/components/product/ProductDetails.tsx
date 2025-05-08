@@ -19,6 +19,7 @@ import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
 import {ApiResponse} from '../../models/generalModel';
+import RichTextEditor from '../RichTextEditor';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -87,6 +88,7 @@ const ProductDetails = forwardRef((props, ref) => {
   const akiProductName = Form.useWatch('akiProductName', productForm);
   const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
   const akiProductImageURL = Form.useWatch('akiProductImageURL', productForm);
+  const description = productForm.getFieldValue('akiProductDescription');
 
   const notify = useNotification();
   const location = useLocation();
@@ -102,6 +104,8 @@ const ProductDetails = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
+    sessionStorage.removeItem('originalCommodityCode');
+    sessionStorage.removeItem('originalCountryOfOrigin');
     const fetchInitialData = async () => {
       try {
         setLoading(true);
@@ -628,8 +632,15 @@ const ProductDetails = forwardRef((props, ref) => {
               </div>
               <div className="relative">
                 <Form.Item label="Product Description" name="akiProductDescription">
-                  <Input.TextArea rows={3} maxLength={charLimit.akiProductDescription} className="pr-12" />
-                  {/* <RichTextEditor value={productForm.getFieldValue('akiProductDescription')} onChange={(val) => productForm.setFieldValue('akiProductDescription', val)} /> */}
+                  <RichTextEditor
+                    value={description}
+                    maxLength={charLimit.akiProductDescription}
+                    onChange={(val) => {
+                      if (val !== productForm.getFieldValue('akiProductDescription')) {
+                        productForm.setFieldValue('akiProductDescription', val);
+                      }
+                    }}
+                  />
                 </Form.Item>
                 <span className="absolute bottom-2 -right-14 ">
                   {akiProductDescription?.length || 0} / {charLimit.akiProductDescription}
@@ -668,7 +679,7 @@ const ProductDetails = forwardRef((props, ref) => {
                     placeholder="Select country"
                     optionFilterProp="label"
                     filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                    options={countries.map((c) => ({value: c.code, label: c.name, key: c.code}))}
+                    options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
                     onChange={originFieldChanges}
                     loading={loading}
                   />
@@ -792,7 +803,22 @@ const ProductDetails = forwardRef((props, ref) => {
           </div>
         </Form>
       </div>
-      <Modal title="Select Category" open={isCategoryModalVisible} onOk={confirmCategorySelection} onCancel={closeCategoryModal} width={1000}>
+      <Modal
+        title="Select Category"
+        open={isCategoryModalVisible}
+        onOk={confirmCategorySelection}
+        onCancel={closeCategoryModal}
+        width={1000}
+        closable={false}
+        footer={[
+          <Button key="cancel" onClick={closeCategoryModal}>
+            Close
+          </Button>,
+          <Button key="ok" type="primary" onClick={confirmCategorySelection}>
+            Ok
+          </Button>,
+        ]}
+      >
         <Input
           placeholder="Search Category Name"
           value={categorySearchValue}
@@ -808,7 +834,7 @@ const ProductDetails = forwardRef((props, ref) => {
         />
         <Table columns={categoryModalColumns} dataSource={filteredCategories} rowKey="akiCategoryID" size="small" bordered loading={loadingProductModal} />
       </Modal>
-      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={1000} destroyOnClose>
+      <Modal title="Add Product" open={isVisibleAddProductModal} onCancel={handleAddModalCancel} footer={null} width={1000} destroyOnClose closable={false}>
         <Form form={addAssociatedProductForm} layout="vertical" onFinish={handleAddAssociatedProductSubmit} className="px-3 py-1">
           <div className="grid grid-cols-2 gap-x-4">
             <Form.Item label="List Order" name="listorder" rules={[{required: true, message: 'Required'}]}>
@@ -856,7 +882,22 @@ const ProductDetails = forwardRef((props, ref) => {
           />
         </div>
       </Modal>
-      <Modal title="Attribute Set Form" open={isSetAttributeVisable} onCancel={() => setIsSetAttributeVisable(false)} footer={null} width={1100} destroyOnClose>
+      <Modal
+        title={
+          <div className="flex justify-between items-center">
+            <span>Attribute Set Form</span>
+            <Button type="default" onClick={() => setIsSetAttributeVisable(false)}>
+              Close
+            </Button>
+          </div>
+        }
+        open={isSetAttributeVisable}
+        onCancel={() => setIsSetAttributeVisable(false)}
+        footer={null}
+        width={1100}
+        destroyOnClose
+        closable={false}
+      >
         {attributslist && <CategoryAttribute categoryData={attributslist} onDataChange={handleDataChange} />}
       </Modal>
       <Modal
@@ -867,9 +908,7 @@ const ProductDetails = forwardRef((props, ref) => {
           setChangeType(null);
         }}
         footer={[
-          <Button key="cancel" onClick={handleConfirmCancel}>
-            No
-          </Button>,
+          <Button onClick={handleConfirmCancel}>No</Button>,
           <Button key="ok" type="primary" onClick={handleConfirmOk}>
             Yes
           </Button>,

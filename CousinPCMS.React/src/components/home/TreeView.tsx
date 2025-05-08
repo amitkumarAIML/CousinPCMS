@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import {Tree, Spin, message, Menu, Modal} from 'antd';
+import {Tree, Spin, message, Menu, Modal, Button} from 'antd';
 import {EditOutlined, FolderOpenOutlined, FolderOutlined, PartitionOutlined, PlusOutlined} from '@ant-design/icons';
 import type {TreeDataNode, TreeProps} from 'antd';
 import type {EventDataNode, DataNode} from 'antd/es/tree';
@@ -613,7 +613,22 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           <Menu onClick={handleMenuClick} items={getMenuItems()} />
         </div>
       )}
-      <Modal title="Attribute Set Form" open={categoryAttriisVisible} onCancel={handleAttributeModalCancel} footer={null} width={1100} destroyOnClose>
+      <Modal
+        title={
+          <div className="flex justify-between items-center">
+            <span>Attribute Set Form</span>
+            <Button type="default" onClick={handleAttributeModalCancel}>
+              Close
+            </Button>
+          </div>
+        }
+        open={categoryAttriisVisible}
+        onCancel={handleAttributeModalCancel}
+        footer={null}
+        width={1100}
+        destroyOnClose
+        closable={false}
+      >
         {categoryData && <CategoryAttribute categoryData={categoryData} onDataChange={handleAttributeModalCancel} />}
       </Modal>
     </div>
