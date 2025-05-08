@@ -754,7 +754,6 @@ const Category = () => {
                         pagination={false}
                         size="small"
                         bordered
-                        virtual
                         showSorterTooltip={false}
                       />
                     </Form>

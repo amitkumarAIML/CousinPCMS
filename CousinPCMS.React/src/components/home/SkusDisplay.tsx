@@ -22,7 +22,6 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
-  const type = 'DraggableBodyRow';
   const notify = useNotification();
   const navigate = useNavigate();
 
@@ -278,7 +277,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
               size="small"
               bordered
               pagination={false}
-              locale={{emptyText: displayText}}
+              locale={{emptyText: <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>}}
               onRow={(record, index) => ({
                 index,
                 'data-row-key': record.akiitemid,
