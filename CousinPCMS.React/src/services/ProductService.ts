@@ -10,7 +10,7 @@ import {
   Product,
 } from '../models/productModel';
 import {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
-import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
+import {LinkDeleteRequestModel, LinkRequestModel, LinkValue, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import {ApiResponse} from '../models/generalModel';
 
 export const updateProduct = async (productData: ProductRequest): Promise<ApiResponse<string>> => {
@@ -53,6 +53,12 @@ export const updateProductAdditionalImage = async (productData: UpdateAdditional
   const response = await http.post<ApiResponse<string>>('Product/UpdateProductAdditionalImages', productData);
   return response;
 };
+
+export const updateProductLinkUrls = async (productData: UpdateLinkOrderModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Product/UpdateProductLinkUrls', productData);
+  return response;
+};
+
 
 export const deleteProductLinkUrl = async (productData: LinkDeleteRequestModel): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Product/DeleteProductLinkUrl', productData);

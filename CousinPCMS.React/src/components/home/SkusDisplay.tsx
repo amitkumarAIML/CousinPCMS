@@ -218,7 +218,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       width: 150,
       sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
     },
-    {title: 'Ctr of Org', dataIndex: 'countryRegionOfOriginCode', width: 150},
+    {title: 'Ctr of Org', dataIndex: 'akiCountryofOrigin', width: 150},
     {
       title: 'Comm Code',
       dataIndex: 'akiCommodityCode',

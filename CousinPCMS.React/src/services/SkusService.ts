@@ -3,7 +3,7 @@ import {layoutSkus, layoutSkusResponse} from '../models/layoutTemplateModel';
 import {ItemModelResponse} from '../models/itemModel';
 import {CompetitorItem, CompetitorItemResponse} from '../models/competitorModel';
 import {ApiResponse} from '../models/generalModel';
-import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
+import {LinkDeleteRequestModel, LinkRequestModel, LinkValue, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import {AdditionalImageDeleteRequestModel, AdditionalImagesModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 import {LikedSkuModel, RelatedSkuItem, RelatedSkuModel, SKuList, SkuRequestModel, UpdateSKULinkedAttribute} from '../models/skusModel';
 import {AttributeModel} from '../models/attributeModel';
@@ -87,6 +87,11 @@ export const saveSkuImagesUrl = async (SkuData: AdditionalImagesModel): Promise<
 
 export const updateSkuAdditionalImage = async (SkuData: UpdateAdditionalImagesModel): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Skus/UpdateSkuAdditionalImage', SkuData);
+  return response;
+};
+
+export const updateSkuLinkUrls = async (SkuData: UpdateLinkOrderModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Skus/UpdateSkuLinkUrls', SkuData);
   return response;
 };
 

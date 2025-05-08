@@ -10,7 +10,7 @@ import {
   UpdateCategoryModel,
 } from '../models/additionalCategoryModel';
 import {ApiResponse} from '../models/generalModel';
-import {LinkDeleteRequestModel, LinkRequestModel, LinkValue} from '../models/linkMaintenanaceModel';
+import {LinkDeleteRequestModel, LinkRequestModel, LinkValue, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import {AdditionalImageDeleteRequestModel, AdditionalImagesModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 
 export const getAdditionalCategory = async (categoryId: string): Promise<AdditionalCategoryModel[]> => {
@@ -87,6 +87,12 @@ export const saveCategoryLinkUrl = async (CategoryData: LinkRequestModel): Promi
   const response = await http.post<ApiResponse<string>>('Category/AddCategoryLinkUrls', CategoryData);
   return response;
 };
+
+export const updateCategoryLinkUrls = async (CategoryData: UpdateLinkOrderModel): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Category/UpdateCategoryLinkUrls', CategoryData);
+  return response;
+};
+
 
 export const getCategoryById = async (categoryId: string): Promise<ApiResponse<categoryResponse>> => {
   const response = await http.get<ApiResponse<categoryResponse>>('Category/GetCategoryById', {params: {categoryId}});

@@ -1,14 +1,17 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router';
 import {Button, Input, Select, Form, Spin, List, Popconfirm} from 'antd';
-import {DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons';
-import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl} from '../services/ProductService';
-import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl} from '../services/CategoryService';
-import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl} from '../services/SkusService';
+import {DeleteOutlined, MenuOutlined, QuestionCircleOutlined} from '@ant-design/icons';
+import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl, updateProductLinkUrls} from '../services/ProductService';
+import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl, updateCategoryLinkUrls} from '../services/CategoryService';
+import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl, updateSkuLinkUrls} from '../services/SkusService';
 import {useNotification} from '../contexts.ts/useNotification';
-import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel} from '../models/linkMaintenanaceModel';
+import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import type {ApiResponse} from '../models/generalModel';
 import {getSessionItem} from '../services/DataService';
+import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {closestCenter, DndContext, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {CSS} from '@dnd-kit/utilities';
 
 const {Option} = Select;
 
@@ -25,6 +28,7 @@ const LinkMaintenance = () => {
 
   const location = useLocation();
   const notify = useNotification();
+  const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {distance: 5}}));
 
   const fetchLinks = useCallback(
     async (id: string | number, type: 'product' | 'category' | 'sku') => {
@@ -48,8 +52,10 @@ const LinkMaintenance = () => {
         }
 
         if (response.isSuccess && response.value) {
-          setLinks(response.value);
-          if (response.value.length === 0) {
+          // Ensure links are sorted by listorder if property exists
+          const sortedLinks = response.value.sort((a, b) => (a.listorder || 0) - (b.listorder || 0));
+          setLinks(sortedLinks);
+          if (sortedLinks.length === 0) {
             setDisplayText('No links added yet.');
           }
         } else {
@@ -67,7 +73,7 @@ const LinkMaintenance = () => {
     [notify]
   );
 
-  useEffect(() => {
+  const handleContextAndFetchLinks = useCallback(() => {
     const path = location.pathname.toLowerCase();
     let id: string | number | undefined;
     let type: 'product' | 'category' | 'sku' | null = null;
@@ -77,7 +83,7 @@ const LinkMaintenance = () => {
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('CategoryId') || getSessionItem('tempProductId');
+      id = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
       type = 'category';
     } else if (path.includes('/skus')) {
       id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
@@ -96,6 +102,10 @@ const LinkMaintenance = () => {
       setDisplayText('Context ID not found.');
     }
   }, [location.pathname, fetchLinks]);
+
+  useEffect(() => {
+    handleContextAndFetchLinks();
+  }, [handleContextAndFetchLinks]);
 
   const goBack = () => {
     window.history.back();
@@ -127,13 +137,16 @@ const LinkMaintenance = () => {
         return;
       }
 
+      const maxListOrder = links.length > 0 ? Math.max(...links.map((link) => link.listorder || 0)) : 0;
+      const nextListOrder = maxListOrder + 1;
+
       const requestData: LinkRequestModel = {
         ...values,
+        listorder: nextListOrder,
         productID: contextType === 'product' ? (contextId as number) : undefined,
         categoryID: contextType === 'category' ? (contextId as string) : undefined,
         skuItemID: contextType === 'sku' ? (contextId as string) : undefined,
       };
-
       let response: ApiResponse<string>;
       switch (contextType) {
         case 'product':
@@ -152,7 +165,7 @@ const LinkMaintenance = () => {
       if (response.isSuccess) {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} Video link added successfully`);
         form.resetFields();
-        setLinks((prev) => [...prev, values]);
+        setLinks((prev) => [...prev, requestData]);
       } else {
         notify.error('Failed to add link.');
       }
@@ -168,7 +181,7 @@ const LinkMaintenance = () => {
     }
   };
 
-  const handleDeleteLink = async (linkToDelete: LinkValue, index: number) => {
+  const handleDeleteLink = async (linkToDelete: LinkValue) => {
     if (!contextId || !contextType) {
       notify.error('Context ID or Type is missing.');
       return;
@@ -202,7 +215,7 @@ const LinkMaintenance = () => {
 
       if (response.isSuccess) {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} Video link successfully deleted.`);
-        setLinks((prevList) => prevList.filter((_, i) => i !== index));
+        await handleContextAndFetchLinks();
       } else {
         notify.error('Failed to delete link.');
       }
@@ -212,6 +225,96 @@ const LinkMaintenance = () => {
       setLoadingData(false);
     }
   };
+
+  // Function to handle drag end and persist order
+  const handleLinkDragEnd = async ({active, over}: {active: any; over: any}) => {
+    if (active.id !== over?.id) {
+      const oldIndex = links.findIndex((link) => link.linkURL === active.id);
+      const newIndex = links.findIndex((link) => link.linkURL === over?.id);
+      const newOrder = arrayMove(links, oldIndex, newIndex);
+
+      // Call API to persist new order
+      setLoadingData(true);
+      try {
+        const link = links.find((link) => link.linkURL === active.id);
+        if (!link) {
+          notify.error('Link not found.');
+          setLoadingData(false);
+          return;
+        }
+
+        const oldListOrder = link.listorder || 0;
+        const newListOrder = links[newIndex]?.listorder || 0;
+
+        const updateRequest: UpdateLinkOrderModel = {
+          newlistorder: newListOrder,
+          oldlistorder: oldListOrder,
+          ...(contextType === 'product' && {productlinkid: link.producturlID}),
+          ...(contextType === 'category' && {categoryurlID: link.categoryurlID}),
+          ...(contextType === 'sku' && {skuitemURLID: link.skuitemURLid}),
+        };
+        let response: ApiResponse<string>;
+        switch (contextType) {
+          case 'product':
+            response = await updateProductLinkUrls(updateRequest);
+            break;
+          case 'category':
+            response = await updateCategoryLinkUrls(updateRequest);
+            break;
+          case 'sku':
+            response = await updateSkuLinkUrls(updateRequest);
+            break;
+          default:
+            throw new Error('Invalid context type for updating link order');
+        }
+
+        if (response.isSuccess) {
+          setLinks(newOrder);
+          notify.success('Image order updated successfully.');
+        } else {
+          notify.error('Failed to update link order.');
+        }
+      } catch (error) {
+        console.error('Error updating link order:', error);
+        notify.error('Failed to update link order.');
+      } finally {
+        setLoadingData(false);
+      }
+    }
+  };
+
+  // Sortable Link Item component
+  function SortableLinkItem({id, link, onDelete}: {id: string | number; link: LinkValue; onDelete: (link: LinkValue) => void}) {
+    const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      background: isDragging ? '#f0f0f0' : undefined,
+      cursor: 'grab',
+      marginBottom: 0,
+    };
+
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id}>
+        <List.Item
+          className="flex justify-between items-center px-2 py-1"
+          actions={[
+            <Popconfirm title="Delete this link?" onConfirm={() => onDelete(link)} okText="Yes" cancelText="No" placement="left" icon={<QuestionCircleOutlined style={{color: 'red'}} />}>
+              <Button type="text" danger size="small" icon={<DeleteOutlined />} />
+            </Popconfirm>,
+          ]}
+        >
+          <span className="flex items-center flex-grow truncate">
+            <Button type="text" size="small" icon={<MenuOutlined />} {...listeners} style={{cursor: 'grab', marginRight: 8}} className="drag-handle" />
+            <span className="text-sm truncate" title={`(${link.linkURL})`}>
+              {link.linkURL}
+            </span>
+          </span>
+        </List.Item>
+      </div>
+    );
+  }
 
   return (
     <div className="main-container">
@@ -231,32 +334,17 @@ const LinkMaintenance = () => {
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[70vh] overflow-y-auto">
                 {links.length > 0 ? (
-                  <List
-                    size="small"
-                    dataSource={links}
-                    renderItem={(link, index) => (
-                      <List.Item
-                        key={`${link.linkURL}-${index}`}
-                        className="flex justify-between items-center px-2 py-1 "
-                        actions={[
-                          <Popconfirm
-                            title="Delete this link?"
-                            onConfirm={() => handleDeleteLink(link, index)}
-                            okText="Yes"
-                            cancelText="No"
-                            placement="left"
-                            icon={<QuestionCircleOutlined style={{color: 'red'}} />}
-                          >
-                            <Button type="text" danger size="small" icon={<DeleteOutlined />} />
-                          </Popconfirm>,
-                        ]}
-                      >
-                        <span className="text-sm  truncate" title={link.linkURL}>
-                          {link.linkURL}
-                        </span>
-                      </List.Item>
-                    )}
-                  />
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleLinkDragEnd}>
+                    <SortableContext items={[...links].sort((a, b) => (a.listorder || 0) - (b.listorder || 0)).map((img) => img.linkURL)} strategy={verticalListSortingStrategy}>
+                      <ul style={{margin: 0, padding: 0}} className="divide-y divide-border">
+                        {[...links]
+                          .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
+                          .map((link) => (
+                            <SortableLinkItem key={link.linkURL} id={link.linkURL} link={link} onDelete={handleDeleteLink} />
+                          ))}
+                      </ul>
+                    </SortableContext>
+                  </DndContext>
                 ) : (
                   <div className="flex justify-center items-center h-48 text-secondary-font">{displayText}</div>
                 )}
