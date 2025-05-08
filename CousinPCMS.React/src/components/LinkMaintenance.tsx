@@ -53,7 +53,7 @@ const LinkMaintenance = () => {
             setDisplayText('No links added yet.');
           }
         } else {
-          setDisplayText('Failed to load links.');
+          setDisplayText('No Data.');
           if (response.exceptionInformation) notify.error(String(response.exceptionInformation));
         }
       } catch (error) {
@@ -100,7 +100,6 @@ const LinkMaintenance = () => {
   const goBack = () => {
     window.history.back();
   };
-
 
   const checkDuplicateUrl = (url: string | undefined | null) => {
     const inputValue = url?.trim().toLowerCase();

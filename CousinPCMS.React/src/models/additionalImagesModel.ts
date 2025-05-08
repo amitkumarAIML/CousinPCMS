@@ -22,19 +22,19 @@ export interface AdditionalImageDeleteRequestModel {
 
 export interface UpdateAdditionalImagesModel {
     categoryID?: string;
-    productID?: number;
     skuItemID?: string;
     
-    imageURL: string;
-    imagename: string;
-    listorder?: number;
+    // imageURL: string;
+    // imagename: string;
+    // listorder?: number;
+    // productID?: number;
 
     catimageid?: number;
-    productImageID?: number;
+    productimageid?: number;
     skuImageID?: number;
 
-    newListOrder?: number;
-    oldListOrder?: number;
+    oldlistorder?: number;
+    newlistorder?: number;
 }
  
   

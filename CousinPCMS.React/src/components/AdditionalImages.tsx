@@ -58,7 +58,7 @@ const AdditionalImages = () => {
             setDisplayText('');
           }
         } else {
-          setDisplayText('Failed to load images.');
+          setDisplayText('No Data.');
           if (response.exceptionInformation) notify.error(String(response.exceptionInformation));
         }
       } catch (error) {
@@ -258,16 +258,14 @@ const AdditionalImages = () => {
         const newListOrder = fileList[newIndex]?.listorder || 0;
 
         const updateRequest: UpdateAdditionalImagesModel = {
-          imageURL: image.imageURL,
-          imagename: image.imagename || image.imageURL.replace(/\.[^/.]+$/, ''),
-          // listorder: oldListOrder,
-          newListOrder: newListOrder,
-          oldListOrder: oldListOrder,
-          ...(contextType === 'product' && {productID: image.productID, catimageid: image.catimageid}),
-          ...(contextType === 'category' && {categoryID: image.categoryID, productImageID: image.productImageID}),
-          ...(contextType === 'sku' && {skuItemID: image.skuItemID, skuImageID: image.skuImageID}),
+          // imageURL: image.imageURL,
+          // imagename: image.imagename || image.imageURL.replace(/\.[^/.]+$/, ''),
+          newlistorder: newListOrder,
+          oldlistorder: oldListOrder,
+          ...(contextType === 'product' && {productimageid: image.productImageID}),
+          ...(contextType === 'category' && {catimageid: image.catimageid}),
+          ...(contextType === 'sku' && {skuImageID: image.skuImageID}),
         };
-
         let response: ApiResponse<string>;
         switch (contextType) {
           case 'product':

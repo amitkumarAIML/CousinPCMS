@@ -50,7 +50,7 @@ export const deleteProductImagesUrl = async (productData: AdditionalImageDeleteR
 };
 
 export const updateProductAdditionalImage = async (productData: UpdateAdditionalImagesModel): Promise<ApiResponse<string>> => {
-  const response = await http.post<ApiResponse<string>>('Product/UpdateProductAdditionalImage', productData);
+  const response = await http.post<ApiResponse<string>>('Product/UpdateProductAdditionalImages', productData);
   return response;
 };
 
