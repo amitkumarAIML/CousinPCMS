@@ -569,6 +569,41 @@ namespace CousinPCMS.API.Controllers
             return Ok(responseValue);
         }
 
+
+        /// <summary>
+        /// Update linked URLs for the specified Sku.
+        /// </summary>
+        /// <param name="objModel">An object containing the details of the URLs to be added to the sku.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
+        [HttpPost("UpdateSkuLinkUrls")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateSkuLinkUrls(UpdateSkuLinkUrlRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateSkuLinkUrls)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateSkuLinkUrls(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateSkuLinkUrls)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateSkuLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
         /// <summary>
         /// Adds SKU linked attribute details for respective item.
         /// </summary>
