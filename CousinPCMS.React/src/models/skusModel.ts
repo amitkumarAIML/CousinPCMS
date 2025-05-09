@@ -225,7 +225,7 @@ export interface RelatedSkuModel {
 }
 
 export interface UpdateSKULinkedAttribute {
-  linkedid: number,
+  linkedid?: number,
   akiItemNo: string,
   akiAttributeName: string,
   akiAttributeValue: string,
@@ -242,6 +242,12 @@ export interface RelatedSkuItem {
   itemIsUnavailable: boolean;
   oDataEtag?: string;
   isrelatedSKU?: boolean;
+}
+
+export interface SKusRequestModelForProductOrderList {
+  akiitemid?: string;
+  oldlistorder: number,
+  newlistorder: number
 }
 
 

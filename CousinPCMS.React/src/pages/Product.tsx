@@ -19,7 +19,9 @@ const Product = () => {
     getFormData: () => {validateFields: () => Promise<Product>};
     getCommityCodeChange: () => boolean;
     getCountryOriginChange: () => boolean;
+    setProductId: (id: string) => void;
   } | null>(null);
+  const [formChanged, setFormChanged] = useState(false);
 
   useEffect(() => {
     const hasRealIds = getSessionItem('CategoryId');
@@ -45,8 +47,16 @@ const Product = () => {
     try {
       const response = await action(req);
       if (response?.isSuccess) {
-        notify.success(`Product Details ${isEdit ? 'Updated' : 'Added'} Successfully`);
-        navigate('/home');
+        if (Number(response.value) && Number(response.value) > 0) {
+          if (!isEdit && productFormRef.current) {
+            productFormRef.current.setProductId(response.value);
+            setIsEdit(true);
+          }
+          setFormChanged(false);
+          notify.success(`Product Details ${isEdit ? 'Updated' : 'Added'} Successfully`);
+        } else {
+          notify.error(`Product Details Failed to ${isEdit ? 'Update' : 'Add'}`);
+        }
       } else {
         notify.error(`Product Details Failed to ${isEdit ? 'Update' : 'Add'}`);
       }
@@ -91,7 +101,7 @@ const Product = () => {
         Close
       </Button>
       {activeTab === '1' && (
-        <Button size="small" type="primary" onClick={handleSave} disabled={checkIdValue}>
+        <Button size="small" type="primary" onClick={handleSave} disabled={checkIdValue && isEdit && !formChanged}>
           {isEdit ? 'Update' : 'Save'}
         </Button>
       )}
@@ -111,7 +121,7 @@ const Product = () => {
             {
               label: 'Product Details',
               key: '1',
-              children: <ProductDetails ref={productFormRef} />, // Pass ref
+              children: <ProductDetails ref={productFormRef} onFormChange={setFormChanged} />, // Pass ref
             },
             {
               label: 'SKUs',

@@ -13,7 +13,7 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
 import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem} from '../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../contexts.ts/useNotification';
@@ -53,7 +53,6 @@ const Category = () => {
   });
   const akiCategoryName = Form.useWatch('akiCategoryName', categoryForm);
   const akiCategoryImageURL = Form.useWatch('akiCategoryImageURL', categoryForm);
-  const akiCategoryDescriptionText = Form.useWatch('akiCategoryDescriptionText', categoryForm);
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
   const [indexEntryCount, setIndexEntryCount] = useState<number>();
@@ -93,6 +92,8 @@ const Category = () => {
     akiCategoryDescriptionText: '',
   };
   const description = categoryForm.getFieldValue('akiCategoryDescriptionText');
+  const [plainTextLength, setPlainTextLength] = useState(0);
+  const [formChanged, setFormChanged] = useState(false);
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -280,15 +281,21 @@ const Category = () => {
         const response = await updateCategory(payload);
         if (response.isSuccess) {
           notify.success('Category details updated successfully');
-          navigate('/home');
+          setFormChanged(false);
+          // navigate('/home');
         } else {
           notify.error('Category details not updated');
         }
       } else {
         const response = await addCategory(payload);
         if (response.isSuccess) {
-          notify.success('Category details Added successfully');
-          navigate('/home');
+          if (Number(response.value) && Number(response.value) > 0) {
+            categoryForm.setFieldValue('akiCategoryID', response.value);
+            setIsEdit(true);
+            setFormChanged(false);
+          } else {
+            notify.success('Category details not added');
+          }
         } else {
           notify.error('Category details not added');
         }
@@ -440,6 +447,11 @@ const Category = () => {
     window.location.href = '/category/additional-images';
   };
 
+  useEffect(() => {
+    const plainText = getPlainText(description || '').trim();
+    setPlainTextLength(plainText.length);
+  }, [description]);
+
   const associatedProductColumns: TableProps<AdditionalCategoryModel>['columns'] = [
     {
       title: 'Product Name',
@@ -517,14 +529,22 @@ const Category = () => {
             <Button size="small" onClick={() => navigate('/home')}>
               Close
             </Button>
-            <Button size="small" type="primary" loading={btnLoading} onClick={() => categoryForm.submit()}>
+            <Button size="small" type="primary" loading={btnLoading} onClick={() => categoryForm.submit()} disabled={isEdit && !formChanged}>
               {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
         </div>
         <hr className="mt-2 mb-1 border-light-border" />
         <div className="p-2 pt-3">
-          <Form form={categoryForm} layout="vertical" onFinish={handleCategoryUpdateSubmit} initialValues={defaultValue}>
+          <Form
+            form={categoryForm}
+            layout="vertical"
+            onFinish={handleCategoryUpdateSubmit}
+            initialValues={defaultValue}
+            onValuesChange={() => {
+              setFormChanged(true);
+            }}
+          >
             <div className="grid grid-cols-12 gap-x-20 gap-y-0">
               <div className="col-span-6">
                 <div className="grid grid-cols-3 gap-x-4">
@@ -604,14 +624,14 @@ const Category = () => {
                       value={description}
                       maxLength={charLimit.akiCategoryDescriptionText}
                       onChange={(val) => {
-                        if (val !== categoryForm.getFieldValue('akiCategoryDescriptionText')) {
-                          categoryForm.setFieldValue('akiCategoryDescriptionText', val);
-                        }
+                        const plainText = getPlainText(val || '').trim();
+                        setPlainTextLength(plainText.length);
+                        categoryForm.setFieldValue('akiCategoryDescriptionText', val);
                       }}
                     />
                   </Form.Item>
-                  <span className=" absolute bottom-3 -right-16  ">
-                    {akiCategoryDescriptionText?.length || 0} / {charLimit.akiCategoryDescriptionText}
+                  <span className=" absolute bottom-3 -right-16">
+                    {plainTextLength || 0} / {charLimit.akiCategoryDescriptionText}
                   </span>
                 </div>
                 <div className="flex items-end gap-x-3 relative">
@@ -738,7 +758,7 @@ const Category = () => {
               </div>
               <div className="col-span-12 grid grid-cols-4 gap-x-6 mt-2">
                 <div className="col-span-2">
-                  <div className="border border-border rounded-lg p-2">
+                  <div className="border border-border rounded-lg p-2 h-[100]">
                     <div className="flex justify-between mb-2">
                       <span className="flex font-medium text-secondary-font">Associated Products</span>
                       <Button size="small" type="primary" onClick={showAddProductModal}>
@@ -747,6 +767,7 @@ const Category = () => {
                     </div>
                     <Form form={editAssociatedProductForm} component={false}>
                       <Table
+                        scroll={{y: 150}}
                         columns={associatedProductColumns}
                         dataSource={additionalCategoryList}
                         rowKey="product"

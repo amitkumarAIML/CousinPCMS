@@ -121,3 +121,8 @@ body {
   font-weight: 600;
   margin: 0.5rem 0;
 }
+.ant-spin-container .ant-table-container .ant-table-body {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+  scrollbar-gutter: stable;
+}

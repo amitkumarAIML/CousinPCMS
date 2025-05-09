@@ -22,6 +22,7 @@ const SKUs = () => {
   const [checkIdValueMsg, setCheckIdValueMsg] = useState<string>('');
   const navigate = useNavigate();
   const notify = useNotification();
+  const [formChanged, setFormChanged] = useState(false);
 
   const handleFormInstanceReady = useCallback((form: FormInstance) => {
     setSkuDetailsFormInstance(form);
@@ -53,9 +54,9 @@ const SKUs = () => {
   );
 
   useEffect(() => {
-    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
-    const hasTempIds = getSessionItem('productId') || getSessionItem('tempProductId');
-    if (!hasRealIds || !hasTempIds) {
+    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('productId');
+    const hasTempIds = getSessionItem('tempCategoryId') || getSessionItem('tempProductId');
+    if (!hasRealIds && !hasTempIds) {
       setCheckIdValueMsg('Select respective category and product to view SKUs');
       setCheckIdValue(true);
       setLoading(false);
@@ -101,20 +102,27 @@ const SKUs = () => {
           const response = await updateSkus(req);
           if (response.isSuccess) {
             notify.success('SKU Details Updated Successfully');
-            navigate('/home');
+            setFormChanged(false);
+            // navigate('/home');
           } else {
-            setBtnSaveLoading(false);
             notify.error('SKU Details Update Failed');
           }
+          setBtnSaveLoading(false);
         } else {
           const response = await addSkus(req);
           if (response.isSuccess) {
-            notify.success('SKU Details Added Successfully');
-            navigate('/home');
+            if (Number(response.value) && Number(response.value) > 0) {
+              skuDetailsFormInstance.setFieldValue('akiSKUID', response.value);
+              setIsEdit(true);
+              setFormChanged(false);
+              notify.success('SKU Details Added Successfully');
+            } else {
+              notify.error('SKU Details Added Failed');
+            }
           } else {
-            setBtnSaveLoading(false);
             notify.error('SKU Details Added Failed');
           }
+          setBtnSaveLoading(false);
         }
       } catch (errorInfo: unknown) {
         setBtnSaveLoading(false);
@@ -132,7 +140,7 @@ const SKUs = () => {
         Close
       </Button>
       {activeTab === '1' && (
-        <Button size="small" type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={checkIdValue}>
+        <Button size="small" type="primary" loading={btnSaveLoading} onClick={handleSave} disabled={checkIdValue || (isEdit && !formChanged)}>
           {isEdit ? 'Update' : 'Save'}
         </Button>
       )}
@@ -143,7 +151,7 @@ const SKUs = () => {
     {
       label: 'Sku',
       key: '1',
-      children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} />,
+      children: <SKUDetails skuData={skuData} onFormInstanceReady={handleFormInstanceReady} onFormChange={setFormChanged} />,
     },
     {
       label: 'Related Skus',

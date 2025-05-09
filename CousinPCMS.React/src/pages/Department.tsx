@@ -6,7 +6,7 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {getCommodityCodes, cleanEmptyNullToString, getSessionItem} from '../services/DataService';
+import {getCommodityCodes, cleanEmptyNullToString, getSessionItem, getPlainText} from '../services/DataService';
 import {useNotification} from '../contexts.ts/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
@@ -24,14 +24,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const akiDepartmentName = Form.useWatch('akiDepartmentName', form);
-  const akiDepartmentDescText = Form.useWatch('akiDepartmentDescText', form);
   const akiDepartmentImageURL = Form.useWatch('akiDepartmentImageURL', form);
   const akiDepartmentKeyWords = Form.useWatch('akiDepartmentKeyWords', form);
   const charLimit = DepartmentCharLimit;
-  // const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartment');
+
   const [isEdit, setIsEdit] = useState(false);
   const notify = useNotification();
   const description = form.getFieldValue('akiDepartmentDescText');
+  const [formChanged, setFormChanged] = useState(false);
+  const [plainTextLength, setPlainTextLength] = useState(0);
 
   useEffect(() => {
     const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartmentId');
@@ -115,14 +116,14 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       .validateFields()
       .then((values) => {
         values.akiDepartmentIsActive = true;
-        console.log('Form values:', values);
         const cleanedForm = cleanEmptyNullToString(values);
         if (isEdit) {
           updateDepartment(cleanedForm)
             .then((response) => {
               if (response.isSuccess) {
                 notify.success('Department Details Updated Successfully');
-                navigate('/home');
+                setFormChanged(false);
+                // navigate('/home');
               } else {
                 notify.error('Department Details Failed to Update');
               }
@@ -135,8 +136,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
           addDepartment(cleanedForm)
             .then((response) => {
               if (response.isSuccess) {
-                notify.success('Department Details Added Successfully');
-                navigate('/home');
+                if (Number(response.value) && Number(response.value) > 0) {
+                  notify.success('Department Details Added Successfully');
+                  form.setFieldValue('akiDepartmentID', response.value);
+                  setIsEdit(true);
+                  setFormChanged(false);
+                } else {
+                  notify.error('Department Details Failed to Add');
+                }
+                // navigate('/departments/edit');
               } else {
                 notify.error('Department Details Failed to Add');
               }
@@ -152,6 +160,11 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       });
   };
 
+  useEffect(() => {
+    const plainText = getPlainText(description || '').trim();
+    setPlainTextLength(plainText.length);
+  }, [description]);
+
   return (
     <Spin spinning={loading}>
       <div className="main-container">
@@ -161,7 +174,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             <Button size="small" type="default" onClick={() => navigate('/home')}>
               Close
             </Button>
-            <Button size="small" type="primary" onClick={handleFormSubmit}>
+            <Button size="small" type="primary" onClick={handleFormSubmit} disabled={isEdit && !formChanged}>
               {isEdit ? 'Update' : 'Save'}
             </Button>
           </div>
@@ -172,12 +185,13 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             form={form}
             layout="vertical"
             className="rounded-lg"
+            onValuesChange={() => {
+              setFormChanged(true);
+            }}
             initialValues={{
               akiDepartmentWebActive: false,
               akiDeptPromptUserifblank: false,
               akiDepartmentIsActive: true,
-              // akiColor: '#F7941D', // Default valid hex color
-              // akiFeaturedProdBGColor: '#FFFF80', // Default valid hex color
               akiDepartmentImageWidth: 0,
               akiDepartmentImageHeight: 0,
             }}
@@ -196,7 +210,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                     <Form.Item label="Department Name" name="akiDepartmentName" rules={[{required: true, message: 'Please enter a department name'}]} colon={false} className="w-full">
                       <Input maxLength={charLimit.akiDepartmentName} className="w-full " />
                     </Form.Item>
-                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2  text-xs">
+                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2 ">
                       {akiDepartmentName?.length || 0} / {charLimit.akiDepartmentName}
                     </span>
                   </div>
@@ -216,14 +230,14 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                         value={description}
                         maxLength={charLimit.akiDepartmentDescText}
                         onChange={(val) => {
-                          if (val !== form.getFieldValue('akiDepartmentDescText')) {
-                            form.setFieldValue('akiDepartmentDescText', val);
-                          }
+                          const plainText = getPlainText(val || '').trim();
+                          setPlainTextLength(plainText.length);
+                          form.setFieldValue('akiDepartmentDescText', val);
                         }}
                       />
                     </Form.Item>
-                    <span className=" absolute bottom-3 -right-16  text-xs">
-                      {akiDepartmentDescText?.length || 0} / {charLimit.akiDepartmentDescText}
+                    <span className="absolute bottom-2 -right-16">
+                      {plainTextLength || 0} / {charLimit.akiDepartmentDescText}
                     </span>
                   </div>
 
@@ -246,7 +260,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                         Upload
                       </Button>
                     </Upload>
-                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2  text-xs">
+                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2 ">
                       {akiDepartmentImageURL?.length || 0} / {charLimit.akiDepartmentImageURL}
                     </span>
                   </div>
@@ -261,7 +275,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                     <Form.Item label="Key Words" name="akiDepartmentKeyWords" colon={false}>
                       <Input maxLength={charLimit.akiDepartmentKeyWords} className="w-full " />
                     </Form.Item>
-                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2  text-xs">
+                    <span className=" absolute -right-14 top-7 transform -translate-y-1/2 ">
                       {akiDepartmentKeyWords?.length || 0} / {charLimit.akiDepartmentKeyWords}
                     </span>
                   </div>

@@ -44,3 +44,9 @@ export const setSessionItem = (key: string, value: any) => {
   sessionStorage.setItem(key, JSON.stringify(value));
 } 
 
+export const getPlainText = (html: string) => {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  return tempDiv.textContent || tempDiv.innerText || '';
+};
+

@@ -102,3 +102,16 @@ export interface AdditionalProductModel {
     isError: boolean;
     exceptionInformation: unknown;
   }
+
+  export interface AdditionalProductResponse {
+    value: AdditionalProductModel[];
+    isSuccess: boolean;
+    isError: boolean;
+    exceptionInformation: unknown;
+  }
+
+  export interface ProductRequestModelForProductOrderList{
+    akiProductID?:number;
+    oldlistorder: number,
+    newlistorder: number
+}

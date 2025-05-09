@@ -7,7 +7,7 @@ import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
 import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
-import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem, setSessionItem} from '../../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
 import {Country} from '../../models/countryOriginModel';
 import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
@@ -40,7 +40,11 @@ interface TableParams {
   filters?: Record<string, FilterValue | null>;
 }
 
-const ProductDetails = forwardRef((props, ref) => {
+interface ProductDetailsProps {
+  onFormChange?: (changed: boolean) => void;
+}
+
+const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref) => {
   const [productForm] = Form.useForm<Product>();
   const [editAssociatedProductForm] = Form.useForm<Omit<AdditionalProductModel, 'additionalProductName'>>();
   const [addAssociatedProductForm] = Form.useForm<Omit<AssociatedProductRequestModelForProduct, 'product' | 'addproduct'> & {product: string}>();
@@ -86,9 +90,9 @@ const ProductDetails = forwardRef((props, ref) => {
   const [countryOriginChange, setCountryOriginChange] = useState(false);
 
   const akiProductName = Form.useWatch('akiProductName', productForm);
-  const akiProductDescription = Form.useWatch('akiProductDescription', productForm);
   const akiProductImageURL = Form.useWatch('akiProductImageURL', productForm);
   const description = productForm.getFieldValue('akiProductDescription');
+  const [plainTextLength, setPlainTextLength] = useState(0);
 
   const notify = useNotification();
   const location = useLocation();
@@ -189,9 +193,14 @@ const ProductDetails = forwardRef((props, ref) => {
   }, [productForm, notify, location.pathname]);
 
   useImperativeHandle(ref, () => ({
-    getFormData: () => productForm,
+    getFormData: () => ({
+      validateFields: () => productForm.validateFields(),
+    }),
     getCommityCodeChange: () => commityCodeChange,
     getCountryOriginChange: () => countryOriginChange,
+    setProductId: (id: number) => {
+      productForm.setFieldsValue({akiProductID: id});
+    },
   }));
 
   const fetchAdditionalProduct = useCallback(
@@ -591,6 +600,11 @@ const ProductDetails = forwardRef((props, ref) => {
     setChangeType(null);
   };
 
+  useEffect(() => {
+    const plainText = getPlainText(description || '').trim();
+    setPlainTextLength(plainText.length);
+  }, [description]);
+
   const handleDataChange = () => {
     notify.success('Attribute data updated successfully.');
   };
@@ -598,7 +612,16 @@ const ProductDetails = forwardRef((props, ref) => {
   return (
     <Spin spinning={loading || productLoading}>
       <div className="px-4">
-        <Form form={productForm} layout="vertical" initialValues={defaultValue}>
+        <Form
+          form={productForm}
+          layout="vertical"
+          initialValues={defaultValue}
+          onValuesChange={() => {
+            if (onFormChange) {
+              onFormChange(true);
+            }
+          }}
+        >
           <Form.Item name="category_Name" style={{display: 'none'}}>
             <Input type="hidden" />
           </Form.Item>
@@ -636,14 +659,14 @@ const ProductDetails = forwardRef((props, ref) => {
                     value={description}
                     maxLength={charLimit.akiProductDescription}
                     onChange={(val) => {
-                      if (val !== productForm.getFieldValue('akiProductDescription')) {
-                        productForm.setFieldValue('akiProductDescription', val);
-                      }
+                      const plainText = getPlainText(val || '').trim();
+                      setPlainTextLength(plainText.length);
+                      productForm.setFieldValue('akiProductDescription', val);
                     }}
                   />
                 </Form.Item>
                 <span className="absolute bottom-2 -right-14 ">
-                  {akiProductDescription?.length || 0} / {charLimit.akiProductDescription}
+                  {plainTextLength || 0} / {charLimit.akiProductDescription}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-x-4 items-end">
@@ -768,7 +791,7 @@ const ProductDetails = forwardRef((props, ref) => {
             </div>
             <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-2">
               <div className="col-span-6 ">
-                <div className="border border-border rounded-lg p-2">
+                <div className="border border-border rounded-lg p-2 h-[100]">
                   <div className="flex justify-between mb-2">
                     <span className="flex font-medium text-secondary-font">Associated Products</span>
 
@@ -778,7 +801,7 @@ const ProductDetails = forwardRef((props, ref) => {
                   </div>
                   <Form form={editAssociatedProductForm} component={false}>
                     <Table
-                      className="h-[150px]"
+                      scroll={{y: 150}}
                       columns={associatedProductColumns}
                       dataSource={additionalProductList}
                       rowKey="additionalProduct"

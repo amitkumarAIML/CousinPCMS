@@ -8,7 +8,7 @@ import {useNotification} from '../../contexts.ts/useNotification';
 import {RelatedSkuItem, RelatedSkuModel, SKuList} from '../../models/skusModel';
 
 interface RelatedSkuProps {
-  skuData: SKuList;
+  skuData: SKuList | null;
 }
 
 const RelatedSKUs: React.FC<RelatedSkuProps> = ({skuData}) => {

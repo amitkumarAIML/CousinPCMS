@@ -1,7 +1,7 @@
 import {http} from '../auth/HttpClient';
 import {DepartmentResponse} from '../models/departmentModel';
-import {ProductResponse} from '../models/productModel';
-import {SkuListResponse} from '../models/skusModel';
+import {ProductRequestModelForProductOrderList, ProductResponse} from '../models/productModel';
+import {SkuListResponse, SKusRequestModelForProductOrderList} from '../models/skusModel';
 import {AddAttributeSetRequestModel, AttributeModel, AttributeModelResponse, AttributeSetModel} from '../models/attributeModel';
 import {ApiResponse} from '../models/generalModel';
 import {categoryResponse} from '../models/additionalCategoryModel';
@@ -55,3 +55,13 @@ export const updateAttributeSets1 = async (attributesData: AddAttributeSetReques
   const response = await http.post<ApiResponse<string>>(`Attributes/UpdateAttributeSets`, attributesData);
   return response;
 };
+
+export const updateProductListOrderForHomeScreen = async (data: ProductRequestModelForProductOrderList): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>(`Product/UpdateProductListOrderForHomeScreen`, data);
+  return response;
+};
+
+export const updateSkuListOrderForHomeScreen = async (data: SKusRequestModelForProductOrderList): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>(`Skus/UpdateSkuListOrderForHomeScreen`, data);
+  return response;
+}

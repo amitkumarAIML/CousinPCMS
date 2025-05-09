@@ -258,8 +258,6 @@ const AdditionalImages = () => {
         const newListOrder = fileList[newIndex]?.listorder || 0;
 
         const updateRequest: UpdateAdditionalImagesModel = {
-          // imageURL: image.imageURL,
-          // imagename: image.imagename || image.imageURL.replace(/\.[^/.]+$/, ''),
           newlistorder: newListOrder,
           oldlistorder: oldListOrder,
           ...(contextType === 'product' && {productimageid: image.productImageID}),

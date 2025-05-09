@@ -4,8 +4,8 @@ import {Form, Input, InputNumber, Select, Checkbox, Button, Upload, Modal, Spin}
 import type {FormInstance} from 'antd/es/form';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
-import {getLayoutTemplateList, getCompetitorDetails, getPriceGroupDetails, getPriceBreaksDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem, setSessionItem} from '../../services/DataService';
+import {getCompetitorDetails, getLayoutTemplateList, getPriceBreaksDetails, getPriceGroupDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
 import {useNotification} from '../../contexts.ts/useNotification';
 import type {Country} from '../../models/countryOriginModel';
 import type {CommodityCode} from '../../models/commodityCodeModel';
@@ -22,6 +22,7 @@ import RichTextEditor from '../RichTextEditor';
 interface SkuDetailsProps {
   skuData?: SKuList | null;
   onFormInstanceReady: (form: FormInstance<SKuList>) => void;
+  onFormChange?: (changed: boolean) => void;
 }
 
 interface SkuFormValues extends SKuList {
@@ -29,7 +30,7 @@ interface SkuFormValues extends SKuList {
   urlLinks?: string;
 }
 
-const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) => {
+const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, onFormChange}) => {
   const [form] = Form.useForm<SkuFormValues>();
   const navigate = useNavigate();
 
@@ -48,7 +49,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
   const charLimit = ItemCharLimit;
 
   const skuName = Form.useWatch('skuName', form);
-  const akiSKUDescription = Form.useWatch('akiSKUDescription', form);
   const akiManufacturerRef = Form.useWatch('akiManufacturerRef', form);
   const akiitemid = Form.useWatch('akiitemid', form);
   const akiImageURL = Form.useWatch('akiImageURL', form);
@@ -73,7 +73,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     },
     [notify]
   );
-  const description = form.getFieldValue('akiSKUDescription');
+  const [plainTextLength, setPlainTextLength] = useState(0);
   const defaultValue = {
     akiGuidePriceTBC: 0,
     akiGuideWeightTBC: 0,
@@ -102,6 +102,13 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
     onFormInstanceReady(form);
   }, [form, onFormInstanceReady]);
 
+  const description = Form.useWatch('akiSKUDescription', form);
+
+  useEffect(() => {
+    const plainText = getPlainText(description || '').trim();
+    setPlainTextLength(plainText.length);
+  }, [description]);
+
   useEffect(() => {
     const hasRealIds = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
     const hasTempIds = getSessionItem('productId') || getSessionItem('tempProductId');
@@ -111,6 +118,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
     const fetchDropdowns = async () => {
       try {
+        //
         const [countryRes, commRes, layoutRes, compRes, pgRes, pbRes, pfRes] = await Promise.all([
           getCountryOrigin(),
           getCommodityCodes(),
@@ -210,7 +218,16 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
 
   return (
     <div className="px-4">
-      <Form form={form} layout="vertical" initialValues={defaultValue}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={defaultValue}
+        onValuesChange={() => {
+          if (onFormChange) {
+            onFormChange(true);
+          }
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-0">
           <div className="lg:col-span-6 md:col-span-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-3">
@@ -240,14 +257,14 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                   value={description}
                   maxLength={charLimit.akiSKUDescription}
                   onChange={(val) => {
-                    if (val !== form.getFieldValue('akiSKUDescription')) {
-                      form.setFieldValue('akiSKUDescription', val);
-                    }
+                    const plainText = getPlainText(val || '').trim();
+                    setPlainTextLength(plainText.length);
+                    form.setFieldValue('akiSKUDescription', val);
                   }}
                 />
               </Form.Item>
-              <span className="absolute bottom-2 -right-12">
-                {akiSKUDescription?.length || 0} / {charLimit.akiSKUDescription}
+              <span className="absolute bottom-2 -right-14">
+                {plainTextLength || 0} / {charLimit.akiSKUDescription}
               </span>
             </div>
 
@@ -412,43 +429,37 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady}) =
                 </Form.Item>
               </div>
             </div>
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <label className="font-medium text-primary-font block mb-1">Price Details</label>
-              <div className="border border-border rounded-lg p-3">
-                <div className="grid grid-cols-1 gap-y-3">
-                  <Form.Item label="Price Formula" name="akiPricingFormula" className="mb-0">
-                    <Select
-                      allowClear
-                      showSearch
-                      placeholder="Select formula"
-                      optionFilterProp="label"
-                      options={pricingFormulas.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))}
-                    />
-                  </Form.Item>
-                  <Form.Item label="Competitors" name="akiCompetitors" className="mb-0">
-                    <Select
-                      allowClear
-                      showSearch
-                      placeholder="Select competitor"
-                      optionFilterProp="label"
-                      options={competitors.map((opt) => ({value: opt.akiCompetitorID, label: opt.akiCompetitorName, key: opt.akiCompetitorID}))}
-                    />
-                  </Form.Item>
-                  <Form.Item label="Price Break" name="akiPriceBreak" className="mb-0">
-                    <Select allowClear showSearch placeholder="Select break" optionFilterProp="label" options={priceBreaks.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))} />
-                  </Form.Item>
-                  <Form.Item label="Price Group" name="akiPriceGroup" className="mb-0">
-                    <Select
-                      allowClear
-                      showSearch
-                      placeholder="Select group"
-                      optionFilterProp="label"
-                      options={priceGroupItem.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))}
-                    />
-                  </Form.Item>
-                </div>
-              </div>
+              <div className="border border-border rounded-lg p-3"> */}
+            <div className="grid grid-cols-1 gap-y-3">
+              <Form.Item label="Price Formula" name="akiPricingFormula" className="mb-0" hidden>
+                <Select
+                  allowClear
+                  showSearch
+                  placeholder="Select formula"
+                  optionFilterProp="label"
+                  options={pricingFormulas.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))}
+                />
+              </Form.Item>
+              <Form.Item label="Competitors" name="akiCompetitors" className="mb-0" hidden>
+                <Select
+                  allowClear
+                  showSearch
+                  placeholder="Select competitor"
+                  optionFilterProp="label"
+                  options={competitors.map((opt) => ({value: opt.akiCompetitorID, label: opt.akiCompetitorName, key: opt.akiCompetitorID}))}
+                />
+              </Form.Item>
+              <Form.Item label="Price Break" name="akiPriceBreak" className="mb-0" hidden>
+                <Select allowClear showSearch placeholder="Select break" optionFilterProp="label" options={priceBreaks.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))} />
+              </Form.Item>
+              <Form.Item label="Price Group" name="akiPriceGroup" className="mb-0" hidden>
+                <Select allowClear showSearch placeholder="Select group" optionFilterProp="label" options={priceGroupItem.map((opt) => ({value: opt.code, label: opt.description, key: opt.code}))} />
+              </Form.Item>
             </div>
+            {/* </div>
+            </div> */}
           </div>
         </div>
       </Form>

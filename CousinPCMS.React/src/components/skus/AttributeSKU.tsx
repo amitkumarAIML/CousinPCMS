@@ -9,7 +9,7 @@ import type {ApiResponse} from '../../models/generalModel';
 import type {LikedSkuModel, SKuList, UpdateSKULinkedAttribute} from '../../models/skusModel';
 
 interface AttributeSkuProps {
-  skuData: SKuList;
+  skuData: SKuList | null;
 }
 
 const AttributeSKU: React.FC<AttributeSkuProps> = ({skuData}) => {

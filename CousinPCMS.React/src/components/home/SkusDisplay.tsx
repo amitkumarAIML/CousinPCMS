@@ -1,15 +1,16 @@
 import {useEffect, useState} from 'react';
 import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
-import {getSkuByProductId} from '../../services/HomeService';
+import {getSkuByProductId, updateSkuListOrderForHomeScreen} from '../../services/HomeService';
 import {useNotification} from '../../contexts.ts/useNotification';
-import type {SKuList} from '../../models/skusModel';
+import type {SKuList, SKusRequestModelForProductOrderList} from '../../models/skusModel';
 import {useNavigate} from 'react-router';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
 import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import React from 'react';
+import {ApiResponse} from '../../models/generalModel';
 interface SkusDisplayProps {
   selectedProductId?: number;
   selectedCategory?: string;
@@ -96,8 +97,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         normalize(item.akiitemid).includes(searchText) ||
         normalize(item.akiListOrder.toString()).includes(searchText) ||
         normalize(item.akiAltSKUName.toString()).includes(searchText) ||
-        normalize(item.akiTemplateID.toString()).includes(searchText) ||
-        normalize(item.countryRegionOfOriginCode.toString()).includes(searchText) ||
+        normalize(item.akiLayoutTemplate.toString()).includes(searchText) ||
+        normalize(item.akiCountryOfOrigin).includes(searchText) ||
         normalize(item.akiManufacturerRef).includes(searchText) ||
         normalize(item.akiCommodityCode.toString()).includes(searchText)
       );
@@ -155,27 +156,27 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         </div>
       ),
       dataIndex: 'skuName',
-      width: 250,
+      width: 350,
       sorter: (a, b) => a.skuName.localeCompare(b.skuName),
     },
 
     {
       title: 'MFR Ref No',
       dataIndex: 'akiManufacturerRef',
-      width: 160,
+      width: 150,
       ellipsis: true,
       sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef),
     },
     {
       title: 'Item No',
       dataIndex: 'akiitemid',
-      width: 130,
+      width: 120,
       sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0),
     },
     {
       title: 'List Order',
       dataIndex: 'akiListOrder',
-      width: 130,
+      width: 100,
       sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0),
     },
     {
@@ -183,34 +184,34 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       dataIndex: 'akiObsolete',
       align: 'center',
       render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
-      width: 120,
+      width: 100,
     },
     {
       title: 'Unavailable',
       dataIndex: 'salesBlocked',
       align: 'center',
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
-      width: 120,
+      width: 110,
     },
     {
       title: 'Web Active',
       dataIndex: 'akiWebActive',
       align: 'center',
       render: (isWebActive) => <Checkbox checked={isWebActive} disabled />,
-      width: 130,
+      width: 80,
     },
     {
       title: 'Cat Active',
       dataIndex: 'akiSKUIsActive',
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,
-      width: 120,
+      width: 80,
     },
     {
       title: 'Temp ID',
-      dataIndex: 'akiTemplateID',
+      dataIndex: 'akiLayoutTemplate',
       align: 'center',
-      width: 120,
+      width: 80,
     },
     {
       title: 'AltSku Name',
@@ -218,12 +219,12 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       width: 150,
       sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
     },
-    {title: 'Ctr of Org', dataIndex: 'akiCountryofOrigin', width: 150},
+    {title: 'Ctr of Org', dataIndex: 'akiCountryofOrigin', width: 80},
     {
       title: 'Comm Code',
       dataIndex: 'akiCommodityCode',
       align: 'center',
-      width: 150,
+      width: 100,
       sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0),
     },
   ];
@@ -251,16 +252,43 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     })
   );
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = async (event: any) => {
     const {active, over} = event;
 
     if (active.id !== over.id) {
-      const oldIndex = filteredData.findIndex((item) => item.akiitemid === active.id);
-      const newIndex = filteredData.findIndex((item) => item.akiitemid === over.id);
+      const newIndex = skus.findIndex((item) => item.akiitemid === over.id);
 
-      const newData = arrayMove(filteredData, oldIndex, newIndex);
-      setFilteredData(newData);
-      setSkus(newData);
+      setLoading(true);
+      try {
+        const data = skus.find((sku) => sku.akiitemid === active.id);
+        if (!data) {
+          notify.error('Skus not found.');
+          setLoading(false);
+          return;
+        }
+
+        const oldListOrder = data.akiListOrder || 0;
+        const newListOrder = skus[newIndex]?.akiListOrder || 0;
+
+        const updateRequest: SKusRequestModelForProductOrderList = {
+          akiitemid: data.akiitemid,
+          newlistorder: newListOrder,
+          oldlistorder: oldListOrder,
+        };
+
+        const response: ApiResponse<string> = await updateSkuListOrderForHomeScreen(updateRequest);
+        if (response.isSuccess) {
+          loadSkuForProduct();
+          notify.success('Skus order updated successfully.');
+        } else {
+          notify.error('Failed to update Skus order.');
+        }
+      } catch (error) {
+        console.error('Error updating Skus order:', error);
+        notify.error('Failed to update Skus order.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
   return (
@@ -269,7 +297,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={filteredData.map((item) => item.akiitemid)} strategy={verticalListSortingStrategy}>
             <Table
-              // scroll={{ x: 1200 }}
+              scroll={{y: 750}}
               columns={columns}
               dataSource={filteredData}
               tableLayout="auto"

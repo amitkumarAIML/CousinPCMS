@@ -2,9 +2,9 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Spin, Modal, Input, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 
-import {Product} from '../../models/productModel';
+import {Product, ProductRequestModelForProductOrderList} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
-import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
+import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId, updateProductListOrderForHomeScreen} from '../../services/HomeService';
 import CategoryAttribute from './CategoryAttribute';
 import {useNavigate} from 'react-router';
 import {useNotification} from '../../contexts.ts/useNotification';
@@ -12,7 +12,8 @@ import {getSessionItem, setSessionItem} from '../../services/DataService';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {arrayMove, SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {ApiResponse} from '../../models/generalModel';
 
 interface ProductDisplayProps {
   selectedCategory: string;
@@ -273,15 +274,45 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
     })
   );
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = async (event: any) => {
     const {active, over} = event;
-    if (!over || active.id === over.id) return;
+    if (active.id !== over.id) {
+      const newIndex = products.findIndex((item) => item.akiProductID === over.id);
 
-    const oldIndex = filteredData.findIndex((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === active.id);
-    const newIndex = filteredData.findIndex((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`) === over.id);
+      setLoading(true);
+      try {
+        const data = products.find((product) => product.akiProductID === active.id);
+        if (!data) {
+          notify.error('product not found.');
+          setLoading(false);
+          return;
+        }
 
-    const newData = arrayMove(filteredData, oldIndex, newIndex);
-    setFilteredData(newData);
+        const oldListOrder = data.akiProductListOrder || 0;
+        const newListOrder = products[newIndex]?.akiProductListOrder || 0;
+
+        const updateRequest: ProductRequestModelForProductOrderList = {
+          akiProductID: Number(data.akiProductID),
+          newlistorder: newListOrder,
+          oldlistorder: oldListOrder,
+        };
+
+        const response: ApiResponse<string> = await updateProductListOrderForHomeScreen(updateRequest);
+        if (response.isSuccess) {
+          fetchData();
+          // setFilteredData(newOrder);
+          // setProducts(newOrder);
+          notify.success('product order updated successfully.');
+        } else {
+          notify.error('Failed to update product order.');
+        }
+      } catch (error) {
+        console.error('Error updating product order:', error);
+        notify.error('Failed to update product order.');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
