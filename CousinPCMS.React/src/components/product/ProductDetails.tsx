@@ -791,7 +791,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
             </div>
             <div className="col-span-12 grid grid-cols-12 gap-x-6 mt-2">
               <div className="col-span-6 ">
-                <div className="border border-border rounded-lg p-2 h-[100]">
+                <div className="border border-border rounded-lg p-2">
                   <div className="flex justify-between mb-2">
                     <span className="flex font-medium text-secondary-font">Associated Products</span>
 
