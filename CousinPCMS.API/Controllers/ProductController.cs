@@ -283,12 +283,12 @@ namespace CousinPCMS.API.Controllers
         /// <summary>
         /// Adds a new product.
         /// </summary>
-        /// <param name="objModel">An <see cref="AddProductRequestModel"/> containing the updated product information.</param>
+        /// <param name="objModel">An <see cref="AddProductRequestModel"/> containing the product information.</param>
         /// <returns>
-        /// Returns an successs or an error message.
+        /// Returns success or error message with the inserted product ID.
         /// </returns>
         [HttpPost("AddProduct")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(typeof(APIResult<int>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddProduct(AddProductRequestModel objModel)
@@ -304,7 +304,7 @@ namespace CousinPCMS.API.Controllers
 
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(AddProduct)} is success.");
+                log.Info($"Response of {nameof(AddProduct)} is success. Product ID: {responseValue.Value}");
             }
             else
             {
@@ -575,6 +575,40 @@ namespace CousinPCMS.API.Controllers
             else
             {
                 log.Error($"Response of {nameof(UpdateProductLinkUrls)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
+        /// Update list order for product.
+        /// </summary>
+        /// <param name="objModel">An object containing the details of the list order to be updated to the product.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
+        [HttpPost("UpdateProductListOrderForHomeScreen")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateProductListOrderForHomeScreen(DragDropProductRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateProductListOrderForHomeScreen)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.UpdateProductListOrderForHomeScreen(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateProductListOrderForHomeScreen)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateProductListOrderForHomeScreen)} failed. Exception: {responseValue.ExceptionInformation}");
             }
 
             return Ok(responseValue);

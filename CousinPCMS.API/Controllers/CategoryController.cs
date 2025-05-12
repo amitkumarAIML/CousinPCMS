@@ -280,18 +280,19 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Adds an category.
+        /// Adds a category.
         /// </summary>
-        /// <param name="objModel">The category object with added details.</param>
-        /// <returns>Returns success or error message.</returns>
+        /// <param name="objModel">An <see cref="AddCategoryModel"/> containing the category information.</param>     
+        /// <returns>Returns the ID of the newly added category or error details.</returns>
         [HttpPost("AddCategory")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(typeof(APIResult<int>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddCategory(AddCategoryModel objModel)
         {
             log.Info($"Request of {nameof(AddCategory)} method called.");
 
+            // Refresh token if expired
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
@@ -299,9 +300,9 @@ namespace CousinPCMS.API.Controllers
 
             var responseValue = _categoryService.AddCategory(objModel);
 
-            if (!responseValue.IsError)
+            if (responseValue.IsSuccess)
             {
-                log.Info($"Response of {nameof(AddCategory)} is success.");
+                log.Info($"Response of {nameof(AddCategory)} is success. Category ID: {responseValue.Value}");
             }
             else
             {

@@ -90,6 +90,13 @@ namespace CousinPCMS.Domain
         public int listorder { get; set; }
     }
 
+    public class DragDropProductRequestModel
+    {
+        public int akiProductID { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
+    }
+
     public class AddProductAdditionalImageRequestModel
     {
         public int productID { get; set; }

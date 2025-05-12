@@ -114,12 +114,10 @@ namespace CousinPCMS.Domain
     {
         [JsonProperty("@odata.etag")]
         public string odataetag { get; set; }
-        [JsonProperty("skuitemID")]
-
-        public int skuitemURLID { get; set; }
-        public string skuItemID { get; set; }
-        public string linkURL { get; set; }
+        public int skuitemURLid { get; set; }
+        public string skuitemID { get; set; }
         public string linkText { get; set; }
+        public string linkURL { get; set; }
         public string toolTip { get; set; }
         public string linkType { get; set; }
         public int listorder { get; set; }
@@ -221,6 +219,13 @@ namespace CousinPCMS.Domain
     {
         public string akiitemid { get; set; }
         public bool akiCurrentlyPartRestricted { get; set; }
+    }
+
+    public class DragDropSkuRequestModel
+    {
+        public string akiitemid { get; set; }
+        public int oldlistorder { get; set; }
+        public int newlistorder { get; set; }
     }
 
 }

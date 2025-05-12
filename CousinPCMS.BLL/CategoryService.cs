@@ -136,30 +136,41 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> AddCategory(AddCategoryModel objModel)
+        public APIResult<int> AddCategory(AddCategoryModel objModel)
         {
-            APIResult<string> returnValue = new APIResult<string>
+            APIResult<int> returnValue = new APIResult<int>
             {
                 IsError = false,
                 IsSuccess = true,
             };
+
             try
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertCategory?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Post,
+                    $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertCategory?company={HardcodedValues.CompanyName}",
+                    ParameterType.RequestBody,
+                    Oauth.Token,
+                    postData
+                );
 
-                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Created)
                 {
-                    returnValue.IsSuccess = true;
-                    returnValue.Value = "Success";
+                    // Parse the response and extract the integer value
+                    var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = (int)jsonResponse.value;
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    returnValue.Value = 0; // Default fallback if no content
                 }
                 else
                 {
                     returnValue.IsSuccess = false;
-                    // Extract "message" field from JSON response if available
                     var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
-                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                    returnValue.ExceptionInformation = errorResponse?.error?.message ?? "Unknown error occurred.";
                 }
             }
             catch (Exception exception)
@@ -171,6 +182,7 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
+
 
         public APIResult<string> UpdateCategory(UpdateCategoryModel objModel)
         {

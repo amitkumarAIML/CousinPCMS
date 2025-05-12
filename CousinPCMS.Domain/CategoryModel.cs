@@ -175,7 +175,7 @@ namespace CousinPCMS.Domain
 
     public class UpdateCategoryLinkUrlRequestModel
     {
-        public int catimageid { get; set; }
+        public int categoryurlID { get; set; }
         public int oldlistorder { get; set; }
         public int newlistorder { get; set; }
     }

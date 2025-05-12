@@ -117,150 +117,150 @@ namespace CousinPCMS.API.Controllers
         }
 
 
-        /// <summary>
-        /// Password change for the user.
-        /// </summary>
-        /// <param name="changePasswordModel">Please provide details to change password.</param>
-        /// <returns>Change password object, if the change password is successful. Else empty object.</returns>
-        [HttpPost("ChangePassword")]
-        [ProducesResponseType(typeof(APIResult<LoginResponseModel>), 200)]
-        [ProducesResponseType(500)]
-        [ProducesResponseType(401)]
-        public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
-        {
-            log.Info($"Request of {nameof(ChangePassword)} method called with value {JsonConvert.SerializeObject(changePasswordModel)}.");
-            if (Oauth.TokenExpiry <= DateTime.Now)
-            {
-                Oauth = Helper.GetOauthToken(Oauth);
-            }
-            if (changePasswordModel.Password != null && changePasswordModel.No != null && changePasswordModel.Email != null)
-            {
-                var responseValue = _accountService.ChangePassword(changePasswordModel);
-                if (!responseValue.IsError)
-                {
-                    log.Info($"Response of {nameof(ChangePassword)} is success.");
-                }
-                else
-                {
-                    log.Error($"Response of {nameof(ChangePassword)} is failed.");
-                }
-                return Ok(responseValue);
-            }
-            else
-            {
-                log.Error($"Response of {nameof(ChangePassword)} is failed.");
-                return BadRequest();
-            }
-        }
+        ///// <summary>
+        ///// Password change for the user.
+        ///// </summary>
+        ///// <param name="changePasswordModel">Please provide details to change password.</param>
+        ///// <returns>Change password object, if the change password is successful. Else empty object.</returns>
+        //[HttpPost("ChangePassword")]
+        //[ProducesResponseType(typeof(APIResult<LoginResponseModel>), 200)]
+        //[ProducesResponseType(500)]
+        //[ProducesResponseType(401)]
+        //public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
+        //{
+        //    log.Info($"Request of {nameof(ChangePassword)} method called with value {JsonConvert.SerializeObject(changePasswordModel)}.");
+        //    if (Oauth.TokenExpiry <= DateTime.Now)
+        //    {
+        //        Oauth = Helper.GetOauthToken(Oauth);
+        //    }
+        //    if (changePasswordModel.Password != null && changePasswordModel.No != null && changePasswordModel.Email != null)
+        //    {
+        //        var responseValue = _accountService.ChangePassword(changePasswordModel);
+        //        if (!responseValue.IsError)
+        //        {
+        //            log.Info($"Response of {nameof(ChangePassword)} is success.");
+        //        }
+        //        else
+        //        {
+        //            log.Error($"Response of {nameof(ChangePassword)} is failed.");
+        //        }
+        //        return Ok(responseValue);
+        //    }
+        //    else
+        //    {
+        //        log.Error($"Response of {nameof(ChangePassword)} is failed.");
+        //        return BadRequest();
+        //    }
+        //}
 
-        /// <summary>
-        /// Password change for the user.
-        /// </summary>
-        /// <param name="Email">Please provide email to reset password.</param>
-        /// <returns>updated password, if the password reset is successful. Else empty value.</returns>
-        [HttpPost("ForgotPassword")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
-        [ProducesResponseType(500)]
-        [ProducesResponseType(401)]
-        public async Task<IActionResult> ForgotPassword(string Email)
-        {
-            log.Info($"Request of {nameof(ForgotPassword)} method called with value {Email}.");
-            if (Oauth.TokenExpiry <= DateTime.Now)
-            {
-                Oauth = Helper.GetOauthToken(Oauth);
-            }
-            if (Email != "")
-            {
-                var responseValue = _accountService.ResetPassword(Email);
+        ///// <summary>
+        ///// Password change for the user.
+        ///// </summary>
+        ///// <param name="Email">Please provide email to reset password.</param>
+        ///// <returns>updated password, if the password reset is successful. Else empty value.</returns>
+        //[HttpPost("ForgotPassword")]
+        //[ProducesResponseType(typeof(APIResult<string>), 200)]
+        //[ProducesResponseType(500)]
+        //[ProducesResponseType(401)]
+        //public async Task<IActionResult> ForgotPassword(string Email)
+        //{
+        //    log.Info($"Request of {nameof(ForgotPassword)} method called with value {Email}.");
+        //    if (Oauth.TokenExpiry <= DateTime.Now)
+        //    {
+        //        Oauth = Helper.GetOauthToken(Oauth);
+        //    }
+        //    if (Email != "")
+        //    {
+        //        var responseValue = _accountService.ResetPassword(Email);
 
-                if (!responseValue.IsSuccess)
-                {
-                    log.Info($"Response of {nameof(ForgotPassword)} is success.");
-                }
-                else
-                {
-                    log.Error($"Response of {nameof(ForgotPassword)} is failed.");
-                }
-                return Ok(responseValue);
-            }
-            else
-            {
-                log.Error($"Response of {nameof(ForgotPassword)} is failed.");
-                return BadRequest();
-            }
-        }
+        //        if (!responseValue.IsSuccess)
+        //        {
+        //            log.Info($"Response of {nameof(ForgotPassword)} is success.");
+        //        }
+        //        else
+        //        {
+        //            log.Error($"Response of {nameof(ForgotPassword)} is failed.");
+        //        }
+        //        return Ok(responseValue);
+        //    }
+        //    else
+        //    {
+        //        log.Error($"Response of {nameof(ForgotPassword)} is failed.");
+        //        return BadRequest();
+        //    }
+        //}
 
-        /// <summary>
-        /// Send email to user.
-        /// </summary>
-        /// <param name="objEmail">Please provide email details.</param>
-        /// <returns>mail send to user.</returns>
-        [HttpPost("SendEmail")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
-        [ProducesResponseType(500)]
-        [ProducesResponseType(401)]
-        public async Task<IActionResult> SendEmail(EmailModel objEmail)
-        {
-            log.Info($"Request of {nameof(SendEmail)} method called with value {JsonConvert.SerializeObject(objEmail)}.");
-            if (Oauth.TokenExpiry <= DateTime.Now)
-            {
-                Oauth = Helper.GetOauthToken(Oauth);
-            }
-            if (objEmail.toEmail != "" && objEmail.subject != "" && objEmail.body != "")
-            {
-                var responseValue = _accountService.SendEmail(objEmail);
-                if (!responseValue.IsError)
-                {
-                    log.Info($"Response of {nameof(SendEmail)} is success.");
-                }
-                else
-                {
-                    log.Error($"Response of {nameof(SendEmail)} is failed.");
-                }
-                return Ok(responseValue);
-            }
-            else
-            {
-                log.Error($"Response of {nameof(SendEmail)} is failed.");
-                return BadRequest();
-            }
-        }
+        ///// <summary>
+        ///// Send email to user.
+        ///// </summary>
+        ///// <param name="objEmail">Please provide email details.</param>
+        ///// <returns>mail send to user.</returns>
+        //[HttpPost("SendEmail")]
+        //[ProducesResponseType(typeof(APIResult<string>), 200)]
+        //[ProducesResponseType(500)]
+        //[ProducesResponseType(401)]
+        //public async Task<IActionResult> SendEmail(EmailModel objEmail)
+        //{
+        //    log.Info($"Request of {nameof(SendEmail)} method called with value {JsonConvert.SerializeObject(objEmail)}.");
+        //    if (Oauth.TokenExpiry <= DateTime.Now)
+        //    {
+        //        Oauth = Helper.GetOauthToken(Oauth);
+        //    }
+        //    if (objEmail.toEmail != "" && objEmail.subject != "" && objEmail.body != "")
+        //    {
+        //        var responseValue = _accountService.SendEmail(objEmail);
+        //        if (!responseValue.IsError)
+        //        {
+        //            log.Info($"Response of {nameof(SendEmail)} is success.");
+        //        }
+        //        else
+        //        {
+        //            log.Error($"Response of {nameof(SendEmail)} is failed.");
+        //        }
+        //        return Ok(responseValue);
+        //    }
+        //    else
+        //    {
+        //        log.Error($"Response of {nameof(SendEmail)} is failed.");
+        //        return BadRequest();
+        //    }
+        //}
 
-        /// <summary>
-        /// Password change for the user.
-        /// </summary>
-        /// <param name="Email">Please provide email to reset password.</param>
-        /// <returns>updated password, if the password reset is successful. Else empty value.</returns>
-        [HttpPost("LockUser")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
-        [ProducesResponseType(500)]
-        [ProducesResponseType(401)]
-        public async Task<IActionResult> LockUser(string Email)
-        {
-            log.Info($"Request of {nameof(LockUser)} method called with value {Email}.");
-            if (Oauth.TokenExpiry <= DateTime.Now)
-            {
-                Oauth = Helper.GetOauthToken(Oauth);
-            }
-            if (Email != "")
-            {
-                var responseValue = _accountService.LockUser(Email);
-                if (!responseValue.IsError)
-                {
-                    log.Info($"Response of {nameof(LockUser)} is success.");
-                }
-                else
-                {
-                    log.Error($"Response of {nameof(LockUser)} is failed.");
-                }
-                return Ok(responseValue);
-            }
-            else
-            {
-                log.Error($"Response of {nameof(LockUser)} is failed.");
-                return BadRequest();
-            }
-        }
+        ///// <summary>
+        ///// Password change for the user.
+        ///// </summary>
+        ///// <param name="Email">Please provide email to reset password.</param>
+        ///// <returns>updated password, if the password reset is successful. Else empty value.</returns>
+        //[HttpPost("LockUser")]
+        //[ProducesResponseType(typeof(APIResult<string>), 200)]
+        //[ProducesResponseType(500)]
+        //[ProducesResponseType(401)]
+        //public async Task<IActionResult> LockUser(string Email)
+        //{
+        //    log.Info($"Request of {nameof(LockUser)} method called with value {Email}.");
+        //    if (Oauth.TokenExpiry <= DateTime.Now)
+        //    {
+        //        Oauth = Helper.GetOauthToken(Oauth);
+        //    }
+        //    if (Email != "")
+        //    {
+        //        var responseValue = _accountService.LockUser(Email);
+        //        if (!responseValue.IsError)
+        //        {
+        //            log.Info($"Response of {nameof(LockUser)} is success.");
+        //        }
+        //        else
+        //        {
+        //            log.Error($"Response of {nameof(LockUser)} is failed.");
+        //        }
+        //        return Ok(responseValue);
+        //    }
+        //    else
+        //    {
+        //        log.Error($"Response of {nameof(LockUser)} is failed.");
+        //        return BadRequest();
+        //    }
+        //}
 
         /// <summary>
         /// Gets country details.

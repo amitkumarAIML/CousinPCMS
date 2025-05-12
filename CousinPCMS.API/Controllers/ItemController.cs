@@ -101,10 +101,10 @@ namespace CousinPCMS.API.Controllers
         /// <summary>
         /// Adds an Item.
         /// </summary>
-        /// <param name="objModel">The item object with added details.</param>
-        /// <returns>Returns item object.</returns>
+        /// <param name="objModel">An <see cref="AddItemRequestModel"/> containing the Sku item information.</param>
+        /// <returns>Returns APIResult with Item ID or error info.</returns>
         [HttpPost("AddItem")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(typeof(APIResult<int>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddItem(AddItemRequestModel objModel)
@@ -120,7 +120,7 @@ namespace CousinPCMS.API.Controllers
 
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(AddItem)} is success.");
+                log.Info($"Response of {nameof(AddItem)} is success. ItemId: {responseValue.Value}");
             }
             else
             {

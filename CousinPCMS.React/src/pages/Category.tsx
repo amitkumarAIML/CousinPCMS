@@ -758,7 +758,7 @@ const Category = () => {
               </div>
               <div className="col-span-12 grid grid-cols-4 gap-x-6 mt-2">
                 <div className="col-span-2">
-                  <div className="border border-border rounded-lg p-2 h-[100]">
+                  <div className="border border-border rounded-lg p-2 h-[200]">
                     <div className="flex justify-between mb-2">
                       <span className="flex font-medium text-secondary-font">Associated Products</span>
                       <Button size="small" type="primary" onClick={showAddProductModal}>

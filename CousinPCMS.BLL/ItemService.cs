@@ -93,30 +93,36 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> AddItem(AddItemRequestModel objModel)
+        public APIResult<int> AddItem(AddItemRequestModel objModel)
         {
-            APIResult<string> returnValue = new APIResult<string>
+            APIResult<int> returnValue = new APIResult<int>
             {
                 IsError = false,
                 IsSuccess = true,
             };
+
             try
             {
                 var postData = JsonConvert.SerializeObject(objModel);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Post, $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertItemSKUPart?company={HardcodedValues.CompanyName}", ParameterType.RequestBody, Oauth.Token, postData.ToString());
+                var response = ServiceClient.PerformAPICallWithToken(
+                    Method.Post,
+                    $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_InsertItemSKUPart?company={HardcodedValues.CompanyName}",
+                    ParameterType.RequestBody,
+                    Oauth.Token,
+                    postData.ToString());
 
-                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    returnValue.Value = jsonResponse?.value != null ? (int)jsonResponse.value : 0;
                     returnValue.IsSuccess = true;
-                    returnValue.Value = "Success";
                 }
                 else
                 {
                     returnValue.IsSuccess = false;
-                    // Extract "message" field from JSON response if available
                     var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
-                    returnValue.Value = errorResponse?.error?.message ?? "Unknown error occurred.";
+                    returnValue.ExceptionInformation = errorResponse?.error?.message ?? "Unknown error occurred.";
                 }
             }
             catch (Exception exception)
@@ -128,6 +134,7 @@ namespace CousinPCMS.BLL
 
             return returnValue;
         }
+
 
         public APIResult<List<ItemResponseModel>> GetAllItemsByProductId(string akiProductID)
         {

@@ -124,14 +124,13 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
-
         /// <summary>
-        /// adds an department.
+        /// Adds a department.
         /// </summary>
-        /// <param name="objModel">The department object with newly added details.</param>
-        /// <returns>Returns success or error message.</returns>
+        /// <param name="objModel">An <see cref="AddDepartmentRequestModel"/> containing the department information.</param>
+        /// <returns>Returns the ID of the newly added department or error information.</returns>
         [HttpPost("AddDepartment")]
-        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(typeof(APIResult<int>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddDepartment(AddDepartmentRequestModel objModel)

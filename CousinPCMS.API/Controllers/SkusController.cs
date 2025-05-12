@@ -639,6 +639,40 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
+        /// Update list order for Skus for home screen.
+        /// </summary>
+        /// <param name="objModel">An object containing the details of the list order to be updated to the Skus.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating success or failure with a corresponding message.
+        /// </returns>
+        [HttpPost("UpdateSkuListOrderForHomeScreen")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateSkuListOrderForHomeScreen(DragDropSkuRequestModel objModel)
+        {
+            log.Info($"Request of {nameof(UpdateSkuListOrderForHomeScreen)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _skusService.UpdateSkuListOrderForHomeScreen(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateSkuListOrderForHomeScreen)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateSkuListOrderForHomeScreen)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
+
+        /// <summary>
         /// updates SKU linked attribute details for respective item.
         /// </summary>
         /// <param name="objModel">The request model containing SKU and attribute information to be added or updated.</param>
