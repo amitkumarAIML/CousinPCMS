@@ -51,7 +51,8 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
 
       let currentProducts: Product[] = [];
       if (productListResponse.isSuccess && productListResponse.value) {
-        currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive).sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+        // currentProducts = productListResponse.value.filter((p: Product) => p?.akiProductIsActive).sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+        currentProducts = productListResponse.value.sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
         setProducts(currentProducts);
       } else {
         setProducts([]);

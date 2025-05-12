@@ -5,13 +5,13 @@ import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, Me
 import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import type {ApiResponse} from '../models/generalModel';
-import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
-import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl, updateProductAdditionalImage} from '../services/ProductService';
-import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl, updateCategoryAdditionalImage} from '../services/CategoryService';
-import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl, updateSkuAdditionalImage} from '../services/SkusService';
-import {useNotification} from '../hook/useNotification';
-import {getSessionItem} from '../services/DataService';
+import type {ApiResponse} from '../../models/generalModel';
+import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../../models/additionalImagesModel';
+import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl, updateProductAdditionalImage} from '../../services/ProductService';
+import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl, updateCategoryAdditionalImage} from '../../services/CategoryService';
+import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl, updateSkuAdditionalImage} from '../../services/SkusService';
+import {useNotification} from '../../hook/useNotification';
+import {getSessionItem} from '../../services/DataService';
 
 type ContextType = 'product' | 'category' | 'sku' | null;
 

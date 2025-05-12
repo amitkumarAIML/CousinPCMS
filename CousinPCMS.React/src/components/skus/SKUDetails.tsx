@@ -17,7 +17,7 @@ import type {AttributeModel} from '../../models/attributeModel';
 import type {ApiResponse} from '../../models/generalModel';
 import {ItemCharLimit} from '../../models/char.constant';
 import AttributeValuesPopup from '../../components/attribute/AttributeValuesPopup';
-import RichTextEditor from '../RichTextEditor';
+import RichTextEditor from '../shared/RichTextEditor';
 
 interface SkuDetailsProps {
   skuData?: SKuList | null;

@@ -6,10 +6,10 @@ import SKUs from './pages/SKUs';
 import Product from './pages/Product';
 import Home from './pages/Home';
 import Attributes from './pages/Attributes';
-import AdditionalImages from './components/AdditionalImages';
-import LinkMaintenance from './components/LinkMaintenance';
+import AdditionalImages from './components/shared/AdditionalImages';
 import AttributeForm from './components/attribute/AttributeForm';
 import AttributeMultiUpload from './components/attribute/AttributeMultiUpload';
+import LinkMaintenance from './components/shared/LinkMaintenance';
 
 const routes = createBrowserRouter([
   {

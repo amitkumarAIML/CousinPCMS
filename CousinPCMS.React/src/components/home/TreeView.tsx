@@ -252,7 +252,8 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       try {
         const response = await getDepartments();
         if (response?.isSuccess && Array.isArray(response.value)) {
-          const departments = response.value.filter((res: Department) => res.akiDepartmentIsActive).sort((a, b) => (Number(a.akiDepartmentListOrder) || 0) - (Number(b.akiDepartmentListOrder) || 0));
+          // const departments = response.value.filter((res: Department) => res.akiDepartmentIsActive).sort((a, b) => (Number(a.akiDepartmentListOrder) || 0) - (Number(b.akiDepartmentListOrder) || 0));
+          const departments = response.value.sort((a, b) => (Number(a.akiDepartmentListOrder) || 0) - (Number(b.akiDepartmentListOrder) || 0));
           const deptNodes: CustomTreeDataNode[] = departments.map((dept: Department) => ({
             key: `dept-${dept.akiDepartmentID}`,
             title: (
@@ -331,10 +332,11 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
         .then((response) => {
           let categoryNodes: CustomTreeDataNode[] = [];
           if (response?.isSuccess && Array.isArray(response.value)) {
-            const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive).sort((a, b) => (Number(a.akiCategoryListOrder) || 0) - (Number(b.akiCategoryListOrder) || 0));
+            // const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive).sort((a, b) => (Number(a.akiCategoryListOrder) || 0) - (Number(b.akiCategoryListOrder) || 0));
+            const categories = response.value.sort((a, b) => (Number(a.akiCategoryListOrder) || 0) - (Number(b.akiCategoryListOrder) || 0));
             categoryNodes = buildCategoryTree(categories, selectedKeys);
           } else {
-            // message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
+            // notify.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
           }
 
           setTreeData((current) => updateTreeData(current, key, categoryNodes));
@@ -347,11 +349,11 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           }
         })
         .catch(() => {
-          // message.error(`Error loading categories for department ${getNodeTitleText(customNode)}.`);
+          notify.error(`Error loading categories for department ${getNodeTitleText(customNode)}.`);
           setTreeData((current) => updateTreeData(current, key, []));
         });
     },
-    [updateTreeData, selectedKeys, onCategorySelected]
+    [updateTreeData, selectedKeys, onCategorySelected, notify]
   );
 
   const onDrop: TreeProps['onDrop'] = useCallback(

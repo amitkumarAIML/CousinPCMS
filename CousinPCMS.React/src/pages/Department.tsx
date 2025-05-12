@@ -10,7 +10,7 @@ import {getCommodityCodes, cleanEmptyNullToString, getSessionItem, getPlainText}
 import {useNotification} from '../hook/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
-import RichTextEditor from '../components/RichTextEditor';
+import RichTextEditor from '../components/shared/RichTextEditor';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -64,8 +64,6 @@ const Department: React.FC<DepartmentInfoProps> = () => {
             akiDepartmentWebActive: response.value[0].akiDepartmentWebActive,
             akiDeptPromptUserifblank: response.value[0].akiDeptPromptUserifblank,
             akiDepartmentIsActive: response.value[0].akiDepartmentIsActive,
-            akiColor: response.value[0].akiColor?.startsWith('#') ? response.value[0].akiColor : `#${response.value[0].akiColor || 'F7941D'}`,
-            akiFeaturedProdBGColor: response.value[0].akiFeaturedProdBGColor?.startsWith('#') ? response.value[0].akiFeaturedProdBGColor : `#${response.value[0].akiFeaturedProdBGColor || 'FFFF80'}`,
           });
         } else {
           notify.error('Failed To Load Data');

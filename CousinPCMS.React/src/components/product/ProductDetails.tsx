@@ -19,7 +19,7 @@ import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
 import {ApiResponse} from '../../models/generalModel';
-import RichTextEditor from '../RichTextEditor';
+import RichTextEditor from '../shared/RichTextEditor';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;

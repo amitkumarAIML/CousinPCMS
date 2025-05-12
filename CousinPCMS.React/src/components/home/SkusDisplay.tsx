@@ -45,8 +45,9 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       const data = await getSkuByProductId(selectedProductId!);
       if (data.isSuccess) {
         if (data.value && data.value.length > 0) {
-          const activeSkus = data.value.filter((res: SKuList) => res?.akiSKUIsActive);
-          activeSkus.sort((a, b) => a.akiListOrder - b.akiListOrder);
+          // const activeSkus = data.value.filter((res: SKuList) => res?.aki SKUIsActive);
+          // activeSkus.sort((a, b) => a.akiListOrder - b.akiListOrder);
+          const activeSkus = data.value.sort((a, b) => a.akiListOrder - b.akiListOrder);
           setSkus(activeSkus);
 
           setFilteredData(activeSkus);

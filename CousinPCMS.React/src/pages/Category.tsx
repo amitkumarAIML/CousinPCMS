@@ -17,7 +17,7 @@ import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText, setSe
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../hook/useNotification';
-import RichTextEditor from '../components/RichTextEditor';
+import RichTextEditor from '../components/shared/RichTextEditor';
 type ProductSearchResult = Product;
 
 interface TableParams {
