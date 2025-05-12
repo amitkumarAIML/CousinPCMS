@@ -9,7 +9,7 @@ import {extractUserMessage, getSessionItem} from '../../services/DataService';
 import type {ApiResponse} from '../../models/generalModel';
 import type {AttributeValueModel} from '../../models/attributesModel';
 import type {LikedSkuModel} from '../../models/skusModel';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 
 interface GroupedValues {
   [attributeName: string]: ExtendedAttributeValueModel[];

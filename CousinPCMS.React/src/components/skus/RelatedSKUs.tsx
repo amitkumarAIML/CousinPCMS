@@ -4,7 +4,7 @@ import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import type {TableProps} from 'antd/es/table';
 
 import {getRelatedSkuItem, updateRelatedSkuItemObsolete, updateRelatedSkuItemUnavailable} from '../../services/SkusService';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import {RelatedSkuItem, RelatedSkuModel, SKuList} from '../../models/skusModel';
 
 interface RelatedSkuProps {

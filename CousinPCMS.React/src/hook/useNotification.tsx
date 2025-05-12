@@ -1,6 +1,6 @@
-import { useContext } from 'react';
-import { NotificationContext } from './NotificationContext';
-import type { MessageApi } from './NotificationProvider';
+import {useContext} from 'react';
+import {NotificationContext} from '../contexts/NotificationContext';
+import type {MessageApi} from '../contexts/NotificationProvider';
 
 export function useNotification(): MessageApi {
   const api = useContext(NotificationContext);

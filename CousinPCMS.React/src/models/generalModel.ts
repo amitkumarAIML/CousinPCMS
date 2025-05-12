@@ -16,3 +16,13 @@ export interface ApiResponse<T> {
   exceptionInformation: unknown;
   value: T;
 }
+
+export interface ValidUser {
+  odataEtag: string | null;
+  email: string;
+  contact: string | null;
+  assignedUserID: string;
+  portalEnabled: boolean;
+  isEmployee: boolean;
+  personResponsible: string;
+}

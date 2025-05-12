@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router';
 import {Form, Input, Checkbox, Button, Modal, Spin} from 'antd';
 import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
 import {getAttributeSearchTypes, getAttributeByAttributesName, getAttributeValuesByAttributesName, addAttributes, updateAttributes} from '../../services/AttributesService';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import type {AttributeRequestModel, AttributeValueModel} from '../../models/attributesModel';
 import AttributesValues from './AttributeValuesPopup';
 import {AttributeFormCharLimit} from '../../models/char.constant';

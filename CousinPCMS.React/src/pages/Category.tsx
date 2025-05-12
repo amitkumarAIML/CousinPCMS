@@ -13,10 +13,10 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
 import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText} from '../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText, setSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import RichTextEditor from '../components/RichTextEditor';
 type ProductSearchResult = Product;
 
@@ -436,15 +436,19 @@ const Category = () => {
   };
 
   const goToLinkMaintenance = () => {
-    const productId = categoryForm.getFieldValue('akiCategoryID');
-    if (!productId) return;
-    window.location.href = '/category/link-maintenance';
+    const categoryId = categoryForm.getFieldValue('akiCategoryID');
+    if (categoryId && categoryId > 0) {
+      setSessionItem('linkCategoryId', categoryId);
+      window.location.href = '/category/link-maintenance';
+    }
   };
 
   const goToAdditionalImage = () => {
-    const productId = categoryForm.getFieldValue('akiCategoryID');
-    if (!productId) return;
-    window.location.href = '/category/additional-images';
+    const categoryId = categoryForm.getFieldValue('akiCategoryID');
+    if (categoryId && categoryId > 0) {
+      setSessionItem('imageCategoryId', categoryId);
+      window.location.href = '/category/additional-images';
+    }
   };
 
   useEffect(() => {
@@ -758,7 +762,7 @@ const Category = () => {
               </div>
               <div className="col-span-12 grid grid-cols-4 gap-x-6 mt-2">
                 <div className="col-span-2">
-                  <div className="border border-border rounded-lg p-2 h-[200]">
+                  <div className="border border-border rounded-lg p-2">
                     <div className="flex justify-between mb-2">
                       <span className="flex font-medium text-secondary-font">Associated Products</span>
                       <Button size="small" type="primary" onClick={showAddProductModal}>

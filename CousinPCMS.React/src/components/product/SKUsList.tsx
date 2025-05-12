@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Table, Checkbox, Spin } from 'antd';
-import type { TableProps } from 'antd/es/table';
-import { useNotification } from '../../contexts.ts/useNotification';
-import type { SKuList, SkuListResponse } from '../../models/skusModel';
-import { getSkuByProductId } from '../../services/HomeService';
-import { getSessionItem, setSessionItem } from '../../services/DataService';
+import {useState, useEffect} from 'react';
+import {Table, Checkbox, Spin} from 'antd';
+import type {TableProps} from 'antd/es/table';
+import {useNotification} from '../../hook/useNotification';
+import type {SKuList, SkuListResponse} from '../../models/skusModel';
+import {getSkuByProductId} from '../../services/HomeService';
+import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,8 +25,7 @@ const SKUsList = () => {
       try {
         const data: SkuListResponse = await getSkuByProductId(Number(productId));
         if (data.isSuccess && data.value) {
-          const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive)
-            .sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
+          const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive).sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
           setSkusList(activeSkus);
         } else {
           notify.info(data.exceptionInformation || 'No SKU data found or request failed.');
@@ -55,20 +54,31 @@ const SKUsList = () => {
 
   const columns: TableProps<SKuList>['columns'] = [
     {
-      title: 'Sku Name', dataIndex: 'skuName', width: 200, ellipsis: true,
-      sorter: (a, b) => a.skuName.localeCompare(b.skuName)
+      title: 'Sku Name',
+      dataIndex: 'skuName',
+      width: 200,
+      ellipsis: true,
+      sorter: (a, b) => a.skuName.localeCompare(b.skuName),
     },
     {
-      title: 'MFR Ref No', dataIndex: 'akiManufacturerRef', ellipsis: true, width: 190,
-      sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef)
+      title: 'MFR Ref No',
+      dataIndex: 'akiManufacturerRef',
+      ellipsis: true,
+      width: 190,
+      sorter: (a, b) => a.akiManufacturerRef.localeCompare(b.akiManufacturerRef),
     },
     {
-      title: 'Item No', dataIndex: 'akiitemid', width: 120,
-      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0)
+      title: 'Item No',
+      dataIndex: 'akiitemid',
+      width: 120,
+      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0),
     },
     {
-      title: 'List Order', dataIndex: 'akiListOrder', width: 100, align: 'right',
-      sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0)
+      title: 'List Order',
+      dataIndex: 'akiListOrder',
+      width: 100,
+      align: 'right',
+      sorter: (a, b) => (Number(a.akiListOrder) || 0) - (Number(b.akiListOrder) || 0),
     },
     {
       title: 'Obsolete',
@@ -98,14 +108,19 @@ const SKUsList = () => {
       align: 'center',
       render: (isActive) => <Checkbox checked={isActive} disabled />,
     },
-    { title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align: 'center' },
+    {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align: 'center'},
     {
-      title: 'AltSku Name', dataIndex: 'akiAltSKUName', ellipsis: true, width: 180,
-      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName)
+      title: 'AltSku Name',
+      dataIndex: 'akiAltSKUName',
+      ellipsis: true,
+      width: 180,
+      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
     },
     {
-      title: 'Comm Code', dataIndex: 'akiCommodityCode', width: 120,
-      sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0)
+      title: 'Comm Code',
+      dataIndex: 'akiCommodityCode',
+      width: 120,
+      sorter: (a, b) => (Number(a.akiCommodityCode) || 0) - (Number(b.akiCommodityCode) || 0),
     },
   ];
 
@@ -114,7 +129,7 @@ const SKUsList = () => {
       <Spin spinning={loading}>
         <Table
           columns={columns}
-          scroll={{ x: 1100 }}
+          scroll={{x: 1100}}
           dataSource={skusList}
           rowKey="akiitemid"
           size="small"

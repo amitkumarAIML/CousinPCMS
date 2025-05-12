@@ -3,15 +3,17 @@ import {useLocation} from 'react-router';
 import {Button, Input, Spin, List, Popconfirm, Form, Upload} from 'antd';
 import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, MenuOutlined} from '@ant-design/icons';
 import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import type {ApiResponse} from '../models/generalModel';
 import type {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 import {getProductAdditionalImages, saveProductImagesUrl, deleteProductImagesUrl, updateProductAdditionalImage} from '../services/ProductService';
 import {getCategoryAdditionalImages, saveCategoryImagesUrl, deleteCategoryImagesUrl, updateCategoryAdditionalImage} from '../services/CategoryService';
 import {getSkuAdditionalImages, saveSkuImagesUrl, deleteSkuImagesUrl, updateSkuAdditionalImage} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import {getSessionItem} from '../services/DataService';
+
+type ContextType = 'product' | 'category' | 'sku' | null;
 
 const AdditionalImages = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
@@ -25,7 +27,7 @@ const AdditionalImages = () => {
   const location = useLocation();
 
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
-  const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
+  const [contextType, setContextType] = useState<ContextType>(null);
   const notify = useNotification();
 
   const sensors = useSensors(useSensor(PointerSensor, {activationConstraint: {distance: 5}}));
@@ -79,14 +81,14 @@ const AdditionalImages = () => {
     let type: 'product' | 'category' | 'sku' | null = null;
 
     if (path.includes('/products')) {
-      const idStr = getSessionItem('productId') || getSessionItem('tempProductId') || undefined;
+      const idStr = getSessionItem('imageProductId') || undefined;
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('CategoryId') || getSessionItem('tempCategoryId') || undefined;
+      id = getSessionItem('imageCategoryId') || undefined;
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber') || undefined;
+      id = getSessionItem('imageSkusId') || undefined;
       type = 'sku';
     }
     setLoadingData(true);
@@ -109,6 +111,9 @@ const AdditionalImages = () => {
   }, [handleContextAndFetchImages]);
 
   const goBack = () => {
+    sessionStorage.removeItem('imageProductId');
+    sessionStorage.removeItem('imageCategoryId');
+    sessionStorage.removeItem('imageSkusId');
     window.history.back();
   };
 
@@ -237,17 +242,21 @@ const AdditionalImages = () => {
     }
   };
 
+  const getImageIdByContext = (image: AdditionalImagesModel, contextType: ContextType): number | undefined => {
+    if (contextType === 'product') return image.productImageID;
+    if (contextType === 'category') return image.catimageid;
+    if (contextType === 'sku') return image.skuImageID;
+  };
+
   // Function to handle drag end and persist order
   const handleImageDragEnd = async ({active, over}: {active: any; over: any}) => {
     if (active.id !== over?.id) {
-      const oldIndex = fileList.findIndex((img) => img.imageURL === active.id);
-      const newIndex = fileList.findIndex((img) => img.imageURL === over?.id);
-      const newOrder = arrayMove(fileList, oldIndex, newIndex);
+      const newIndex = fileList.findIndex((img) => getImageIdByContext(img, contextType)?.toString() === over?.id?.toString());
 
       // Call API to persist new order
       setLoadingData(true);
       try {
-        const image = fileList.find((img) => img.imageURL === active.id);
+        const image = fileList.find((img) => getImageIdByContext(img, contextType)?.toString() === active.id?.toString());
         if (!image) {
           notify.error('Image not found.');
           setLoadingData(false);
@@ -280,7 +289,7 @@ const AdditionalImages = () => {
         }
 
         if (response.isSuccess) {
-          setFileList(newOrder);
+          handleContextAndFetchImages();
           notify.success('Image order updated successfully.');
         } else {
           notify.error('Failed to update image order.');
@@ -295,15 +304,13 @@ const AdditionalImages = () => {
   };
 
   // Sortable image item using dnd-kit
-  function SortableImageItem({image, onDelete, id}: {image: AdditionalImagesModel; onDelete: (image: AdditionalImagesModel, index: number) => void; id: string}) {
+  function SortableImageItem({image, onDelete, id}: {image: AdditionalImagesModel; onDelete: (image: AdditionalImagesModel, index: number) => void; id: string | number}) {
     const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
       opacity: isDragging ? 0.5 : 1,
-      background: isDragging ? '#f0f0f0' : undefined,
       cursor: 'grab',
-      marginBottom: 4,
     };
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id}>
@@ -358,12 +365,14 @@ const AdditionalImages = () => {
                 {fileList.length > 0 ? (
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
                     <SortableContext items={[...fileList].sort((a, b) => (a.listorder || 0) - (b.listorder || 0)).map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
-                      <ul style={{margin: 0, padding: 0}}>
+                      <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
                         {[...fileList]
                           .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
-                          .map((image) => (
-                            <SortableImageItem key={image.imageURL} id={image.imageURL} image={image} onDelete={handleDeleteImage} />
-                          ))}
+                          .map((image: AdditionalImagesModel) => {
+                            const key = image.catimageid ?? image.productImageID ?? image.skuImageID ?? image.imageURL;
+
+                            return <SortableImageItem key={key} id={key} image={image} onDelete={handleDeleteImage} />;
+                          })}
                       </ul>
                     </SortableContext>
                   </DndContext>

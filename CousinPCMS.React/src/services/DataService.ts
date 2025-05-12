@@ -1,6 +1,17 @@
 import {http} from '../auth/HttpClient';
 import {CommodityCode, CommodityCodeResponse} from '../models/commodityCodeModel';
 import {Country, CountryResponse} from '../models/countryOriginModel';
+import { ApiResponse } from '../models/generalModel';
+
+
+interface EmpTokenRequest {
+  token: string;
+}
+
+export const empLogin = async (empToken: EmpTokenRequest): Promise<ApiResponse<any>> => {
+  const response = await http.post<ApiResponse<any>>('Account/EmpLogin', empToken);
+    return response;
+};
 
 export const getCountryOrigin = async (): Promise<Country[]> => {
   const response = await http.get<CountryResponse>('Account/GetCountryOrigin');

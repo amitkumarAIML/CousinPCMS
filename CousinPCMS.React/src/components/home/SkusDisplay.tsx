@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 import {getSkuByProductId, updateSkuListOrderForHomeScreen} from '../../services/HomeService';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import type {SKuList, SKusRequestModelForProductOrderList} from '../../models/skusModel';
 import {useNavigate} from 'react-router';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
@@ -238,7 +238,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       ...props.style,
       transform: CSS.Transform.toString(transform),
       transition,
-      cursor: 'move',
+      cursor: 'grab',
     };
 
     return <tr {...props} ref={setNodeRef} style={style} {...attributes} {...listeners} />;

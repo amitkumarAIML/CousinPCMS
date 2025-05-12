@@ -9,7 +9,7 @@ import {getDepartments} from '../../services/DepartmentService';
 import {getCategoriesByDepartment, getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {useNavigate} from 'react-router';
 import CategoryAttribute from './CategoryAttribute';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
 
 interface CustomTreeDataNode extends TreeDataNode {
@@ -96,7 +96,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
   const [categoryData, setCategoryData] = useState<CustomTreeDataNode | undefined>(undefined);
   const navigate = useNavigate();
   const notify = useNotification();
-
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -269,10 +268,16 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           }));
           setTreeData(deptNodes);
           if (!getSessionItem('departmentId') && deptNodes.length > 0) {
+            sessionStorage.removeItem('tempCategoryId');
+            sessionStorage.removeItem('tempProductId');
+            sessionStorage.removeItem('tempItemNumber');
             setSessionItem('tempDepartmentId', String(deptNodes[0].id));
             setExpandedKeys((prev) => Array.from(new Set([...prev, deptNodes[0].key])));
           } else {
             sessionStorage.removeItem('tempDepartmentId');
+            sessionStorage.removeItem('tempCategoryId');
+            sessionStorage.removeItem('tempProductId');
+            sessionStorage.removeItem('tempItemNumber');
           }
         } else {
           setError('Failed to load departments.');
@@ -329,7 +334,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
             const categories = response.value.filter((res: CategoryModel) => res.akiCategoryIsActive).sort((a, b) => (Number(a.akiCategoryListOrder) || 0) - (Number(b.akiCategoryListOrder) || 0));
             categoryNodes = buildCategoryTree(categories, selectedKeys);
           } else {
-            message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
+            // message.error(`Failed to load categories for department ${getNodeTitleText(customNode)}.`);
           }
 
           setTreeData((current) => updateTreeData(current, key, categoryNodes));
@@ -342,7 +347,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           }
         })
         .catch(() => {
-          message.error(`Error loading categories for department ${getNodeTitleText(customNode)}.`);
+          // message.error(`Error loading categories for department ${getNodeTitleText(customNode)}.`);
           setTreeData((current) => updateTreeData(current, key, []));
         });
     },

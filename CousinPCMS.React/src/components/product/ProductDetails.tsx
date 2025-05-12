@@ -13,7 +13,7 @@ import {CommodityCode} from '../../models/commodityCodeModel';
 import {layoutProduct} from '../../models/layoutTemplateModel';
 import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import {useLocation} from 'react-router';
 import {getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {AttributeSetModel} from '../../models/attributeModel';
@@ -540,14 +540,18 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
   ];
   const goToLinkMaintenance = () => {
     const productId = productForm.getFieldValue('akiProductID');
-    if (!productId) return;
-    window.location.href = '/products/link-maintenance';
+    if (productId && productId > 0) {
+      setSessionItem('linkProductId', productId);
+      window.location.href = '/products/link-maintenance';
+    }
   };
 
   const goToAdditionalImage = () => {
     const productId = productForm.getFieldValue('akiProductID');
-    if (!productId) return;
-    window.location.href = '/products/additional-images';
+    if (productId && productId > 0) {
+      setSessionItem('imageProductId', productId);
+      window.location.href = '/products/additional-images';
+    }
   };
 
   const goToSetAttribute = () => {

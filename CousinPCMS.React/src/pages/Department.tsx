@@ -7,7 +7,7 @@ import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
 import {getCommodityCodes, cleanEmptyNullToString, getSessionItem, getPlainText} from '../services/DataService';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
 import RichTextEditor from '../components/RichTextEditor';

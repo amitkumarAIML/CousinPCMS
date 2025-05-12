@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Input, Button} from 'antd';
 import {addAttributesValues, updateAttributeValues} from '../../services/AttributesService';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import type {AttributeValuesRequestModel} from '../../models/attributesModel';
 import {PlusOutlined} from '@ant-design/icons';
 

@@ -6,7 +6,7 @@ import SKUDetails from '../components/skus/SKUDetails';
 import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 import {updateSkus, getSkuItemById, addSkus} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import type {SKuList} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
 import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';

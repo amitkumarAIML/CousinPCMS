@@ -6,7 +6,7 @@ import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import {getCompetitorDetails, getLayoutTemplateList, getPriceBreaksDetails, getPriceGroupDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
 import {getCountryOrigin, getCommodityCodes, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import type {Country} from '../../models/countryOriginModel';
 import type {CommodityCode} from '../../models/commodityCodeModel';
 import type {layoutSkus} from '../../models/layoutTemplateModel';
@@ -200,13 +200,19 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
   };
 
   const goToLinkMaintenance = () => {
-    if (!skuData?.akiSKUID) return;
-    navigate(`/SKUs/link-maintenance`);
+    const akiItemid = form.getFieldValue('akiSKUID');
+    if (akiItemid && akiItemid > 0) {
+      setSessionItem('linkSkusId', akiItemid);
+      navigate(`/SKUs/link-maintenance`);
+    }
   };
 
   const goToAdditionalImage = () => {
-    if (!skuData?.akiSKUID) return;
-    navigate(`/SKUs/additional-images`);
+    const akiItemid = form.getFieldValue('akiSKUID');
+    if (akiItemid && akiItemid > 0) {
+      setSessionItem('imageSkusId', akiItemid);
+      navigate(`/SKUs/additional-images`);
+    }
   };
 
   const goToUploadForm = () => {

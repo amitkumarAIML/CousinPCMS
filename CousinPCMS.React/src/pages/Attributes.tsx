@@ -2,7 +2,7 @@ import {useState, useEffect, useCallback, useMemo} from 'react';
 import {useNavigate} from 'react-router';
 import {Input, Button, Spin} from 'antd';
 import {CloseCircleFilled, SearchOutlined} from '@ant-design/icons';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import type {AttributeModel} from '../models/attributeModel';
 import {getAttributesList} from '../services/AttributesService';
 import {setSessionItem} from '../services/DataService';

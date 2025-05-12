@@ -5,14 +5,14 @@ import {DeleteOutlined, MenuOutlined, QuestionCircleOutlined} from '@ant-design/
 import {getProductUrls, saveProductLinkUrl, deleteProductLinkUrl, updateProductLinkUrls} from '../services/ProductService';
 import {getCategoryUrls, saveCategoryLinkUrl, deleteCategoryLinkUrl, updateCategoryLinkUrls} from '../services/CategoryService';
 import {getSkuUrls, saveSkuLinkUrl, deleteSkuLinkUrl, updateSkuLinkUrls} from '../services/SkusService';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import type {LinkValue, LinkRequestModel, LinkDeleteRequestModel, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import type {ApiResponse} from '../models/generalModel';
 import {getSessionItem} from '../services/DataService';
-import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {closestCenter, DndContext, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
-
+type ContextType = 'product' | 'category' | 'sku' | null;
 const {Option} = Select;
 
 const LinkMaintenance = () => {
@@ -24,7 +24,7 @@ const LinkMaintenance = () => {
   const [isDuplicateUrl, setIsDuplicateUrl] = useState<boolean>(false);
 
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
-  const [contextType, setContextType] = useState<'product' | 'category' | 'sku' | null>(null);
+  const [contextType, setContextType] = useState<ContextType>(null);
 
   const location = useLocation();
   const notify = useNotification();
@@ -79,14 +79,14 @@ const LinkMaintenance = () => {
     let type: 'product' | 'category' | 'sku' | null = null;
 
     if (path.includes('/products')) {
-      const idStr = getSessionItem('productId') || getSessionItem('tempProductId');
+      const idStr = getSessionItem('linkProductId');
       id = idStr ? Number(idStr) : undefined;
       type = 'product';
     } else if (path.includes('/category')) {
-      id = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
+      id = getSessionItem('linkCategoryId');
       type = 'category';
     } else if (path.includes('/skus')) {
-      id = getSessionItem('skuId') || getSessionItem('itemNumber') || getSessionItem('tempItemNumber');
+      id = getSessionItem('linkSkusId');
       type = 'sku';
     }
 
@@ -108,6 +108,9 @@ const LinkMaintenance = () => {
   }, [handleContextAndFetchLinks]);
 
   const goBack = () => {
+    sessionStorage.removeItem('linkProductId');
+    sessionStorage.removeItem('linkCategoryId');
+    sessionStorage.removeItem('linkSkusId');
     window.history.back();
   };
 
@@ -226,17 +229,20 @@ const LinkMaintenance = () => {
     }
   };
 
+  const getLinkIdByContext = (link: LinkValue, contextType: ContextType): number | undefined => {
+    if (contextType === 'product') return link.producturlID;
+    if (contextType === 'category') return link.categoryurlID;
+    if (contextType === 'sku') return link.skuitemURLid;
+  };
+
   // Function to handle drag end and persist order
   const handleLinkDragEnd = async ({active, over}: {active: any; over: any}) => {
     if (active.id !== over?.id) {
-      const oldIndex = links.findIndex((link) => link.linkURL === active.id);
-      const newIndex = links.findIndex((link) => link.linkURL === over?.id);
-      const newOrder = arrayMove(links, oldIndex, newIndex);
-
+      const newIndex = links.findIndex((link) => getLinkIdByContext(link, contextType)?.toString() === over?.id?.toString());
       // Call API to persist new order
       setLoadingData(true);
       try {
-        const link = links.find((link) => link.linkURL === active.id);
+        const link = links.find((links) => getLinkIdByContext(links, contextType)?.toString() === active.id?.toString());
         if (!link) {
           notify.error('Link not found.');
           setLoadingData(false);
@@ -269,8 +275,8 @@ const LinkMaintenance = () => {
         }
 
         if (response.isSuccess) {
-          setLinks(newOrder);
-          notify.success('Image order updated successfully.');
+          handleContextAndFetchLinks();
+          notify.success('Link order updated successfully.');
         } else {
           notify.error('Failed to update link order.');
         }
@@ -339,9 +345,18 @@ const LinkMaintenance = () => {
                       <ul style={{margin: 0, padding: 0}} className="divide-y divide-border">
                         {[...links]
                           .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
-                          .map((link) => (
-                            <SortableLinkItem key={link.linkURL} id={link.linkURL} link={link} onDelete={handleDeleteLink} />
-                          ))}
+                          .map((link) => {
+                            const key =
+                              link.categoryurlID !== undefined
+                                ? link.categoryurlID
+                                : link.producturlID !== undefined
+                                ? link.producturlID
+                                : link.skuitemURLid !== undefined
+                                ? link.skuitemURLid
+                                : link.linkURL; // fallback to imageURL if none are present
+
+                            return <SortableLinkItem key={key} id={key} link={link} onDelete={handleDeleteLink} />;
+                          })}
                       </ul>
                     </SortableContext>
                   </DndContext>

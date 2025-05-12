@@ -5,7 +5,7 @@ import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
 import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
 import type {Product, ProductRequest} from '../models/productModel';
-import {useNotification} from '../contexts.ts/useNotification';
+import {useNotification} from '../hook/useNotification';
 import {addProduct, updateProduct} from '../services/ProductService';
 
 const Product = () => {

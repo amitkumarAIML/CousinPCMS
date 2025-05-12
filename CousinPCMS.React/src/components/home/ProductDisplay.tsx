@@ -7,12 +7,11 @@ import {AttributeSetModel} from '../../models/attributeModel';
 import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId, updateProductListOrderForHomeScreen} from '../../services/HomeService';
 import CategoryAttribute from './CategoryAttribute';
 import {useNavigate} from 'react-router';
-import {useNotification} from '../../contexts.ts/useNotification';
+import {useNotification} from '../../hook/useNotification';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
-import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import {SortableContext, verticalListSortingStrategy, useSortable} from '@dnd-kit/sortable';
 import {ApiResponse} from '../../models/generalModel';
 
 interface ProductDisplayProps {
@@ -38,7 +37,6 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
     if (!selectedCategory) {
       setProducts([]);
       setAllProductAttributes([]);
-      setFilteredData([]);
       setFilteredData([]);
       onProductSelected(undefined);
       setDisplayText('Click a category to view the product');
@@ -233,7 +231,7 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       transform: CSS.Transform.toString(transform),
       transition,
       opacity: isDragging ? 0.5 : 1,
-      cursor: 'move',
+      cursor: 'grab',
     };
 
     if ('akiProductID' in item) {
@@ -300,8 +298,6 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
         const response: ApiResponse<string> = await updateProductListOrderForHomeScreen(updateRequest);
         if (response.isSuccess) {
           fetchData();
-          // setFilteredData(newOrder);
-          // setProducts(newOrder);
           notify.success('product order updated successfully.');
         } else {
           notify.error('Failed to update product order.');
@@ -314,6 +310,7 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       }
     }
   };
+
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
       <div className="bg-[#E2E8F0] text-primary-font text-[11px] font-semibold px-2 py-[5px] border-b border-border flex justify-between items-center">
@@ -333,7 +330,10 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
 
       <Spin spinning={loading}>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={filteredData.map((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`))} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={filteredData.filter((item) => !('attributeSetName' in item && item.attributeSetName)).map((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`))}
+            strategy={verticalListSortingStrategy}
+          >
             <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
               {filteredData && filteredData.length > 0 ? (
                 <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
