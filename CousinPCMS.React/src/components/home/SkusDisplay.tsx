@@ -170,9 +170,9 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     },
     {
       title: 'Item No',
-      dataIndex: 'akiitemid',
+      dataIndex: 'akigpItemNumber',
       width: 120,
-      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0),
+      sorter: (a, b) => (Number(a.akigpItemNumber) || 0) - (Number(b.akigpItemNumber) || 0),
     },
     {
       title: 'List Order',

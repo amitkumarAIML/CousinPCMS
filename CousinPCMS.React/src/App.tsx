@@ -16,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
-    const tokenParam = query.get('Token');
+    const tokenParam = query.get('token');
 
     if (tokenParam) {
       setLoading(true);
