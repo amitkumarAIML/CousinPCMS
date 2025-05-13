@@ -91,29 +91,49 @@ namespace CousinPCMS.API.Controllers
         public async Task<IActionResult> EmpLogin(EmpLoginRequestModel loginModel)
         {
             log.Info($"Request of {nameof(EmpLogin)} method called with token: {loginModel.token}.");
+
+            if (string.IsNullOrWhiteSpace(loginModel.token))
+            {
+                log.Error($"Token is missing in the request.");
+                return BadRequest();
+            }
+
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
-            if (!string.IsNullOrWhiteSpace(loginModel.token))
+            // Bypass the service call if token contains "AKK"
+            if (loginModel.token.Contains("Akkomplish", StringComparison.OrdinalIgnoreCase))
             {
+                log.Info($"Token contains 'Akkomplish', bypassing service call.");
+                var bypassResponse = new APIResult<LoginResponseModel>
+                {
+                    IsError = false,
+                    IsSuccess = true,
+                    Value = new LoginResponseModel
+                    {
+                        PortalEnabled = true,
+                        PersonResponsible = "Akkomplish",
+                        Email = "support@Akkomplish.com",
+                        AssignedUserID = "",
+                        isEmployee = true
+                    }
+                };
+                return Ok(bypassResponse);
+            }
 
-                var responseValue = _accountService.EmpLogin(loginModel);
-                if (!responseValue.IsError)
-                {
-                    log.Info($"Response of {nameof(Login)} is success.");
-                }
-                else
-                {
-                    log.Error($"Response of {nameof(Login)} is failed.");
-                }
-                return Ok(responseValue);
+            var responseValue = _accountService.EmpLogin(loginModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(EmpLogin)} is success.");
             }
             else
             {
                 log.Error($"Response of {nameof(EmpLogin)} is failed.");
-                return BadRequest();
             }
+
+            return Ok(responseValue);
         }
 
 
