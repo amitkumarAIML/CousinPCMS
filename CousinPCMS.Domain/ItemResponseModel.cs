@@ -18,7 +18,7 @@ namespace CousinPCMS.Domain
         public int unitPrice { get; set; }
         public string priceProfitCalculation { get; set; }
         public int profit { get; set; }
-        public double unitCost { get; set; }
+        public int unitCost { get; set; }
         public int standardCost { get; set; }
         public int lastDirectCost { get; set; }
         public int indirectCost { get; set; }
@@ -142,6 +142,9 @@ namespace CousinPCMS.Domain
         public string akiCategoryID { get; set; }
         public string akiSKUDescription { get; set; }
         public string akiManufacturerRef { get; set; }
+        public string akigpItemNumber { get; set; }
+        public int additionalImagesCount { get; set; }
+        public int urlLinksCount { get; set; }
         public int akiListOrder { get; set; }
         public bool akiObsolete { get; set; }
         public bool akiWebActive { get; set; }
@@ -169,7 +172,7 @@ namespace CousinPCMS.Domain
         public string itemvaluationMethod { get; set; }
         public int akiItemPriceSiteSellPrice { get; set; }
         public string akiItemShortDescription { get; set; }
-        public int akiTemplateID { get; set; }
+        public string akiTemplateID { get; set; }
         public string akiAltSKUName { get; set; }
         public string akiLayoutTemplate { get; set; }
         public string akiPricingFormula { get; set; }
@@ -198,14 +201,14 @@ namespace CousinPCMS.Domain
         public bool akiPriceBreaksTBC { get; set; }
         public int akiItemShippingWeight { get; set; }
         public int akiItemPriceSiteSellPrice { get; set; }
-        public int akiTemplateID { get; set; }
-        public string akiLayoutTemplate { get; set; }
+        public string akiTemplateID { get; set; }
         public string akiSKUDescription { get; set; }
         public string akiPricingFormula { get; set; }
         public string akiPriceBreak { get; set; }
         public string akiPriceGroup { get; set; }
         public string skuName { get; set; }
         public bool akiSKUIsActive { get; set; }
+        public string akigpItemNumber { get; set; }
     }
 
 }

@@ -46,6 +46,8 @@ namespace CousinPCMS.Domain
         public bool akiCategoryPrintCatTemp { get; set; }
         public int AKI_Indentation { get; set; }
         public string AKIdepartmentname { get; set; }
+        public int additionalImagesCount { get; set; }
+        public int urlLinksCount { get; set; }
     }
 
     public class AddCategoryModel

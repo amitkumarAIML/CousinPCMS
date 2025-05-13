@@ -45,6 +45,8 @@ namespace CousinPCMS.Domain
         public string akiProductIndexText4 { get; set; }
         public string akiProductIndexText5 { get; set; }
         public string category_Name { get; set; }
+        public int additionalImagesCount { get; set; }
+        public int urlLinksCount { get; set; }
     }
 
     public class ProductLinkedURlModel
