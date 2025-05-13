@@ -36,7 +36,7 @@ namespace CousinPCMS.Domain
         public int akiProductImageWidth { get; set; }
         public bool akiProductIsActive { get; set; }
         public string akiProductAlternativeTitle { get; set; }
-        public string aki_Layout_Template { get; set; }
+        public string akiLayoutTemplate { get; set; }
         public bool akiProductShowPriceBreaks { get; set; }
         public bool akiProductPrintLayoutTemp { get; set; }
         public string akiProductIndexText1 { get; set; }

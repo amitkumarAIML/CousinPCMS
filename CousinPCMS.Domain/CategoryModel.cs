@@ -33,7 +33,7 @@ namespace CousinPCMS.Domain
         public bool akiCategoryIsActive { get; set; }
         public bool AKI_Show_Category_Text { get; set; }
         public bool AKI_Show_Category_Image { get; set; }
-        public string AKI_Layout_Template { get; set; }
+        public string akiLayoutTemplate { get; set; }
         public string akiCategoryAlternativeTitle { get; set; }
         public bool akiCategoryShowPriceBreaks { get; set; }
         public string akiCategoryIndex1 { get; set; }
