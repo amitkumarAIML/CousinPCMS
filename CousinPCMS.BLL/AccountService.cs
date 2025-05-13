@@ -156,8 +156,8 @@ namespace CousinPCMS.BLL
 
                         obj.PortalEnabled = true;
                         obj.PersonResponsible = parts[0];
-                        obj.Email = parts[6];
-                        obj.AssignedUserID = parts[3];
+                        obj.Email = parts[3];
+                        obj.AssignedUserID = parts[2];
                         obj.Contact = parts[5];
                         obj.isEmployee = true;
 
