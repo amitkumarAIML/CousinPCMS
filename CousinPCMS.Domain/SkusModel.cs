@@ -72,11 +72,10 @@ namespace CousinPCMS.Domain
         public bool akiPrintLayoutTemp { get; set; }
         public string akiAlternativeTitle { get; set; }
         public string akiCompetitors { get; set; }
-        public bool akiPricebreaks { get; set; }
+        public bool akiPriceBreaks { get; set; }
         public int akiItemShippingWeight { get; set; }
         public int akiItemPriceSiteSellPrice { get; set; }
-        public int akiTemplateID { get; set; }
-        public string akiLayoutTemplate { get; set; }
+        public string akiTemplateID { get; set; }
         public string akiSKUDescription { get; set; }
         public string akiPricingFormula { get; set; }
         public string akiPriceBreak { get; set; }

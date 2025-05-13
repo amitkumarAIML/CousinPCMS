@@ -36,7 +36,7 @@ namespace CousinPCMS.Domain
         public int akiProductImageWidth { get; set; }
         public bool akiProductIsActive { get; set; }
         public string akiProductAlternativeTitle { get; set; }
-        public string aki_Layout_Template { get; set; }
+        public string akiLayoutTemplate { get; set; }
         public bool akiProductShowPriceBreaks { get; set; }
         public bool akiProductPrintLayoutTemp { get; set; }
         public string akiProductIndexText1 { get; set; }
@@ -45,6 +45,8 @@ namespace CousinPCMS.Domain
         public string akiProductIndexText4 { get; set; }
         public string akiProductIndexText5 { get; set; }
         public string category_Name { get; set; }
+        public int additionalImagesCount { get; set; }
+        public int urlLinksCount { get; set; }
     }
 
     public class ProductLinkedURlModel

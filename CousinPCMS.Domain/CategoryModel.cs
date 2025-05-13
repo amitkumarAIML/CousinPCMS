@@ -33,7 +33,7 @@ namespace CousinPCMS.Domain
         public bool akiCategoryIsActive { get; set; }
         public bool AKI_Show_Category_Text { get; set; }
         public bool AKI_Show_Category_Image { get; set; }
-        public string AKI_Layout_Template { get; set; }
+        public string akiLayoutTemplate { get; set; }
         public string akiCategoryAlternativeTitle { get; set; }
         public bool akiCategoryShowPriceBreaks { get; set; }
         public string akiCategoryIndex1 { get; set; }
@@ -46,6 +46,8 @@ namespace CousinPCMS.Domain
         public bool akiCategoryPrintCatTemp { get; set; }
         public int AKI_Indentation { get; set; }
         public string AKIdepartmentname { get; set; }
+        public int additionalImagesCount { get; set; }
+        public int urlLinksCount { get; set; }
     }
 
     public class AddCategoryModel
