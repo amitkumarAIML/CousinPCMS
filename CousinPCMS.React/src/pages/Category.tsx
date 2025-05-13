@@ -28,7 +28,7 @@ interface TableParams {
 }
 
 const Category = () => {
-  const [categoryForm] = Form.useForm<UpdateCategoryModel & {additionalImages?: string; urlLinks?: string}>();
+  const [categoryForm] = Form.useForm<UpdateCategoryModel>();
   const [editAssociatedProductForm] = Form.useForm<AdditionalCategoryModel>();
   const [addAssociatedProductForm] = Form.useForm<{listorder: number; product: number; productName: string}>();
   const navigate = useNavigate();
@@ -86,10 +86,10 @@ const Category = () => {
     aki_Indentation: 0,
     akiDepartment: '',
     akidepartmentname: '',
-    // akI_Show_Category_Text: false,
-    // akI_Show_Category_Image: false,
     akI_Layout_Template: '',
     akiCategoryDescriptionText: '',
+    additionalImagesCount: 0,
+    urlLinksCount: 0,
   };
   const description = categoryForm.getFieldValue('akiCategoryDescriptionText');
   const [plainTextLength, setPlainTextLength] = useState(0);
@@ -155,9 +155,6 @@ const Category = () => {
             aki_Show_Category_Image: !!details.akI_Show_Category_Image,
             akiCategoryWebActive: !!details.akiCategoryWebActive,
             akiCategoryPrintCatActive: !!details.akiCategoryPrintCatActive,
-            additionalImages: String((details as Record<string, unknown>).additionalImagesCount || 0),
-            urlLinks: String((details as Record<string, unknown>).urlLinksCount || 0),
-            aki_Layout_Template: !!details.akI_Layout_Template,
           });
         } else {
           notify.error('Failed to load category details.');
@@ -252,9 +249,7 @@ const Category = () => {
     setBtnLoading(true);
     const payload: UpdateCategoryModel = {
       ...values,
-      akiCategoryID: values.akiCategoryID || '',
-      // akiCategoryParentID: categoryDetails?.akiCategoryParentID || '',
-      // akiDepartment: categoryDetails?.akiDepartment || '',
+      akiCategoryID: String(values.akiCategoryID) || '',
       akiCategoryParentID: values.akiCategoryParentID || '',
       akiDepartment: values.akiDepartment || '',
       akiCategoryGuidePrice: Number(values.akiCategoryGuidePrice) || 0,
@@ -267,7 +262,7 @@ const Category = () => {
       aki_Indentation: Number((values as UpdateCategoryModel).aki_Indentation) || 0,
       akiCategoryCommodityCode: values.akiCategoryCommodityCode || '',
       akiCategoryCountryOfOrigin: values.akiCategoryCountryOfOrigin || '',
-      aki_Layout_Template: values.akI_Layout_Template || '',
+      aki_Layout_Template: values.akiLayoutTemplate || '',
       akiCategoryReturnType: values.akiCategoryReturnType || '',
       akiCategoryPrintCatImage: '',
       akiCategoryPrintCatTemp: true,
@@ -275,7 +270,7 @@ const Category = () => {
       aki_Show_Category_Text: (values as UpdateCategoryModel).aki_Show_Category_Text || false,
       aki_Show_Category_Image: (values as UpdateCategoryModel).aki_Show_Category_Image || false,
     };
-    delete payload.akI_Layout_Template;
+    delete payload.akiLayoutTemplate;
     try {
       if (isEdit) {
         const response = await updateCategory(payload);
@@ -668,7 +663,7 @@ const Category = () => {
                         No of Additional Website Images
                       </a>
                     }
-                    name="additionalImages"
+                    name="additionalImagesCount"
                   >
                     <Input disabled />
                   </Form.Item>
@@ -684,7 +679,7 @@ const Category = () => {
                         No of URL Links
                       </a>
                     }
-                    name="urlLinks"
+                    name="urlLinksCount"
                   >
                     <Input disabled />
                   </Form.Item>
@@ -723,7 +718,7 @@ const Category = () => {
               <div className="col-span-6">
                 <Form.Item label="Print Catalogue Settings" className="mb-2">
                   <div className="flex flex-col items-start space-y-1">
-                    <Form.Item name="akiCategoryPrintCatActive" valuePropName="checked" noStyle>
+                    <Form.Item name="akiCategoryIsActive" valuePropName="checked" noStyle>
                       <Checkbox>Cat Active</Checkbox>
                     </Form.Item>
                     <Form.Item name="aki_Show_Category_Text" valuePropName="checked" noStyle>
@@ -734,7 +729,7 @@ const Category = () => {
                     </Form.Item>
                   </div>
                 </Form.Item>
-                <Form.Item label="Layout Template" name="akI_Layout_Template">
+                <Form.Item label="Layout Template" name="akiLayoutTemplate">
                   <Select
                     allowClear
                     showSearch

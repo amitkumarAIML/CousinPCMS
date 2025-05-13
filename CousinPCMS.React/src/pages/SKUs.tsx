@@ -9,7 +9,7 @@ import {updateSkus, getSkuItemById, addSkus} from '../services/SkusService';
 import {useNotification} from '../hook/useNotification';
 import type {SKuList} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
-import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
+import {cleanEmptyNullToString, extractUserMessage, getSessionItem} from '../services/DataService';
 
 const SKUs = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
@@ -91,10 +91,10 @@ const SKUs = () => {
       const skusData = cleanEmptyNullToString(values);
 
       skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
-      const akiPriceBreaksTBC = values?.akiPriceBreak ? true : false;
+      const akiPriceBreaks = values?.akiPriceBreak ? true : false;
       const req = {
         ...skusData,
-        akiPriceBreaksTBC,
+        akiPriceBreaks,
       };
       try {
         setBtnSaveLoading(true);
@@ -105,7 +105,10 @@ const SKUs = () => {
             setFormChanged(false);
             // navigate('/home');
           } else {
-            notify.error('SKU Details Update Failed');
+            const raw = response?.value || 'Unknown error';
+            const userMsg = extractUserMessage(raw);
+            notify.error(userMsg);
+            // notify.error('SKU Details Update Failed');
           }
           setBtnSaveLoading(false);
         } else {
@@ -117,10 +120,16 @@ const SKUs = () => {
               setFormChanged(false);
               notify.success('SKU Details Added Successfully');
             } else {
+              const raw = response?.value || 'Unknown error';
+              const userMsg = extractUserMessage(raw);
+              notify.error(userMsg);
               notify.error('SKU Details Added Failed');
             }
           } else {
-            notify.error('SKU Details Added Failed');
+            const raw = response?.value || 'Unknown error';
+            const userMsg = extractUserMessage(raw);
+            notify.error(userMsg);
+            // notify.error('SKU Details Added Failed');
           }
           setBtnSaveLoading(false);
         }

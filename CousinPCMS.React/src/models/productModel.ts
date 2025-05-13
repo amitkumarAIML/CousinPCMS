@@ -26,6 +26,8 @@ export interface Product {
     iscommoditychange: boolean,
     iscountrychange: boolean
     odataetag: string;
+    additionalImagesCount: number,
+    urlLinksCount: number
 }
 
 export interface ProductRequest {

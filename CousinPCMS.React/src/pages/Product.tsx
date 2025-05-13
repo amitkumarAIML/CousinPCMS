@@ -42,23 +42,30 @@ const Product = () => {
   };
 
   const saveProduct = async (req: ProductRequest) => {
-    const action = isEdit ? updateProduct : addProduct;
-
     try {
-      const response = await action(req);
-      if (response?.isSuccess) {
-        if (Number(response.value) && Number(response.value) > 0) {
-          if (!isEdit && productFormRef.current) {
-            productFormRef.current.setProductId(response.value);
-            setIsEdit(true);
-          }
+      if (isEdit) {
+        const response = await updateProduct(req);
+        if (response.isSuccess) {
+          notify.success('Product details updated successfully');
           setFormChanged(false);
-          notify.success(`Product Details ${isEdit ? 'Updated' : 'Added'} Successfully`);
         } else {
-          notify.error(`Product Details Failed to ${isEdit ? 'Update' : 'Add'}`);
+          notify.error('Category details not updated');
         }
       } else {
-        notify.error(`Product Details Failed to ${isEdit ? 'Update' : 'Add'}`);
+        const response = await addProduct(req);
+        if (response.isSuccess) {
+          if (Number(response.value) && Number(response.value) > 0) {
+            if (productFormRef.current) {
+              productFormRef.current.setProductId(response.value);
+              setIsEdit(true);
+            }
+            notify.success('Product Details Added Successfully');
+          } else {
+            notify.success('Product details not added');
+          }
+        } else {
+          notify.error('Product Details Failed to Add');
+        }
       }
       sessionStorage.removeItem('originalCommodityCode');
       sessionStorage.removeItem('originalCountryOfOrigin');
@@ -75,16 +82,18 @@ const Product = () => {
         const values = await formData.validateFields();
         const productData = cleanEmptyNullToString(values);
 
-        if (productData.aki_Layout_Template) {
+        if (productData.akiLayoutTemplate) {
           productData.akiProductPrintLayoutTemp = true;
         }
         const req = {
           ...productData,
+          aki_Layout_Template: productData.akiLayoutTemplate,
           categoryName: productData.category_Name,
           iscommoditychange: productFormRef.current.getCommityCodeChange(),
           iscountrychange: productFormRef.current.getCountryOriginChange(),
         };
         delete req.category_Name;
+        delete req.akiLayoutTemplate;
 
         await saveProduct(req);
       } catch (errorInfo) {

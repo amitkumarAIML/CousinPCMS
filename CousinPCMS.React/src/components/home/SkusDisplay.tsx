@@ -210,15 +210,15 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     },
     {
       title: 'Temp ID',
-      dataIndex: 'akiLayoutTemplate',
+      dataIndex: 'akiTemplateID',
       align: 'center',
       width: 80,
     },
     {
       title: 'AltSku Name',
-      dataIndex: 'akiAltSKUName',
+      dataIndex: 'akiAlternativeTitle',
       width: 150,
-      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
+      sorter: (a, b) => a.akiAlternativeTitle.localeCompare(b.akiAlternativeTitle),
     },
     {title: 'Ctr of Org', dataIndex: 'akiCountryofOrigin', width: 80},
     {

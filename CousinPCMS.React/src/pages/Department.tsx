@@ -113,7 +113,6 @@ const Department: React.FC<DepartmentInfoProps> = () => {
     form
       .validateFields()
       .then((values) => {
-        values.akiDepartmentIsActive = true;
         const cleanedForm = cleanEmptyNullToString(values);
         if (isEdit) {
           updateDepartment(cleanedForm)

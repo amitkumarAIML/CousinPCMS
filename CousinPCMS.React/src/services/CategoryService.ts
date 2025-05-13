@@ -58,8 +58,8 @@ export const getCategoryUrls = async (CategoryId: string): Promise<ApiResponse<L
   return response;
 };
 
-export const getCategoryAdditionalImages = async (CategoryId: string): Promise<ApiResponse<AdditionalImagesModel[]>> => {
-  const response = await http.get<ApiResponse<AdditionalImagesModel[]>>('Category/GetCategoryAdditionalImages', {params: {CategoryId}});
+export const getCategoryAdditionalImages = async (categoryId: string): Promise<ApiResponse<AdditionalImagesModel[]>> => {
+  const response = await http.get<ApiResponse<AdditionalImagesModel[]>>('Category/GetCategoryAdditionalImages', {params: {categoryId}});
   return response;
 };
 

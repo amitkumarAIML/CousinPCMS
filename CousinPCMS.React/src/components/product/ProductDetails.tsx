@@ -105,6 +105,8 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
     akiProductIsActive: false,
     iscommoditychange: false,
     iscountrychange: false,
+    additionalImagesCount: 0,
+    urlLinksCount: 0,
   };
 
   useEffect(() => {
@@ -738,7 +740,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                       No of Additional Website Images
                     </a>
                   }
-                  name="additionalImages"
+                  name="additionalImagesCount"
                 >
                   <Input disabled />
                 </Form.Item>
@@ -756,7 +758,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                       No of URL Links
                     </a>
                   }
-                  name="urlLinks"
+                  name="urlLinksCount"
                 >
                   <Input disabled />
                 </Form.Item>
@@ -766,7 +768,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
               <Form.Item name="akiProductIsActive" valuePropName="checked" className="mt-2">
                 <Checkbox>Cat Active</Checkbox>
               </Form.Item>
-              <Form.Item label="Layout Template" name="aki_Layout_Template">
+              <Form.Item label="Layout Template" name="akiLayoutTemplate">
                 <Select
                   allowClear
                   showSearch

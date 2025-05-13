@@ -25,7 +25,8 @@ const SKUsList = () => {
       try {
         const data: SkuListResponse = await getSkuByProductId(Number(productId));
         if (data.isSuccess && data.value) {
-          const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive).sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
+          // const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive).sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
+          const activeSkus = data.value.sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
           setSkusList(activeSkus);
         } else {
           notify.info(data.exceptionInformation || 'No SKU data found or request failed.');
@@ -69,9 +70,9 @@ const SKUsList = () => {
     },
     {
       title: 'Item No',
-      dataIndex: 'akiitemid',
+      dataIndex: 'akigpItemNumber',
       width: 120,
-      sorter: (a, b) => (Number(a.akiitemid) || 0) - (Number(b.akiitemid) || 0),
+      sorter: (a, b) => (Number(a.akigpItemNumber) || 0) - (Number(b.akigpItemNumber) || 0),
     },
     {
       title: 'List Order',
@@ -111,10 +112,10 @@ const SKUsList = () => {
     {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align: 'center'},
     {
       title: 'AltSku Name',
-      dataIndex: 'akiAltSKUName',
+      dataIndex: 'akiAlternativeTitle',
       ellipsis: true,
       width: 180,
-      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
+      sorter: (a, b) => a.akiAlternativeTitle.localeCompare(b.akiAlternativeTitle),
     },
     {
       title: 'Comm Code',

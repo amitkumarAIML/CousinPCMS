@@ -52,7 +52,9 @@ export interface UpdateCategoryModel{
     aki_Layout_Template: string;
     akiCategoryWebActive: boolean;
     akiCategoryDescriptionText:string;
-    akI_Layout_Template?: string
+    akiLayoutTemplate?: string,
+    additionalImagesCount: number,
+    urlLinksCount: number
 }
  
 export interface CategoryResponseModel {
@@ -96,6 +98,8 @@ export interface CategoryResponseModel {
   akiCategoryPrintCatTemp: boolean;
   akI_Indentation: number;
   akIdepartmentname: string;
+  additionalImagesCount: number,
+  urlLinksCount: number
 }
 
 export interface categorylayout {

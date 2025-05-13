@@ -170,6 +170,9 @@ export interface SKuList {
   akiPricingFormula: string;
   akiPriceBreak: string;
   akiPriceGroup: string;
+  additionalImagesCount: number,
+  urlLinksCount: number,
+  akigpItemNumber: string,
 }
 
 export interface SkuRequestModel {
@@ -196,9 +199,10 @@ export interface SkuRequestModel {
   akiPriceGroup?: string;
   akiPricingFormula?: string;
   akiPrintLayoutTemp: boolean;
-  additionalImages?: string;
-  urlLinks?: string;
+  additionalImagesCount?: string;
+  urlLinksCount?: string;
   akiPriceBreaksTBC: boolean;
+  akigpItemNumber: string,
 }
 
 export interface SkuListResponse {

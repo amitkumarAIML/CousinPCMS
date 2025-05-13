@@ -25,13 +25,8 @@ interface SkuDetailsProps {
   onFormChange?: (changed: boolean) => void;
 }
 
-interface SkuFormValues extends SKuList {
-  additionalImages?: string;
-  urlLinks?: string;
-}
-
 const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, onFormChange}) => {
-  const [form] = Form.useForm<SkuFormValues>();
+  const [form] = Form.useForm<SKuList>();
   const navigate = useNavigate();
 
   const [countries, setCountries] = useState<Country[]>([]);
@@ -50,7 +45,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
 
   const skuName = Form.useWatch('skuName', form);
   const akiManufacturerRef = Form.useWatch('akiManufacturerRef', form);
-  const akiitemid = Form.useWatch('akiitemid', form);
+  const akigpItemNumber = Form.useWatch('akigpItemNumber', form);
   const akiImageURL = Form.useWatch('akiImageURL', form);
   const notify = useNotification();
   const fetchSkuAttributesByCategoryId = useCallback(
@@ -96,6 +91,9 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
     akiPriceBreaksTBC: true,
     akiItemShippingWeight: 0,
     akiItemPriceSiteSellPrice: 0,
+    akigpItemNumber: 0,
+    additionalImagesCount: 0,
+    urlLinksCount: 0,
   };
 
   useEffect(() => {
@@ -161,8 +159,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
         akiWebActive: !!skuData.akiWebActive,
         akiCurrentlyPartRestricted: !!skuData.akiCurrentlyPartRestricted,
         akiSKUIsActive: !!skuData.akiSKUIsActive,
-        additionalImages: String((skuData as {additionalImagesCount?: number}).additionalImagesCount || 0),
-        urlLinks: String((skuData as {urlLinksCount?: number}).urlLinksCount || 0),
       });
       if (skuData.akiCategoryID) {
         fetchSkuAttributesByCategoryId(skuData.akiCategoryID);
@@ -240,6 +236,9 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
               <Form.Item label="Sku Id" name="akiSKUID">
                 <Input disabled />
               </Form.Item>
+              <Form.Item label="akiitemid" name="akiitemid" hidden>
+                <Input />
+              </Form.Item>
               <Form.Item label="Product Id" name="akiProductID">
                 <Input disabled />
               </Form.Item>
@@ -284,11 +283,11 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                 </span>
               </div>
               <div className=" col-span-1 flex items-end gap-x-2">
-                <Form.Item className="w-full" label="Item Number" name="akiitemid">
+                <Form.Item className="w-full" label="Item Number" name="akigpItemNumber">
                   <Input maxLength={charLimit.akiitemid} />
                 </Form.Item>
                 <span className="whitespace-nowrap">
-                  {String(akiitemid ?? '').length || 0} / {charLimit.akiitemid}
+                  {String(akigpItemNumber ?? '').length || 0} / {charLimit.akiitemid}
                 </span>
               </div>
             </div>
@@ -361,7 +360,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                       No of Additional Website Images
                     </a>
                   }
-                  name="additionalImages"
+                  name="additionalImagesCount"
                 >
                   <Input disabled />
                 </Form.Item>
@@ -381,7 +380,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                     No of URL Links
                   </a>
                 }
-                name="urlLinks"
+                name="urlLinksCount"
               >
                 <Input disabled />
               </Form.Item>
@@ -421,7 +420,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                 <Form.Item name="akiSKUIsActive" valuePropName="checked" className="mb-3">
                   <Checkbox>Cat Active</Checkbox>
                 </Form.Item>
-                <Form.Item label="Layout Template" name="akiLayoutTemplate" className="mb-3">
+                <Form.Item label="Layout Template" name="akiTemplateID" className="mb-3">
                   <Select
                     allowClear
                     showSearch
