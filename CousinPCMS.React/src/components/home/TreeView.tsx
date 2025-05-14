@@ -282,11 +282,9 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           }
         } else {
           setError('Failed to load departments.');
-          message.error('Failed to load departments.');
         }
       } catch (err) {
         setError('An error occurred while fetching departments.');
-        message.error('An error occurred while fetching departments.');
         console.error(err);
       } finally {
         setLoading(false);

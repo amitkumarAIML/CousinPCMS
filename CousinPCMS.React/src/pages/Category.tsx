@@ -303,11 +303,11 @@ const Category = () => {
   };
   const handleAddAssociatedProductSubmit = async (values: {listorder: number; product: number; productName: string}) => {
     if (!values.product) {
-      message.error('Please select a product from the grid below.');
+      notify.error('Please select a product from the grid below.');
       return;
     }
     if (!categoryId) {
-      message.error('Category context is missing.');
+      notify.error('Category context is missing.');
       return;
     }
     const listOrder = Number(values.listorder);

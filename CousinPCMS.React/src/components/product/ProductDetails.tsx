@@ -433,9 +433,9 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
     if (file) {
       productForm.setFieldsValue({akiProductImageURL: file.name});
       if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
+        notify.success(`${info.file.name} file uploaded successfully`);
       } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+        notify.error(`${info.file.name} file upload failed.`);
       }
     } else if (info.file.status === 'removed') {
       productForm.setFieldsValue({akiProductImageURL: ''});
@@ -938,7 +938,9 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
           setChangeType(null);
         }}
         footer={[
-          <Button onClick={handleConfirmCancel}>No</Button>,
+          <Button key="No" onClick={handleConfirmCancel}>
+            No
+          </Button>,
           <Button key="ok" type="primary" onClick={handleConfirmOk}>
             Yes
           </Button>,

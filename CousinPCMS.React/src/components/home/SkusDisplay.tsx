@@ -95,7 +95,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       const normalize = (str: string) => str?.toLowerCase().replace(/\s/g, '') || '';
       return (
         normalize(item.skuName).includes(searchText) ||
-        normalize(item.akiitemid).includes(searchText) ||
+        normalize(item.akigpItemNumber).includes(searchText) ||
         normalize(item.akiListOrder.toString()).includes(searchText) ||
         normalize(item.akiAltSKUName.toString()).includes(searchText) ||
         normalize(item.akiLayoutTemplate.toString()).includes(searchText) ||
