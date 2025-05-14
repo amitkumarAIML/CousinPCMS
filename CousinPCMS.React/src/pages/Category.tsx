@@ -712,7 +712,7 @@ const Category = () => {
                   <Form.Item label="Return Type" name="akiCategoryReturnType">
                     <Select allowClear showSearch placeholder="Select return type" options={returnOptions} />
                   </Form.Item>
-                  <span className=" pb-2">This will roll down to sub-categories.</span>
+                  <span className="pb-2">This will roll down to all sub-categories.</span>
                 </div>
               </div>
               <div className="col-span-6">

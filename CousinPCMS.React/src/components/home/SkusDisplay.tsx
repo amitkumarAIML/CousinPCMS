@@ -41,6 +41,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
   const loadSkuForProduct = async () => {
     setLoading(true);
     setSkus([]);
+    setFilteredData([]);
     try {
       const data = await getSkuByProductId(selectedProductId!);
       if (data.isSuccess) {

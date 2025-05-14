@@ -24,7 +24,7 @@ const Attributes = () => {
       } else {
         notify.error('Failed to load attributes.');
       }
-    } catch (error) {
+    } catch {
       notify.error('Something went wrong loading attributes.');
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ const Attributes = () => {
 
   // Function to chunk data into columns
   const chunkData = (data: any[], chunkSize: number) => {
-    let result: any[][] = [];
+    const result: any[][] = [];
     for (let i = 0; i < data.length; i += chunkSize) {
       result.push(data.slice(i, i + chunkSize));
     }

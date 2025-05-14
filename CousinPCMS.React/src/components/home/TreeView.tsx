@@ -338,12 +338,12 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           }
 
           setTreeData((current) => updateTreeData(current, key, categoryNodes));
-          if (getSessionItem('tempDepartmentId') && categoryNodes.length > 0) {
+          if (getSessionItem('tempDepartmentId') && expandedKeys.length < 1 && categoryNodes.length > 0) {
             setSessionItem('tempCategoryId', String(categoryNodes[0].id));
             setSelectedKeys((prev) => [...prev, categoryNodes[0].key]);
             onCategorySelected(categoryNodes[0].id as number);
           } else {
-            sessionStorage.removeItem('tempCategoryId');
+            // sessionStorage.removeItem('tempCategoryId');
           }
         })
         .catch(() => {
