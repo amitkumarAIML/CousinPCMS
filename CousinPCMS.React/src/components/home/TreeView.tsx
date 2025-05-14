@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import {Tree, Spin, message, Menu, Modal, Button} from 'antd';
+import {Tree, Spin, Menu, Modal, Button} from 'antd';
 import {EditOutlined, FolderOpenOutlined, FolderOutlined, PartitionOutlined, PlusOutlined} from '@ant-design/icons';
 import type {TreeDataNode, TreeProps} from 'antd';
 import type {EventDataNode, DataNode} from 'antd/es/tree';

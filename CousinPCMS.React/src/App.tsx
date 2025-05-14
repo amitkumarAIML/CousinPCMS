@@ -1,15 +1,15 @@
-import { Outlet, useLocation, useNavigate } from 'react-router';
+import {Outlet, useLocation, useNavigate} from 'react-router';
 import Header from './components/shared/Header';
-import { useEffect, useState } from 'react';
-import { empLogin } from './services/DataService';
-import { useNotification } from './hook/useNotification';
-import { useUser } from './hook/useUser';
+import {useEffect, useState} from 'react';
+import {empLogin} from './services/DataService';
+import {useNotification} from './hook/useNotification';
+import {useUser} from './hook/useUser';
 
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const notify = useNotification();
-  const { validUser, setValidUser } = useUser();
+  const {validUser, setValidUser} = useUser();
 
   const [loading, setLoading] = useState(false);
   const [attemptedLogin, setAttemptedLogin] = useState(false);
@@ -23,7 +23,7 @@ const App = () => {
       setAttemptedLogin(true);
 
       // const decodedToken = decodeURIComponent(tokenParam).replace(/ /g, '+');
-      const EmpLoginRequestModel = { token: tokenParam };
+      const EmpLoginRequestModel = {token: tokenParam};
 
       empLogin(EmpLoginRequestModel)
         .then((response) => {
