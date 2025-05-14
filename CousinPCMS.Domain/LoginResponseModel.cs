@@ -17,7 +17,17 @@ public class LoginResponseModel
 public class EmpLoginResponseModel
 {
 
-    [JsonProperty("@odata.etag")]
-    public string odataetag { get; set; }
+    [JsonProperty("@odata.context")]
+    public string odatacontext { get; set; }
     public string value { get; set; }
+}
+public class ErrorDetail
+{
+    public string code { get; set; }
+    public string message { get; set; }
+}
+
+public class ErrorResponse
+{
+    public ErrorDetail error { get; set; }
 }
