@@ -682,5 +682,41 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Handles drag-and-drop operations for categories, either within the same category or across different ones.
+        /// </summary>
+        /// <param name="objModel">The model containing the details for updating the product category order.</param>
+        /// <returns>
+        /// An <see cref="APIResult{string}"/> indicating success or failure, along with a relevant message.
+        /// </returns>
+        [HttpPost("DragDropCategory")]
+        [ProducesResponseType(typeof(APIResult<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DragDropCategory(DragDropCategoryModel objModel)
+        {
+            log.Info($"[{nameof(DragDropCategory)}] request received.");
+
+            // Refresh token if expired
+            if (Oauth.TokenExpiry <= DateTime.UtcNow)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            // Perform drag-drop logic
+            var responseValue = _categoryService.DragDropCategory(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"[{nameof(DragDropCategory)}] operation completed successfully.");
+            }
+            else
+            {
+                log.Error($"[{nameof(DragDropCategory)}] operation failed. Error: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }

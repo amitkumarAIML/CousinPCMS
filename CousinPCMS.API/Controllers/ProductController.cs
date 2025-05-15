@@ -750,5 +750,41 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Updates the product's category and order based on a drag-and-drop operation.
+        /// </summary>
+        /// <param name="objModel">An instance of <see cref="DragDropProductToCategoryModel"/> containing product and category mapping details.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{string}"/> indicating whether the operation succeeded, along with a relevant message.
+        /// </returns>
+        [HttpPost("DragDropProductToCategory")]
+        [ProducesResponseType(typeof(APIResult<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DragDropProductToCategory(DragDropProductToCategoryModel objModel)
+        {
+            log.Info($"[{nameof(DragDropProductToCategory)}] request received.");
+
+            // Refresh token if expired
+            if (Oauth.TokenExpiry <= DateTime.UtcNow)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            // Perform drag-drop logic
+            var responseValue = _productService.DragDropProductToCategory(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"[{nameof(DragDropProductToCategory)}] operation completed successfully.");
+            }
+            else
+            {
+                log.Error($"[{nameof(DragDropProductToCategory)}] operation failed. Error: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }

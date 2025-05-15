@@ -5,6 +5,19 @@ namespace CousinPCMS.Domain
     public class CommonModels
     {
     }
+
+    public class LayoutTemplateModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public string templateCode { get; set; }
+        public string layoutDescription { get; set; }
+        public bool forcategory { get; set; }
+        public bool forproducts { get; set; }
+        public bool forsku { get; set; }
+        public bool fordepartment { get; set; }
+    }
+
     public class ReturnTypeModel
     {
         [JsonProperty("@odata.etag")]

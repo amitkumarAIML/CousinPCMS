@@ -185,5 +185,33 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Gets retunrtype details.
+        /// </summary>       
+        /// <returns>returns returntype object if details are available. Else empty object.</returns>
+        [HttpGet("GetLayoutTemplates")]
+        [ProducesResponseType(typeof(APIResult<List<LayoutTemplateModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetLayoutTemplates()
+        {
+            log.Info($"Request of {nameof(GetLayoutTemplates)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _accountService.GetLayoutTemplates();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetLayoutTemplates)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetLayoutTemplates)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

@@ -224,4 +224,12 @@ namespace CousinPCMS.Domain
         [JsonProperty("layoutDescription")]
         public string LayoutDescription { get; set; }
     }
+
+    public class DragDropProductToCategoryModel
+    {
+        public string categoryid { get; set; }
+        public int productid { get; set; }
+        public int aboveproductid { get; set; }
+        public int belowproductid { get; set; }
+    }
 }
