@@ -4,12 +4,9 @@ import {Form, Input, InputNumber, Select, Checkbox, Button, Upload, Modal, Spin}
 import type {FormInstance} from 'antd/es/form';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
-import {getCompetitorDetails, getLayoutTemplateList, getPriceBreaksDetails, getPriceGroupDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
+import {getCompetitorDetails, getPriceBreaksDetails, getPriceGroupDetails, getPricingFormulasDetails, getSkuAttributesBycategoryId} from '../../services/SkusService';
+import {getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
 import {useNotification} from '../../hook/useNotification';
-import type {Country} from '../../models/countryOriginModel';
-import type {CommodityCode} from '../../models/commodityCodeModel';
-import type {layoutSkus} from '../../models/layoutTemplateModel';
 import type {CompetitorItem} from '../../models/competitorModel';
 import type {ItemModel} from '../../models/itemModel';
 import type {SKuList} from '../../models/skusModel';
@@ -18,6 +15,7 @@ import type {ApiResponse} from '../../models/generalModel';
 import {ItemCharLimit} from '../../models/char.constant';
 import AttributeValuesPopup from '../../components/attribute/AttributeValuesPopup';
 import RichTextEditor from '../shared/RichTextEditor';
+import {useCommonData} from '../../hook/useCommonData';
 
 interface SkuDetailsProps {
   skuData?: SKuList | null;
@@ -29,9 +27,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
   const [form] = Form.useForm<SKuList>();
   const navigate = useNavigate();
 
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [layoutOptions, setLayoutOptions] = useState<layoutSkus[]>([]);
-  const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
   const [competitors, setCompetitors] = useState<CompetitorItem[]>([]);
   const [priceGroupItem, setPriceGroupItem] = useState<ItemModel[]>([]);
   const [priceBreaks, setPriceBreaks] = useState<ItemModel[]>([]);
@@ -95,7 +90,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
     additionalImagesCount: 0,
     urlLinksCount: 0,
   };
-
+  const {commodityCodes, templateLayouts, countries} = useCommonData();
   useEffect(() => {
     onFormInstanceReady(form);
   }, [form, onFormInstanceReady]);
@@ -116,20 +111,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
 
     const fetchDropdowns = async () => {
       try {
-        //
-        const [countryRes, commRes, layoutRes, compRes, pgRes, pbRes, pfRes] = await Promise.all([
-          getCountryOrigin(),
-          getCommodityCodes(),
-          getLayoutTemplateList(),
-          getCompetitorDetails(),
-          getPriceGroupDetails(),
-          getPriceBreaksDetails(),
-          getPricingFormulasDetails(),
-        ]);
-
-        setCountries(countryRes || []);
-        setCommodityCode(commRes || []);
-        setLayoutOptions(layoutRes || []);
+        const [compRes, pgRes, pbRes, pfRes] = await Promise.all([getCompetitorDetails(), getPriceGroupDetails(), getPriceBreaksDetails(), getPricingFormulasDetails()]);
         setCompetitors(compRes || []);
         setPriceGroupItem(pgRes?.isSuccess ? (pgRes.value && pgRes.value.length > 0 ? pgRes.value : []) : []);
         setPriceBreaks(pbRes?.isSuccess ? (pbRes.value && pbRes.value.length > 0 ? pbRes.value : []) : []);
@@ -318,7 +300,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                   showSearch
                   placeholder="Select code"
                   optionFilterProp="label"
-                  options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
+                  options={(commodityCodes || []).map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
                 />
               </Form.Item>
               <Form.Item label="Country of Origin" name="akiCountryofOrigin">
@@ -328,7 +310,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                   placeholder="Select country"
                   optionFilterProp="label"
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                  options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
+                  options={(countries || []).map((c) => ({value: c.code, label: c.code, key: c.code}))}
                 />
               </Form.Item>
             </div>
@@ -426,7 +408,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                     showSearch
                     placeholder="Select layout"
                     optionFilterProp="label"
-                    options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
+                    options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                   />
                 </Form.Item>
                 <Form.Item label="Alternative Title" name="akiAlternativeTitle" className="mb-0">

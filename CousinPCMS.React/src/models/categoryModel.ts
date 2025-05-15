@@ -6,3 +6,10 @@ export interface CategoryModel {
   akiDepartment?: string | number;
   selected?: boolean;
 }
+
+export interface UpdateCategoryOrderRequest {
+  categoryid?: string; 
+  abovecategoryid?: string; 
+  belowcategoryid?: string;
+  parentid?: string
+}

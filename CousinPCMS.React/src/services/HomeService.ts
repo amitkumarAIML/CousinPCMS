@@ -1,6 +1,6 @@
 import {http} from '../auth/HttpClient';
 import {DepartmentResponse} from '../models/departmentModel';
-import {ProductRequestModelForProductOrderList, ProductResponse} from '../models/productModel';
+import {ProductRequestModelForProductOrderList, ProductResponse, UpdateProductToCategoryRequest} from '../models/productModel';
 import {SkuListResponse, SKusRequestModelForProductOrderList} from '../models/skusModel';
 import {AddAttributeSetRequestModel, AttributeModel, AttributeModelResponse, AttributeSetModel} from '../models/attributeModel';
 import {ApiResponse} from '../models/generalModel';
@@ -65,3 +65,8 @@ export const updateSkuListOrderForHomeScreen = async (data: SKusRequestModelForP
   const response = await http.post<ApiResponse<string>>(`Skus/UpdateSkuListOrderForHomeScreen`, data);
   return response;
 }
+
+export const linkProductToCategory = async (data: UpdateProductToCategoryRequest): Promise<ApiResponse<string>> => {
+   const response = await http.post<ApiResponse<string>>(`Product/DragDropProductToCategory`, data);
+   return response;
+};

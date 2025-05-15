@@ -6,11 +6,8 @@ import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue} from 'antd/es/table/interface';
-import {getProductById, getLayoutTemplateList, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
-import {getCountryOrigin, getCommodityCodes, getAllCategory, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
-import {Country} from '../../models/countryOriginModel';
-import {CommodityCode} from '../../models/commodityCodeModel';
-import {layoutProduct} from '../../models/layoutTemplateModel';
+import {getProductById, getAllProducts, getAdditionalProduct, addAssociatedProduct, updateAssociatedProduct} from '../../services/ProductService';
+import {getAllCategory, getSessionItem, setSessionItem, getPlainText} from '../../services/DataService';
 import {AdditionalProductModel, AssociatedProductRequestModelForProduct, Product} from '../../models/productModel';
 import {ProductCharLimit} from '../../models/char.constant';
 import {useNotification} from '../../hook/useNotification';
@@ -20,6 +17,7 @@ import {AttributeSetModel} from '../../models/attributeModel';
 import CategoryAttribute from '../home/CategoryAttribute';
 import {ApiResponse} from '../../models/generalModel';
 import RichTextEditor from '../shared/RichTextEditor';
+import {useCommonData} from '../../hook/useCommonData';
 
 interface CategorySelectItem {
   akiCategoryID: string | number;
@@ -58,10 +56,6 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
   const [akiProductID, setAkiProductID] = useState<number | undefined>(undefined);
   const [indexEntryCount, setIndexEntryCount] = useState<number>();
 
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [layoutOptions, setLayoutOptions] = useState<layoutProduct[]>([]);
-  const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
-
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState<boolean>(false);
   const [categoryList, setCategoryList] = useState<CategorySelectItem[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<CategorySelectItem[]>([]);
@@ -96,6 +90,8 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
 
   const notify = useNotification();
   const location = useLocation();
+  const {commodityCodes, templateLayouts, countries} = useCommonData();
+
   const defaultValue = {
     akiProductImageHeight: 0,
     akiProductImageWidth: 0,
@@ -114,12 +110,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
     sessionStorage.removeItem('originalCountryOfOrigin');
     const fetchInitialData = async () => {
       try {
-        setLoading(true);
         setCategoryLoading(true);
-        const [countriesData, commoditiesData, layoutsData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getLayoutTemplateList()]);
-        setCountries(countriesData || []);
-        setCommodityCode(commoditiesData || []);
-        setLayoutOptions(layoutsData || []);
         const categoriesData = await getAllCategory();
         setCategoryList(categoriesData || []);
         setFilteredCategories(categoriesData || []);
@@ -127,7 +118,6 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
         console.error('Error fetching initial data:', e);
         notify.error('Could not load necessary form options.');
       } finally {
-        setLoading(false);
         setCategoryLoading(false);
       }
     };
@@ -697,7 +687,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                     placeholder="Select code"
                     optionFilterProp="label"
                     loading={loading}
-                    options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
+                    options={(commodityCodes || []).map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
                     onChange={commodityFieldChanges}
                   />
                 </Form.Item>
@@ -708,7 +698,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                     placeholder="Select country"
                     optionFilterProp="label"
                     filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                    options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
+                    options={(countries || []).map((c) => ({value: c.code, label: c.code, key: c.code}))}
                     onChange={originFieldChanges}
                     loading={loading}
                   />
@@ -775,7 +765,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                   placeholder="Select layout"
                   optionFilterProp="label"
                   loading={loading}
-                  options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
+                  options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                 />
               </Form.Item>
               <Form.Item label="Alternative Title" name="akiProductAlternativeTitle">

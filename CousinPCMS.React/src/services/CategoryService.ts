@@ -12,6 +12,7 @@ import {
 import {ApiResponse} from '../models/generalModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
 import {AdditionalImageDeleteRequestModel, AdditionalImagesModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
+import { UpdateCategoryOrderRequest } from '../models/categoryModel';
 
 export const getAdditionalCategory = async (categoryId: string): Promise<AdditionalCategoryModel[]> => {
   const response = await http.get<AdditionalCategoryResponse>('Category/GetAdditionalCategory', {params: {categoryId}});
@@ -98,3 +99,11 @@ export const getCategoryById = async (categoryId: string): Promise<ApiResponse<c
   const response = await http.get<ApiResponse<categoryResponse>>('Category/GetCategoryById', {params: {categoryId}});
   return response;
 };
+
+export const dragDropCategory = async (CategoryData: UpdateCategoryOrderRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Category/DragDropCategory', CategoryData);
+  return response;
+};
+
+
+

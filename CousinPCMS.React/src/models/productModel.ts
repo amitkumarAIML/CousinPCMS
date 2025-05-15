@@ -117,3 +117,9 @@ export interface AdditionalProductModel {
     oldlistorder: number,
     newlistorder: number
 }
+
+
+export interface UpdateProductToCategoryRequest {
+  categoryid?: string; 
+  productid?: number;
+}

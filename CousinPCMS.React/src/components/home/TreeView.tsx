@@ -4,13 +4,15 @@ import {EditOutlined, FolderOpenOutlined, FolderOutlined, PartitionOutlined, Plu
 import type {TreeDataNode, TreeProps} from 'antd';
 import type {EventDataNode, DataNode} from 'antd/es/tree';
 import {Department} from '../../models/departmentModel';
-import {CategoryModel} from '../../models/categoryModel';
+import {CategoryModel, UpdateCategoryOrderRequest} from '../../models/categoryModel';
 import {getDepartments} from '../../services/DepartmentService';
 import {getCategoriesByDepartment, getDistinctAttributeSetsByCategoryId} from '../../services/HomeService';
 import {useNavigate} from 'react-router';
 import CategoryAttribute from './CategoryAttribute';
 import {useNotification} from '../../hook/useNotification';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
+import {useDroppable} from '@dnd-kit/core';
+import {dragDropCategory} from '../../services/CategoryService';
 
 interface CustomTreeDataNode extends TreeDataNode {
   dataType: 'department' | 'category';
@@ -86,9 +88,45 @@ const buildCategoryTree = (categories: CategoryModel[], selectedKeys: React.Key[
 
   return rootCategories;
 };
+
+// New component to wrap category titles to make them droppable
+interface CategoryTitleWrapperProps {
+  node: CustomTreeDataNode;
+  children: React.ReactNode;
+}
+const CategoryTitleWrapper: React.FC<CategoryTitleWrapperProps> = ({node, children}) => {
+  const {setNodeRef, isOver, active} = useDroppable({
+    id: `droppable-category-${node.id}`, // Unique ID for the droppable area
+    data: {
+      type: 'category-target',
+      categoryId: node.id, // The actual category ID
+      nodeKey: node.key, // The tree node key, e.g., "cat-123"
+      categoryName: node.dataType === 'category' && node.data ? (node.data as CategoryModel).akiCategoryName : `Category ${node.id}`,
+    },
+  });
+
+  const highlight = isOver && active?.data.current?.type === 'product';
+
+  return (
+    <span
+      ref={setNodeRef}
+      style={{
+        padding: '2px 4px',
+        borderRadius: '3px',
+        backgroundColor: highlight ? '#e6f7ff' : 'transparent',
+        border: highlight ? '1px dashed #91d5ff' : '1px dashed transparent',
+        transition: 'background-color 0.2s, border-color 0.2s',
+        display: 'inline-block', // Important for the droppable area to have dimensions
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
 const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetChange}) => {
   const [treeData, setTreeData] = useState<CustomTreeDataNode[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
@@ -354,8 +392,33 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
     [updateTreeData, selectedKeys, onCategorySelected, notify]
   );
 
+  // Helper function to strip prefixes like "cat-" or "dep-"
+  const stripIdPrefix = (key: React.Key | null): number | string | null => {
+    if (key === null || key === undefined) {
+      return null;
+    }
+    const keyStr = String(key);
+    const lastHyphenIndex = keyStr.lastIndexOf('-');
+
+    if (lastHyphenIndex !== -1 && lastHyphenIndex < keyStr.length - 1) {
+      const idPart = keyStr.substring(lastHyphenIndex + 1);
+      const numId = Number(idPart);
+      if (!isNaN(numId) && String(numId) === idPart) {
+        return numId;
+      }
+      return idPart;
+    }
+
+    const numKey = Number(keyStr);
+    if (!isNaN(numKey) && String(numKey) === keyStr) {
+      return numKey;
+    }
+
+    return keyStr;
+  };
+
   const onDrop: TreeProps['onDrop'] = useCallback(
-    (info: Parameters<NonNullable<TreeProps['onDrop']>>[0]) => {
+    async (info: Parameters<NonNullable<TreeProps['onDrop']>>[0]) => {
       const dropKey = info.node.key;
       const dragKey = info.dragNode.key;
       const dropPos = info.node.pos.split('-');
@@ -470,7 +533,55 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       };
 
       const updatedData = cleanupEmptyParents(data);
-      setTreeData(updatedData);
+      const req: UpdateCategoryOrderRequest = {
+        categoryid: stripIdPrefix(dragKey)?.toString(),
+        abovecategoryid: '0',
+        belowcategoryid: '0',
+        parentid: '0',
+      };
+
+      const findNodeAndSiblings = (nodesToSearch: CustomTreeDataNode[], key: React.Key, currentParentKey: React.Key | null = null): boolean => {
+        for (let idx = 0; idx < nodesToSearch.length; idx++) {
+          const currentNode = nodesToSearch[idx];
+          if (currentNode.key === key) {
+            req.parentid = stripIdPrefix(currentParentKey)?.toString();
+            if (idx > 0) {
+              req.abovecategoryid = stripIdPrefix(nodesToSearch[idx - 1].key)?.toString();
+            }
+            if (idx < nodesToSearch.length - 1) {
+              req.belowcategoryid = stripIdPrefix(nodesToSearch[idx + 1].key)?.toString();
+            }
+            return true;
+          }
+          if (currentNode.children) {
+            if (findNodeAndSiblings(currentNode.children!, key, currentNode.key)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      findNodeAndSiblings(updatedData, dragKey);
+
+      console.log('Request Data:', req);
+
+      setLoading(true);
+      try {
+        const apiResponse = await dragDropCategory(req);
+        if (apiResponse.isSuccess) {
+          notify.success('Category order updated!');
+
+          setTreeData(updatedData);
+        } else {
+          notify.error('Failed to update category order on the server.');
+        }
+      } catch (error: any) {
+        console.error('API Error updating category order:', error);
+        notify.error(error.message || 'An error occurred while updating order.');
+      } finally {
+        setLoading(false);
+      }
     },
     [treeData]
   );
@@ -495,9 +606,15 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           </span>
         );
 
+        let finalTitle: React.ReactNode = newTitle;
+        if (node.dataType === 'category') {
+          // Wrap category title content with the droppable wrapper
+          finalTitle = <CategoryTitleWrapper node={node}>{newTitle}</CategoryTitleWrapper>;
+        }
+
         return {
           ...node,
-          title: newTitle,
+          title: finalTitle,
           children: node.children ? mapNodesWithIcons(node.children) : undefined,
         };
       });
@@ -596,6 +713,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
 
   return (
     <div style={{position: 'relative'}}>
+      {/* <Spin tip="Updating order..." spinning={loading}> */}
       <div className="text-[11px] bg-light-border rounded-md p-2 text-primary-font">
         <span>Departments & Categories</span>
       </div>
@@ -618,6 +736,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           <Menu onClick={handleMenuClick} items={getMenuItems()} />
         </div>
       )}
+      {/* </Spin> */}
       <Modal
         title={
           <div className="flex justify-between items-center">

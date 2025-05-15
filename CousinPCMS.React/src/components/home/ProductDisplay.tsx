@@ -2,22 +2,25 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Spin, Modal, Input, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
 
-import {Product, ProductRequestModelForProductOrderList} from '../../models/productModel';
+import {Product} from '../../models/productModel';
 import {AttributeSetModel} from '../../models/attributeModel';
-import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId, updateProductListOrderForHomeScreen} from '../../services/HomeService';
+import {getDistinctAttributeSetsByCategoryId, getProductListByCategoryId} from '../../services/HomeService';
 import CategoryAttribute from './CategoryAttribute';
 import {useNavigate} from 'react-router';
 import {useNotification} from '../../hook/useNotification';
 import {getSessionItem, setSessionItem} from '../../services/DataService';
 import {CSS} from '@dnd-kit/utilities';
-import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {SortableContext, verticalListSortingStrategy, useSortable} from '@dnd-kit/sortable';
-import {ApiResponse} from '../../models/generalModel';
 
 interface ProductDisplayProps {
   selectedCategory: string;
   onProductSelected: (productId: number | undefined) => void;
   refreshKey?: number;
+
+  // New props from Home
+  productsData: Product[]; // Products now come from Home
+  isLoadingProducts: boolean; // Loading state for products from Home
+  onProductReorder: (activeId: string | number, overId: string | number) => Promise<void>; // Callback for Home to handle reorder logic
 }
 
 function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: ProductDisplayProps) {
@@ -212,6 +215,7 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
   };
 
   const inputSuffix = searchValue ? <CloseCircleFilled className="cursor-pointer" onClick={clearSearchText} aria-hidden="true" /> : <SearchOutlined />;
+
   //drag and drop
   const SortableItem = ({
     item,
@@ -226,7 +230,16 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
   }) => {
     const id = 'akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`;
 
-    const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
+    const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({
+      id,
+      data: {
+        // Provide data for the DndContext in Home
+        type: 'product', // General type
+        payload: 'akiProductID' in item ? item : null, // Full product object if it's a product
+        isSortable: 'akiProductID' in item, // Flag if this item is part of the sortable product list
+      },
+      disabled: !('akiProductID' in item), // Disable sorting for attribute sets
+    });
 
     const style = {
       transform: CSS.Transform.toString(transform),
@@ -267,50 +280,50 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
     }
     return null;
   };
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {distance: 5},
-    })
-  );
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor, {
+  //     activationConstraint: {distance: 5},
+  //   })
+  // );
 
-  const handleDragEnd = async (event: any) => {
-    const {active, over} = event;
-    if (active.id !== over.id) {
-      const newIndex = products.findIndex((item) => item.akiProductID === over.id);
+  // const handleDragEnd = async (event: any) => {
+  //   const {active, over} = event;
+  //   if (active.id !== over.id) {
+  //     const newIndex = products.findIndex((item) => item.akiProductID === over.id);
 
-      setLoading(true);
-      try {
-        const data = products.find((product) => product.akiProductID === active.id);
-        if (!data) {
-          notify.error('product not found.');
-          setLoading(false);
-          return;
-        }
+  //     setLoading(true);
+  //     try {
+  //       const data = products.find((product) => product.akiProductID === active.id);
+  //       if (!data) {
+  //         notify.error('product not found.');
+  //         setLoading(false);
+  //         return;
+  //       }
 
-        const oldListOrder = data.akiProductListOrder || 0;
-        const newListOrder = products[newIndex]?.akiProductListOrder || 0;
+  //       const oldListOrder = data.akiProductListOrder || 0;
+  //       const newListOrder = products[newIndex]?.akiProductListOrder || 0;
 
-        const updateRequest: ProductRequestModelForProductOrderList = {
-          akiProductID: Number(data.akiProductID),
-          newlistorder: newListOrder,
-          oldlistorder: oldListOrder,
-        };
+  //       const updateRequest: ProductRequestModelForProductOrderList = {
+  //         akiProductID: Number(data.akiProductID),
+  //         newlistorder: newListOrder,
+  //         oldlistorder: oldListOrder,
+  //       };
 
-        const response: ApiResponse<string> = await updateProductListOrderForHomeScreen(updateRequest);
-        if (response.isSuccess) {
-          fetchData();
-          notify.success('product order updated successfully.');
-        } else {
-          notify.error('Failed to update product order.');
-        }
-      } catch (error) {
-        console.error('Error updating product order:', error);
-        notify.error('Failed to update product order.');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+  //       const response: ApiResponse<string> = await updateProductListOrderForHomeScreen(updateRequest);
+  //       if (response.isSuccess) {
+  //         fetchData();
+  //         notify.success('product order updated successfully.');
+  //       } else {
+  //         notify.error('Failed to update product order.');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error updating product order:', error);
+  //       notify.error('Failed to update product order.');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
 
   return (
     <div className="border border-border rounded-[5px] w-full bg-white overflow-hidden">
@@ -330,30 +343,30 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       </div>
 
       <Spin spinning={loading}>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={filteredData.filter((item) => !('attributeSetName' in item && item.attributeSetName)).map((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`))}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
-              {filteredData && filteredData.length > 0 ? (
-                <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
-                  {filteredData.map((item) => (
-                    <SortableItem
-                      key={'akiProductID' in item ? `prod-${item.akiProductID}` : `attr-${item.akiCategoryID}`}
-                      item={item}
-                      handleProductClick={handleProductClick}
-                      handleAttributeSetClick={handleAttributeSetClick}
-                      selectedProduct={selectedProduct}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>
-              )}
-            </div>
-          </SortableContext>
-        </DndContext>
+        {/* <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}> */}
+        <SortableContext
+          items={filteredData.filter((item) => !('attributeSetName' in item && item.attributeSetName)).map((item) => ('akiProductID' in item ? item.akiProductID : `attr-${item.akiCategoryID}`))}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex flex-col justify-center items-center bg-white min-h-[48px]">
+            {filteredData && filteredData.length > 0 ? (
+              <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
+                {filteredData.map((item) => (
+                  <SortableItem
+                    key={'akiProductID' in item ? `prod-${item.akiProductID}` : `attr-${item.akiCategoryID}`}
+                    item={item}
+                    handleProductClick={handleProductClick}
+                    handleAttributeSetClick={handleAttributeSetClick}
+                    selectedProduct={selectedProduct}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{displayText}</div>
+            )}
+          </div>
+        </SortableContext>
+        {/* </DndContext> */}
       </Spin>
 
       <Modal
