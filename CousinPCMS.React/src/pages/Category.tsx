@@ -13,11 +13,12 @@ import {CommodityCode} from '../models/commodityCodeModel';
 import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
 import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText, setSessionItem} from '../services/DataService';
+import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText, setSessionItem, getReturnTypes} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../hook/useNotification';
 import RichTextEditor from '../components/shared/RichTextEditor';
+import {ReturnType} from '../models/returnTypeModel';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -42,7 +43,7 @@ const Category = () => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
   const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
-  const [returnOptions] = useState<{value: string; label: string}[]>([]);
+  const [returnOptions, setReturnType] = useState<ReturnType[]>([]);
   const [additionalCategoryList, setAdditionalCategoryList] = useState<AdditionalCategoryModel[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isVisibleAddProductModal, setIsVisibleAddProductModal] = useState<boolean>(false);
@@ -97,7 +98,7 @@ const Category = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [countriesData, commoditiesData, layoutsData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getCategoryLayouts()]);
+        const [countriesData, commoditiesData, layoutsData, returnType] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getCategoryLayouts(), getReturnTypes()]);
         setCountries(countriesData || []);
         setCommodityCode(commoditiesData || []);
         setLayoutOptions(
@@ -106,6 +107,7 @@ const Category = () => {
             departmentId: layout.categoryId,
           }))
         );
+        setReturnType(returnType);
       } catch {
         notify.error('Could not load necessary form options.');
       }
@@ -710,7 +712,12 @@ const Category = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-x-4 items-end">
                   <Form.Item label="Return Type" name="akiCategoryReturnType">
-                    <Select allowClear showSearch placeholder="Select return type" options={returnOptions} />
+                    <Select
+                      allowClear
+                      showSearch
+                      placeholder="Select return type"
+                      options={returnOptions.map((opt) => ({value: opt.returnType, label: opt.returnType + ' - ' + opt.description, key: opt.returnType}))}
+                    />
                   </Form.Item>
                   <span className="pb-2">This will roll down to all sub-categories.</span>
                 </div>
