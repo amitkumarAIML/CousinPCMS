@@ -156,5 +156,34 @@ namespace CousinPCMS.API.Controllers
             }
             return Ok(responseValue);
         }
+
+
+        /// <summary>
+        /// Gets retunrtype details.
+        /// </summary>       
+        /// <returns>returns returntype object if details are available. Else empty object.</returns>
+        [HttpGet("GetReturnTypes")]
+        [ProducesResponseType(typeof(APIResult<List<ReturnTypeModel>>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetReturnTypes()
+        {
+            log.Info($"Request of {nameof(GetReturnTypes)} method called.");
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _accountService.GetReturnTypes();
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(GetReturnTypes)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(GetReturnTypes)} is failed.");
+            }
+            return Ok(responseValue);
+        }
     }
 }

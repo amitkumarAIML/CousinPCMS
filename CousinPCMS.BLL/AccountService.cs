@@ -41,7 +41,6 @@ namespace CousinPCMS.BLL
 
                 // Encode token
                 loginModel.token = HttpUtility.UrlEncode(loginModel.token);
-                Console.WriteLine("Encoded Token received from frontend: " + loginModel.token);
 
                 var postData = JsonConvert.SerializeObject(loginModel);
                 var url = $"{HardcodedValues.PrefixBCODataV4Url}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCODataV4Url}ProductCousinsProcess_validateToken?company={HardcodedValues.CompanyName}";
@@ -150,6 +149,43 @@ namespace CousinPCMS.BLL
                 if (!string.IsNullOrEmpty(response))
                 {
                     var countryResponse = JsonConvert.DeserializeObject<ODataResponse<List<CommodityModel>>>(response);
+                    if (countryResponse != null && countryResponse.Value != null && countryResponse.Value.Any() && countryResponse.Value.Count > 0)
+                    {
+                        returnValue.Value = countryResponse.Value;
+                    }
+                    else
+                    {
+                        returnValue.IsSuccess = false;
+                    }
+                }
+                else
+                {
+                    returnValue.IsSuccess = false;
+                }
+            }
+            catch (Exception exception)
+            {
+                returnValue.IsSuccess = false;
+                returnValue.IsError = true;
+                returnValue.ExceptionInformation = exception;
+            }
+            return returnValue;
+        }
+
+        public APIResult<List<ReturnTypeModel>> GetReturnTypes()
+        {
+            APIResult<List<ReturnTypeModel>> returnValue = new APIResult<List<ReturnTypeModel>>
+            {
+                IsError = false,
+                IsSuccess = true,
+            };
+            try
+            {
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}returntypes?company={HardcodedValues.CompanyName}", ParameterType.GetOrPost, Oauth.Token).Content;
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    var countryResponse = JsonConvert.DeserializeObject<ODataResponse<List<ReturnTypeModel>>>(response);
                     if (countryResponse != null && countryResponse.Value != null && countryResponse.Value.Any() && countryResponse.Value.Count > 0)
                     {
                         returnValue.Value = countryResponse.Value;

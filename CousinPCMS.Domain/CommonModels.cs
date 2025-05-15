@@ -5,7 +5,14 @@ namespace CousinPCMS.Domain
     public class CommonModels
     {
     }
-
+    public class ReturnTypeModel
+    {
+        [JsonProperty("@odata.etag")]
+        public string odataetag { get; set; }
+        public int id { get; set; }
+        public string returnType { get; set; }
+        public string description { get; set; }
+    }
     public class CommodityModel
     {
         [JsonProperty("@odata.etag")]
