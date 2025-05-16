@@ -80,8 +80,8 @@ export interface ProductUpdateResponse {
     exceptionInformation: unknown;
 }
 export interface AssociatedProductRequestModelForProduct{
-    product?:number;
-    addproduct:string;
+    product: number;
+    addproduct:number;
     listorder:number;
 }
 

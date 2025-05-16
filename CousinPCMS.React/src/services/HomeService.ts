@@ -4,15 +4,15 @@ import {ProductRequestModelForProductOrderList, ProductResponse, UpdateProductTo
 import {SkuListResponse, SKusRequestModelForProductOrderList} from '../models/skusModel';
 import {AddAttributeSetRequestModel, AttributeModel, AttributeModelResponse, AttributeSetModel} from '../models/attributeModel';
 import {ApiResponse} from '../models/generalModel';
-import {categoryResponse} from '../models/additionalCategoryModel';
+import { CategoryModel } from '../models/categoryModel';
 
 export const getDepartments = async (): Promise<DepartmentResponse> => {
   const response = await http.get<DepartmentResponse>('Department/GetAllDepartment');
   return response;
 };
 
-export const getCategoriesByDepartment = async (departmentId: string): Promise<categoryResponse> => {
-  const response = await http.get<categoryResponse>('Category/GetAllCategoryBYDeptId', {params: {deptId: departmentId}});
+export const getCategoriesByDepartment = async (departmentId: string): Promise<ApiResponse<CategoryModel>> => {
+  const response = await http.get<ApiResponse<CategoryModel>>('Category/GetAllCategoryBYDeptId', {params: {deptId: departmentId}});
   return response;
 };
 

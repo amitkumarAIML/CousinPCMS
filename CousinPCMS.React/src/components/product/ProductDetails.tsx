@@ -196,7 +196,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
   }));
 
   const fetchAdditionalProduct = useCallback(
-    async (productId: number) => {
+    async (productId: string) => {
       setIsAdditionalPLoading(true);
       try {
         const response = await getAdditionalProduct(productId);
@@ -216,7 +216,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
 
   useEffect(() => {
     if (akiProductID !== undefined) {
-      fetchAdditionalProduct(akiProductID);
+      fetchAdditionalProduct(akiProductID.toString());
     }
   }, [akiProductID, fetchAdditionalProduct]);
 
@@ -347,7 +347,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
 
     const payload: AssociatedProductRequestModelForProduct = {
       product: akiProductID,
-      addproduct: selectedProductIdModal.toString(),
+      addproduct: selectedProductIdModal,
       listorder: listOrder,
     };
 
@@ -358,8 +358,8 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
         setIsVisibleAddProductModal(false);
         addAssociatedProductForm.resetFields();
         setSelectedProductIdModal(null);
-        fetchAdditionalProduct(akiProductID);
-        const updatedList = await getAdditionalProduct(akiProductID);
+        fetchAdditionalProduct(akiProductID.toString());
+        const updatedList = await getAdditionalProduct(akiProductID.toString());
         const data = updatedList || [];
         const maxListOrder = data.length > 0 ? Math.max(...data.map((p: AdditionalProductModel) => Number(p.listOrder) || 0)) : 0;
         addAssociatedProductForm.setFieldsValue({listorder: maxListOrder + 1});
@@ -401,7 +401,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
 
       const payload: AssociatedProductRequestModelForProduct = {
         product: akiProductID,
-        addproduct: currentEditingId.toString(),
+        addproduct: currentEditingId,
         listorder: listOrder,
       };
 
@@ -409,7 +409,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
       if (response.isSuccess) {
         notify.success('Associated product updated successfully');
         setEditingId(null);
-        fetchAdditionalProduct(akiProductID);
+        fetchAdditionalProduct(akiProductID.toString());
       } else {
         notify.error('Associated product not updated');
       }

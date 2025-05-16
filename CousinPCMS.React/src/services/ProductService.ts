@@ -1,5 +1,4 @@
 import {http} from '../auth/HttpClient';
-import {layoutProduct, layoutProductResponse} from '../models/layoutTemplateModel';
 import {
   ProductResponse,
   ProductRequest,
@@ -21,12 +20,6 @@ export const updateProduct = async (productData: ProductRequest): Promise<ApiRes
 export const addProduct = async (productData: ProductRequest): Promise<ApiResponse<string>> => {
   const response = await http.post<ApiResponse<string>>('Product/AddProduct', productData);
   return response;
-};
-
-
-export const getLayoutTemplateList = async (): Promise<layoutProduct[]> => {
-  const response = await http.get<layoutProductResponse>('Product/GetProductLayouts');
-  return response.value;
 };
 
 export const deleteProduct = async (productId: number): Promise<ApiResponse<string>> => {
@@ -75,7 +68,7 @@ export const saveProductLinkUrl = async (productData: LinkRequestModel): Promise
   return response;
 };
 
-export const getAdditionalProduct = async (productId: number): Promise<AdditionalProductModel[]> => {
+export const getAdditionalProduct = async (productId: string): Promise<AdditionalProductModel[]> => {
   const response = await http.get<AdditionalProductResponse>('Product/GetAdditionalProduct', {params: {productId}});
   return response.value;
 };

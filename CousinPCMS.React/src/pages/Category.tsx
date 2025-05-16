@@ -296,8 +296,8 @@ const Category = () => {
       return;
     }
     const payload: AssociatedProductRequestModel = {
-      product: values.product,
-      additionalCategory: categoryId,
+      product: categoryId,
+      additionalCategory: values.product,
       listorder: listOrder,
       isAdditionalProduct: true,
     };
@@ -318,7 +318,8 @@ const Category = () => {
 
   const handleStartEdit = (record: AdditionalCategoryModel) => {
     editAssociatedProductForm.setFieldsValue({...record});
-    setEditingId(record.product);
+    console.log('sdfsd', record.additionalCategory);
+    setEditingId(record.additionalCategory);
   };
   const handleCancelEdit = () => {
     setEditingId(null);
@@ -329,14 +330,14 @@ const Category = () => {
     try {
       const values = await editAssociatedProductForm.validateFields();
       const listOrder = Number(values.listOrder);
-      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.product !== editingId);
+      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.additionalCategory !== editingId);
       if (isListOrderExist) {
         notify.error('List order already exists, please choose another number.');
         return;
       }
       const payload: AssociatedProductRequestModel = {
-        product: editingId,
-        additionalCategory: categoryId!,
+        product: categoryId,
+        additionalCategory: editingId,
         listorder: listOrder,
         isAdditionalProduct: values.isAdditionalProduct ?? true,
       };
@@ -454,7 +455,8 @@ const Category = () => {
       sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
       width: 100,
       render: (text, record) => {
-        if (editingId === record.product) {
+        console.log('edit ', editingId);
+        if (editingId === record.additionalCategory) {
           return (
             <Form.Item name="listOrder" style={{margin: 2}} rules={[{required: true, message: 'Required'}]}>
               <Input
@@ -753,7 +755,7 @@ const Category = () => {
                         scroll={{y: 150}}
                         columns={associatedProductColumns}
                         dataSource={additionalCategoryList}
-                        rowKey="product"
+                        rowKey="additionalCategory"
                         loading={isAssociatePLoading}
                         pagination={false}
                         size="small"

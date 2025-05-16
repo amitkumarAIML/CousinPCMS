@@ -9,8 +9,8 @@ export interface AdditionalCategoryModel {
     isAdditionalProduct: boolean
 }
 export interface AssociatedProductRequestModel{
-  product:number,
-  additionalCategory: string,
+  product: string,
+  additionalCategory: number,
   listorder: number,
   isAdditionalProduct:boolean
 }

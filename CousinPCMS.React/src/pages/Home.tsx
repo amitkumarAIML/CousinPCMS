@@ -91,7 +91,7 @@ const Home = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 10, // User must drag further to initiate
+        distance: 5, // User must drag further to initiate
       },
     })
   );
@@ -99,7 +99,6 @@ const Home = () => {
   // Global Drag End Handler
   const handleDragEndGlobal = async (event: DragEndEvent) => {
     const {active, over} = event;
-    console.log('dd', active, over);
     if (!over) return;
 
     const activeDataType = active.data.current?.type;
@@ -120,7 +119,7 @@ const Home = () => {
       const targetCategoryName = over?.data.current?.categoryName;
 
       setConfirmModalProps({
-        title: 'Confirm Product Category Change',
+        title: 'Link Product To Category',
         content: `Are you sure you want to move product "${draggedProduct.akiProductName}" to the category "${targetCategoryName}"?`,
         async onOk() {
           try {
@@ -135,7 +134,7 @@ const Home = () => {
               triggerProductRefresh(); // This will refetch products for the current selectedCategory
               setIsConfirmModalVisible(false);
             } else {
-              // notify.error(response || 'Failed to link product.');
+              notify.error('Failed to link product.');
             }
           } catch (error) {
             console.error('Error linking product to category:', error);
@@ -145,7 +144,6 @@ const Home = () => {
           }
         },
         onCancel() {
-          console.log('Product category change cancelled.');
           setIsConfirmModalVisible(false);
         },
       });
@@ -197,24 +195,26 @@ const Home = () => {
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndGlobal}>
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-2 m-2">
         <div className="lg:col-span-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-            <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
-              <TreeView onCategorySelected={handleCategorySelected} onAttributeSetChange={triggerProductRefresh} />
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndGlobal}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
+              <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
+                <TreeView onCategorySelected={handleCategorySelected} onAttributeSetChange={triggerProductRefresh} />
+              </div>
+              <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)] ">
+                <ProductDisplay
+                  selectedCategory={selectedCategory}
+                  onProductSelected={setSelectedProductId}
+                  refreshKey={productRefreshKey}
+                  productsData={products} // Pass managed products
+                  isLoadingProducts={isLoadingProducts} // Pass loading state
+                  onProductReorder={async () => {}} // Placeholder, logic is now in Home's handleDragEndGlobal
+                />
+              </div>
             </div>
-            <div className="p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)] ">
-              <ProductDisplay
-                selectedCategory={selectedCategory}
-                onProductSelected={setSelectedProductId}
-                refreshKey={productRefreshKey}
-                productsData={products} // Pass managed products
-                isLoadingProducts={isLoadingProducts} // Pass loading state
-                onProductReorder={async () => {}} // Placeholder, logic is now in Home's handleDragEndGlobal
-              />
-            </div>
-          </div>
+          </DndContext>
         </div>
         <div className="lg:col-span-7 p-2 bg-white rounded-md shadow-cousins-box mb-0 min-h-[calc(100vh-80px)]">
           <SkusDisplay selectedProductId={selectedProductId} selectedCategory={selectedCategory} />
@@ -223,7 +223,7 @@ const Home = () => {
       <Modal title={confirmModalProps.title} open={isConfirmModalVisible} onOk={confirmModalProps.onOk} onCancel={confirmModalProps.onCancel} okText="Confirm" cancelText="Close" destroyOnClose>
         <p>{confirmModalProps.content}</p>
       </Modal>
-    </DndContext>
+    </div>
   );
 };
 
