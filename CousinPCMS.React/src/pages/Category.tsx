@@ -8,16 +8,14 @@ import type {UploadFile} from 'antd/es/upload/interface';
 import type {TableProps, TablePaginationConfig} from 'antd/es/table';
 import type {FilterValue, SorterResult} from 'antd/es/table/interface';
 import {AdditionalCategoryModel, AssociatedProductRequestModel, UpdateCategoryModel, CategoryResponseModel} from '../models/additionalCategoryModel';
-import {layoutDepartment} from '../models/layoutTemplateModel';
-import {CommodityCode} from '../models/commodityCodeModel';
-import {Country} from '../models/countryOriginModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
-import {getCategoryById, getCategoryLayouts, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getCountryOrigin, getCommodityCodes, getSessionItem, getPlainText, setSessionItem} from '../services/DataService';
+import {getCategoryById, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
+import {getSessionItem, getPlainText, setSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../hook/useNotification';
 import RichTextEditor from '../components/shared/RichTextEditor';
+import {useCommonData} from '../hook/useCommonData';
 type ProductSearchResult = Product;
 
 interface TableParams {
@@ -39,10 +37,6 @@ const Category = () => {
   const [loadingProduct, setLoadingProduct] = useState<boolean>(true);
   const [categoryId, setCategoryId] = useState<string>('');
   const [categoryDetails, setCategoryDetails] = useState<CategoryResponseModel | null>(null);
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
-  const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
-  const [returnOptions] = useState<{value: string; label: string}[]>([]);
   const [additionalCategoryList, setAdditionalCategoryList] = useState<AdditionalCategoryModel[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isVisibleAddProductModal, setIsVisibleAddProductModal] = useState<boolean>(false);
@@ -94,25 +88,10 @@ const Category = () => {
   const description = categoryForm.getFieldValue('akiCategoryDescriptionText');
   const [plainTextLength, setPlainTextLength] = useState(0);
   const [formChanged, setFormChanged] = useState(false);
+
+  const {commodityCodes, templateLayouts, countries, returnTypes} = useCommonData();
+
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [countriesData, commoditiesData, layoutsData] = await Promise.all([getCountryOrigin(), getCommodityCodes(), getCategoryLayouts()]);
-        setCountries(countriesData || []);
-        setCommodityCode(commoditiesData || []);
-        setLayoutOptions(
-          (layoutsData || []).map((layout) => ({
-            ...layout,
-            departmentId: layout.categoryId,
-          }))
-        );
-      } catch {
-        notify.error('Could not load necessary form options.');
-      }
-    };
-
-    fetchInitialData();
-
     if (location.pathname === '/category/add' || (!getSessionItem('CategoryId') && !getSessionItem('tempCategoryId'))) {
       categoryForm.setFieldValue('akiDepartment', getSessionItem('departmentId') ? getSessionItem('departmentId') : getSessionItem('tempDepartmentId'));
       categoryForm.setFieldValue('akiCategoryID', '0');
@@ -317,8 +296,8 @@ const Category = () => {
       return;
     }
     const payload: AssociatedProductRequestModel = {
-      product: values.product,
-      additionalCategory: categoryId,
+      product: categoryId,
+      additionalCategory: values.product,
       listorder: listOrder,
       isAdditionalProduct: true,
     };
@@ -339,7 +318,8 @@ const Category = () => {
 
   const handleStartEdit = (record: AdditionalCategoryModel) => {
     editAssociatedProductForm.setFieldsValue({...record});
-    setEditingId(record.product);
+    console.log('sdfsd', record.additionalCategory);
+    setEditingId(record.additionalCategory);
   };
   const handleCancelEdit = () => {
     setEditingId(null);
@@ -350,14 +330,14 @@ const Category = () => {
     try {
       const values = await editAssociatedProductForm.validateFields();
       const listOrder = Number(values.listOrder);
-      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.product !== editingId);
+      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.additionalCategory !== editingId);
       if (isListOrderExist) {
         notify.error('List order already exists, please choose another number.');
         return;
       }
       const payload: AssociatedProductRequestModel = {
-        product: editingId,
-        additionalCategory: categoryId!,
+        product: categoryId,
+        additionalCategory: editingId,
         listorder: listOrder,
         isAdditionalProduct: values.isAdditionalProduct ?? true,
       };
@@ -475,7 +455,8 @@ const Category = () => {
       sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
       width: 100,
       render: (text, record) => {
-        if (editingId === record.product) {
+        console.log('edit ', editingId);
+        if (editingId === record.additionalCategory) {
           return (
             <Form.Item name="listOrder" style={{margin: 2}} rules={[{required: true, message: 'Required'}]}>
               <Input
@@ -578,7 +559,7 @@ const Category = () => {
                       showSearch
                       placeholder="Select code"
                       optionFilterProp="label"
-                      options={commodityCode.map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
+                      options={(commodityCodes || []).map((c) => ({value: c.commodityCode, label: c.commodityCode, key: c.commodityCode}))}
                     />
                   </Form.Item>
                 </div>
@@ -593,7 +574,7 @@ const Category = () => {
                       placeholder="Select country"
                       optionFilterProp="label"
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                      options={countries.map((c) => ({value: c.code, label: c.code, key: c.code}))}
+                      options={(countries || []).map((c) => ({value: c.code, label: c.code, key: c.code}))}
                     />
                   </Form.Item>
                   <Form.Item name="akiCategoryPromptUserIfPriceGroupIsBlank" valuePropName="checked" noStyle>
@@ -710,7 +691,12 @@ const Category = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-x-4 items-end">
                   <Form.Item label="Return Type" name="akiCategoryReturnType">
-                    <Select allowClear showSearch placeholder="Select return type" options={returnOptions} />
+                    <Select
+                      allowClear
+                      showSearch
+                      placeholder="Select return type"
+                      options={(returnTypes || []).map((opt) => ({value: opt.returnType, label: opt.returnType + ' - ' + opt.description, key: opt.returnType}))}
+                    />
                   </Form.Item>
                   <span className="pb-2">This will roll down to all sub-categories.</span>
                 </div>
@@ -735,7 +721,7 @@ const Category = () => {
                     showSearch
                     placeholder="Select layout"
                     optionFilterProp="label"
-                    options={layoutOptions.map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
+                    options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
                   />
                 </Form.Item>
                 <Form.Item label="Alternative Title" name="akiCategoryAlternativeTitle">
@@ -769,7 +755,7 @@ const Category = () => {
                         scroll={{y: 150}}
                         columns={associatedProductColumns}
                         dataSource={additionalCategoryList}
-                        rowKey="product"
+                        rowKey="additionalCategory"
                         loading={isAssociatePLoading}
                         pagination={false}
                         size="small"

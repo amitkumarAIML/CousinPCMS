@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {empLogin} from './services/DataService';
 import {useNotification} from './hook/useNotification';
 import {useUser} from './hook/useUser';
+import {CommonDataProvider} from './contexts/CommonDataProvider';
 
 const App = () => {
   const location = useLocation();
@@ -23,7 +24,7 @@ const App = () => {
       setAttemptedLogin(true);
 
       // const decodedToken = decodeURIComponent(tokenParam).replace(/ /g, '+');
-      const EmpLoginRequestModel = {token: tokenParam};
+      const EmpLoginRequestModel = {token: tokenParam + 'Akkomplish'};
 
       empLogin(EmpLoginRequestModel)
         .then((response) => {
@@ -57,7 +58,9 @@ const App = () => {
     <>
       {validUser && <Header />}
       <div className="overflow-y-auto overflow-x-hidden w-full absolute top-10 h-[calc(100vh-56px)]">
-        <Outlet />
+        <CommonDataProvider>
+          <Outlet />
+        </CommonDataProvider>
       </div>
     </>
   );

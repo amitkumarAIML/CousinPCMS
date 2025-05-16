@@ -2,6 +2,8 @@ import {http} from '../auth/HttpClient';
 import {CommodityCode, CommodityCodeResponse} from '../models/commodityCodeModel';
 import {Country, CountryResponse} from '../models/countryOriginModel';
 import { ApiResponse } from '../models/generalModel';
+import { TemplateLayout, TemplateLayoutResponse } from '../models/layoutTemplateModel';
+import { ReturnType, ReturnTypeResponse } from '../models/returnTypeModel';
 
 
 interface EmpTokenRequest {
@@ -23,6 +25,16 @@ export const getCommodityCodes = async (): Promise<CommodityCode[]> => {
   return response.value;
 };
 
+export const getReturnTypes = async (): Promise<ReturnType[]> => {
+  const response = await http.get<ReturnTypeResponse>('Account/GetReturnTypes');
+  return response.value;
+};
+
+export const getLayoutTemplateList = async (): Promise<TemplateLayout[]> => {
+  const response = await http.get<TemplateLayoutResponse>('Account/GetLayoutTemplates');
+  return response.value;
+};
+
 export const getAllCategory = async (): Promise<any[]> => {
   const response = await http.get<any>('Category/GetAllCategory');
   return response.value;
@@ -34,6 +46,8 @@ export const extractUserMessage = (fullMsg: string): string => {
   if (idx === -1) return fullMsg.trim();
   return fullMsg.slice(0, idx).replace(/\s+$/, '');
 };
+
+
 
 export const cleanEmptyNullToString = (obj: any) => {
   const result: any = {};

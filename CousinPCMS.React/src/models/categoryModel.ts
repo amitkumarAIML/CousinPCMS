@@ -5,4 +5,14 @@ export interface CategoryModel {
   akiCategoryIsActive: boolean;
   akiDepartment?: string | number;
   selected?: boolean;
+  akiCategoryListOrder: number;
+  akiDepartmentID: number;
+  
+}
+
+export interface UpdateCategoryOrderRequest {
+  categoryid?: string; 
+  abovecategoryid?: string; 
+  belowcategoryid?: string;
+  parentid?: string
 }

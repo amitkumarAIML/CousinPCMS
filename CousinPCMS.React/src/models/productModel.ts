@@ -80,8 +80,8 @@ export interface ProductUpdateResponse {
     exceptionInformation: unknown;
 }
 export interface AssociatedProductRequestModelForProduct{
-    product?:number;
-    addproduct:string;
+    product: number;
+    addproduct:number;
     listorder:number;
 }
 
@@ -116,4 +116,10 @@ export interface AdditionalProductModel {
     akiProductID?:number;
     oldlistorder: number,
     newlistorder: number
+}
+
+
+export interface UpdateProductToCategoryRequest {
+  categoryid?: string; 
+  productid?: number;
 }

@@ -1,5 +1,4 @@
 import {http} from '../auth/HttpClient';
-import {layoutSkus, layoutSkusResponse} from '../models/layoutTemplateModel';
 import {ItemModelResponse} from '../models/itemModel';
 import {CompetitorItem, CompetitorItemResponse} from '../models/competitorModel';
 import {ApiResponse} from '../models/generalModel';
@@ -23,11 +22,6 @@ export const addSkus = async (skusData: SkuRequestModel): Promise<ApiResponse<st
 export const deleteSkus = async (itemId: number): Promise<ApiResponse<string>> => {
   const response = await http.get<ApiResponse<string>>('Skus/DeleteItem', {params: {itemno: itemId}});
   return response;
-};
-
-export const getLayoutTemplateList = async (): Promise<layoutSkus[]> => {
-  const response = await http.get<layoutSkusResponse>('Skus/GetSkusLayouts');
-  return response.value;
 };
 
 export const getCompetitorDetails = async (): Promise<CompetitorItem[]> => {

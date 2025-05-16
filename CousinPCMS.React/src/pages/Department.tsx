@@ -2,15 +2,14 @@ import React, {useState, useEffect} from 'react';
 import {Form, Input, Select, Checkbox, Button, Upload, Spin} from 'antd';
 import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
-import {CommodityCode} from '../models/commodityCodeModel';
-import {layoutDepartment} from '../models/layoutTemplateModel';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {getCommodityCodes, cleanEmptyNullToString, getSessionItem, getPlainText} from '../services/DataService';
+import {cleanEmptyNullToString, getSessionItem, getPlainText} from '../services/DataService';
 import {useNotification} from '../hook/useNotification';
-import {getLayoutTemplateList, getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
+import {getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
 import RichTextEditor from '../components/shared/RichTextEditor';
+import {useCommonData} from '../hook/useCommonData';
 
 interface DepartmentInfoProps {
   deptData?: Department | null;
@@ -18,8 +17,8 @@ interface DepartmentInfoProps {
 
 const Department: React.FC<DepartmentInfoProps> = () => {
   const [form] = Form.useForm<Department>();
-  const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
-  const [layoutOptions, setLayoutOptions] = useState<layoutDepartment[]>([]);
+  // const [commodityCode, setCommodityCode] = useState<CommodityCode[]>([]);
+  // const [layoutOptions, setLayoutOptions] = useState<TemplateLayout[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,20 +32,10 @@ const Department: React.FC<DepartmentInfoProps> = () => {
   const description = form.getFieldValue('akiDepartmentDescText');
   const [formChanged, setFormChanged] = useState(false);
   const [plainTextLength, setPlainTextLength] = useState(0);
+  const {commodityCodes, templateLayouts} = useCommonData();
 
   useEffect(() => {
     const departmentId = getSessionItem('departmentId') || getSessionItem('tempDepartmentId');
-    const fetchData = async () => {
-      try {
-        const [commodities, layouts] = await Promise.all([getCommodityCodes(), getLayoutTemplateList()]);
-        setCommodityCode(commodities);
-        setLayoutOptions(layouts);
-      } catch (error) {
-        console.error('Error fetching initial data:', error);
-        notify.error('Failed to load form data.');
-      }
-    };
-    fetchData();
     if (location.pathname === '/departments/add' || !departmentId) {
       form.setFieldValue('akiDepartmentID', 0);
       setLoading(false);
@@ -286,7 +275,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       placeholder="Select a commodity code"
                       optionFilterProp="children"
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                      options={(commodityCode || []).map((commodity, index) => ({
+                      options={(commodityCodes || []).map((commodity, index) => ({
                         value: commodity.commodityCode,
                         label: commodity.commodityCode,
                         key: commodity.commodityCode || index,
@@ -314,7 +303,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       placeholder="Select a layout template"
                       optionFilterProp="children"
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                      options={(layoutOptions || []).map((option) => ({
+                      options={(templateLayouts || []).map((option) => ({
                         value: option.templateCode,
                         label: option.layoutDescription,
                         key: option.templateCode,

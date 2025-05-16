@@ -1,6 +1,5 @@
 import {http} from '../auth/HttpClient';
 import {DepartmentRequest, DepartmentResponse} from '../models/departmentModel';
-import {layoutDepartment, layoutDepartmentResponse} from '../models/layoutTemplateModel';
 
 export const getDepartments = async (): Promise<DepartmentResponse> => {
   const response = await http.get<DepartmentResponse>('Department/GetAllDepartment');
@@ -15,11 +14,6 @@ export const updateDepartment = async (departmentData: DepartmentRequest): Promi
 export const addDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
   const response = await http.post<DepartmentResponse>('Department/AddDepartment', departmentData);
   return response;
-};
-
-export const getLayoutTemplateList = async (): Promise<layoutDepartment[]> => {
-  const response = await http.get<layoutDepartmentResponse>('Department/GetDepartmentLayouts');
-  return response.value;
 };
 
 export const deleteDepartment = async (departmentId: number): Promise<void> => {

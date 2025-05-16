@@ -1,8 +1,8 @@
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback, useMemo} from 'react';
 import {useLocation} from 'react-router';
 import {Button, Input, Spin, List, Popconfirm, Form, Upload} from 'antd';
 import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, MenuOutlined} from '@ant-design/icons';
-import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
+import {DndContext, closestCenter, useSensor, useSensors, PointerSensor} from '@dnd-kit/core';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import type {ApiResponse} from '../../models/generalModel';
@@ -183,7 +183,8 @@ const AdditionalImages = () => {
         setAvatarUrl(null);
         setIsDuplicateUrl(false);
         form.resetFields();
-        setFileList((prev) => [...prev, saveData]);
+        // setFileList((prev) => [...prev, saveData]);
+        await handleContextAndFetchImages();
       } else {
         notify.error('Failed to add image.');
       }
@@ -248,15 +249,19 @@ const AdditionalImages = () => {
     if (contextType === 'sku') return image.skuImageID;
   };
 
+  const sortedFileList = useMemo(() => {
+    return [...fileList].sort((a, b) => (a.listorder || 0) - (b.listorder || 0));
+  }, [fileList]);
+
   // Function to handle drag end and persist order
   const handleImageDragEnd = async ({active, over}: {active: any; over: any}) => {
     if (active.id !== over?.id) {
-      const newIndex = fileList.findIndex((img) => getImageIdByContext(img, contextType)?.toString() === over?.id?.toString());
+      const newIndex = sortedFileList.findIndex((img) => getImageIdByContext(img, contextType)?.toString() === over?.id?.toString());
 
       // Call API to persist new order
       setLoadingData(true);
       try {
-        const image = fileList.find((img) => getImageIdByContext(img, contextType)?.toString() === active.id?.toString());
+        const image = sortedFileList.find((img) => getImageIdByContext(img, contextType)?.toString() === active.id?.toString());
         if (!image) {
           notify.error('Image not found.');
           setLoadingData(false);
@@ -264,7 +269,7 @@ const AdditionalImages = () => {
         }
 
         const oldListOrder = image.listorder || 0;
-        const newListOrder = fileList[newIndex]?.listorder || 0;
+        const newListOrder = sortedFileList[newIndex]?.listorder || 0;
 
         const updateRequest: UpdateAdditionalImagesModel = {
           newlistorder: newListOrder,
@@ -311,9 +316,12 @@ const AdditionalImages = () => {
       transition,
       opacity: isDragging ? 0.5 : 1,
       cursor: 'grab',
+      zIndex: isDragging ? 100 : 'auto', // Lift the item when dragging
+      backgroundColor: isDragging ? 'rgba(230, 230, 230, 0.9)' : 'transparent', // Slight background change
+      listStyleType: 'none', // Ensure no list bullets interfere
     };
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id}>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id.toString()}>
         <List.Item
           className="flex justify-between items-center px-2 py-1"
           actions={[
@@ -336,7 +344,7 @@ const AdditionalImages = () => {
         >
           <span className="flex items-center">
             <MenuOutlined style={{cursor: 'grab', color: '#999', marginRight: 8}} />
-            <span className="text-sm truncate" title={image.imageURL}>
+            <span className="text-sm truncate" title={image.imageURL} style={{pointerEvents: 'none'}}>
               {image.imageURL}
             </span>
           </span>
@@ -362,23 +370,21 @@ const AdditionalImages = () => {
             </div>
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
-                {fileList.length > 0 ? (
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
-                    <SortableContext items={[...fileList].sort((a, b) => (a.listorder || 0) - (b.listorder || 0)).map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
+                  <SortableContext items={sortedFileList.map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
+                    {sortedFileList && sortedFileList.length > 0 ? (
                       <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
-                        {[...fileList]
-                          .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
-                          .map((image: AdditionalImagesModel) => {
-                            const key = image.catimageid ?? image.productImageID ?? image.skuImageID ?? image.imageURL;
+                        {sortedFileList.map((image: AdditionalImagesModel) => {
+                          const key = image.catimageid ?? image.productImageID ?? image.skuImageID ?? image.imageURL;
 
-                            return <SortableImageItem key={key} id={key} image={image} onDelete={handleDeleteImage} />;
-                          })}
+                          return <SortableImageItem key={key.toString()} id={key} image={image} onDelete={handleDeleteImage} />;
+                        })}
                       </ul>
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <div className="flex justify-center items-center h-48">{displayText}</div>
-                )}
+                    ) : (
+                      <div className="flex justify-center items-center h-48">{displayText}</div>
+                    )}
+                  </SortableContext>
+                </DndContext>
               </div>
             </Spin>
           </div>
