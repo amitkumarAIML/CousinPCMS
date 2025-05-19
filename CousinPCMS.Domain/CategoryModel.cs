@@ -88,6 +88,8 @@ namespace CousinPCMS.Domain
         public bool aki_Show_Category_Image { get; set; }
         public string aki_Layout_Template { get; set; } = string.Empty;
         public string akiCategoryDescriptionText { get; set; } = string.Empty;
+        public bool akiCategoryWebActive { get; set; }
+        public bool akiCategoryIsActive { get; set; }
     }
 
     public class UpdateCategoryModel
@@ -129,6 +131,7 @@ namespace CousinPCMS.Domain
         public string aki_Layout_Template { get; set; } = string.Empty;
         public bool akiCategoryWebActive { get; set; }
         public string akiCategoryDescriptionText { get; set; } = string.Empty;
+        public bool akiCategoryIsActive { get; set; }
     }
 
     public class DeleteCategoryRequestModel
@@ -206,8 +209,8 @@ namespace CousinPCMS.Domain
 
     public class AssociatedProductRequestModel
     {
-        public int Product { get; set; }
-        public string additionalCategory { get; set; }
+        public string Product { get; set; }
+        public int additionalCategory { get; set; }
         public int Listorder { get; set; }
         public bool isAdditionalProduct { get; set; }
     }
@@ -221,8 +224,15 @@ namespace CousinPCMS.Domain
 
     public class AddAdditionalProductforCategoryRequestModel
     {
-        public int product { get; set; }
-        public string prodCategory { get; set; }
+        public string product { get; set; }
+        public int prodCategory { get; set; }
+        public int listorder { get; set; }
+    }
+
+    public class UpdateAddProdForCategoryListOrderRequestModel
+    {
+        public string product { get; set; }
+        public int prodCategory { get; set; }
         public int listorder { get; set; }
     }
 
@@ -251,10 +261,10 @@ namespace CousinPCMS.Domain
         public string ODataEtag { get; set; }
 
         [JsonProperty("Product")]
-        public int Product { get; set; }
+        public string Product { get; set; }
 
         [JsonProperty("additionalCategory")]
-        public string AdditionalCategory { get; set; }
+        public int AdditionalCategory { get; set; }
 
         [JsonProperty("Listorder")]
         public int ListOrder { get; set; }
@@ -292,6 +302,6 @@ namespace CousinPCMS.Domain
         public string abovecategoryid { get; set; }
         public string belowcategoryid { get; set; }
         public string parentid { get; set; }
+        public string departmentid { get; set; }
     }
-
 }

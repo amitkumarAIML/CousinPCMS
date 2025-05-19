@@ -40,6 +40,8 @@ namespace CousinPCMS.Domain
         public string akiLayoutTemplate { get; set; }
         public string akiColor { get; set; }
         public string akiFeaturedProdBGColor { get; set; }
+        public bool akiDepartmentWebActive { get; set; }
+        public bool akiDepartmentIsActive { get; set; }
     }
 
     public class UpdateDepartmentRequestModel
@@ -59,6 +61,7 @@ namespace CousinPCMS.Domain
         public string akiLayoutTemplate { get; set; }
         public string akiColor { get; set; }
         public string akiFeaturedProdBGColor { get; set; }
+        public bool akiDepartmentIsActive { get; set; }
     }
 
     public class DeleteDepartmentRequestModel

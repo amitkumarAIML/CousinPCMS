@@ -88,7 +88,7 @@ namespace CousinPCMS.Domain
     public class AdditionalProductRequestModel
     {
         public int product { get; set; }
-        public string addproduct { get; set; }
+        public int addproduct { get; set; }
         public int listorder { get; set; }
     }
 
@@ -175,6 +175,8 @@ namespace CousinPCMS.Domain
         public string categoryName { get; set; }
         public string akiProductDescription { get; set; } = string.Empty;
         public string akiProductText { get; set; } = string.Empty;
+        public bool akiProductWebActive { get; set; }
+        public bool akiProductIsActive { get; set; }
     }
 
     public class UpdateProductModel
@@ -204,6 +206,7 @@ namespace CousinPCMS.Domain
         public string akiProductText { get; set; } = string.Empty;
         public bool iscommoditychange { get; set; }
         public bool iscountrychange { get; set; }
+        public bool akiProductIsActive { get; set; }
     }
 
     public class DeleteProductRequestModel
@@ -229,7 +232,5 @@ namespace CousinPCMS.Domain
     {
         public string categoryid { get; set; }
         public int productid { get; set; }
-        public int aboveproductid { get; set; }
-        public int belowproductid { get; set; }
     }
 }

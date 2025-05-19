@@ -256,7 +256,7 @@ namespace CousinPCMS.BLL
             return returnValue;
         }
 
-        public APIResult<string> UpdateAssociatedProduct(AddAdditionalProductforCategoryRequestModel objModel)
+        public APIResult<string> UpdateAssociatedProduct(UpdateAddProdForCategoryListOrderRequestModel objModel)
         {
             APIResult<string> returnValue = new APIResult<string>
             {
@@ -380,7 +380,7 @@ namespace CousinPCMS.BLL
                 {
                     new Filters
                     {
-                        ParameterName = "additionalCategory",
+                        ParameterName = "Product",
                         ParameterValue = categoryId,
                         DataType = typeof(string),
                         Compare = ComparisonType.Equals
@@ -416,8 +416,8 @@ namespace CousinPCMS.BLL
                 {
                     var products = category.Value.Select(additionalCategory => new AdditionalCategoryModel
                     {
-                        AdditionalCategory = additionalCategory.akiCategoryID,
-                        Product = additionalCategory.akiProductID,
+                        AdditionalCategory = additionalCategory.akiProductID,
+                        Product = additionalCategory.akiCategoryID,
                         ListOrder = additionalCategory.akiProductListOrder,
                         ProductName = additionalCategory.akiProductName,
                         CategoryName = additionalCategory.category_Name,
