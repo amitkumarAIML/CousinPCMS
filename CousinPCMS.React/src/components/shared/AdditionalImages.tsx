@@ -167,11 +167,11 @@ const AdditionalImages = () => {
           response = await saveProductImagesUrl(saveData);
           break;
         case 'category':
-          saveData = {...requestData, categoryID: contextId as string} as AdditionalImagesModel;
+          saveData = {...requestData, categoryID: contextId.toString()} as AdditionalImagesModel;
           response = await saveCategoryImagesUrl(saveData);
           break;
         case 'sku':
-          saveData = {...requestData, skuItemID: contextId as string} as AdditionalImagesModel;
+          saveData = {...requestData, skuItemID: contextId.toString()} as AdditionalImagesModel;
           response = await saveSkuImagesUrl(saveData);
           break;
         default:

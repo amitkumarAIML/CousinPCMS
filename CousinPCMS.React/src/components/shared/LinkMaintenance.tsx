@@ -147,8 +147,8 @@ const LinkMaintenance = () => {
         ...values,
         listorder: nextListOrder,
         productID: contextType === 'product' ? (contextId as number) : undefined,
-        categoryID: contextType === 'category' ? (contextId as string) : undefined,
-        skuItemID: contextType === 'sku' ? (contextId as string) : undefined,
+        categoryID: contextType === 'category' ? contextId.toString() : undefined,
+        skuItemID: contextType === 'sku' ? contextId.toString() : undefined,
       };
       let response: ApiResponse<string>;
       switch (contextType) {

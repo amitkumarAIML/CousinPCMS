@@ -7,7 +7,7 @@ import RelatedSKUs from '../components/skus/RelatedSKUs';
 import AttributeSKU from '../components/skus/AttributeSKU';
 import {updateSkus, getSkuItemById, addSkus} from '../services/SkusService';
 import {useNotification} from '../hook/useNotification';
-import type {SKuList} from '../models/skusModel';
+import type {SKuList, SkuRequestModel} from '../models/skusModel';
 import type {ApiResponse} from '../models/generalModel';
 import {cleanEmptyNullToString, extractUserMessage, getSessionItem} from '../services/DataService';
 
@@ -92,10 +92,12 @@ const SKUs = () => {
 
       skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
       const akiPriceBreaks = values?.akiPriceBreak ? true : false;
-      const req = {
+      const req: SkuRequestModel = {
         ...skusData,
         akiPriceBreaks,
       };
+      delete req.additionalImagesCount;
+      delete req.urlLinksCount;
       try {
         setBtnSaveLoading(true);
         if (isEdit) {
