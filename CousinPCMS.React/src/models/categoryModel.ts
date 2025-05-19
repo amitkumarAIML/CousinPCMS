@@ -14,5 +14,6 @@ export interface UpdateCategoryOrderRequest {
   categoryid?: string; 
   abovecategoryid?: string; 
   belowcategoryid?: string;
-  parentid?: string
+  parentid?: string;
+  departmentid?: string;
 }

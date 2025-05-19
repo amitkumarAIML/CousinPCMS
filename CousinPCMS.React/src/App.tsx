@@ -24,7 +24,7 @@ const App = () => {
       setAttemptedLogin(true);
 
       // const decodedToken = decodeURIComponent(tokenParam).replace(/ /g, '+');
-      const EmpLoginRequestModel = {token: tokenParam + 'Akkomplish'};
+      const EmpLoginRequestModel = {token: tokenParam};
 
       empLogin(EmpLoginRequestModel)
         .then((response) => {

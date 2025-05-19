@@ -53,8 +53,8 @@ export interface UpdateCategoryModel{
     akiCategoryWebActive: boolean;
     akiCategoryDescriptionText:string;
     akiLayoutTemplate?: string,
-    additionalImagesCount: number,
-    urlLinksCount: number
+    additionalImagesCount?: number,
+    urlLinksCount?: number
 }
  
 export interface CategoryResponseModel {

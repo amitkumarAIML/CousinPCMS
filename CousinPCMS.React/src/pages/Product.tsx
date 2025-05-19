@@ -4,7 +4,7 @@ import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
 import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
-import type {Product, ProductRequest} from '../models/productModel';
+import type {Product} from '../models/productModel';
 import {useNotification} from '../hook/useNotification';
 import {addProduct, updateProduct} from '../services/ProductService';
 
@@ -39,40 +39,8 @@ const Product = () => {
 
   const handleCancel = () => {
     navigate('/home');
-  };
-
-  const saveProduct = async (req: ProductRequest) => {
-    try {
-      if (isEdit) {
-        const response = await updateProduct(req);
-        if (response.isSuccess) {
-          notify.success('Product details updated successfully');
-          setFormChanged(false);
-        } else {
-          notify.error('Category details not updated');
-        }
-      } else {
-        const response = await addProduct(req);
-        if (response.isSuccess) {
-          if (Number(response.value) && Number(response.value) > 0) {
-            if (productFormRef.current) {
-              productFormRef.current.setProductId(response.value);
-              setIsEdit(true);
-            }
-            notify.success('Product Details Added Successfully');
-          } else {
-            notify.success('Product details not added');
-          }
-        } else {
-          notify.error('Product Details Failed to Add');
-        }
-      }
-      sessionStorage.removeItem('originalCommodityCode');
-      sessionStorage.removeItem('originalCountryOfOrigin');
-    } catch (err) {
-      console.error('Error saving product:', err);
-      notify.error('Failed to save product details.');
-    }
+    sessionStorage.removeItem('originalCommodityCode');
+    sessionStorage.removeItem('originalCountryOfOrigin');
   };
 
   const handleSave = async () => {
@@ -89,13 +57,44 @@ const Product = () => {
           ...productData,
           aki_Layout_Template: productData.akiLayoutTemplate,
           categoryName: productData.category_Name,
-          iscommoditychange: productFormRef.current.getCommityCodeChange(),
-          iscountrychange: productFormRef.current.getCountryOriginChange(),
         };
         delete req.category_Name;
         delete req.akiLayoutTemplate;
+        delete req.additionalImagesCount;
+        delete req.urlLinksCount;
 
-        await saveProduct(req);
+        if (isEdit) {
+          const data = {
+            ...req,
+            iscommoditychange: productFormRef.current.getCommityCodeChange(),
+            iscountrychange: productFormRef.current.getCountryOriginChange(),
+          };
+
+          const response = await updateProduct(data);
+          if (response.isSuccess) {
+            notify.success('Product details updated successfully');
+            setFormChanged(false);
+          } else {
+            notify.error('Category details not updated');
+          }
+        } else {
+          const response = await addProduct(req);
+          if (response.isSuccess) {
+            if (Number(response.value) && Number(response.value) > 0) {
+              if (productFormRef.current) {
+                productFormRef.current.setProductId(response.value);
+                setIsEdit(true);
+              }
+              notify.success('Product Details Added Successfully');
+            } else {
+              notify.success('Product details not added');
+            }
+          } else {
+            notify.error('Product Details Failed to Add');
+          }
+        }
+        // sessionStorage.removeItem('originalCommodityCode');
+        // sessionStorage.removeItem('originalCountryOfOrigin');
       } catch (errorInfo) {
         notify.error('Please fill in all required fields correctly.' + errorInfo);
       }

@@ -37,7 +37,6 @@ const getNodeTitleText = (node: CustomTreeDataNode): string => {
   if (node.data) {
     return node.dataType === 'department' ? (node.data as Department).akiDepartmentName ?? `Dept ${node.id}` : (node.data as CategoryModel).akiCategoryName ?? `Cat ${node.id}`;
   }
-  console.log('sssss', node);
   return `Node ${node.key}`;
 };
 
@@ -366,30 +365,61 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
     fetchDepartments();
   }, []);
 
-  const updateDepartmentWithCategories = useCallback((list: CustomTreeDataNode[], key: React.Key, children: CustomTreeDataNode[]): CustomTreeDataNode[] => {
-    return list.map((node) => {
-      if (node.key === key) {
-        const titleText = getNodeTitleText(node);
-        const icon = node.dataType === 'category' ? <FolderOutlined style={{marginRight: 6}} /> : <PartitionOutlined style={{marginRight: 6}} />;
-        return {
-          ...node,
-          title: (
+  const updateDepartmentWithCategories = useCallback(
+    (
+      list: CustomTreeDataNode[], // The current segment of the tree being processed
+      departmentKeyToUpdateChildren: React.Key, // The specific department whose children should be replaced
+      newChildrenForSpecificDepartment: CustomTreeDataNode[] // The new children for that specific department
+    ): CustomTreeDataNode[] => {
+      return list.map((node) => {
+        let newTitle = node.title;
+        let newChildren = node.children;
+        let newIsLeaf = node.isLeaf;
+
+        // 1. Uppercase title for ALL department nodes encountered
+        if (node.dataType === 'department') {
+          const titleText = getNodeTitleText(node); // Get current text
+          const icon = <PartitionOutlined style={{marginRight: 6}} />; // Department icon
+          newTitle = (
             <span>
               {icon}
-              {titleText}
+              {titleText.toUpperCase()} {/* UPPERCASE the text */}
             </span>
-          ),
-          children: children.length > 0 ? children : undefined,
-          isLeaf: children.length === 0,
-        };
-      }
+          );
+        }
 
-      if (node.children) {
-        return {...node, children: updateDepartmentWithCategories(node.children, key, children)};
-      }
-      return node;
-    });
-  }, []);
+        // 2. Update children for the SPECIFIC department that was refreshed
+        if (node.key === departmentKeyToUpdateChildren) {
+          newChildren = newChildrenForSpecificDepartment.length > 0 ? newChildrenForSpecificDepartment : undefined;
+          newIsLeaf = newChildrenForSpecificDepartment.length === 0;
+        }
+
+        // 3. Recursively process children for all nodes
+        if (node.children) {
+          const processedOriginalChildren = updateDepartmentWithCategories(
+            node.children, // original children of current node
+            departmentKeyToUpdateChildren,
+            newChildrenForSpecificDepartment
+          );
+          if (node.key === departmentKeyToUpdateChildren) {
+            newChildren = newChildrenForSpecificDepartment.length > 0 ? newChildrenForSpecificDepartment : undefined;
+            newIsLeaf = newChildrenForSpecificDepartment.length === 0;
+          } else {
+            newChildren = processedOriginalChildren;
+            if (newChildren) newIsLeaf = newChildren.length === 0;
+          }
+        }
+
+        return {
+          ...node,
+          title: newTitle,
+          children: newChildren,
+          isLeaf: newIsLeaf,
+        };
+      });
+    },
+    []
+  );
 
   const onLoadData = useCallback(
     (treeNode: EventDataNode<DataNode>): Promise<void> => {
@@ -497,7 +527,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
           </span>
         );
         if (node.children) {
-          node.children = node.children.map(resetTitle);
+          node.children = node.children.map((child) => resetTitle(child));
         }
         return node;
       };
@@ -568,18 +598,21 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       };
 
       const updatedData = cleanupEmptyParents(data);
+      console.log('updatedData', updatedData);
       const req: UpdateCategoryOrderRequest = {
         categoryid: stripIdPrefix(dragKey)?.toString(),
         abovecategoryid: '0',
         belowcategoryid: '0',
         parentid: '0',
+        departmentid: '0',
       };
 
+      let identifiedParentKey: React.Key | null = null;
       const findNodeAndSiblings = (nodesToSearch: CustomTreeDataNode[], key: React.Key, currentParentKey: React.Key | null = null): boolean => {
         for (let idx = 0; idx < nodesToSearch.length; idx++) {
           const currentNode = nodesToSearch[idx];
           if (currentNode.key === key) {
-            req.parentid = stripIdPrefix(currentParentKey)?.toString();
+            identifiedParentKey = currentParentKey;
             if (idx > 0) {
               req.abovecategoryid = stripIdPrefix(nodesToSearch[idx - 1].key)?.toString();
             }
@@ -599,7 +632,35 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
 
       findNodeAndSiblings(updatedData, dragKey);
 
-      console.log('Request Data:', req);
+      // Determine parentid and departmentid based on the identified parent
+      if (identifiedParentKey) {
+        const parentNode = findNodeByKey(updatedData, identifiedParentKey);
+        if (parentNode) {
+          if (parentNode.dataType === 'department') {
+            // Parent is a department: category is top-level in this department
+            req.parentid = '0'; // As per instruction
+            const deptId = stripIdPrefix(parentNode.key)?.toString();
+            if (deptId) req.departmentid = deptId; // Pass department ID
+            // If deptId is undefined, req.departmentid remains '0' (safer default)
+          } else if (parentNode.dataType === 'category') {
+            // Parent is another category
+            const parentCatId = stripIdPrefix(parentNode.key)?.toString();
+            if (parentCatId) req.parentid = parentCatId; // Pass parent category ID
+            // If parentCatId is undefined, req.parentid remains '0'
+            req.departmentid = '0'; // Department ID is '0' as parent is a category
+          } else {
+            // Parent is of an unknown type or dataType is not set
+            // Defaults (parentid='0', departmentid='0') will be used. Log a warning.
+            console.warn(`Parent node (${parentNode.key}) has an unexpected dataType: '${parentNode.dataType}'. Using default parent/department IDs.`);
+          }
+        } else {
+          // Should not happen if identifiedParentKey is valid and from updatedData
+          console.error(`Could not find parent node object in updatedData for key: ${identifiedParentKey}. Using default parent/department IDs.`);
+        }
+      } else {
+        console.warn(`Node (${dragKey}) is at the root of the data structure after move. Ensure parentid='0' and departmentid='0' is the correct representation for this state.`);
+      }
+
       setLoading(true);
       try {
         const apiResponse = await dragDropCategory(req);
@@ -613,7 +674,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
             departmentToRefreshId = dropNodeContextInTree.id;
             departmentToRefreshKey = dropNodeContextInTree.key;
           } else {
-            const parentDeptInfo = dropNodeContextInTree ? findNodeAndParentDeptKeyInternal(treeData, dropNodeContextInTree.key) : '';
+            const parentDeptInfo = dropNodeContextInTree ? findNodeAndParentDeptKeyInternal(treeData, dropNodeContextInTree.key) : null;
             if (parentDeptInfo && parentDeptInfo.deptKey) {
               departmentToRefreshKey = parentDeptInfo.deptKey;
               const deptNode = findNodeByKey(treeData, departmentToRefreshKey);
@@ -625,7 +686,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
             const categoriesResponse = await getCategoriesByDepartment(String(departmentToRefreshId));
             if (categoriesResponse?.isSuccess && Array.isArray(categoriesResponse.value)) {
               const newCategoryNodes = buildCategoryTree(categoriesResponse.value, selectedKeys);
-              setTreeData((currentData) => updateDepartmentWithCategories(currentData, departmentToRefreshKey!, newCategoryNodes));
+              setTreeData(updateDepartmentWithCategories(updatedData, departmentToRefreshKey, newCategoryNodes));
               if (!expandedKeys.includes(departmentToRefreshKey)) {
                 setExpandedKeys((prev) => Array.from(new Set([...prev, departmentToRefreshKey!])));
               }
@@ -740,11 +801,88 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
     }
   }, [loading, treeData, findDepartmentIdForCategoryKey, onCategorySelected]);
 
+  const isNodeDescendant = (
+    nodes: CustomTreeDataNode[], // The full tree data or relevant part
+    parentKey: React.Key,
+    childKey: React.Key
+  ): boolean => {
+    // Find the potential parent node in the provided 'nodes' array
+    const parentNode = findNodeByKey(nodes, parentKey);
+
+    // If the parent node doesn't exist or has no children, the childKey cannot be a descendant
+    if (!parentNode || !parentNode.children || parentNode.children.length === 0) {
+      return false;
+    }
+
+    // Recursive function to search within the children of the parentNode
+    const findInChildren = (children: CustomTreeDataNode[], keyToFind: React.Key): boolean => {
+      for (const child of children) {
+        if (child.key === keyToFind) return true; // Found the childKey
+        if (child.children && child.children.length > 0) {
+          // If the current child has its own children, search recursively
+          if (findInChildren(child.children, keyToFind)) return true;
+        }
+      }
+      return false; // childKey not found in this branch
+    };
+
+    // Start the search from the direct children of the parentNode
+    return findInChildren(parentNode.children, childKey);
+  };
+
+  const allowDropFunc = useCallback(
+    (options: {
+      dragNode: DataNode; // Accept generic DataNode
+      dropNode: DataNode; // Accept generic DataNode
+      dropPosition: -1 | 0 | 1;
+    }): boolean => {
+      // Type assertion/guard to use CustomTreeDataNode properties
+      const dragItem = options.dragNode as CustomTreeDataNode;
+      const dropItem = options.dropNode as CustomTreeDataNode;
+      const {dropPosition} = options;
+
+      // It's good practice to check if the assertion is valid,
+      // especially if your tree could theoretically contain non-CustomTreeDataNode items.
+      if (!dragItem.dataType || !dropItem.dataType) {
+        // This might happen if a node doesn't have 'dataType',
+        // though your setup implies all nodes will be CustomTreeDataNode.
+        console.warn('AllowDrop: dragNode or dropNode is not a CustomTreeDataNode as expected.');
+        return false;
+      }
+
+      if (dragItem.dataType !== 'category') {
+        return false;
+      }
+
+      if (dragItem.key === dropItem.key) {
+        return false;
+      }
+
+      // Pass treeData (which is CustomTreeDataNode[]) to isNodeDescendant
+      if (isNodeDescendant(treeData, dragItem.key, dropItem.key)) {
+        return false;
+      }
+
+      if (dropItem.dataType === 'department') {
+        const allowed = dropPosition === 0;
+        return allowed;
+      }
+
+      if (dropItem.dataType === 'category') {
+        return true;
+      }
+
+      return false;
+    },
+    [treeData]
+  );
+
   const treeProps = useMemo<TreeProps>(
     () => ({
       showIcon: true,
       icon: null,
-      draggable: (node) => (node as CustomTreeDataNode).dataType !== 'department',
+      // draggable: (node) => (node as CustomTreeDataNode).dataType !== 'department',
+      draggable: true,
       blockNode: true,
       showLine: {showLeafIcon: false},
       loadData: onLoadData,
@@ -757,40 +895,9 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       height: 800,
       virtual: true,
       onRightClick,
-      // allowDrop: ({dragNode, dropNode, dropPosition}) => {
-      //   const dragItem = dragNode as CustomTreeDataNode;
-      //   const dropItem = dropNode as CustomTreeDataNode;
-
-      //   console.log('--- ALLOW DROP CHECK ---');
-      //   console.log('Drag Item:', {key: dragItem.key, type: dragItem.dataType, title: getNodeTitleText(dragItem as CustomTreeDataNode)});
-      //   console.log('Drop Target Item:', {key: dropItem.key, type: dropItem.dataType, title: getNodeTitleText(dropItem as CustomTreeDataNode)});
-      //   console.log('Drop Position (relative to dropItem):', dropPosition); // -1: before, 0: onto, 1: after
-
-      //   if (dragItem.dataType !== 'category') {
-      //     console.log('AllowDrop returning false: Dragged item is not a category.');
-      //     return false;
-      //   }
-
-      //   if (dropItem.dataType === 'department') {
-      //     const allowed = dropPosition === 0;
-      //     console.log(`AllowDrop (target: Department, pos: ${dropPosition}): ${allowed}`);
-      //     return allowed;
-      //   }
-
-      //   if (dropItem.dataType === 'category') {
-      //     if (dragItem.key === dropItem.key) {
-      //       console.log('AllowDrop returning false: Cannot drop category onto itself.');
-      //       return false;
-      //     }
-      //     console.log('AllowDrop returning true: Valid category-on-category drop.');
-      //     return true;
-      //   }
-
-      //   console.log('AllowDrop returning false: Default deny (target not department or category).');
-      //   return false;
-      // },
+      allowDrop: allowDropFunc,
     }),
-    [displayTreeData, onLoadData, onDrop, expandedKeys, selectedKeys, onSelect, onRightClick]
+    [displayTreeData, onLoadData, onDrop, expandedKeys, selectedKeys, onSelect, onRightClick, allowDropFunc]
   );
 
   if (loading && treeData.length === 0) {
@@ -807,30 +914,30 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
 
   return (
     <div style={{position: 'relative'}}>
-      {/* <Spin tip="Updating order..." spinning={loading}> */}
-      <div className="text-[11px] bg-light-border rounded-md p-2 text-primary-font">
-        <span>Departments & Categories</span>
-      </div>
-      <Tree {...treeProps} />
-      {displayTreeData && displayTreeData.length === 0 && <span className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{'No Data'}</span>}
-      {contextMenu.visible && (
-        <div
-          style={{
-            position: 'fixed',
-            top: contextMenu.y,
-            left: contextMenu.x,
-            zIndex: 1000,
-            background: '#fff',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            borderRadius: 4,
-            minWidth: 180,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Menu onClick={handleMenuClick} items={getMenuItems()} />
+      <Spin tip="Updating order..." spinning={loading}>
+        <div className="text-[11px] bg-light-border rounded-md p-2 text-primary-font">
+          <span>Departments & Categories</span>
         </div>
-      )}
-      {/* </Spin> */}
+        <Tree {...treeProps} />
+        {displayTreeData && displayTreeData.length === 0 && <span className="flex items-center justify-center h-12 text-secondary-font text-[10px] text-center">{'No Data'}</span>}
+        {contextMenu.visible && (
+          <div
+            style={{
+              position: 'fixed',
+              top: contextMenu.y,
+              left: contextMenu.x,
+              zIndex: 1000,
+              background: '#fff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              borderRadius: 4,
+              minWidth: 180,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Menu onClick={handleMenuClick} items={getMenuItems()} />
+          </div>
+        )}
+      </Spin>
       <Modal
         title={
           <div className="flex justify-between items-center">

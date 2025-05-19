@@ -250,6 +250,8 @@ const Category = () => {
       aki_Show_Category_Image: (values as UpdateCategoryModel).aki_Show_Category_Image || false,
     };
     delete payload.akiLayoutTemplate;
+    delete payload.additionalImagesCount;
+    delete payload.urlLinksCount;
     try {
       if (isEdit) {
         const response = await updateCategory(payload);
@@ -318,7 +320,6 @@ const Category = () => {
 
   const handleStartEdit = (record: AdditionalCategoryModel) => {
     editAssociatedProductForm.setFieldsValue({...record});
-    console.log('sdfsd', record.additionalCategory);
     setEditingId(record.additionalCategory);
   };
   const handleCancelEdit = () => {
