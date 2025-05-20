@@ -100,7 +100,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         normalize(item.akiListOrder.toString()).includes(searchText) ||
         normalize(item.akiAltSKUName.toString()).includes(searchText) ||
         normalize(item.akiLayoutTemplate.toString()).includes(searchText) ||
-        normalize(item.akiCountryOfOrigin).includes(searchText) ||
+        normalize(item.akiCountryofOrigin).includes(searchText) ||
         normalize(item.akiManufacturerRef).includes(searchText) ||
         normalize(item.akiCommodityCode.toString()).includes(searchText)
       );

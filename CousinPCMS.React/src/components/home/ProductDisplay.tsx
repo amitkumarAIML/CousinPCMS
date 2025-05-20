@@ -113,11 +113,7 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchValue, notify, onProductSelected]);
-
-  useEffect(() => {
-    fetchData();
-  }, [selectedCategory, refreshKey, fetchData]);
+  }, [selectedCategory, notify, onProductSelected]);
 
   useEffect(() => {
     fetchData();
@@ -128,7 +124,7 @@ function ProductDisplay({selectedCategory, onProductSelected, refreshKey}: Produ
       setFilteredData([]);
       setDisplayText('Click a category to view the product');
     }
-  }, [selectedCategory, fetchData]);
+  }, [selectedCategory, refreshKey, fetchData]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

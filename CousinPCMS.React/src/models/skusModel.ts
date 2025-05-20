@@ -146,7 +146,7 @@ export interface SKuList {
   akiGuideWeightTBC: number;
   akiSKUIsActive: boolean;
   akiCurrentlyPartRestricted: boolean;
-  akiCountryOfOrigin: string;
+  akiCountryofOrigin: string;
   akiPrintLayoutTemp: boolean;
   akiAlternativeTitle: string;
   akiCompetitors: string;

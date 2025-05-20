@@ -353,7 +353,7 @@ const AdditionalImages = () => {
           ]}
         >
           <span className="flex items-center">
-            <MenuOutlined style={{cursor: 'grab', color: '#999', marginRight: 8}} />
+            <Button type="text" size="small" icon={<MenuOutlined />} {...listeners} style={{cursor: 'grab', marginRight: 8}} className="drag-handle" />
             <span className="text-sm truncate" title={image.imageURL}>
               {image.imageURL}
             </span>
