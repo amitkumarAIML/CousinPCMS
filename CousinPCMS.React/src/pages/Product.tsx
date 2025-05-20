@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
-import {cleanEmptyNullToString, getSessionItem} from '../services/DataService';
+import {cleanEmptyNullToString, getSessionItem, setSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {useNotification} from '../hook/useNotification';
 import {addProduct, updateProduct} from '../services/ProductService';
@@ -73,6 +73,8 @@ const Product = () => {
           const response = await updateProduct(data);
           if (response.isSuccess) {
             notify.success('Product details updated successfully');
+            setSessionItem('originalCommodityCode', values.akiProductCommodityCode);
+            setSessionItem('originalCountryOfOrigin', values.akiProductCountryOfOrigin);
             setFormChanged(false);
           } else {
             notify.error('Category details not updated');
@@ -84,6 +86,8 @@ const Product = () => {
               if (productFormRef.current) {
                 productFormRef.current.setProductId(response.value);
                 setIsEdit(true);
+                setSessionItem('originalCommodityCode', values.akiProductCommodityCode);
+                setSessionItem('originalCountryOfOrigin', values.akiProductCountryOfOrigin);
               }
               notify.success('Product Details Added Successfully');
             } else {
@@ -93,6 +97,7 @@ const Product = () => {
             notify.error('Product Details Failed to Add');
           }
         }
+
         // sessionStorage.removeItem('originalCommodityCode');
         // sessionStorage.removeItem('originalCountryOfOrigin');
       } catch (errorInfo) {
