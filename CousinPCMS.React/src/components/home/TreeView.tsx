@@ -114,13 +114,12 @@ const CategoryTitleWrapper: React.FC<CategoryTitleWrapperProps> = ({node, childr
     <span
       ref={setNodeRef}
       style={{
-        padding: '2px 4px',
+        display: 'block',
+        width: '100%',
         borderRadius: '3px',
         backgroundColor: highlight ? '#e6f7ff' : 'transparent',
         border: highlight ? '1px dashed #91d5ff' : '1px dashed transparent',
         transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
-        boxSizing: 'border-box',
-        minHeight: '24px', // Ensure it has a decent hit area, adjust to your tree's line height
       }}
     >
       {children}
@@ -598,7 +597,6 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       };
 
       const updatedData = cleanupEmptyParents(data);
-      console.log('updatedData', updatedData);
       const req: UpdateCategoryOrderRequest = {
         categoryid: stripIdPrefix(dragKey)?.toString(),
         abovecategoryid: '0',
@@ -914,7 +912,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
 
   return (
     <div style={{position: 'relative'}}>
-      <Spin tip="Updating order..." spinning={loading}>
+      <Spin tip="Updating data..." spinning={loading}>
         <div className="text-[11px] bg-light-border rounded-md p-2 text-primary-font">
           <span>Departments & Categories</span>
         </div>
