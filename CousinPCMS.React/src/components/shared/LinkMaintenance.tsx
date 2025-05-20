@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {useLocation} from 'react-router';
 import {Button, Input, Select, Form, Spin, List, Popconfirm} from 'antd';
 import {DeleteOutlined, MenuOutlined, QuestionCircleOutlined} from '@ant-design/icons';
@@ -15,6 +15,22 @@ import {CSS} from '@dnd-kit/utilities';
 type ContextType = 'product' | 'category' | 'sku' | null;
 const {Option} = Select;
 
+// Helper function to get a consistent string ID for sortable items based on your condition
+const getSortableItemId = (link: LinkValue): string => {
+  if (link.categoryurlID !== undefined && link.categoryurlID !== null) {
+    return String(link.categoryurlID);
+  }
+  if (link.producturlID !== undefined && link.producturlID !== null) {
+    return String(link.producturlID);
+  }
+  if (link.skuitemURLid !== undefined && link.skuitemURLid !== null) {
+    return String(link.skuitemURLid);
+  }
+  if (link.linkURL !== undefined && link.linkURL !== null && link.linkURL.trim() !== '') {
+    return link.linkURL; // linkURL is already a string, use directly
+  }
+  return `unsortable-link-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
 const LinkMaintenance = () => {
   const [form] = Form.useForm();
   const [links, setLinks] = useState<LinkValue[]>([]);
@@ -235,14 +251,18 @@ const LinkMaintenance = () => {
     if (contextType === 'sku') return link.skuitemURLid;
   };
 
+  const sortedFileList = useMemo(() => {
+    return [...links].sort((a, b) => (a.listorder || 0) - (b.listorder || 0));
+  }, [links]);
+
   // Function to handle drag end and persist order
   const handleLinkDragEnd = async ({active, over}: {active: any; over: any}) => {
     if (active.id !== over?.id) {
-      const newIndex = links.findIndex((link) => getLinkIdByContext(link, contextType)?.toString() === over?.id?.toString());
+      const newIndex = sortedFileList.findIndex((link) => getLinkIdByContext(link, contextType)?.toString() === over?.id?.toString());
       // Call API to persist new order
       setLoadingData(true);
       try {
-        const link = links.find((links) => getLinkIdByContext(links, contextType)?.toString() === active.id?.toString());
+        const link = sortedFileList.find((links) => getLinkIdByContext(links, contextType)?.toString() === active.id?.toString());
         if (!link) {
           notify.error('Link not found.');
           setLoadingData(false);
@@ -250,12 +270,12 @@ const LinkMaintenance = () => {
         }
 
         const oldListOrder = link.listorder || 0;
-        const newListOrder = links[newIndex]?.listorder || 0;
+        const newListOrder = sortedFileList[newIndex]?.listorder || 0;
 
         const updateRequest: UpdateLinkOrderModel = {
           newlistorder: newListOrder,
           oldlistorder: oldListOrder,
-          ...(contextType === 'product' && {productlinkid: link.producturlID}),
+          ...(contextType === 'product' && {producturlID: link.producturlID}),
           ...(contextType === 'category' && {categoryurlID: link.categoryurlID}),
           ...(contextType === 'sku' && {skuitemURLID: link.skuitemURLid}),
         };
@@ -302,7 +322,7 @@ const LinkMaintenance = () => {
     };
 
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id}>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         <List.Item
           className="flex justify-between items-center px-2 py-1"
           actions={[
@@ -339,30 +359,22 @@ const LinkMaintenance = () => {
             </div>
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[70vh] overflow-y-auto">
-                {links.length > 0 ? (
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleLinkDragEnd}>
-                    <SortableContext items={[...links].sort((a, b) => (a.listorder || 0) - (b.listorder || 0)).map((img) => img.linkURL)} strategy={verticalListSortingStrategy}>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleLinkDragEnd}>
+                  <SortableContext items={sortedFileList.map((url) => getSortableItemId(url))} strategy={verticalListSortingStrategy}>
+                    {sortedFileList.length > 0 ? (
                       <ul style={{margin: 0, padding: 0}} className="divide-y divide-border">
-                        {[...links]
+                        {[...sortedFileList]
                           .sort((a, b) => (a.listorder || 0) - (b.listorder || 0))
                           .map((link) => {
-                            const key =
-                              link.categoryurlID !== undefined
-                                ? link.categoryurlID
-                                : link.producturlID !== undefined
-                                ? link.producturlID
-                                : link.skuitemURLid !== undefined
-                                ? link.skuitemURLid
-                                : link.linkURL; // fallback to imageURL if none are present
-
-                            return <SortableLinkItem key={key} id={key} link={link} onDelete={handleDeleteLink} />;
+                            const sortableId = getSortableItemId(link);
+                            return <SortableLinkItem key={sortableId} id={sortableId} link={link} onDelete={handleDeleteLink} />;
                           })}
                       </ul>
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <div className="flex justify-center items-center h-48 text-secondary-font">{displayText}</div>
-                )}
+                    ) : (
+                      <div className="flex justify-center items-center h-48 text-secondary-font">{displayText}</div>
+                    )}
+                  </SortableContext>
+                </DndContext>
               </div>
             </Spin>
           </div>

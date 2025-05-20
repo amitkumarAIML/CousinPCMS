@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback, useMemo} from 'react';
 import {useLocation} from 'react-router';
-import {Button, Input, Spin, List, Popconfirm, Form, Upload} from 'antd';
+import {Button, Input, Spin, Popconfirm, Form, Upload, List} from 'antd';
 import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, MenuOutlined} from '@ant-design/icons';
 import {DndContext, closestCenter, useSensor, useSensors, PointerSensor} from '@dnd-kit/core';
 import {SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
@@ -14,6 +14,17 @@ import {useNotification} from '../../hook/useNotification';
 import {getSessionItem} from '../../services/DataService';
 
 type ContextType = 'product' | 'category' | 'sku' | null;
+
+const getSortableItemId = (image: AdditionalImagesModel): string => {
+  const id = image.catimageid ?? image.productImageID ?? image.skuImageID;
+  if (id !== null && id !== undefined) {
+    return String(id);
+  }
+  if (image.imageURL) {
+    return image.imageURL;
+  }
+  return `unsortable-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
 
 const AdditionalImages = () => {
   const [fileList, setFileList] = useState<AdditionalImagesModel[]>([]);
@@ -315,13 +326,12 @@ const AdditionalImages = () => {
       transform: CSS.Transform.toString(transform),
       transition,
       opacity: isDragging ? 0.5 : 1,
+      background: isDragging ? '#f0f0f0' : undefined,
       cursor: 'grab',
-      zIndex: isDragging ? 100 : 'auto', // Lift the item when dragging
-      backgroundColor: isDragging ? 'rgba(230, 230, 230, 0.9)' : 'transparent', // Slight background change
-      listStyleType: 'none', // Ensure no list bullets interfere
+      marginBottom: 0,
     };
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners} key={id.toString()}>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         <List.Item
           className="flex justify-between items-center px-2 py-1"
           actions={[
@@ -344,7 +354,7 @@ const AdditionalImages = () => {
         >
           <span className="flex items-center">
             <MenuOutlined style={{cursor: 'grab', color: '#999', marginRight: 8}} />
-            <span className="text-sm truncate" title={image.imageURL} style={{pointerEvents: 'none'}}>
+            <span className="text-sm truncate" title={image.imageURL}>
               {image.imageURL}
             </span>
           </span>
@@ -371,17 +381,16 @@ const AdditionalImages = () => {
             <Spin spinning={loadingData}>
               <div className="border border-border rounded divide-y divide-border max-h-[60vh] overflow-y-auto">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleImageDragEnd}>
-                  <SortableContext items={sortedFileList.map((img) => img.imageURL)} strategy={verticalListSortingStrategy}>
+                  <SortableContext items={sortedFileList.map((img) => getSortableItemId(img))} strategy={verticalListSortingStrategy}>
                     {sortedFileList && sortedFileList.length > 0 ? (
                       <ul className="divide-y divide-border p-0 m-0 overflow-y-auto max-h-[700px] lg:max-h-[700px] md:max-h-[50vh] sm:max-h-[40vh] w-full">
                         {sortedFileList.map((image: AdditionalImagesModel) => {
-                          const key = image.catimageid ?? image.productImageID ?? image.skuImageID ?? image.imageURL;
-
-                          return <SortableImageItem key={key.toString()} id={key} image={image} onDelete={handleDeleteImage} />;
+                          const sortableId = getSortableItemId(image);
+                          return <SortableImageItem key={sortableId} id={sortableId} image={image} onDelete={handleDeleteImage} />;
                         })}
                       </ul>
                     ) : (
-                      <div className="flex justify-center items-center h-48">{displayText}</div>
+                      <div className="flex justify-center items-center h-48 text-secondary-font">{displayText}</div>
                     )}
                   </SortableContext>
                 </DndContext>
