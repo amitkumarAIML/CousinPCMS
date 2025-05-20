@@ -38,7 +38,7 @@ const Category = () => {
   const [categoryId, setCategoryId] = useState<string>('');
   const [categoryDetails, setCategoryDetails] = useState<CategoryResponseModel | null>(null);
   const [additionalCategoryList, setAdditionalCategoryList] = useState<AdditionalCategoryModel[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState<AdditionalCategoryModel | null>(null);
   const [isVisibleAddProductModal, setIsVisibleAddProductModal] = useState<boolean>(false);
   const [productNameList, setProductNameList] = useState<Product[]>([]);
   const [productSearchValue, setProductSearchValue] = useState<string>('');
@@ -320,32 +320,32 @@ const Category = () => {
 
   const handleStartEdit = (record: AdditionalCategoryModel) => {
     editAssociatedProductForm.setFieldsValue({...record});
-    setEditingId(record.additionalCategory);
+    setEditingValue(record);
   };
   const handleCancelEdit = () => {
-    setEditingId(null);
+    setEditingValue(null);
     editAssociatedProductForm.resetFields();
   };
   const handleUpdateAssociatedProduct = async () => {
-    if (!editingId) return;
+    if (!editingValue) return;
     try {
       const values = await editAssociatedProductForm.validateFields();
       const listOrder = Number(values.listOrder);
-      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.additionalCategory !== editingId);
+      const isListOrderExist = additionalCategoryList.some((category) => Number(category.listOrder) === listOrder && category.additionalCategory !== editingValue.additionalCategory);
       if (isListOrderExist) {
         notify.error('List order already exists, please choose another number.');
         return;
       }
       const payload: AssociatedProductRequestModel = {
         product: categoryId,
-        additionalCategory: editingId,
+        additionalCategory: editingValue.additionalCategory,
         listorder: listOrder,
-        isAdditionalProduct: values.isAdditionalProduct ?? true,
+        isAdditionalProduct: editingValue.isAdditionalProduct,
       };
       const response = await updateAssociatedProduct(payload);
       if (response.isSuccess) {
         notify.success('Associated product updated successfully');
-        setEditingId(null);
+        setEditingValue(null);
         fetchAdditionalCategory(categoryId!);
       } else {
         notify.error('Associated product not updated');
@@ -441,7 +441,7 @@ const Category = () => {
         <span
           style={{cursor: 'pointer', color: '#1890ff'}}
           onClick={() => {
-            if (!editingId) {
+            if (!editingValue) {
               handleStartEdit(record);
             }
           }}
@@ -456,8 +456,7 @@ const Category = () => {
       sorter: (a, b) => (Number(a.listOrder) || 0) - (Number(b.listOrder) || 0),
       width: 100,
       render: (text, record) => {
-        console.log('edit ', editingId);
-        if (editingId === record.additionalCategory) {
+        if (editingValue?.additionalCategory === record.additionalCategory) {
           return (
             <Form.Item name="listOrder" style={{margin: 2}} rules={[{required: true, message: 'Required'}]}>
               <Input
