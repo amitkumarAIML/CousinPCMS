@@ -348,8 +348,8 @@ namespace CousinPCMS.API.Controllers
             {
                 var objRequest = new AddAdditionalProductforCategoryRequestModel
                 {
-                    prodCategory = objModel.additionalCategory,
-                    product = objModel.Product.ToString(),
+                    prodCategory = objModel.Product,
+                    product = objModel.additionalCategory,
                     listorder = objModel.Listorder
                 };
                 responseValue = _categoryService.UpdateProductListorder(objRequest);
@@ -388,8 +388,8 @@ namespace CousinPCMS.API.Controllers
             }
 
             var objRequest = new AddAdditionalProductforCategoryRequestModel();
-            objRequest.prodCategory = objModel.additionalCategory;
-            objRequest.product = objModel.Product;
+            objRequest.prodCategory = objModel.Product;
+            objRequest.product = objModel.additionalCategory;
             objRequest.listorder = objModel.Listorder;
 
             var responseValue = _categoryService.AddAssociatedProduct(objRequest);

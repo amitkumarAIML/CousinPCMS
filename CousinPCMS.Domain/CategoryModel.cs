@@ -224,8 +224,8 @@ namespace CousinPCMS.Domain
 
     public class AddAdditionalProductforCategoryRequestModel
     {
-        public string product { get; set; }
-        public int prodCategory { get; set; }
+        public int product { get; set; }
+        public string prodCategory { get; set; }
         public int listorder { get; set; }
     }
 
