@@ -54,7 +54,7 @@ export const CommonDataProvider: React.FC<{children: ReactNode}> = ({children}) 
       setCountries(countriesData);
       setCommodityCodes(commodityCodesData);
       setReturnTypes(returnTypesData);
-      setTemplateLayouts(templateLayoutsData);
+      setTemplateLayouts(templateLayoutsData.sort((a, b) => Number(a.templateCode) - Number(b.templateCode)));
     } catch (err) {
       console.error('Failed to fetch common data:', err);
       setHasFetched(false);

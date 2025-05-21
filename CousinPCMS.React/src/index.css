@@ -28,6 +28,10 @@ body {
   background-color: var(--color-bg);
 }
 
+*{
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea transparent;
+}
 @utility main-container {
   background-color: var(--color-white) !important;
   box-shadow: var(--shadow-cousins-box) !important;
@@ -126,3 +130,4 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #eaeaea transparent;
 }
+

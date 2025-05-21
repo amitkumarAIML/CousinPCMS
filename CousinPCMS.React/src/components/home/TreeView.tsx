@@ -891,7 +891,7 @@ const TreeView: React.FC<TreeViewProps> = ({onCategorySelected, onAttributeSetCh
       selectedKeys,
       onSelect,
       height: 800,
-      virtual: true,
+      virtual: false,
       onRightClick,
       allowDrop: allowDropFunc,
     }),

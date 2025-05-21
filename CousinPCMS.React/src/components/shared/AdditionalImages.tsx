@@ -1,5 +1,5 @@
 import {useState, useEffect, useCallback, useMemo} from 'react';
-import {useLocation} from 'react-router';
+import {useLocation, useNavigate} from 'react-router';
 import {Button, Input, Spin, Popconfirm, Form, Upload, List} from 'antd';
 import {DeleteOutlined, PlusOutlined, UploadOutlined, QuestionCircleOutlined, MenuOutlined} from '@ant-design/icons';
 import {DndContext, closestCenter, useSensor, useSensors, PointerSensor} from '@dnd-kit/core';
@@ -36,6 +36,7 @@ const AdditionalImages = () => {
   const [isDuplicateUrl, setIsDuplicateUrl] = useState<boolean>(false);
   const [form] = Form.useForm();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [contextId, setContextId] = useState<string | number | undefined>(undefined);
   const [contextType, setContextType] = useState<ContextType>(null);
@@ -125,7 +126,7 @@ const AdditionalImages = () => {
     sessionStorage.removeItem('imageProductId');
     sessionStorage.removeItem('imageCategoryId');
     sessionStorage.removeItem('imageSkusId');
-    window.history.back();
+    navigate(-1);
   };
 
   const checkDuplicateUrl = (url: string) => {
