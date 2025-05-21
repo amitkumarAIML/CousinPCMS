@@ -765,7 +765,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                   placeholder="Select layout"
                   optionFilterProp="label"
                   loading={loading}
-                  options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
+                  options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: 'Template ' + opt.templateCode + ': ' + opt.layoutDescription, key: opt.templateCode}))}
                 />
               </Form.Item>
               <Form.Item label="Alternative Title" name="akiProductAlternativeTitle">

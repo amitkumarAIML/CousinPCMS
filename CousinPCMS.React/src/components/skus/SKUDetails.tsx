@@ -408,7 +408,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                     showSearch
                     placeholder="Select layout"
                     optionFilterProp="label"
-                    options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: opt.layoutDescription, key: opt.templateCode}))}
+                    options={(templateLayouts || []).map((opt) => ({value: opt.templateCode, label: 'Template ' + opt.templateCode + ': ' + opt.layoutDescription, key: opt.templateCode}))}
                   />
                 </Form.Item>
                 <Form.Item label="Alternative Title" name="akiAlternativeTitle" className="mb-0">

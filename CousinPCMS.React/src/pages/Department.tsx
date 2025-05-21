@@ -305,7 +305,7 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                       filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                       options={(templateLayouts || []).map((option) => ({
                         value: option.templateCode,
-                        label: option.layoutDescription,
+                        label: 'Template ' + option.templateCode + ': ' + option.layoutDescription,
                         key: option.templateCode,
                       }))}
                     />
