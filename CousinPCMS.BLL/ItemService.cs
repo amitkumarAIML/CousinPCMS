@@ -147,18 +147,42 @@ namespace CousinPCMS.BLL
             {
                 var allFilters = new List<Filters>();
 
-                allFilters.Add(new Filters { ParameterName = "akiProductID", ParameterValue = akiProductID, DataType = typeof(string), Compare = ComparisonType.Equals });
+                allFilters.Add(new Filters { ParameterName = "productid", ParameterValue = akiProductID, DataType = typeof(int), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
-                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}items?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
+                var response = ServiceClient.PerformAPICallWithToken(Method.Get, $"{HardcodedValues.PrefixBCUrl}{HardcodedValues.TenantId}{HardcodedValues.SuffixBCUrl}akiItemProdMappings?company={HardcodedValues.CompanyName}{filter}", ParameterType.GetOrPost, Oauth.Token).Content;
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ItemResponseModel>>>(response);
+                    var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<ItemMappingResponseModel>>>(response);
                     if (responseOfOrderLine != null && responseOfOrderLine.Value != null && responseOfOrderLine.Value.Any() && responseOfOrderLine.Value.Count > 0)
                     {
-                        returnValue.Value = responseOfOrderLine.Value;
+                        returnValue.Value = new List<ItemResponseModel>();
+                        foreach (var source in responseOfOrderLine.Value)
+                        {
+                            var mappedItem = new ItemResponseModel
+                            {
+                                odataetag = source.odataetag,
+                                akiProductID = source.productid.ToString(),
+                                akiCategoryID = source.categorytId,
+                                skuName = source.itemdesc,
+                                akiManufacturerRef = source.mfrref,
+                                akiListOrder = source.listorder,
+                                akiObsolete = source.obsolete,
+                                akiCurrentlyPartRestricted = source.unavailable,
+                                akiWebActive = source.webactive,
+                                akiSKUIsActive = source.catactive,
+                                akiTemplateID = source.tempid,
+                                akiAltSKUName = source.AltSkuName,
+                                akiCommodityCode = source.commCode,
+                                akiCountryofOrigin = source.cou,
+                                akigpItemNumber = source.itemNo,
+                                akiitemid = source.skuITEMID.ToString()
+                            };
+
+                            returnValue.Value.Add(mappedItem);
+                        }
                     }
                     else
                     {
