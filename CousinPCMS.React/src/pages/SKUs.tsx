@@ -54,9 +54,9 @@ const SKUs = () => {
   );
 
   useEffect(() => {
-    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('productId');
-    const hasTempIds = getSessionItem('tempCategoryId') || getSessionItem('tempProductId');
-    if (!hasRealIds && !hasTempIds) {
+    const hasRealIds = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
+    const hasTempIds = getSessionItem('productId') || getSessionItem('tempProductId');
+    if (!hasRealIds || !hasTempIds) {
       setCheckIdValueMsg('Select respective category and product to view SKUs');
       setCheckIdValue(true);
       setLoading(false);

@@ -251,7 +251,9 @@ export interface RelatedSkuItem {
 export interface SKusRequestModelForProductOrderList {
   akiitemid?: string;
   oldlistorder: number,
-  newlistorder: number
+  newlistorder: number,
+  categoryid: string,
+  productid: number,
 }
 
 

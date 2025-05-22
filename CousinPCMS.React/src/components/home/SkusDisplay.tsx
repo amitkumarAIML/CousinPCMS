@@ -190,7 +190,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     },
     {
       title: 'Unavailable',
-      dataIndex: 'salesBlocked',
+      dataIndex: 'akiCurrentlyPartRestricted',
       align: 'center',
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
       width: 110,
@@ -276,6 +276,8 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
           akiitemid: data.akiitemid,
           newlistorder: newListOrder,
           oldlistorder: oldListOrder,
+          categoryid: data.akiCategoryID,
+          productid: Number(data.akiProductID),
         };
 
         const response: ApiResponse<string> = await updateSkuListOrderForHomeScreen(updateRequest);

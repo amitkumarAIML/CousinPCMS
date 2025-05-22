@@ -775,7 +775,7 @@ const ProductDetails = forwardRef<any, ProductDetailsProps>(({onFormChange}, ref
                 <Checkbox>Show Price Breaks</Checkbox>
               </Form.Item>
               <div className="mt-1">
-                <label className="font-medium text-primary-font block mb-1">Index Entry Text</label>
+                <label className="font-medium text-secondry-font block mb-1">Index Entry Text</label>
                 <div className="border border-border rounded-lg p-4">
                   {indexEntryCount !== undefined ? (
                     <IndexEntryFields form={productForm} fieldPrefix="akiProductIndexText" labelPrefix="Index Entry" max={5} patchValue={indexEntryCount} />

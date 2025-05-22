@@ -90,7 +90,7 @@ const SKUsList = () => {
     },
     {
       title: 'Unavailable',
-      dataIndex: 'salesBlocked',
+      dataIndex: 'akiCurrentlyPartRestricted',
       width: 100,
       align: 'center',
       render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
