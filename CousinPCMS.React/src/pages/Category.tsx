@@ -118,7 +118,7 @@ const Category = () => {
         if (response.isSuccess && response.value && Array.isArray(response.value)) {
           const details = response.value[0];
           setCategoryDetails(details);
-          const initialCount = Object.keys(details).filter((key) => key.startsWith('akiProductIndexText') && (details as Record<string, any>)[key] !== '').length;
+          const initialCount = Object.keys(details).filter((key) => key.startsWith('akiCategoryIndex') && (details as Record<string, any>)[key] !== '').length;
           setIndexEntryCount(initialCount);
           categoryForm.setFieldsValue({
             ...details,

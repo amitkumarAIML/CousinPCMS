@@ -126,11 +126,11 @@ const SKUsList = () => {
   ];
 
   return (
-    <div className="px-4">
-      <Spin spinning={loading}>
+    <Spin spinning={loading}>
+      <div className="px-4">
         <Table
           columns={columns}
-          scroll={{x: 1100}}
+          scroll={{y: 800}}
           dataSource={skusList}
           rowKey="akiitemid"
           size="small"
@@ -143,8 +143,8 @@ const SKUsList = () => {
           })}
           showSorterTooltip={false}
         />
-      </Spin>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

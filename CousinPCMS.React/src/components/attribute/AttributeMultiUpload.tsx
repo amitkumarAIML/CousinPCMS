@@ -168,8 +168,8 @@ const AttributeMultiUpload = () => {
   ]);
 
   return (
-    <div className="main-container">
-      <Spin spinning={loading}>
+    <Spin spinning={loading}>
+      <div className="main-container">
         <div className="flex flex-wrap justify-between items-center p-4 pb-1">
           <span className="text-sm font-medium">Attribute Multi Upload Form</span>
           <div className="flex gap-x-3">
@@ -181,10 +181,10 @@ const AttributeMultiUpload = () => {
         <hr className="mt-2 mb-1 border-gray-200" />
 
         <div className="p-4">
-          <Table columns={columns} dataSource={tableDataSource} rowKey="key" size="small" bordered pagination={false} className="attribute-multi-upload-table" />
+          <Table columns={columns} dataSource={tableDataSource} rowKey="key" size="small" bordered pagination={false} className="attribute-multi-upload-table" scroll={{y: 800}} />
         </div>
-      </Spin>
-    </div>
+      </div>
+    </Spin>
   );
 };
 
