@@ -225,6 +225,8 @@ namespace CousinPCMS.Domain
         public string akiitemid { get; set; }
         public int oldlistorder { get; set; }
         public int newlistorder { get; set; }
+        public string categoryid { get; set; }
+        public int productid { get; set; }
     }
 
 }
