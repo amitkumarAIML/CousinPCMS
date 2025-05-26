@@ -184,7 +184,8 @@ const LinkMaintenance = () => {
       if (response.isSuccess) {
         notify.success(`${contextType.charAt(0).toUpperCase() + contextType.slice(1)} Video link added successfully`);
         form.resetFields();
-        setLinks((prev) => [...prev, requestData]);
+        // setLinks((prev) => [...prev, requestData]);
+        await handleContextAndFetchLinks();
       } else {
         notify.error('Failed to add link.');
       }
@@ -295,7 +296,7 @@ const LinkMaintenance = () => {
         }
 
         if (response.isSuccess) {
-          handleContextAndFetchLinks();
+          await handleContextAndFetchLinks();
           notify.success('Link order updated successfully.');
         } else {
           notify.error('Failed to update link order.');
