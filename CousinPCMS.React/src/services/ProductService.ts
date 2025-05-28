@@ -7,6 +7,7 @@ import {
   AssociatedProductRequestModelForProduct,
   DeleteAssociatedProductModelForProduct,
   Product,
+  UpdateProductSkusRequest,
 } from '../models/productModel';
 import {AdditionalImagesModel, AdditionalImageDeleteRequestModel, UpdateAdditionalImagesModel} from '../models/additionalImagesModel';
 import {LinkDeleteRequestModel, LinkRequestModel, LinkValue, UpdateLinkOrderModel} from '../models/linkMaintenanaceModel';
@@ -102,4 +103,10 @@ export const updateProductImagesOrder = async (productData: ProductRequest): Pro
   const response = await http.post<ApiResponse<string>>('Product/UpdateProduct', productData);
   return response;
 };
+
+export const updateProductSKus = async (skusData: UpdateProductSkusRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Product/UpdateItemdetailsforProducts', skusData);
+  return response;
+};
+
 

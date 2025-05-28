@@ -123,3 +123,12 @@ export interface UpdateProductToCategoryRequest {
   categoryid?: string; 
   productid?: number;
 }
+
+export interface UpdateProductSkusRequest{
+  skuITEMID: number,
+  productid: number,
+  obsolete: boolean,
+  unavailable: boolean,
+  webactive: boolean,
+  catactive: boolean
+}

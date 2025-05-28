@@ -382,7 +382,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                           </div>
                         ))
                       ) : (
-                        <span className=" text-sm italic">{isLoadingAttributeNames ? '' : 'No attributes found for this category.'}</span>
+                        <span className=" text-sm italic">{isLoadingAttributeNames ? '' : 'No attributes for Product Sku.'}</span>
                       )}
                     </div>
                   </Spin>

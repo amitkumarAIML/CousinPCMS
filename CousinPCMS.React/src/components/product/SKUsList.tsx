@@ -4,7 +4,9 @@ import type {TableProps} from 'antd/es/table';
 import {useNotification} from '../../hook/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
 import {getSkuByProductId} from '../../services/HomeService';
-import {getSessionItem, setSessionItem} from '../../services/DataService';
+import {getSessionItem} from '../../services/DataService';
+import {updateProductSKus} from '../../services/ProductService';
+import {UpdateProductSkusRequest} from '../../models/productModel';
 
 const SKUsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,12 +46,37 @@ const SKUsList = () => {
 
   const handleRowSelect = (record: SKuList) => {
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
-    if (record.akiitemid !== selectedRow?.akiitemid) {
-      setSessionItem('itemNumber', record.akiitemid || '');
-      setSessionItem('skuId', String(record.akiSKUID || ''));
-    } else {
-      sessionStorage.removeItem('itemNumber');
-      sessionStorage.removeItem('skuId');
+    // if (record.akiitemid !== selectedRow?.akiitemid) {
+    //   setSessionItem('itemNumber', record.akiitemid || '');
+    //   setSessionItem('skuId', String(record.akiSKUID || ''));
+    // } else {
+    //   sessionStorage.removeItem('itemNumber');
+    //   sessionStorage.removeItem('skuId');
+    // }
+  };
+
+  const handleCheckboxChange = async (data: SKuList, field: string, checked: boolean) => {
+    setLoading(true);
+    try {
+      const req: UpdateProductSkusRequest = {
+        skuITEMID: Number(data.akiitemid),
+        productid: Number(data.akiProductID),
+        obsolete: field === 'akiObsolete' ? checked : data.akiObsolete,
+        unavailable: field === 'akiCurrentlyPartRestricted' ? checked : data.akiCurrentlyPartRestricted,
+        webactive: field === 'akiWebActive' ? checked : data.akiWebActive,
+        catactive: field === 'akiSKUIsActive' ? checked : data.akiSKUIsActive,
+      };
+      const response = await updateProductSKus(req);
+      if (response.isSuccess) {
+        notify.success('Updated successfully.');
+        setSkusList((prevList) => prevList.map((item) => (item.akiitemid === data.akiitemid ? {...item, [field]: checked} : item)));
+      } else {
+        notify.error('Failed to update.');
+      }
+    } catch {
+      notify.error('Something went wrong while updating.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,20 +113,20 @@ const SKUsList = () => {
       dataIndex: 'akiObsolete',
       width: 90,
       align: 'center',
-      render: (isObsolete) => <Checkbox checked={isObsolete} disabled />,
+      render: (isObsolete, record) => <Checkbox checked={isObsolete} onChange={(e) => handleCheckboxChange(record, 'akiObsolete', e.target.checked)} />,
     },
     {
       title: 'Unavailable',
       dataIndex: 'akiCurrentlyPartRestricted',
       width: 100,
       align: 'center',
-      render: (isBlocked) => <Checkbox checked={isBlocked} disabled />,
+      render: (isBlocked, record) => <Checkbox checked={isBlocked} onChange={(e) => handleCheckboxChange(record, 'akiCurrentlyPartRestricted', e.target.checked)} />,
     },
     {
       title: 'Web Active',
       dataIndex: 'akiWebActive',
       align: 'center',
-      render: (isWebActive) => <Checkbox checked={isWebActive} disabled />,
+      render: (isWebActive, record) => <Checkbox checked={isWebActive} onChange={(e) => handleCheckboxChange(record, 'akiWebActive', e.target.checked)} />,
       width: 100,
     },
     {
@@ -107,15 +134,15 @@ const SKUsList = () => {
       dataIndex: 'akiSKUIsActive',
       width: 90,
       align: 'center',
-      render: (isActive) => <Checkbox checked={isActive} disabled />,
+      render: (isActive, record) => <Checkbox checked={isActive} onChange={(e) => handleCheckboxChange(record, 'akiSKUIsActive', e.target.checked)} />,
     },
     {title: 'TemplateID', dataIndex: 'akiTemplateID', width: 100, align: 'center'},
     {
       title: 'AltSku Name',
-      dataIndex: 'akiAlternativeTitle',
+      dataIndex: 'akiAltSKUName',
       ellipsis: true,
       width: 180,
-      sorter: (a, b) => a.akiAlternativeTitle.localeCompare(b.akiAlternativeTitle),
+      sorter: (a, b) => a.akiAltSKUName.localeCompare(b.akiAltSKUName),
     },
     {
       title: 'Comm Code',
