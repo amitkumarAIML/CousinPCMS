@@ -233,4 +233,14 @@ namespace CousinPCMS.Domain
         public string categoryid { get; set; }
         public int productid { get; set; }
     }
+
+    public class UpdateItemDetailsForProduct
+    {
+        public int skuITEMID { get; set; }
+        public int productid { get; set; }
+        public bool obsolete { get; set; }
+        public bool unavailable { get; set; }
+        public bool webactive { get; set; }
+        public bool catactive { get; set; }
+    }
 }

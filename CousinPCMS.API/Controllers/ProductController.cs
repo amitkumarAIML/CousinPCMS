@@ -786,5 +786,39 @@ namespace CousinPCMS.API.Controllers
 
             return Ok(responseValue);
         }
+
+        /// <summary>
+        /// Updates the details items related to product.
+        /// </summary>
+        /// <param name="objModel">An <see cref="UpdateItemDetailsForProduct"/> containing the updated product information.</param>
+        /// <returns>
+        /// Returns an <see cref="APIResult{ProductModel}"/> with the updated product details if successful; otherwise, returns null or an error message.
+        /// </returns>
+        [HttpPost("UpdateItemdetailsforProducts")]
+        [ProducesResponseType(typeof(APIResult<string>), 200)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> UpdateItemdetailsforProducts(UpdateItemDetailsForProduct objModel)
+        {
+            log.Info($"Request of {nameof(UpdateItemdetailsforProducts)} method called.");
+
+            if (Oauth.TokenExpiry <= DateTime.Now)
+            {
+                Oauth = Helper.GetOauthToken(Oauth);
+            }
+
+            var responseValue = _productService.UpdateItemdetailsforProducts(objModel);
+
+            if (!responseValue.IsError)
+            {
+                log.Info($"Response of {nameof(UpdateItemdetailsforProducts)} is success.");
+            }
+            else
+            {
+                log.Error($"Response of {nameof(UpdateItemdetailsforProducts)} failed. Exception: {responseValue.ExceptionInformation}");
+            }
+
+            return Ok(responseValue);
+        }
     }
 }
