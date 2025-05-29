@@ -115,7 +115,7 @@ const SKUs = () => {
           notify.success('SKU Details Updated Successfully');
           setFormChanged(false);
         } else {
-          const raw = response?.value || 'Unknown error';
+          const raw = response?.value || 'SKU Details Update Failed';
           const userMsg = extractUserMessage(raw);
           notify.error(userMsg);
         }
@@ -128,15 +128,14 @@ const SKUs = () => {
             setFormChanged(false);
             notify.success('SKU Details Added Successfully');
           } else {
-            const raw = response?.value || 'SKU Details Added Failed';
+            const raw = response?.message || 'SKU Details Added Failed';
             const userMsg = extractUserMessage(raw);
             notify.error(userMsg);
           }
         } else {
-          const raw = response?.value || 'Unknown error';
+          const raw = response?.message || 'SKU Details Added Failed';
           const userMsg = extractUserMessage(raw);
           notify.error(userMsg);
-          // notify.error('SKU Details Added Failed');
         }
       }
     } catch (error: unknown) {

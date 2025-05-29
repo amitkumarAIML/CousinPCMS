@@ -34,8 +34,8 @@ export const updateCategory = async (categoryData: UpdateCategoryModel): Promise
   return response;
 };
 
-export const addCategory = async (categoryData: UpdateCategoryModel): Promise<ApiResponse<string>> => {
-  const response = await http.post<ApiResponse<string>>('Category/AddCategory', categoryData);
+export const addCategory = async (categoryData: UpdateCategoryModel): Promise<ApiResponse<number>> => {
+  const response = await http.post<ApiResponse<number>>('Category/AddCategory', categoryData);
   return response;
 };
 

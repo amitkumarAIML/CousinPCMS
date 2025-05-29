@@ -102,12 +102,14 @@ const Product = () => {
               }
               notify.success('Product Details Added Successfully');
             } else {
-              const raw = response?.value || 'Product details not added';
+              const raw = response?.message || 'Product details not added';
               const userMsg = extractUserMessage(raw);
               notify.error(userMsg);
             }
           } else {
-            notify.error('Product Details Failed to Add');
+            const raw = response?.message || 'Product details not added';
+            const userMsg = extractUserMessage(raw);
+            notify.error(userMsg);
           }
         }
 

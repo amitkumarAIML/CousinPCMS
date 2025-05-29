@@ -15,6 +15,7 @@ export interface ApiResponse<T> {
   isError: boolean;
   exceptionInformation: unknown;
   value: T;
+  message: string;
 }
 
 export interface ValidUser {

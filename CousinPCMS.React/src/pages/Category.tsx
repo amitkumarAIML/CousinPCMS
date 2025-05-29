@@ -279,12 +279,14 @@ const Category = () => {
             setIsEdit(true);
             setFormChanged(false);
           } else {
-            const raw = response?.value || 'Category details not added';
+            const raw = response?.message || 'Category details not added';
             const userMsg = extractUserMessage(raw);
             notify.error(userMsg);
           }
         } else {
-          notify.error('Category details not added');
+          const raw = response?.message || 'Category details not added';
+          const userMsg = extractUserMessage(raw);
+          notify.error(userMsg);
         }
       }
     } catch {

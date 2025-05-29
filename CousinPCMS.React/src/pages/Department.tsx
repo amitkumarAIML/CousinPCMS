@@ -134,13 +134,15 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   setIsEdit(true);
                   setFormChanged(false);
                 } else {
-                  const raw = response?.value || 'Department Details Failed to Add';
+                  const raw = response?.message || 'Department Details Failed to Add';
                   const userMsg = extractUserMessage(raw);
                   notify.error(userMsg);
                 }
                 // navigate('/departments/edit');
               } else {
-                notify.error('Department Details Failed to Add');
+                const raw = response?.message || 'Department Details Failed to Add';
+                const userMsg = extractUserMessage(raw);
+                notify.error(userMsg);
               }
             })
             .catch((err) => {
