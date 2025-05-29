@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router';
 import {Tabs, Button} from 'antd';
 import ProductDetails from '../components/product/ProductDetails';
 import SKUsList from '../components/product/SKUsList';
-import {cleanEmptyNullToString, getSessionItem, setSessionItem} from '../services/DataService';
+import {cleanEmptyNullToString, extractUserMessage, getSessionItem, setSessionItem} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {useNotification} from '../hook/useNotification';
 import {addProduct, updateProduct} from '../services/ProductService';
@@ -46,8 +46,17 @@ const Product = () => {
   const handleSave = async () => {
     if (productFormRef.current) {
       const formData = productFormRef.current.getFormData();
+      const values = await formData.validateFields();
+      if (!values) {
+        notify.error('Please fill in all required fields.');
+        return;
+      }
+      if (values && values.akiProductListOrder <= 0) {
+        notify.error('List Order must greater than 0.');
+        return;
+      }
+
       try {
-        const values = await formData.validateFields();
         const productData = cleanEmptyNullToString(values);
 
         if (productData.akiLayoutTemplate) {
@@ -77,7 +86,9 @@ const Product = () => {
             setSessionItem('originalCountryOfOrigin', values.akiProductCountryOfOrigin);
             setFormChanged(false);
           } else {
-            notify.error('Category details not updated');
+            const raw = response?.value || 'Product details not updated';
+            const userMsg = extractUserMessage(raw);
+            notify.error(userMsg);
           }
         } else {
           const response = await addProduct(req);
@@ -91,7 +102,9 @@ const Product = () => {
               }
               notify.success('Product Details Added Successfully');
             } else {
-              notify.success('Product details not added');
+              const raw = response?.value || 'Product details not added';
+              const userMsg = extractUserMessage(raw);
+              notify.error(userMsg);
             }
           } else {
             notify.error('Product Details Failed to Add');

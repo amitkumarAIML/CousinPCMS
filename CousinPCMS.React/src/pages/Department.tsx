@@ -4,7 +4,7 @@ import type {UploadChangeParam} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import {DepartmentCharLimit} from '../models/char.constant';
 import type {Department} from '../models/departmentModel';
-import {cleanEmptyNullToString, getSessionItem, getPlainText} from '../services/DataService';
+import {cleanEmptyNullToString, getSessionItem, getPlainText, extractUserMessage} from '../services/DataService';
 import {useNotification} from '../hook/useNotification';
 import {getDepartmentById, updateDepartment, addDepartment} from '../services/DepartmentService';
 import {useLocation, useNavigate} from 'react-router';
@@ -103,6 +103,10 @@ const Department: React.FC<DepartmentInfoProps> = () => {
       .validateFields()
       .then((values) => {
         const cleanedForm = cleanEmptyNullToString(values);
+        if (values && values.akiDepartmentListOrder <= 0) {
+          notify.error('List Order must greater than 0.');
+          return;
+        }
         if (isEdit) {
           updateDepartment(cleanedForm)
             .then((response) => {
@@ -111,7 +115,9 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                 setFormChanged(false);
                 // navigate('/home');
               } else {
-                notify.error('Department Details Failed to Update');
+                const raw = response?.value || 'Department Details Failed to Update';
+                const userMsg = extractUserMessage(raw);
+                notify.error(userMsg);
               }
             })
             .catch((err) => {
@@ -128,7 +134,9 @@ const Department: React.FC<DepartmentInfoProps> = () => {
                   setIsEdit(true);
                   setFormChanged(false);
                 } else {
-                  notify.error('Department Details Failed to Add');
+                  const raw = response?.value || 'Department Details Failed to Add';
+                  const userMsg = extractUserMessage(raw);
+                  notify.error(userMsg);
                 }
                 // navigate('/departments/edit');
               } else {

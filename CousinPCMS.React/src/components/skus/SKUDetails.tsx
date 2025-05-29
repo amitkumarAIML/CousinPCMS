@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {useNavigate} from 'react-router';
+import {useLocation, useNavigate} from 'react-router';
 import {Form, Input, InputNumber, Select, Checkbox, Button, Upload, Modal, Spin} from 'antd';
 import type {FormInstance} from 'antd/es/form';
 import type {UploadChangeParam} from 'antd/es/upload';
@@ -26,7 +26,8 @@ interface SkuDetailsProps {
 const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, onFormChange}) => {
   const [form] = Form.useForm<SKuList>();
   const navigate = useNavigate();
-
+  const notify = useNotification();
+  const location = useLocation();
   const [competitors, setCompetitors] = useState<CompetitorItem[]>([]);
   const [priceGroupItem, setPriceGroupItem] = useState<ItemModel[]>([]);
   const [priceBreaks, setPriceBreaks] = useState<ItemModel[]>([]);
@@ -42,7 +43,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
   const akiManufacturerRef = Form.useWatch('akiManufacturerRef', form);
   const akigpItemNumber = Form.useWatch('akigpItemNumber', form);
   const akiImageURL = Form.useWatch('akiImageURL', form);
-  const notify = useNotification();
+  const [isEdit, setIsEdit] = useState(false);
+
   const fetchSkuAttributesByCategoryId = useCallback(
     async (categoryId: string | number) => {
       setIsLoadingAttributeNames(true);
@@ -86,7 +88,6 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
     akiPriceBreaksTBC: true,
     akiItemShippingWeight: 0,
     akiItemPriceSiteSellPrice: 0,
-    akigpItemNumber: 0,
     additionalImagesCount: 0,
     urlLinksCount: 0,
   };
@@ -130,6 +131,7 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
       form.setFieldValue('akiProductID', getSessionItem('productId') ? getSessionItem('productId') : getSessionItem('tempProductId') || '0');
       form.setFieldValue('akiSKUID', '0');
       form.setFieldValue('akiitemid', '0');
+      setIsEdit(true);
       return;
     }
 
@@ -265,8 +267,8 @@ const SKUDetails: React.FC<SkuDetailsProps> = ({skuData, onFormInstanceReady, on
                 </span>
               </div>
               <div className=" col-span-1 flex items-end gap-x-2">
-                <Form.Item className="w-full" label="Item Number" name="akigpItemNumber">
-                  <Input maxLength={charLimit.akiitemid} />
+                <Form.Item className="w-full" label="Item Number" name="akigpItemNumber" rules={[{required: true, message: 'Item Number is required'}]}>
+                  <Input maxLength={charLimit.akiitemid} disabled={!isEdit} />
                 </Form.Item>
                 <span className="whitespace-nowrap">
                   {String(akigpItemNumber ?? '').length || 0} / {charLimit.akiitemid}

@@ -1,18 +1,19 @@
 import {http} from '../auth/HttpClient';
 import {DepartmentRequest, DepartmentResponse} from '../models/departmentModel';
+import { ApiResponse } from '../models/generalModel';
 
 export const getDepartments = async (): Promise<DepartmentResponse> => {
   const response = await http.get<DepartmentResponse>('Department/GetAllDepartment');
   return response;
 };
 
-export const updateDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
-  const response = await http.post<DepartmentResponse>('Department/UpdateDepartment', departmentData);
+export const updateDepartment = async (departmentData: DepartmentRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Department/UpdateDepartment', departmentData);
   return response;
 };
 
-export const addDepartment = async (departmentData: DepartmentRequest): Promise<DepartmentResponse> => {
-  const response = await http.post<DepartmentResponse>('Department/AddDepartment', departmentData);
+export const addDepartment = async (departmentData: DepartmentRequest): Promise<ApiResponse<string>> => {
+  const response = await http.post<ApiResponse<string>>('Department/AddDepartment', departmentData);
   return response;
 };
 

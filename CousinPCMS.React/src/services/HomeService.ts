@@ -26,6 +26,11 @@ export const getSkuByProductId = async (productID: number): Promise<SkuListRespo
   return response;
 };
 
+export const getItemsByProductAndCategory = async (productID: number, categoryID: string): Promise<SkuListResponse> => {
+  const response = await http.get<SkuListResponse>('Item/GetItemsByProductAndCategory', {params: {akiProductID: productID, akiCategoryID: categoryID}});
+  return response;
+};
+
 export const getAllAttributes = async (): Promise<AttributeModelResponse> => {
   const response = await http.get<AttributeModelResponse>('Attributes/GetAllAttributes');
   return response;

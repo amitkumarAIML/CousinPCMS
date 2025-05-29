@@ -88,63 +88,62 @@ const SKUs = () => {
       notify.error('SKU details form is not ready.');
       return;
     }
+    const values = await skuDetailsFormInstance.validateFields();
+    if (!values) {
+      notify.error('Please fill in all required fields.');
+      return;
+    }
+    if (values && values.akiListOrder <= 0) {
+      notify.error('List Order must greater than 0.');
+      return;
+    }
+    const skusData = cleanEmptyNullToString(values);
 
+    skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
+    const akiPriceBreaks = values?.akiPriceBreak ? true : false;
+    const req: SkuRequestModel = {
+      ...skusData,
+      akiPriceBreaks,
+    };
+    delete req.additionalImagesCount;
+    delete req.urlLinksCount;
     try {
-      const values = await skuDetailsFormInstance.validateFields();
-      const skusData = cleanEmptyNullToString(values);
-
-      skusData.akiPrintLayoutTemp = !!skusData.akiLayoutTemplate;
-      const akiPriceBreaks = values?.akiPriceBreak ? true : false;
-      const req: SkuRequestModel = {
-        ...skusData,
-        akiPriceBreaks,
-      };
-      delete req.additionalImagesCount;
-      delete req.urlLinksCount;
-      try {
-        setBtnSaveLoading(true);
-        if (isEdit) {
-          const response = await updateSkus(req);
-          if (response.isSuccess) {
-            notify.success('SKU Details Updated Successfully');
-            setFormChanged(false);
-            // navigate('/home');
-          } else {
-            const raw = response?.value || 'Unknown error';
-            const userMsg = extractUserMessage(raw);
-            notify.error(userMsg);
-            // notify.error('SKU Details Update Failed');
-          }
-          setBtnSaveLoading(false);
+      setBtnSaveLoading(true);
+      if (isEdit) {
+        const response = await updateSkus(req);
+        if (response.isSuccess) {
+          notify.success('SKU Details Updated Successfully');
+          setFormChanged(false);
         } else {
-          const response = await addSkus(req);
-          if (response.isSuccess) {
-            if (Number(response.value) && Number(response.value) > 0) {
-              skuDetailsFormInstance.setFieldValue('akiSKUID', response.value);
-              setIsEdit(true);
-              setFormChanged(false);
-              notify.success('SKU Details Added Successfully');
-            } else {
-              const raw = response?.value || 'Unknown error';
-              const userMsg = extractUserMessage(raw);
-              notify.error(userMsg);
-              notify.error('SKU Details Added Failed');
-            }
+          const raw = response?.value || 'Unknown error';
+          const userMsg = extractUserMessage(raw);
+          notify.error(userMsg);
+        }
+      } else {
+        const response = await addSkus(req);
+        if (response.isSuccess) {
+          if (Number(response.value) && Number(response.value) > 0) {
+            skuDetailsFormInstance.setFieldValue('akiSKUID', response.value);
+            setIsEdit(true);
+            setFormChanged(false);
+            notify.success('SKU Details Added Successfully');
           } else {
-            const raw = response?.value || 'Unknown error';
+            const raw = response?.value || 'SKU Details Added Failed';
             const userMsg = extractUserMessage(raw);
             notify.error(userMsg);
-            // notify.error('SKU Details Added Failed');
           }
-          setBtnSaveLoading(false);
+        } else {
+          const raw = response?.value || 'Unknown error';
+          const userMsg = extractUserMessage(raw);
+          notify.error(userMsg);
+          // notify.error('SKU Details Added Failed');
         }
-      } catch (errorInfo: unknown) {
-        setBtnSaveLoading(false);
-        notify.error('Please fill in all required fields correctly.' + errorInfo);
       }
     } catch (error: unknown) {
       console.error('Error saving SKU:', error);
       notify.error('An error occurred while saving SKU details.');
+    } finally {
+      setBtnSaveLoading(false);
     }
   };
 

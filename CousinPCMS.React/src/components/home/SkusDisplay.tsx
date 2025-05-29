@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Spin, Input, TableProps, Table, Checkbox, Button} from 'antd';
 import {SearchOutlined, CloseCircleFilled} from '@ant-design/icons';
-import {getSkuByProductId, updateSkuListOrderForHomeScreen} from '../../services/HomeService';
+import {getItemsByProductAndCategory, updateSkuListOrderForHomeScreen} from '../../services/HomeService';
 import {useNotification} from '../../hook/useNotification';
 import type {SKuList, SKusRequestModelForProductOrderList} from '../../models/skusModel';
 import {useNavigate} from 'react-router';
@@ -43,7 +43,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     setSkus([]);
     setFilteredData([]);
     try {
-      const data = await getSkuByProductId(selectedProductId!);
+      const data = await getItemsByProductAndCategory(selectedProductId!, selectedCategory!);
       if (data.isSuccess) {
         if (data.value && data.value.length > 0) {
           // const activeSkus = data.value.filter((res: SKuList) => res?.aki SKUIsActive);
@@ -275,9 +275,10 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
         const newListOrder = skus[newIndex]?.akiListOrder || 0;
 
         const updateRequest: SKusRequestModelForProductOrderList = {
-          akiitemid: data.akiitemid,
+          akiitemid: data.akigpItemNumber,
           newlistorder: newListOrder,
           oldlistorder: oldListOrder,
+
           categoryid: data.akiCategoryID,
           productid: Number(data.akiProductID),
         };

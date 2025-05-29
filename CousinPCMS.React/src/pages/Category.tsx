@@ -10,7 +10,7 @@ import type {FilterValue, SorterResult} from 'antd/es/table/interface';
 import {AdditionalCategoryModel, AssociatedProductRequestModel, UpdateCategoryModel, CategoryResponseModel} from '../models/additionalCategoryModel';
 import {CategoryCharLimit as charLimit} from '../models/char.constant';
 import {getCategoryById, updateCategory, getAdditionalCategory, addAssociatedProduct, updateAssociatedProduct, addCategory} from '../services/CategoryService';
-import {getSessionItem, getPlainText, setSessionItem} from '../services/DataService';
+import {getSessionItem, getPlainText, setSessionItem, extractUserMessage} from '../services/DataService';
 import type {Product} from '../models/productModel';
 import {getAllProducts} from '../services/ProductService';
 import {useNotification} from '../hook/useNotification';
@@ -226,6 +226,14 @@ const Category = () => {
 
   const handleCategoryUpdateSubmit = async (values: UpdateCategoryModel) => {
     setBtnLoading(true);
+    if (!values) {
+      notify.error('Please fill in all required fields.');
+      return;
+    }
+    if (values && values.akiCategoryListOrder <= 0) {
+      notify.error('List Order must greater than 0.');
+      return;
+    }
     const payload: UpdateCategoryModel = {
       ...values,
       akiCategoryID: String(values.akiCategoryID) || '',
@@ -258,9 +266,10 @@ const Category = () => {
         if (response.isSuccess) {
           notify.success('Category details updated successfully');
           setFormChanged(false);
-          // navigate('/home');
         } else {
-          notify.error('Category details not updated');
+          const raw = response?.value || 'Category details not updated';
+          const userMsg = extractUserMessage(raw);
+          notify.error(userMsg);
         }
       } else {
         const response = await addCategory(payload);
@@ -270,7 +279,9 @@ const Category = () => {
             setIsEdit(true);
             setFormChanged(false);
           } else {
-            notify.success('Category details not added');
+            const raw = response?.value || 'Category details not added';
+            const userMsg = extractUserMessage(raw);
+            notify.error(userMsg);
           }
         } else {
           notify.error('Category details not added');
