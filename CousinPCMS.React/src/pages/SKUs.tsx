@@ -36,6 +36,7 @@ const SKUs = () => {
         if (response.isSuccess && response.value && response.value.length > 0) {
           response.value[0].akiCategoryID = getSessionItem('CategoryId') || getSessionItem('tempCategoryId');
           response.value[0].akiProductID = getSessionItem('productId') || getSessionItem('tempProductId');
+          response.value[0].akiListOrder = getSessionItem('listOrder');
           setSkuData(response.value[0]);
         } else {
           notify.error('Failed To Load SKU Data');

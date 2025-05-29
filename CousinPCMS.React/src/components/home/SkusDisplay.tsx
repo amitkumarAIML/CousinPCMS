@@ -118,6 +118,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
     setSelectedRow((prev: SKuList | null) => (prev?.akiitemid === record.akiitemid ? null : record));
     if (record.akiitemid !== selectedRow?.akiitemid) {
       setSessionItem('itemNumber', record.akiitemid || '');
+      setSessionItem('listOrder', record.akiListOrder || '');
       if (getSessionItem('tempDepartmentId') && getSessionItem('tempCategoryId')) {
         const dept = getSessionItem('tempDepartmentId');
         setSessionItem('departmentId', dept);
@@ -131,6 +132,7 @@ const SkusDisplay: React.FC<SkusDisplayProps> = ({selectedProductId, selectedCat
       sessionStorage.removeItem('tempItemNumber');
     } else {
       sessionStorage.removeItem('itemNumber');
+      sessionStorage.removeItem('listOrder');
     }
   };
 

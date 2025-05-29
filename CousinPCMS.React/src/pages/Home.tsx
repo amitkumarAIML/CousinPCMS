@@ -6,7 +6,6 @@ import {getSessionItem} from '../services/DataService';
 import {closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {useNotification} from '../hook/useNotification';
 import {Product, ProductRequestModelForProductOrderList, UpdateProductToCategoryRequest} from '../models/productModel';
-import {arrayMove} from '@dnd-kit/sortable';
 import {getProductListByCategoryId, linkProductToCategory, updateProductListOrderForHomeScreen} from '../services/HomeService';
 import {Modal} from 'antd';
 
@@ -36,10 +35,6 @@ const Home = () => {
     setProductRefreshKey(0);
   }, []);
 
-  const triggerProductRefresh = useCallback(() => {
-    setProductRefreshKey((prevKey) => prevKey + 1);
-  }, []);
-
   // New state for products managed by Home
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
@@ -58,7 +53,7 @@ const Home = () => {
         const response = await getProductListByCategoryId(categoryId);
         if (response.isSuccess && response.value) {
           // const sortedProducts = response.value.filter((p: Product) => p?.akiProductIsActive).sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
-          const sortedProducts = response.value.sort((a, b) => (a.akiProductListOrder ?? 0) - (b.akiProductListOrder ?? 0));
+          const sortedProducts = response.value.sort((a, b) => (a.akiProductListOrder || 0) - (b.akiProductListOrder || 0));
           setProducts(sortedProducts);
         } else {
           setProducts([]);
@@ -74,6 +69,10 @@ const Home = () => {
     },
     [notify]
   ); // Added notify dependency
+
+  const triggerProductRefresh = useCallback(() => {
+    setProductRefreshKey((prevKey) => prevKey + 1);
+  }, []);
 
   useEffect(() => {
     const storedCategoryId = getSessionItem('CategoryId');
@@ -102,7 +101,7 @@ const Home = () => {
     if (!over) return;
 
     const activeDataType = active.data.current?.type;
-    const activePayload = active.data.current?.payload;
+    const activePayload = active.data.current?.payload as Product | undefined;
     const activeIsSortable = active.data.current?.isSortable;
 
     const overDataType = over.data.current?.type;
@@ -150,27 +149,21 @@ const Home = () => {
       setIsConfirmModalVisible(true);
     }
     // Case 2: Product reordered within ProductDisplay's list
-    else if (active.id !== over.id && activeDataType === 'product' && activeIsSortable) {
-      const overIsProduct = products.some((p) => p.akiProductID === over.id);
-      if (!overIsProduct) return;
+    else if (active.id !== over.id && activeDataType === 'product' && activeIsSortable && activePayload) {
+      const draggedItem = products.find((p) => p.akiProductID === active.id);
+      const targetItem = products.find((p) => p.akiProductID === over.id);
+      if (!draggedItem) {
+        notify.error('Dragged product not found for reordering.');
+        return;
+      }
 
-      const oldIndex = products.findIndex((p) => p.akiProductID === active.id);
-      const newIndex = products.findIndex((p) => p.akiProductID === over.id);
-
-      if (oldIndex === -1 || newIndex === -1) return;
-
-      // Optimistic UI update
-      const reorderedProducts = arrayMove(products, oldIndex, newIndex);
-      setProducts(reorderedProducts); // Update UI immediately
-
-      const draggedItem = products[oldIndex]; // Original item before reorder for oldListOrder
-      const targetItemOrder = products[newIndex]?.akiProductListOrder; // Order of item at new position
-
-      if (!draggedItem) return;
-
+      if (!targetItem) {
+        notify.error('Target product not found for reordering.');
+        return;
+      }
       const updateRequest: ProductRequestModelForProductOrderList = {
         akiProductID: Number(draggedItem.akiProductID),
-        newlistorder: targetItemOrder || 0, // Use the list order of the item at the target position
+        newlistorder: targetItem.akiProductListOrder || 0,
         oldlistorder: draggedItem.akiProductListOrder || 0,
       };
 
@@ -179,7 +172,8 @@ const Home = () => {
         const response = await updateProductListOrderForHomeScreen(updateRequest);
         if (response.isSuccess) {
           notify.success('Product order updated successfully.');
-          await fetchProductsForCategory(selectedCategory);
+          // await fetchProductsForCategory(selectedCategory);
+          triggerProductRefresh();
         } else {
           notify.error('Failed to update product order.');
           setProducts(products); // Revert optimistic update
