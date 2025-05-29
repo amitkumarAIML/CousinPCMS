@@ -131,30 +131,34 @@ namespace CousinPCMS.API.Controllers
         }
 
         /// <summary>
-        /// Gets all items by Product Id.
-        /// </summary>       
-        /// <param name="akiProductID">Pass Product Id</param>
-        /// <returns>returns Items object if details are available. Else empty object.</returns>
-        [HttpGet("GetAllItemsByProductId")]
+        /// Retrieves all items associated with the specified Product ID and Category ID.
+        /// </summary>
+        /// <param name="akiProductID">The unique identifier of the product.</param>
+        /// <param name="akiCategoryID">The unique identifier of the category.</param>
+        /// <returns>
+        /// Returns a list of item objects wrapped in an APIResult if data is found; 
+        /// otherwise, returns an empty list.
+        /// </returns>
+        [HttpGet("GetItemsByProductAndCategory")]
         [ProducesResponseType(typeof(APIResult<List<ItemResponseModel>>), 200)]
         [ProducesResponseType(500)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetAllItemsByProductId(string akiProductID)
+        public async Task<IActionResult> GetItemsByProductAndCategory(string akiProductID, string akiCategoryID)
         {
-            log.Info($"Request of {nameof(GetAllItemsByProductId)} method called.");
+            log.Info($"Request of {nameof(GetItemsByProductAndCategory)} method called.");
             if (Oauth.TokenExpiry <= DateTime.Now)
             {
                 Oauth = Helper.GetOauthToken(Oauth);
             }
 
-            var responseValue = _itemService.GetAllItemsByProductId(akiProductID);
+            var responseValue = _itemService.GetItemsByProductAndCategory(akiProductID, akiCategoryID);
             if (!responseValue.IsError)
             {
-                log.Info($"Response of {nameof(GetAllItemsByProductId)} is success.");
+                log.Info($"Response of {nameof(GetItemsByProductAndCategory)} is success.");
             }
             else
             {
-                log.Error($"Response of {nameof(GetAllItemsByProductId)} is failed.");
+                log.Error($"Response of {nameof(GetItemsByProductAndCategory)} is failed.");
             }
             return Ok(responseValue);
         }

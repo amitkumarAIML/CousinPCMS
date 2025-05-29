@@ -334,26 +334,26 @@ namespace CousinPCMS.API.Controllers
             APIResult<string> responseValue;
 
 
-            if (objModel.isAdditionalProduct)
+            //if (objModel.isAdditionalProduct)
+            //{
+            var objRequest = new UpdateAddProdForCategoryListOrderRequestModel
             {
-                var objRequest = new UpdateAddProdForCategoryListOrderRequestModel
-                {
-                    prodCategory = objModel.additionalCategory,
-                    product = objModel.Product,
-                    listorder = objModel.Listorder
-                };
-                responseValue = _categoryService.UpdateAssociatedProduct(objRequest);
-            }
-            else
-            {
-                var objRequest = new AddAdditionalProductforCategoryRequestModel
-                {
-                    prodCategory = objModel.Product,
-                    product = objModel.additionalCategory,
-                    listorder = objModel.Listorder
-                };
-                responseValue = _categoryService.UpdateProductListorder(objRequest);
-            }
+                prodCategory = objModel.additionalCategory,
+                product = objModel.Product,
+                listorder = objModel.Listorder
+            };
+            responseValue = _categoryService.UpdateAssociatedProduct(objRequest);
+            //}
+            //else
+            //{
+            //    var objRequest = new AddAdditionalProductforCategoryRequestModel
+            //    {
+            //        prodCategory = objModel.Product,
+            //        product = objModel.additionalCategory,
+            //        listorder = objModel.Listorder
+            //    };
+            //    responseValue = _categoryService.UpdateProductListorder(objRequest);
+            //}
 
             // Logging result
             if (!responseValue.IsError)

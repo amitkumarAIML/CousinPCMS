@@ -136,7 +136,7 @@ namespace CousinPCMS.BLL
         }
 
 
-        public APIResult<List<ItemResponseModel>> GetAllItemsByProductId(string akiProductID)
+        public APIResult<List<ItemResponseModel>> GetItemsByProductAndCategory(string akiProductID, string akiCategoryID)
         {
             APIResult<List<ItemResponseModel>> returnValue = new APIResult<List<ItemResponseModel>>
             {
@@ -148,6 +148,7 @@ namespace CousinPCMS.BLL
                 var allFilters = new List<Filters>();
 
                 allFilters.Add(new Filters { ParameterName = "productid", ParameterValue = akiProductID, DataType = typeof(int), Compare = ComparisonType.Equals });
+                allFilters.Add(new Filters { ParameterName = "categorytId", ParameterValue = akiCategoryID, DataType = typeof(string), Compare = ComparisonType.Equals });
 
                 var filter = Helper.GenerateFilterExpressionForAnd(allFilters);
 
