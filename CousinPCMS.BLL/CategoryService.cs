@@ -397,10 +397,6 @@ namespace CousinPCMS.BLL
                     Oauth.Token
                 ).Content;
 
-                // Fetch Product Data
-                var pservice = new ProductService(Oauth);
-                var category = pservice.GetProductsByCategory(categoryId);
-
                 if (!string.IsNullOrEmpty(response))
                 {
                     var responseOfOrderLine = JsonConvert.DeserializeObject<ODataResponse<List<AdditionalCategoryModel>>>(response);
@@ -412,21 +408,25 @@ namespace CousinPCMS.BLL
                     }
                 }
 
-                if (category?.Value != null && category.Value.Any())
-                {
-                    var products = category.Value.Select(additionalCategory => new AdditionalCategoryModel
-                    {
-                        AdditionalCategory = additionalCategory.akiProductID,
-                        Product = additionalCategory.akiCategoryID,
-                        ListOrder = additionalCategory.akiProductListOrder,
-                        ProductName = additionalCategory.akiProductName,
-                        CategoryName = additionalCategory.category_Name,
-                        WebActive = additionalCategory.akiProductWebActive,
-                        isAdditionalProduct = false
-                    }).ToList();
+                //// Fetch Product Data
+                // var pservice = new ProductService(Oauth);
+                // var category = pservice.GetProductsByCategory(categoryId);
 
-                    returnValue.Value.AddRange(products);
-                }
+                //if (category?.Value != null && category.Value.Any())
+                //{
+                //    var products = category.Value.Select(additionalCategory => new AdditionalCategoryModel
+                //    {
+                //        AdditionalCategory = additionalCategory.akiProductID,
+                //        Product = additionalCategory.akiCategoryID,
+                //        ListOrder = additionalCategory.akiProductListOrder,
+                //        ProductName = additionalCategory.akiProductName,
+                //        CategoryName = additionalCategory.category_Name,
+                //        WebActive = additionalCategory.akiProductWebActive,
+                //        isAdditionalProduct = false
+                //    }).ToList();
+
+                //    returnValue.Value.AddRange(products);
+                //}
                 returnValue.IsSuccess = true;
             }
             catch (Exception exception)
