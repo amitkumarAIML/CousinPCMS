@@ -170,7 +170,7 @@ namespace CousinPCMS.BLL
                 {
                     returnValue.IsSuccess = false;
                     var errorResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
-                    returnValue.ExceptionInformation = errorResponse?.error?.message ?? "Unknown error occurred.";
+                    returnValue.Message = errorResponse?.error?.message ?? "Unknown error occurred.";
                 }
             }
             catch (Exception exception)
