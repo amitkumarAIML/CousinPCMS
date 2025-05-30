@@ -3,7 +3,7 @@ import {Table, Checkbox, Spin} from 'antd';
 import type {TableProps} from 'antd/es/table';
 import {useNotification} from '../../hook/useNotification';
 import type {SKuList, SkuListResponse} from '../../models/skusModel';
-import {getSkuByProductId} from '../../services/HomeService';
+import {getItemsByProductAndCategory} from '../../services/HomeService';
 import {getSessionItem} from '../../services/DataService';
 import {updateProductSKus} from '../../services/ProductService';
 import {UpdateProductSkusRequest} from '../../models/productModel';
@@ -13,6 +13,7 @@ const SKUsList = () => {
   const [skusList, setSkusList] = useState<SKuList[]>([]);
   const [selectedRow, setSelectedRow] = useState<SKuList | null>(null);
   const [productId] = useState<string | null>(getSessionItem('productId') || getSessionItem('tempProductId'));
+  const [categoryId] = useState<string>(getSessionItem('CategoryId') || getSessionItem('tempCategoryId'));
   const notify = useNotification();
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const SKUsList = () => {
       setLoading(true);
       setSelectedRow(null);
       try {
-        const data: SkuListResponse = await getSkuByProductId(Number(productId));
+        const data: SkuListResponse = await getItemsByProductAndCategory(Number(productId), categoryId);
         if (data.isSuccess && data.value) {
           // const activeSkus = data.value.filter((sku: SKuList) => sku?.akiSKUIsActive).sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
           const activeSkus = data.value.sort((a, b) => Number(a.akiListOrder || 0) - (Number(b.akiListOrder) || 0));
